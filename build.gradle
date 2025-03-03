@@ -4,14 +4,17 @@ plugins {
     id 'org.openjfx.javafxplugin' version '0.0.13'
 }
 
+group 'ch.unibas.dmi.dbis'
+version '0.0.1-ALPHA'
+
+application {
+    mainClass = 'ch.unibas.dmi.dbis.cs108.example.HelloWorld'
+}
+
 javafx {
     version = "19.0.2.1"
     modules = ['javafx.controls', 'javafx.fxml', 'javafx.base']
 }
-
-group 'ch.unibas.dmi.dbis'
-version '0.0.1-ALPHA'
-mainClassName = 'ch.unibas.dmi.dbis.cs108.example.HelloWorld'
 
 java {
     toolchain {
@@ -19,54 +22,35 @@ java {
     }
 }
 
-//adds maven central as a maven repository
 repositories {
     mavenCentral()
 }
 
-/* The following lines are extensively documented. Please remove the documentation when you have read and understood it. */
 dependencies {
-    // EXAMPLE: LOGGING
-    /*
-    The following adds the logging framework Apache Log4J2.
-    The statements serve as an example on how to use libraries.
-    Since these are `implementation` dependencies, they are packed in the final jar.
-    Read the documentation at https://docs.gradle.org/current/userguide/declaring_dependencies.html to learn more
-     */
-    //implementation 'org.apache.logging.log4j:log4j-api:2.+'
-    //implementation 'org.apache.logging.log4j:log4j-core:2.+'
+    // JUnit BOM
+    testImplementation platform('org.junit:junit-bom:5.9.2')
+    // JUnit Jupiter (the JUnit 5 engine)
+    testImplementation 'org.junit.jupiter:junit-jupiter'
 
-    /*
-    This is another example - it imports the javafx-controls dependency
-     */
+    // If you still need the older JUnit Vintage engine:
+    // testImplementation 'org.junit.vintage:junit-vintage-engine'
+
+    // example JavaFX library (though the plugin might already handle these)
     implementation 'org.openjfx:javafx-controls:19.0.2.1'
-
-    // JUNIT
-    /*
-    The following dependency is required to perform JUnit tests, as for example HelloWorldTest.
-    Since it is a `testCompile` dependency, it will not be part of the final product, only during testing.
-     */
-    testImplementation("org.junit.jupiter:junit-jupiter:5.+")
 }
 
 test {
     useJUnitPlatform()
 }
 
-/*
-The following block adds both compile and runtime dependencies to the jar
- */
 jar {
-
-    duplicatesStrategy(DuplicatesStrategy.INCLUDE)
-
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
     manifest {
-        attributes(
-                'Main-Class': mainClassName
-        )
+        attributes 'Main-Class': application.mainClass
     }
     from {
-        configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.collect { file ->
+            file.isDirectory() ? file : zipTree(file)
+        }
     }
 }
