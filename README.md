@@ -11,7 +11,7 @@ Der Spieler mit den meisten Runen nach 5 Spielrunden gewinnt das Spiel.
 
 Genauere Dokumentation der voraussichtlichen Spielregeln: [Spielregeln](docs/GameDesign.pdf).
 
-Github Kollaboratoren: [Kollaboratoren](docs/Sitzungstagebuch/Contributors/CONTRIBUTORS.txt).
+Github Kollaboratoren: [Kollaboratoren](docs/Contributors/CONTRIBUTORS.txt).
 
 Eine Übersicht über den ständig aktualisierten Projektplan, Kalender und Aufgabenzuteilung findet sich hier:
 [Projektmanagement](https://tungsten-carrot-2b4.notion.site/1ad104ac2da581e0bd69d7f92ebc897b?v=1ad104ac2da581f5ba1b000c74035432&pvs=4)
