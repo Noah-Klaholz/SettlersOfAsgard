@@ -2,20 +2,18 @@ package ch.unibas.dmi.dbis.cs108.server;
 
 /**
  * Interface for the communication between the server and the client
+ * Message String should be in the format "commandName:arg1,arg2,arg3"
  */
 public interface CommunicationAPI {
-
-    MessageParser messageParser = new MessageParser();
-
     /**
-     * Sends a command to the server
+     * Sends a message to the server
      * @param message the message to send
      */
-    void RecieveCommand(Command message);
+    void sendMessage(String message);
 
     /**
-     * Receives a command from the server
+     * Receives a message from the server
      * @return the message received
      */
-    Command recieveCommand();
+    String receiveMessage();
 }

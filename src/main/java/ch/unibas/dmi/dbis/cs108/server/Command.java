@@ -11,12 +11,28 @@ public class Command {
 
     /**
      * Creates a new command
-     * @param command the command
-     * @param args the arguments
+     * @param message the String message
+     * Prints out error Message in case of wrong formatting of message
+     * Correct formatting: commandName:arg1,arg2,arg3
      */
-    public Command(String command, String[] args) {
-        this.command = command;
-        this.args = args;
+    public Command(String message) {
+        String[] parts = message.split(":", 2);
+        if(parts.length != 2) {
+            System.err.println("Invalid command: " + message);
+            return;
+        }
+        this.command = parts[0];
+        this.args = parts[1].split(",");
+    }
+
+    /**
+     * Checks if the command is valid
+     * @return true if the command is valid, false otherwise
+     */
+    public boolean validCommand() {
+        // TODO: Implement checking for correct commandName and valid arguments (Netzwerkprotokoll vorher festlegen)
+        // Should check for correct command and arguments
+        return command != null && args != null;
     }
 
     /**
