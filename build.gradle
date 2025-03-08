@@ -11,6 +11,14 @@ application {
     mainClass = 'ch.unibas.dmi.dbis.cs108.example.HelloWorld'
 }
 
+javadoc {
+    source = sourceSets.main.allJava
+
+    destinationDir = file("$buildDir/docs/Documentation/javadoc")
+
+    options.encoding = "UTF-8"
+}
+
 javafx {
     version = "19.0.2.1"
     modules = ['javafx.controls', 'javafx.fxml', 'javafx.base']
