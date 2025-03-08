@@ -3,7 +3,7 @@ package ch.unibas.dmi.dbis.cs108.server;
 /**
  * Main class for the server and the client, makes starting the server and client via terminal possible
  */
-public class Main {
+public class ServerMain {
 
     /**
      * Main method for the server and the client

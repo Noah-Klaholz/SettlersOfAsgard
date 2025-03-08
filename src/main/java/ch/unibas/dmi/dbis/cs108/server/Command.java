@@ -29,7 +29,7 @@ public class Command {
      * Checks if the command is valid
      * @return true if the command is valid, false otherwise
      */
-    public boolean validCommand() {
+    public boolean isValid() {
         // TODO: Implement checking for correct commandName and valid arguments (Netzwerkprotokoll vorher festlegen)
         // Should check for correct command and arguments
         return command != null && args != null;
