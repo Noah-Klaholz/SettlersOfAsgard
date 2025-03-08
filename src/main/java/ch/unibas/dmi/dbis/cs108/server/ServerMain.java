@@ -15,8 +15,8 @@ public class ServerMain {
     public static void main(String[] args) {
         if(args.length < 2) {
             System.out.println("Usage:");
-            System.out.println("Server: java -jar xyz.jar server <listenport>");
-            System.out.println("Client: java -jar xyz.jar client <serverip>:<serverport>");
+            System.out.println("Server: java -jar xyz.jar server <listenport>"); //TODO change project name and change xyz to the new name
+            System.out.println("Client: java -jar xyz.jar client <serverip>:<serverport>"); //TODO change project name and change xyz to the new name
             System.exit(1);
         }
 
@@ -27,6 +27,7 @@ public class ServerMain {
                 int port = Integer.parseInt(args[1]);
                 GameServer server = new GameServer(port);
                 server.start();
+                System.out.println("Server started on port " + port);
             } catch (NumberFormatException e) {
                 System.out.println("Invalid port number in server mode.");
                 System.exit(1);
@@ -42,6 +43,7 @@ public class ServerMain {
                 int serverPort = Integer.parseInt(parts[1]);
                 GameClient client = new GameClient(serverIp, serverPort);
                 client.connect();
+                System.out.println("Client connected on port " + serverPort);
             } catch (NumberFormatException e) {
                 System.err.println("Invalid port number in client mode.");
                 System.exit(1);

@@ -56,6 +56,10 @@ public class GameServer {
         }
     }
 
+    /**
+     * Removes a client from the list of connected clients.
+     * @param client The client to remove
+     */
     public void removeClient(ClientHandler client) {
         clients.remove(client);
     }
@@ -120,11 +124,19 @@ public class GameServer {
             // You can also add logic for synchronous response if needed.
         }
 
+        /**
+         * Sends a message to the client.
+         * @param message The message to send
+         */
         @Override
         public void sendMessage(String message) {
             out.println(message);
         }
 
+        /**
+         * Receives a message from the client.
+         * @return The received message
+         */
         @Override
         public String receiveMessage() {
             try {

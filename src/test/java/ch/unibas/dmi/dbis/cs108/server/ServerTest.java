@@ -1,11 +1,14 @@
-package ch.unibas.dmi.dbis.cs108.example;
+package ch.unibas.dmi.dbis.cs108.server;
 
-import ch.unibas.dmi.dbis.cs108.server.*;
-/**
- * testing the HexMap and HexTiles classes
- */
-public class Main {
-    public static void main(String[] args){
+import org.junit.jupiter.api.*;
+import java.io.IOException;
+
+class ServerTest {
+
+    @Test
+    public void testServer() throws IOException {
+
+        System.out.println("Testing");
         // Start server in a new thread
         new Thread(() -> new GameServer(9000).start()).start();
 
@@ -29,3 +32,4 @@ public class Main {
         System.exit(0); // Ensure program terminates cleanly
     }
 }
+

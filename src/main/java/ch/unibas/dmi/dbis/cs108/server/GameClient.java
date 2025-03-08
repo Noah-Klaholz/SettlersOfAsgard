@@ -34,6 +34,7 @@ public class GameClient implements CommunicationAPI{
                 try {
                     while ((message = in.readLine()) != null) {
                         System.out.println("Server sent message: " + message);
+                        //TODO implement message handling -> this is asynchronous
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -52,11 +53,19 @@ public class GameClient implements CommunicationAPI{
         }
     }
 
+    /**
+     * Sends a message to the server.
+     * @param message The message to send
+     */
     @Override
     public void sendMessage(String message) {
         out.println(message);
     }
 
+    /**
+     * Receives a message from the server.
+     * @return The received message
+     */
     @Override
     public String receiveMessage() {
         try {
@@ -65,12 +74,5 @@ public class GameClient implements CommunicationAPI{
             e.printStackTrace();
         }
         return null;
-    }
-
-    public static void main(String[] args) {
-        GameClient client = new GameClient("localhost", 12345);
-        client.connect();
-        // Send a test command. For example: MOVE:UP (following the protocol "COMMAND:args")
-        client.sendMessage("MOVE:UP");
     }
 }

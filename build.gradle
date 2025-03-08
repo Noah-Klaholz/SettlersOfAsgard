@@ -8,7 +8,7 @@ group 'ch.unibas.dmi.dbis'
 version '0.0.1-ALPHA'
 
 application {
-    mainClass = 'ch.unibas.dmi.dbis.cs108.example.HelloWorld'
+    mainClass = 'ch.unibas.dmi.dbis.cs108.example.Main'
 }
 
 javadoc {
