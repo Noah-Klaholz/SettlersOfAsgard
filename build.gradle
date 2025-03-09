@@ -1,27 +1,25 @@
 plugins {
     id 'java-library'
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.0.13'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
 }
 
 group 'ch.unibas.dmi.dbis'
 version '0.0.1-ALPHA'
 
 application {
-    mainClass = 'ch.unibas.dmi.dbis.cs108.example.Main'
+    mainClass = 'ch.unibas.dmi.dbis.cs108.example.HelloWorld'
 }
 
 javadoc {
     source = sourceSets.main.allJava
-
-    destinationDir = file("$buildDir/docs/Documentation/javadoc")
-
+    setDestinationDir(layout.buildDirectory.dir("docs/Documentation/javadoc").get().asFile)
     options.encoding = "UTF-8"
 }
 
 javafx {
     version = "19.0.2.1"
-    modules = ['javafx.controls', 'javafx.fxml', 'javafx.base']
+    modules = ['javafx.controls', 'javafx.fxml']
 }
 
 java {
@@ -35,16 +33,14 @@ repositories {
 }
 
 dependencies {
-    // JUnit BOM
-    testImplementation platform('org.junit:junit-bom:5.9.2')
-    // JUnit Jupiter (the JUnit 5 engine)
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-
-    // If you still need the older JUnit Vintage engine:
-    // testImplementation 'org.junit.vintage:junit-vintage-engine'
-
-    // example JavaFX library (though the plugin might already handle these)
+    // JavaFX dependencies (explicit if needed)
     implementation 'org.openjfx:javafx-controls:19.0.2.1'
+    implementation 'org.openjfx:javafx-fxml:19.0.2.1'
+
+    // JUnit dependencies
+    testImplementation platform('org.junit:junit-bom:5.9.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher' // Ensures tests can run in some cases
 }
 
 test {
