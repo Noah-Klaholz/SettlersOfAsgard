@@ -38,7 +38,7 @@ dependencies {
     // JUnit BOM
     testImplementation platform('org.junit:junit-bom:5.9.2')
     // JUnit Jupiter (the JUnit 5 engine)
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
 
     // If you still need the older JUnit Vintage engine:
     // testImplementation 'org.junit.vintage:junit-vintage-engine'
@@ -49,6 +49,10 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    testLogging {
+        showStandardStreams = true
+        events "failed", "skipped", "passed", "standardOut", "standardError", "started"
+    }
 }
 
 jar {
