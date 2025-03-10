@@ -57,7 +57,7 @@ public class GameClient implements CommunicationAPI{
     }
 
     public void start() {
-        //TODO implement client logic (Actual Game Logic)
+        //TODO implement client logic (Actual Game Logic) -> Game Should start here (call to main menu)
         sendMessage("TEST:arg1,arg2,arg3");    // test command
     }
 

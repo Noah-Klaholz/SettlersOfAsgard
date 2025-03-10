@@ -26,7 +26,7 @@ public interface CommunicationAPI {
          * @param cmd The message to parse
          */
         public static void processCommand(Command cmd) {
-            //TODO implement command handling here
+            //TODO implement command handling here (Networking Protocol)
             if(cmd.isValid()) {
                 switch(cmd.getCommand()) {
                     case "TEST":
