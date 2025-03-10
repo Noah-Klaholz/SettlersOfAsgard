@@ -30,12 +30,14 @@ public class GameClient implements CommunicationAPI{
             System.out.println("Connected to server on port " + port);
 
             new Thread(() -> {
-                String message;
+                String received;
                 try {
-                    while ((message = in.readLine()) != null) {
-                        System.out.println("Server sent message: " + message);
-                        //TODO implement message handling -> this is asynchronous
+                    while ((received = in.readLine()) != null) {
+                        System.out.println("Client received message: " + received);
+                        processMessage(received);
                     }
+                } catch (SocketException se) {
+                    System.out.println("Socket closed, exiting reading thread"); // Expected during shutdown
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -51,6 +53,12 @@ public class GameClient implements CommunicationAPI{
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println("Client Disconnected from port " + port);
+    }
+
+    public void start() {
+        //TODO implement client logic (Actual Game Logic)
+        sendMessage("TEST:arg1,arg2,arg3");    // test command
     }
 
     /**
@@ -63,16 +71,18 @@ public class GameClient implements CommunicationAPI{
     }
 
     /**
-     * Receives a message from the server.
+     * Receives a message from the server and processes it.
      * @return The received message
      */
     @Override
-    public String receiveMessage() {
-        try {
-            return in.readLine();
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void processMessage(String received) {
+        Command cmd = new Command(received);
+        System.out.println("Client processing " + cmd);
+        if(cmd.getCommand().equals("STDN")) {
+            System.out.println("Server sent a shutdown command. Disconnecting...");
+            disconnect();
+        } else {
+            NetworkProtocol.processCommand(cmd);
         }
-        return null;
     }
 }

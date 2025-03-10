@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
@@ -16,6 +17,7 @@ import java.util.concurrent.Executors;
  * It listens for incoming connections and creates a new ClientHandler for each client.
  */
 public class GameServer {
+    private boolean running;
     private int port;
     private ServerSocket serverSocket;
     private ExecutorService executor;
@@ -31,21 +33,55 @@ public class GameServer {
      * Starts the server and listens for incoming connections.
      */
     public void start() {
+        running = true;
         try {
             serverSocket = new ServerSocket(port);
             System.out.println("Server started on port " + port);
 
-            while (true) {
-                System.out.println("Waiting for client connection...");
-                ClientHandler client = new ClientHandler(serverSocket.accept());
-                clients.add(client);
-                executor.execute(client);
+            while (running) {
+                try {
+                    System.out.println("Waiting for client connection...");
+                    ClientHandler client = new ClientHandler(serverSocket.accept());
+                    clients.add(client);
+                    executor.execute(client);
+                } catch (SocketException se) {
+                    if(!running) {
+                        System.out.println("Server socket closed. Exiting accept loop");
+                        break; // Expected exception when server is shutting down
+                    } else {
+                        throw se;
+                    }
+                }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Stops the server and closes all connections.
+     */
+    public void shutdown() {
+        running = false;
+        // Disconnect all clients
+        broadcast("STDN:");
+        try {
+            if(executor != null) {
+                executor.shutdown();
+                if (!executor.awaitTermination(5, java.util.concurrent.TimeUnit.SECONDS)) {
+                    executor.shutdownNow();
+                }
+            }
+            if (serverSocket != null && !serverSocket.isClosed()) {
+                serverSocket.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            executor.shutdownNow();
+        }
+    }
     /**
      * Broadcasts a message to all connected clients.
      * @param message The message to broadcast
@@ -92,14 +128,8 @@ public class GameServer {
             String received;
             try {
                 while ((received = in.readLine()) != null) {
-                    System.out.println("Received: " + received);
-                    // Use the message parser to extract command info.
-                    Command cmd = new Command(received);
-                    if (cmd.isValid()) {
-                        processCommand(cmd);
-                    } else {
-                        System.err.println("Invalid command received: " + received);
-                    }
+                    System.out.println("Server received: " + received);
+                    processMessage(received);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -114,17 +144,6 @@ public class GameServer {
         }
 
         /**
-         * Process the parsed command.
-         * Extend this method to handle different commands (e.g., MOVE, ATTACK, CHAT, etc.)
-         */
-        private void processCommand(Command cmd) {
-            //TODO implement this Method with switch case (Network protocol)
-            System.out.println("Processing " + cmd);
-            // Example: If the command is a move, you might update the player's position.
-            // You can also add logic for synchronous response if needed.
-        }
-
-        /**
          * Sends a message to the client.
          * @param message The message to send
          */
@@ -134,17 +153,15 @@ public class GameServer {
         }
 
         /**
-         * Receives a message from the client.
+         * Receives a message from the client and processes it.
          * @return The received message
          */
         @Override
-        public String receiveMessage() {
-            try {
-                return in.readLine();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
+        public void processMessage(String received) {
+            Command cmd = new Command(received);
+            System.out.println("Server processing " + cmd);
+            sendMessage(cmd.toString()); // Echo the command back to the client
+            NetworkProtocol.processCommand(cmd);
         }
     }
 }

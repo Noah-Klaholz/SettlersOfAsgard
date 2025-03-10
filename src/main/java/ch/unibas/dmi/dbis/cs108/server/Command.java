@@ -57,6 +57,7 @@ public class Command {
      */
     @Override
     public String toString() {
-        return "Command:" + command + ", args=" + Arrays.toString(args);
+        String args = String.join(",", this.args);
+        return command + ":" + args;
     }
 }

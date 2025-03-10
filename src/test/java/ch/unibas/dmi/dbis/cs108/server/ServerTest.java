@@ -10,7 +10,14 @@ class ServerTest {
 
         System.out.println("Testing");
         // Start server in a new thread
-        new Thread(() -> new GameServer(9000).start()).start();
+        new Thread(() -> {
+            GameServer server = new GameServer(9000);
+            server.start();
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                System.out.println("Server shutting down...");
+                server.shutdown();
+            }));
+        }).start();
 
         // Small delay to let the server start properly
         try { Thread.sleep(500); } catch (InterruptedException ignored) {}
@@ -29,6 +36,7 @@ class ServerTest {
         client.disconnect();
 
         System.out.println("Test complete.");
+
         System.exit(0); // Ensure program terminates cleanly
     }
 }

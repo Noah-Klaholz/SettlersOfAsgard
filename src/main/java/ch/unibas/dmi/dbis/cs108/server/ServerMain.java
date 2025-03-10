@@ -22,12 +22,15 @@ public class ServerMain {
 
         String mode = args[0];
 
-        if(mode.equalsIgnoreCase("server")) {
+        if (mode.equalsIgnoreCase("server")) {
             try {
                 int port = Integer.parseInt(args[1]);
                 GameServer server = new GameServer(port);
-                server.start();
-                System.out.println("Server started on port " + port);
+                new Thread(server::start).start();
+                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                    System.out.println("Server shutting down...");
+                    server.shutdown();
+                }));
             } catch (NumberFormatException e) {
                 System.out.println("Invalid port number in server mode.");
                 System.exit(1);
@@ -43,7 +46,7 @@ public class ServerMain {
                 int serverPort = Integer.parseInt(parts[1]);
                 GameClient client = new GameClient(serverIp, serverPort);
                 client.connect();
-                System.out.println("Client connected on port " + serverPort);
+                client.start();
             } catch (NumberFormatException e) {
                 System.err.println("Invalid port number in client mode.");
                 System.exit(1);
@@ -52,6 +55,5 @@ public class ServerMain {
             System.err.println("Invalid mode. Expected: 'server' or 'client'.");
             System.exit(1);
         }
-
     }
 }

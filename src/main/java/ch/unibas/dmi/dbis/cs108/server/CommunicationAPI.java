@@ -15,5 +15,30 @@ public interface CommunicationAPI {
      * Receives a message from the server
      * @return the message received
      */
-    String receiveMessage();
+    void processMessage(String received);
+
+    /**
+     * The Command class is responsible for parsing messages into commands.
+     */
+    class NetworkProtocol {
+        /**
+         * Parses a message into a command.
+         * @param cmd The message to parse
+         */
+        public static void processCommand(Command cmd) {
+            //TODO implement command handling here
+            if(cmd.isValid()) {
+                switch(cmd.getCommand()) {
+                    case "TEST":
+                        System.out.println("TEST");
+                        break;
+                    default:
+                        System.err.println("Unknown command: " + cmd.getCommand());
+                }
+            } else {
+                System.err.println("Invalid command: " + cmd);
+            }
+        }
+    }
 }
+

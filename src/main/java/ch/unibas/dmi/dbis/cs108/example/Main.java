@@ -7,25 +7,19 @@ import ch.unibas.dmi.dbis.cs108.server.*;
 public class Main {
     public static void main(String[] args){
         // Start server in a new thread
-        new Thread(() -> new GameServer(9000).start()).start();
+        String[] serverArgs = {"server", "9000"};
+        ServerMain.main(serverArgs);
 
         // Small delay to let the server start properly
         try { Thread.sleep(500); } catch (InterruptedException ignored) {}
 
         // Start client
-        GameClient client = new GameClient("127.0.0.1", 9000);
-        client.connect();
-
-        // Send a test command
-        client.sendMessage("testCommand:arg1,arg2,arg3");
+        String[] clientArgs = {"client", "127.0.0.1:9000"};
+        ServerMain.main(clientArgs);
 
         // Wait a bit to see the response
         try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
 
-        // Disconnect client
-        client.disconnect();
-
-        System.out.println("Test complete.");
         System.exit(0); // Ensure program terminates cleanly
     }
 }
