@@ -163,11 +163,18 @@ public class GameServer {
             Command cmd = new Command(received);
             if (cmd.isValid()) {
                 boolean processed = true; // Assume command is processed, only change in default (error) case
-                System.out.println("Client processing " + cmd);
+                System.out.println("Server processing " + cmd);
 
                 switch (cmd.getCommand()) {
                     case NetworkProtocol.TEST:
                         System.out.println("TEST");
+                        break;
+                    case NetworkProtocol.OK:
+                        processed = false;
+                        break;
+                    case NetworkProtocol.ERROR:
+                        processed = false;
+                        System.out.println("Server sent an error command.");
                         break;
                     default: // Error case
                         System.err.println("Unknown command: " + cmd.getCommand());

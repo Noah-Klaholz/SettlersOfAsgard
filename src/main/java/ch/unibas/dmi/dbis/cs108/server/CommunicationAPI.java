@@ -23,6 +23,8 @@ public interface CommunicationAPI {
     class NetworkProtocol {
         public final static String TEST = "TEST"; // Test command
         public final static String SHUTDOWN = "STDN"; // Shutdown command broadcast by server to disconnect all clients
+        public final static String OK = "OK"; // OK response
+        public final static String ERROR = "ERR"; // Error response
     }
 }
 

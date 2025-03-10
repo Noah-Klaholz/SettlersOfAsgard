@@ -61,7 +61,7 @@ public class GameClient implements CommunicationAPI {
      */
     public void start() {
         //TODO implement client logic (Actual Game Logic) -> Game Should start here (call to main menu)
-        sendMessage("TEST:arg1,arg2,arg3");    // test command
+        sendMessage(NetworkProtocol.TEST+":arg1,arg2,arg3");    // test command
     }
 
     /**
@@ -82,7 +82,7 @@ public class GameClient implements CommunicationAPI {
     public void processMessage(String received) {
         Command cmd = new Command(received);
         if (cmd.isValid()) {
-            boolean processed = true; // Assume command is processed, only change in default (error) case
+            boolean processed = true; // Assume command is processed, only change in response and default (error) case
             System.out.println("Client processing " + cmd);
 
             switch (cmd.getCommand()) {
@@ -92,15 +92,25 @@ public class GameClient implements CommunicationAPI {
                 case NetworkProtocol.SHUTDOWN:
                     System.out.println("Server sent a shutdown command. Disconnecting...");
                     disconnect();
-                default:
-                    System.err.println("Unknown command: " + cmd.getCommand());
+                case NetworkProtocol.OK:
                     processed = false;
+                    break;
+                case NetworkProtocol.ERROR:
+                    processed = false;
+                    System.out.println("Server sent an error command.");
+                    break;
+                default:
+                    processed = false;
+                    System.err.println("Unknown command: " + cmd.getCommand());
             }
+            /*
             if(processed) {
                 sendMessage("OK:" + cmd.toString()); // Echo the command back to the client with an OK response
             } else {
                 sendMessage("ERR:" + cmd.toString()); // Echo the command back to the client with an ERR response
             }
+
+             */
         } else {
             System.err.println("Invalid command: " + cmd);
         }
