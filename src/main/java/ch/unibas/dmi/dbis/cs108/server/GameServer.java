@@ -122,6 +122,7 @@ public class GameServer {
 
         /**
          * Continuously reads messages from the client and processes them.
+         * Closes the connection when the client disconnects.
          */
         @Override
         public void run() {
@@ -153,15 +154,33 @@ public class GameServer {
         }
 
         /**
-         * Receives a message from the client and processes it.
-         * @return The received message
+         * Receives a message from the client and processes it. Answers with an OK or ERR response depending on success of processing.
+         * @param received The message received from the client
+         *                 The message should be in the format "commandName:arg1,arg2,arg3"
          */
         @Override
         public void processMessage(String received) {
             Command cmd = new Command(received);
-            System.out.println("Server processing " + cmd);
-            sendMessage(cmd.toString()); // Echo the command back to the client
-            NetworkProtocol.processCommand(cmd);
+            if (cmd.isValid()) {
+                boolean processed = true; // Assume command is processed, only change in default (error) case
+                System.out.println("Client processing " + cmd);
+
+                switch (cmd.getCommand()) {
+                    case NetworkProtocol.TEST:
+                        System.out.println("TEST");
+                        break;
+                    default: // Error case
+                        System.err.println("Unknown command: " + cmd.getCommand());
+                        processed = false;
+                }
+                if(processed) {
+                    sendMessage("OK:" + cmd.toString()); // Echo the command back to the client with an OK response
+                } else {
+                    sendMessage("ERR:" + cmd.toString()); // Echo the command back to the client with an ERR response
+                }
+            } else {
+                System.err.println("Invalid command: " + cmd);
+            }
         }
     }
 }

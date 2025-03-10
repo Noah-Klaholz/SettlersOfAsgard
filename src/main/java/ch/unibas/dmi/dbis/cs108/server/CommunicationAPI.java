@@ -18,27 +18,11 @@ public interface CommunicationAPI {
     void processMessage(String received);
 
     /**
-     * The Command class is responsible for parsing messages into commands.
+     * Utility class for network protocol constants
      */
     class NetworkProtocol {
-        /**
-         * Parses a message into a command.
-         * @param cmd The message to parse
-         */
-        public static void processCommand(Command cmd) {
-            //TODO implement command handling here (Networking Protocol)
-            if(cmd.isValid()) {
-                switch(cmd.getCommand()) {
-                    case "TEST":
-                        System.out.println("TEST");
-                        break;
-                    default:
-                        System.err.println("Unknown command: " + cmd.getCommand());
-                }
-            } else {
-                System.err.println("Invalid command: " + cmd);
-            }
-        }
+        public final static String TEST = "TEST"; // Test command
+        public final static String SHUTDOWN = "STDN"; // Shutdown command broadcast by server to disconnect all clients
     }
 }
 

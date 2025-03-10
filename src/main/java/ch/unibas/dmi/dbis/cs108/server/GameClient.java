@@ -6,7 +6,7 @@ import java.net.*;
 /**
  * The GameClient class is responsible for connecting to the server and sending/receiving messages.
  */
-public class GameClient implements CommunicationAPI{
+public class GameClient implements CommunicationAPI {
     private String host;
     private int port;
     private Socket socket;
@@ -56,6 +56,9 @@ public class GameClient implements CommunicationAPI{
         System.out.println("Client Disconnected from port " + port);
     }
 
+    /**
+     * Starts the client and sends a test message to the server.
+     */
     public void start() {
         //TODO implement client logic (Actual Game Logic) -> Game Should start here (call to main menu)
         sendMessage("TEST:arg1,arg2,arg3");    // test command
@@ -71,18 +74,35 @@ public class GameClient implements CommunicationAPI{
     }
 
     /**
-     * Receives a message from the server and processes it.
-     * @return The received message
+     * Receives a message from the server and processes it. Answers with an OK or ERR response depending on success of processing.
+     * @param received The received message from the server
+     *                 Message String should be in the format "commandName:arg1,arg2,arg3"
      */
     @Override
     public void processMessage(String received) {
         Command cmd = new Command(received);
-        System.out.println("Client processing " + cmd);
-        if(cmd.getCommand().equals("STDN")) {
-            System.out.println("Server sent a shutdown command. Disconnecting...");
-            disconnect();
+        if (cmd.isValid()) {
+            boolean processed = true; // Assume command is processed, only change in default (error) case
+            System.out.println("Client processing " + cmd);
+
+            switch (cmd.getCommand()) {
+                case NetworkProtocol.TEST:
+                    System.out.println("TEST");
+                    break;
+                case NetworkProtocol.SHUTDOWN:
+                    System.out.println("Server sent a shutdown command. Disconnecting...");
+                    disconnect();
+                default:
+                    System.err.println("Unknown command: " + cmd.getCommand());
+                    processed = false;
+            }
+            if(processed) {
+                sendMessage("OK:" + cmd.toString()); // Echo the command back to the client with an OK response
+            } else {
+                sendMessage("ERR:" + cmd.toString()); // Echo the command back to the client with an ERR response
+            }
         } else {
-            NetworkProtocol.processCommand(cmd);
+            System.err.println("Invalid command: " + cmd);
         }
     }
 }
