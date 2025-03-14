@@ -1,43 +1,87 @@
 package ch.unibas.dmi.dbis.cs108.server;
 
 import org.junit.jupiter.api.*;
-import java.io.IOException;
 
+import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * The {@code ServerTest} class is a JUnit test class for testing the {@link GameServer} and its interaction
+ * with a {@link GameClient}. It ensures that the server can start, accept client connections, process
+ * messages, and shut down gracefully.
+ */
 class ServerTest {
 
-    @Test
-    public void testServer() throws IOException {
+    private GameServer server;
+    private Thread serverThread;
 
-        System.out.println("Testing");
-        // Start server in a new thread
-        new Thread(() -> {
-            GameServer server = new GameServer(9000);
+    /**
+     * Sets up the test environment by starting the {@link GameServer} in a separate thread.
+     * This method is executed before each test method.
+     */
+    @BeforeEach
+    public void setUp() {
+        // Start the server in a new thread
+        CountDownLatch serverReady = new CountDownLatch(1);
+        serverThread = new Thread(() -> {
+            server = new GameServer(9000);
             server.start();
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                System.out.println("Server shutting down...");
-                server.shutdown();
-            }));
-        }).start();
+            serverReady.countDown(); // Signal that the server is ready
+        });
+        serverThread.start();
 
-        // Small delay to let the server start properly
-        try { Thread.sleep(500); } catch (InterruptedException ignored) {}
+        // Wait for the server to start
+        try {
+            serverReady.await(2, TimeUnit.SECONDS); // Wait up to 2 seconds for the server to start
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Server setup interrupted", e);
+        }
+    }
 
-        // Start client
+    /**
+     * Tears down the test environment by shutting down the {@link GameServer} and interrupting
+     * the server thread if it is still running. This method is executed after each test method.
+     */
+    @AfterEach
+    public void tearDown() {
+        // Shut down the server gracefully
+        if (server != null) {
+            server.shutdown();
+        }
+        if (serverThread != null && serverThread.isAlive()) {
+            serverThread.interrupt(); // Interrupt the server thread if it's still running
+        }
+    }
+
+    /**
+     * Tests the interaction between the {@link GameServer} and a {@link GameClient}. This test:
+     * Starts the server.
+     * Connects a client to the server.
+     * Sends a test message from the client to the server.
+     * Waits for the server to process the message.
+     * Disconnects the client.
+     * @throws IOException if an I/O error occurs during client-server communication.
+     * @throws InterruptedException if the test thread is interrupted while waiting.
+     */
+    @Test
+    public void testServer() throws IOException, InterruptedException {
+        System.out.println("Testing");
+
+        // Start the client
         GameClient client = new GameClient("127.0.0.1", 9000);
         client.connect();
 
         // Send a test command
-        client.sendMessage(CommunicationAPI.NetworkProtocol.TEST+":arg1,arg2,arg3");
+        client.sendMessage(CommunicationAPI.NetworkProtocol.TEST + ":arg1,arg2,arg3");
 
-        // Wait a bit to see the response
-        try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
+        // Wait for the server to process the message
+        Thread.sleep(1000); // Adjust the delay as needed
 
-        // Disconnect client
+        // Disconnect the client
         client.disconnect();
 
         System.out.println("Test complete.");
-
-        System.exit(0); // Ensure program terminates cleanly
     }
 }
-
