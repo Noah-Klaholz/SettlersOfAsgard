@@ -13,7 +13,6 @@ public interface CommunicationAPI {
 
     /**
      * Receives a message from the server
-     * @return the message received
      */
     void processMessage(String received);
 
