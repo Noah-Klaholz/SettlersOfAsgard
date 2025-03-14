@@ -2,6 +2,7 @@ plugins {
     id 'java-library'
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.13'
+    id 'com.github.ben-manes.versions' version '0.46.0'
 }
 
 group 'ch.unibas.dmi.dbis'

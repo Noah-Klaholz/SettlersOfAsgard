@@ -11,12 +11,14 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
 /**
  * The GameServer class is responsible for managing the clients and their connections.
  * It listens for incoming connections and creates a new ClientHandler for each client.
  */
 public class GameServer {
+    private static final Logger logger = Logger.getLogger(GameServer.class.getName());
     private boolean running;
     private int port;
     private ServerSocket serverSocket;
@@ -36,17 +38,17 @@ public class GameServer {
         running = true;
         try {
             serverSocket = new ServerSocket(port);
-            System.out.println("Server started on port " + port);
+            logger.info("Server started on port " + port);
 
             while (running) {
                 try {
-                    System.out.println("Waiting for client connection...");
+                    logger.info("Waiting for client connection...");
                     ClientHandler client = new ClientHandler(serverSocket.accept());
                     clients.add(client);
                     executor.execute(client);
                 } catch (SocketException se) {
                     if(!running) {
-                        System.out.println("Server socket closed. Exiting accept loop");
+                        logger.info("Server socket closed. Exiting accept loop");
                         break; // Expected exception when server is shutting down
                     } else {
                         throw se;
@@ -54,7 +56,7 @@ public class GameServer {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.severe("Server error:" + e.getMessage());
         }
     }
 
@@ -65,23 +67,36 @@ public class GameServer {
         running = false;
         // Disconnect all clients
         broadcast("STDN:");
-        try {
-            if(executor != null) {
-                executor.shutdown();
+        for (ClientHandler client : clients) {  //forcefully close all sockets and clear the clients list
+            try {
+                client.closeSocket();
+            } catch (IOException e) {
+                logger.warning("Error closing client socket: " + e.getMessage());
+            }
+        }
+        clients.clear();
+        if (executor != null) {
+            executor.shutdown();
+            try {
                 if (!executor.awaitTermination(5, java.util.concurrent.TimeUnit.SECONDS)) {
                     executor.shutdownNow();
                 }
+            } catch (InterruptedException e) {
+                logger.warning("Executor shutdown interrupted: " + e.getMessage());
+                executor.shutdownNow();
+                Thread.currentThread().interrupt();
             }
-            if (serverSocket != null && !serverSocket.isClosed()) {
+        }
+
+        if (serverSocket != null && !serverSocket.isClosed()) {
+            try {
                 serverSocket.close();
+            } catch (IOException e) {
+                logger.warning("Error closing server socket: " + e.getMessage());
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            executor.shutdownNow();
         }
     }
+
     /**
      * Broadcasts a message to all connected clients.
      * @param message The message to broadcast
@@ -97,7 +112,19 @@ public class GameServer {
      * @param client The client to remove
      */
     public void removeClient(ClientHandler client) {
-        clients.remove(client);
+        if (clients.contains(client)) {
+            clients.remove(client);
+            logger.info("Removed " + client);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "GameServer{" +
+                "port=" + port +
+                ", running=" + running +
+                ", clients=" + clients.size() +
+                '}';
     }
 
     /**
@@ -113,10 +140,11 @@ public class GameServer {
         public ClientHandler(Socket socket) {
             this.socket = socket;
             try {
+                socket.setSoTimeout(5000); // 5 second timeout
                 out = new PrintWriter(socket.getOutputStream(), true);
                 in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.severe("Error setting up client handler: " + e.getMessage());
             }
         }
 
@@ -129,19 +157,23 @@ public class GameServer {
             String received;
             try {
                 while ((received = in.readLine()) != null) {
-                    System.out.println("Server received: " + received);
+                    logger.info("Server received: " + received);
                     processMessage(received);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.info("Client disconnected unexpectedly: " + e.getMessage());
             } finally {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                closeResources();
                 removeClient(this);
             }
+        }
+
+        /**
+         * Checks if the server is running.
+         * @return the state of the server
+         */
+        public boolean isRunning() {
+            return running;
         }
 
         /**
@@ -150,7 +182,11 @@ public class GameServer {
          */
         @Override
         public void sendMessage(String message) {
-            out.println(message);
+            if(socket != null && !socket.isClosed()) {
+                out.println(message);
+            } else {
+                logger.info("Client socket is closed. Unable to send message: " + message);
+            }
         }
 
         /**
@@ -160,24 +196,29 @@ public class GameServer {
          */
         @Override
         public void processMessage(String received) {
+            if (received == null || received.trim().isEmpty()) {
+                logger.warning("Received null or empty message");
+                sendMessage("ERR0R:103;Null");
+                return;
+            }
             Command cmd = new Command(received);
             if (cmd.isValid()) {
                 boolean processed = true; // Assume command is processed, only change in default (error) case
-                System.out.println("Server processing " + cmd);
+                logger.info("Server processing " + cmd);
 
                 switch (cmd.getCommand()) {
                     case NetworkProtocol.TEST:
-                        System.out.println("TEST");
+                        logger.info("TEST");
                         break;
                     case NetworkProtocol.OK:
                         processed = false;
                         break;
                     case NetworkProtocol.ERROR:
                         processed = false;
-                        System.out.println("Server sent an error command.");
+                        logger.info("Server sent an error command.");
                         break;
                     default: // Error case
-                        System.err.println("Unknown command: " + cmd.getCommand());
+                        logger.warning("Unknown command: " + cmd.getCommand());
                         processed = false;
                 }
                 if(processed) {
@@ -186,10 +227,50 @@ public class GameServer {
                     sendMessage("ERR:" + cmd.toString()); // Echo the command back to the client with an ERR response
                 }
             } else {
-                System.err.println("Invalid command: " + cmd);
+                logger.warning("Invalid command: " + cmd);
             }
+        }
+
+        /**
+         * Closes the client socket.
+         * @throws IOException if an error occurs while closing the socket
+         */
+        public void closeSocket() throws IOException {
+            closeResources();
+        }
+
+        /**
+         * Closes the client socket and associated resources.
+         */
+        private void closeResources() {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+            } catch (Exception e) {
+                logger.warning("Error closing PrintWriter: " + e.getMessage());
+            }
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (Exception e) {
+                logger.warning("Error closing BufferedReader: " + e.getMessage());
+            }
+            try {
+                if (socket != null && !socket.isClosed()) {
+                    socket.close();
+                }
+            } catch (Exception e) {
+                logger.warning("Error closing socket: " + e.getMessage());
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "ClientHandler{" +
+                    "socket=" + (socket != null ? socket.getRemoteSocketAddress() : "disconnected") +
+                    "}";
         }
     }
 }
-
-
