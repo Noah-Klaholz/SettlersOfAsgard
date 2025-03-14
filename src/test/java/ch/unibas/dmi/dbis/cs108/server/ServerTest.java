@@ -27,7 +27,7 @@ class ServerTest {
         client.connect();
 
         // Send a test command
-        client.sendMessage("testCommand:arg1,arg2,arg3");
+        client.sendMessage(CommunicationAPI.NetworkProtocol.TEST+":arg1,arg2,arg3");
 
         // Wait a bit to see the response
         try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
