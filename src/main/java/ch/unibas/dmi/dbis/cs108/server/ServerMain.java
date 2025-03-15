@@ -1,9 +1,13 @@
 package ch.unibas.dmi.dbis.cs108.server;
 
+import java.util.logging.Logger;
+
 /**
  * Main class for the server and the client, makes starting the server and client via terminal possible
  */
 public class ServerMain {
+
+    private static final Logger logger = Logger.getLogger(ServerMain.class.getName());
 
     /**
      * Main method for the server and the client
@@ -14,9 +18,9 @@ public class ServerMain {
      */
     public static void main(String[] args) {
         if(args.length < 2) {
-            System.out.println("Usage:");
-            System.out.println("Server: java -jar xyz.jar server <listenport>"); //TODO change project name and change xyz to the new name
-            System.out.println("Client: java -jar xyz.jar client <serverip>:<serverport>"); //TODO change project name and change xyz to the new name
+            logger.info("Usage:");
+            logger.info("Server: java -jar xyz.jar server <listenport>"); //TODO change project name and change xyz to the new name
+            logger.info("Client: java -jar xyz.jar client <serverip>:<serverport>"); //TODO change project name and change xyz to the new name
             System.exit(1);
         }
 
@@ -28,17 +32,17 @@ public class ServerMain {
                 GameServer server = new GameServer(port);
                 new Thread(server::start).start();
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                    System.out.println("Server shutting down...");
+                    logger.info("Server shutting down...");
                     server.shutdown();
                 }));
             } catch (NumberFormatException e) {
-                System.out.println("Invalid port number in server mode.");
+                logger.info("Invalid port number in server mode.");
                 System.exit(1);
             }
         } else if (mode.equalsIgnoreCase("client")) {
             String[] parts = args[1].split(":");
             if(parts.length != 2) {
-                System.err.println("Invalid argument for client. Expected: <serverip>:<serverport>.");
+                logger.warning("Invalid argument for client. Expected: <serverip>:<serverport>.");
                 System.exit(1);
             }
             String serverIp = parts[0];
@@ -48,11 +52,11 @@ public class ServerMain {
                 client.connect();
                 client.start();
             } catch (NumberFormatException e) {
-                System.err.println("Invalid port number in client mode.");
+                logger.warning("Invalid port number in client mode.");
                 System.exit(1);
             }
         } else {
-            System.err.println("Invalid mode. Expected: 'server' or 'client'.");
+            logger.warning("Invalid mode. Expected: 'server' or 'client'.");
             System.exit(1);
         }
     }
