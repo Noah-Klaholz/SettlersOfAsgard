@@ -59,6 +59,14 @@ test {
     systemProperty "file.encoding", "utf-8"
 }
 
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+tasks.withType(Test) {
+    systemProperty "file.encoding", "utf-8"
+}
+
 tasks.withType(JavaExec) {
     systemProperty "file.encoding", "utf-8"
 }
