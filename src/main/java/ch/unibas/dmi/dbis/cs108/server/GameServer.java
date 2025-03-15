@@ -19,6 +19,18 @@ import java.util.logging.Logger;
  */
 public class GameServer {
     private static final Logger logger = Logger.getLogger(GameServer.class.getName());
+
+    static {
+        try {
+            // Load the logging.properties file from the classpath
+            String loggingConfigPath = GameServer.class.getClassLoader().getResource("logging.properties").getFile();
+            System.setProperty("java.util.logging.config.file", loggingConfigPath);
+            //System.out.println("Loaded logging properties from: " + loggingConfigPath);  debug statement
+        } catch (Exception e) {
+            logger.warning("Failed to load logging.properties file: " + e.getMessage());
+        }
+    }
+
     private boolean running;
     private int port;
     private ServerSocket serverSocket;

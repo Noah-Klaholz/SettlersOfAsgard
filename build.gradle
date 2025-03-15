@@ -54,6 +54,13 @@ test {
         showStandardStreams = true
         events "failed", "skipped", "passed", "standardOut", "standardError", "started"
     }
+
+    // Set UTF-8 encoding for the test JVM
+    systemProperty "file.encoding", "utf-8"
+}
+
+tasks.withType(JavaExec) {
+    systemProperty "file.encoding", "utf-8"
 }
 
 jar {
