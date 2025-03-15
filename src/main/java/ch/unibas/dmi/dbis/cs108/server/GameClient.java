@@ -2,11 +2,14 @@ package ch.unibas.dmi.dbis.cs108.server;
 
 import java.io.*;
 import java.net.*;
+import java.util.logging.Logger;
 
 /**
  * The GameClient class is responsible for connecting to the server and sending/receiving messages.
  */
 public class GameClient implements CommunicationAPI {
+    private static final Logger logger = Logger.getLogger(GameClient.class.getName());
+
     private String host;
     private int port;
     private Socket socket;
@@ -27,7 +30,7 @@ public class GameClient implements CommunicationAPI {
             socket = new Socket(host, port);
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            System.out.println("Connected to server on port " + port);
+            logger.info("Connected to server on port " + port);
 
             new Thread(() -> {
                 String received;
@@ -37,13 +40,13 @@ public class GameClient implements CommunicationAPI {
                         processMessage(received);
                     }
                 } catch (SocketException se) {
-                    System.out.println("Socket closed, exiting reading thread"); // Expected during shutdown
+                    logger.info("Socket closed, exiting reading thread"); // Expected during shutdown
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.warning("IO exception: " + e.getMessage());
                 }
             }).start();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warning("Server exception: " + e.getMessage());
         }
     }
 
@@ -51,7 +54,7 @@ public class GameClient implements CommunicationAPI {
         try {
             socket.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.warning("IO exception: " + e.getMessage());
         }
         System.out.println("Client Disconnected from port " + port);
     }
@@ -71,6 +74,7 @@ public class GameClient implements CommunicationAPI {
     @Override
     public void sendMessage(String message) {
         out.println(message);
+        logger.info("Sent message to server: " + message); // Log the sent message
     }
 
     /**
@@ -82,25 +86,26 @@ public class GameClient implements CommunicationAPI {
     public void processMessage(String received) {
         Command cmd = new Command(received);
         if (cmd.isValid()) {
-            System.out.println("Client processing " + cmd);
+            logger.info("Client processing " + cmd);
 
             switch (cmd.getCommand()) {
                 case NetworkProtocol.TEST:
-                    System.out.println("TEST");
+                    logger.info("TEST");
                     break;
                 case NetworkProtocol.SHUTDOWN:
-                    System.out.println("Server sent a shutdown command. Disconnecting...");
+                    logger.info("Server sent a shutdown command. Disconnecting...");
                     disconnect();
+                    break;
                 case NetworkProtocol.OK:
                     break;
                 case NetworkProtocol.ERROR:
-                    System.out.println("Server sent an error command.");
+                    logger.info("Server sent an error command.");
                     break;
                 default:
-                    System.err.println("Unknown command: " + cmd.getCommand());
+                    logger.warning("Unknown command: " + cmd.getCommand());
             }
         } else {
-            System.err.println("Invalid command: " + cmd);
+            logger.warning("Invalid command: " + cmd);
         }
     }
 }
