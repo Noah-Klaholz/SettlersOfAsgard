@@ -88,7 +88,15 @@ public class SocketHandler {
 
     public void closeConnection() {
 
-
+        try {
+            if (socket != null) socket.close();
+            if (input != null) input.close();
+            if (output != null) output.close();
+            executorService.shutdownNow();
+            System.out.println("[SocketHandler] Connection closed.");
+        } catch (IOException e) {
+            System.err.println("[SocketHandler] Error closing connection: " + e.getMessage());
+        }
 
     }
 
