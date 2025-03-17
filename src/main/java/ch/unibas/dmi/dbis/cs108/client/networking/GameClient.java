@@ -51,7 +51,18 @@ public class GameClient {
     }
 
     private void listenForMessages() {
-
+        try {
+            String serverMessage;
+            while ((serverMessage = input.readLine()) != null) {
+                System.out.println("[Server] " + serverMessage);
+                if (listener != null) {
+                    listener.onMessageReceived(serverMessage); // Notify UI
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("[Client] Connection lost.");
+            connected = false;
+        }
     }
 
     public void disconnect() {
