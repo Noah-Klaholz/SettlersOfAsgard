@@ -8,6 +8,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+/**
+ * The GameClient class is responsible for connecting to the server, sending messages to the server, and listening for messages from the server.
+ */
 public class GameClient {
     private static GameClient instance; // Singleton instance
     private Socket socket;
@@ -16,6 +19,12 @@ public class GameClient {
     private boolean connected;
     private GameEventListener listener;
 
+    /**
+     * Constructor for the GameClient.
+     *
+     * @param serverAddress The server address to connect to.
+     * @param port The port to connect to.
+     */
     private GameClient(String serverAddress, int port) {
         try {
             socket = new Socket(serverAddress, port);
@@ -30,6 +39,13 @@ public class GameClient {
         }
     }
 
+    /**
+     * Returns the singleton instance of the GameClient.
+     *
+     * @param serverAddress The server address to connect to.
+     * @param port The port to connect to.
+     * @return The singleton instance of the GameClient.
+     */
     public static GameClient getInstance(String serverAddress, int port) {
         if (instance == null) {
             instance = new GameClient(serverAddress, port);
@@ -37,10 +53,20 @@ public class GameClient {
         return instance;
     }
 
+    /**
+     * Sets the listener for the GameClient.
+     *
+     * @param listener The listener to set.
+     */
     public void setListener(GameEventListener listener) {
         this.listener = listener;
     }
 
+    /**
+     * Sends a message to the server.
+     *
+     * @param message The message to send.
+     */
     public void sendMessage(String message) {
         if (connected) {
             output.println(message);
@@ -50,6 +76,9 @@ public class GameClient {
         }
     }
 
+    /**
+     * Listens for messages from the server.
+     */
     private void listenForMessages() {
         try {
             String serverMessage;
@@ -65,6 +94,9 @@ public class GameClient {
         }
     }
 
+    /**
+     * Disconnects from the server.
+     */
     public void disconnect() {
         try {
             connected = false;
