@@ -38,7 +38,7 @@ public class GameClient {
     }
 
     public void setListener(GameEventListener listener) {
-
+        this.listener = listener;
     }
 
     public void sendMessage(String message) {
