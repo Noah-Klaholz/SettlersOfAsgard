@@ -48,6 +48,8 @@ public class SocketHandler {
 
     public void setListener(GameEventListener listener) {
 
+        this.listener = listener;
+
     }
 
 
