@@ -66,6 +66,23 @@ public class SocketHandler {
 
     private void startListening() {
 
+        executorService.submit(() -> {
+            try {
+                String serverMessage;
+                while ((serverMessage = input.readLine()) != null) {
+                    System.out.println("[SocketHandler] Received: " + serverMessage);
+
+                    if (listener != null) {
+                        listener.onMessageReceived(serverMessage);
+                    }
+                }
+            } catch (IOException e) {
+                System.err.println("[SocketHandler] Disconnected from server: " + e.getMessage());
+            } finally {
+                closeConnection();
+            }
+        });
+
 
     }
 
