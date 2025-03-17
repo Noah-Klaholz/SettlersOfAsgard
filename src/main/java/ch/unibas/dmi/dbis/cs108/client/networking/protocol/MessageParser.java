@@ -12,6 +12,11 @@ public class MessageParser {
     }
 
     private static void handleChatMessage(String message) {
-
+        String[] parts = message.split(":", 3);
+        if (parts.length == 3) {
+            String username = parts[1];
+            String chatMessage = parts[2];
+            System.out.println(username + ": " + chatMessage);
+        }
     }
 }
