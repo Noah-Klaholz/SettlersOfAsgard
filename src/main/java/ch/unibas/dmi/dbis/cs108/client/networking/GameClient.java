@@ -66,6 +66,12 @@ public class GameClient {
     }
 
     public void disconnect() {
-
+        try {
+            connected = false;
+            if (socket != null) socket.close();
+            System.out.println("[Client] Disconnected from server.");
+        } catch (IOException e) {
+            System.err.println("[Client] Error closing connection.");
+        }
     }
 }
