@@ -19,14 +19,29 @@ public class SocketHandler {
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
 
+
     private SocketHandler(String serverAddress, int serverPort) throws IOException {
 
+        try{
+            this.socket = new Socket(serverAddress, serverPort);
+            this.input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            this.output = new PrintWriter(socket.getOutputStream(), true);
 
+            System.out.println("[SocketHandler] Connected to server at " + serverAddress + ":" + serverPort);
+
+            startListening();
+        } catch (IOException e) {
+            System.err.println("[SocketHandler] Connection failed: " + e.getMessage());
+            throw e;
+        }
     }
 
 
     public static synchronized SocketHandler getInstance(String serverAddress, int serverPort) throws IOException {
 
+        if (instance == null) {
+            instance = new SocketHandler(serverAddress, serverPort);
+        }
         return instance;
     }
 
@@ -35,17 +50,21 @@ public class SocketHandler {
 
     }
 
-    // Send message to the server
+
     public void sendMessage(String message) {
+
+
 
     }
 
-    // Start listening for incoming data
     private void startListening() {
+
 
     }
 
     public void closeConnection() {
+
+
 
     }
 
