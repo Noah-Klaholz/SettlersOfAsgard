@@ -42,7 +42,12 @@ public class GameClient {
     }
 
     public void sendMessage(String message) {
-
+        if (connected) {
+            output.println(message);
+            System.out.println("[Client] Sent: " + message);
+        } else {
+            System.out.println("[Client] Not connected to the server.");
+        }
     }
 
     private void listenForMessages() {
