@@ -19,7 +19,10 @@ public class GameClient {
     }
 
     public static GameClient getInstance(String serverAddress, int port) {
-        return null;
+        if (instance == null) {
+            instance = new GameClient(serverAddress, port);
+        }
+        return instance;
     }
 
     public void setListener(GameEventListener listener) {
