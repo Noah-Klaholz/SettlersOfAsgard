@@ -55,7 +55,12 @@ public class SocketHandler {
 
     public void sendMessage(String message) {
 
-
+        if (output != null) {
+            output.println(message);
+            System.out.println("[SocketHandler] Sent: " + message);
+        } else {
+            System.err.println("[SocketHandler] Output stream is not available.");
+        }
 
     }
 
