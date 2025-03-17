@@ -1,6 +1,13 @@
 package ch.unibas.dmi.dbis.cs108.client.networking.protocol;
 
+/**
+ * This class provides static methods to parse messages according to the protocol.
+ */
 public class MessageParser {
+    /**
+     * Parses a message and handles it accordingly.
+     * @param message The message to be parsed.
+     */
     public static void parse(String message) {
         if (message.startsWith("CHAT:")) {
             handleChatMessage(message);
@@ -11,6 +18,10 @@ public class MessageParser {
         }
     }
 
+    /**
+     * Handles a chat message.
+     * @param message The chat message to be handled.
+     */
     private static void handleChatMessage(String message) {
         String[] parts = message.split(":", 3);
         if (parts.length == 3) {
