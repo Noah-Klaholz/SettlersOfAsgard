@@ -6,10 +6,11 @@ public class BuyTileCommand implements GameCommand {
     private String data;
 
     public BuyTileCommand(String data) {
-
+        this.data = data;
     }
+
     @Override
     public String execute() {
-        return null;
+        return "BUY_TILE:" + data;
     }
 }
