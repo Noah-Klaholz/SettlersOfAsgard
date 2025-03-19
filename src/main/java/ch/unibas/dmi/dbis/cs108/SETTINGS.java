@@ -1,5 +1,8 @@
 package ch.unibas.dmi.dbis.cs108;
 
+/**
+ * The {@code SETTINGS} class contains configuration settings for the game server and client.
+ */
 public class SETTINGS {
     public enum Config {
         PING_INTERVAL(1000),

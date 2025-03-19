@@ -159,6 +159,10 @@ public class GameServer {
                 '}';
     }
 
+    public List<ClientHandler> getClients() {
+        return clients;
+    }
+
     /**
      * Inner class representing a client handler.
      * The ClientHandler class is responsible for handling communication with a single client.
