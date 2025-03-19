@@ -65,7 +65,50 @@ public class ClientHandler implements Runnable, CommunicationAPI {
 
     @Override
     public void processMessage(String received) {
-        // Existing processMessage() implementation...
+        if (received == null || received.trim().isEmpty()) {
+            logger.warning("Received null or empty message");
+            sendMessage("ERR0R:103;Null");
+            return;
+        }
+        Command cmd = new Command(received);
+        if (cmd.isValid()) {
+            boolean processed = true; // Assume command is processed, only change in default (error) case
+            logger.info("Server processing " + cmd);
+
+            NetworkProtocol.Command command;
+            try {
+                command = NetworkProtocol.Command.fromCommand(cmd.getCommand());
+            } catch (IllegalArgumentException e) {
+                logger.warning("Unknown command: " + cmd.getCommand());
+                return;
+            }
+
+            switch (command) {
+                case PING:
+                    lastPingTime = System.currentTimeMillis();
+                    break;
+                case TEST:
+                    logger.info("TEST");
+                    break;
+                case OK:
+                    processed = false;
+                    break;
+                case ERROR:
+                    processed = false;
+                    logger.info("Client sent an error command.");
+                    break;
+                default: // Error case
+                    logger.warning("Unknown command: " + cmd.getCommand());
+                    processed = false;
+            }
+            if(processed) {
+                sendMessage("OK:" + cmd.toString()); // Echo the command back to the client with an OK response
+            } else {
+                sendMessage("ERR:" + cmd.toString()); // Echo the command back to the client with an ERR response
+            }
+        } else {
+            logger.warning("Invalid command: " + cmd);
+        }
     }
 
     public void closeResources() {
