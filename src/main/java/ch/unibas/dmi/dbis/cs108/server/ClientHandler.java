@@ -97,6 +97,18 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                     processed = false;
                     logger.info("Client sent an error command.");
                     break;
+                case CREATELOBBY:
+                    handleCreateLobby();
+                    break;
+                case JOIN:
+                    handleJoinLobby();
+                    break;
+                case EXIT:
+                    handleLeaveLobby();
+                    break;
+                case START:
+                    handleStartGame();
+                    break;
                 default: // Error case
                     logger.warning("Unknown command: " + cmd.getCommand());
                     processed = false;
@@ -128,4 +140,12 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     public void stop() {
         running = false;
     }
+
+    public void handleCreateLobby() {}
+
+    public void handleJoinLobby() {}
+
+    public void handleLeaveLobby() {}
+
+    public void handleStartGame() {}
 }
