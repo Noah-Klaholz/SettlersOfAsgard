@@ -177,8 +177,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      * This method handles a player (client) exiting a Lobby.
       */
     private void handleLeaveLobby() {
-        if (currentLobby != null) {
-            currentLobby.removePlayer(this); // Remove the player from the lobby
+        if (currentLobby != null && currentLobby.removePlayer(this)) {
             sendMessage("OK:LEFT_LOBBY:" + currentLobby.getId());
             currentLobby = null; // Clear the current lobby reference
         } else {
