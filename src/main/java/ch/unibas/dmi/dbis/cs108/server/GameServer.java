@@ -25,19 +25,6 @@ import java.util.concurrent.TimeUnit;
 public class GameServer {
     private static final Logger logger = Logger.getLogger(GameServer.class.getName());
 
-    // static block that loads the logging.properties file to the logger. maybe not essential since encoding issues
-    // have been resolved..
-    static {
-        try {
-            // Load the logging.properties file from the classpath
-            String loggingConfigPath = GameServer.class.getClassLoader().getResource("logging.properties").getFile();
-            System.setProperty("java.util.logging.config.file", loggingConfigPath);
-            // System.out.println("Loaded logging properties from: " + loggingConfigPath);  // Debug statement
-        } catch (Exception e) {
-            logger.warning("Failed to load logging.properties file: " + e.getMessage());
-        }
-    }
-
     private ScheduledExecutorService pingScheduler = Executors.newScheduledThreadPool(1);
     private boolean running;
     private int port;
