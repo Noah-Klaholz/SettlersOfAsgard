@@ -175,5 +175,12 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         }
     }
 
-    public void handleStartGame() {}
+    private void handleStartGame() {
+        if (currentLobby != null && currentLobby.getPlayers().get(0) == this) {
+            //currentLobby.startGame(); // Start the game in the lobby
+            sendMessage("OK:GAME_STARTED");
+        } else {
+            sendMessage("ERR:106;CANNOT_START_GAME");
+        }
+    }
 }
