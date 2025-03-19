@@ -31,6 +31,7 @@ public interface CommunicationAPI {
             EXIT("EXIT"), // Player exits a game
             CHATGLOBAL("CHTG"), // Send a message to all players
             CHATPRIVATE("CHTP"), // Send a whisper message to only one player
+            CREATELOBBY("CREA"), // Creates a new Lobby
             LISTLOBBIES("LIST"), // List all current Lobbies
             START("STRT"), // Start the game
             STATS("STAT"), // Request game state
