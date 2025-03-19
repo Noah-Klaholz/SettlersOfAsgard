@@ -74,7 +74,7 @@ class ServerTest {
         client.connect();
 
         // Send a test command
-        client.sendMessage(CommunicationAPI.NetworkProtocol.TEST + ":arg1,arg2,arg3");
+        client.sendMessage("Test:arg1,arg2,arg3");
 
         // Wait for the server to process the message
         Thread.sleep(1000); // Adjust the delay as needed

@@ -77,7 +77,7 @@ public class GameClient implements CommunicationAPI {
      */
     public void start() {
         //TODO implement client logic (Actual Game Logic) -> Game Should start here (call to main menu)
-        sendMessage(NetworkProtocol.TEST+":arg1,arg2,arg3");    // test command
+        sendMessage("TEST:arg1,arg2,arg3");    // test command
     }
 
     public void sendPing() {
@@ -110,20 +110,27 @@ public class GameClient implements CommunicationAPI {
         if (cmd.isValid()) {
             logger.info("Client processing " + cmd);
 
-            switch (cmd.getCommand()) {
-                case NetworkProtocol.PING:
+            NetworkProtocol.Command command;
+            try {
+                command = NetworkProtocol.Command.fromCommand(cmd.getCommand());
+            } catch (IllegalArgumentException e) {
+                logger.warning("Unknown command: " + cmd.getCommand());
+                return;
+            }
+            switch (command) {
+                case PING:
                     lastPingTime = System.currentTimeMillis();
                     break;
-                case NetworkProtocol.TEST:
+                case TEST:
                     logger.info("TEST");
                     break;
-                case NetworkProtocol.SHUTDOWN:
+                case SHUTDOWN:
                     logger.info("Server sent a shutdown command. Disconnecting...");
                     disconnect();
                     break;
-                case NetworkProtocol.OK:
+                case OK:
                     break;
-                case NetworkProtocol.ERROR:
+                case ERROR:
                     logger.info("Server sent an error command.");
                     break;
                 default:

@@ -20,35 +20,58 @@ public interface CommunicationAPI {
      * Utility class for network protocol constants
      */
     class NetworkProtocol {
-        // administrative commands
-        public final static String TEST = "TEST"; // Test command
-        public final static String SHUTDOWN = "STDN"; // Shutdown command broadcast by server to disconnect all clients
-        public final static String JOIN = "JOIN"; // Player joins a game
-        public final static String EXIT = "EXIT"; // Player exits a game
-        public final static String CHATGLOBAL = "CHTG"; // Send a message to all players
-        public final static String CHATPRIVATE = "CHTP"; // Send a whisper message to only one player
-        public final static String LISTLOBBIES = "LIST"; // List all current Lobbies
-        public final static String START = "STRT"; // Start the game
-        public final static String STATS = "STAT"; // Request game state
-        public final static String SYNCHRONIZE = "SYNC"; // Request synchronization of the game
-        // game mechanics
-        public final static String STARTTURN = "TURN"; // starts turn
-        public final static String ENDTURN = "ENDT"; // ends turn
-        public final static String BUYHEXFIELD = "BUYH"; // player buys a hexfield
-        public final static String BUILDSTRUCTURE = "BILD"; // player builds a structure
-        public final static String UPGRADESTRUCTURE = "UPGD"; // player upgrades a structure
-        public final static String TRADERESOURCES = "TRAD"; // player offers a trade of resources to another player
-        public final static String RESOURCEBALANCE = "BLNC"; // request the current resource balance of a player
-        public final static String STARTRITUAL = "RITU"; // player starts a ritual
-        public final static String BLESSING = "BLES"; // player gets blessed
-        public final static String CURSE = "CURS"; // player gets cursed
-        public final static String USEARTIFACT = "ARTF"; // player uses an artifact
-        public final static String FINDARTIFACT = "FIND"; // player finds an artifact
-        // exception handling
-        public final static String OK = "OK"; // OK response
-        public final static String ERROR = "ERR"; // Error response
+        /**
+         * Enum for network protocol constants
+         */
+        public enum Command {
+            // administrative commands
+            TEST("TEST"), // Test command
+            SHUTDOWN("STDN"), // Shutdown command broadcast by server to disconnect all clients
+            JOIN("JOIN"), // Player joins a game
+            EXIT("EXIT"), // Player exits a game
+            CHATGLOBAL("CHTG"), // Send a message to all players
+            CHATPRIVATE("CHTP"), // Send a whisper message to only one player
+            LISTLOBBIES("LIST"), // List all current Lobbies
+            START("STRT"), // Start the game
+            STATS("STAT"), // Request game state
+            SYNCHRONIZE("SYNC"), // Request synchronization of the game
+            // game mechanics
+            STARTTURN("TURN"), // starts turn
+            ENDTURN("ENDT"), // ends turn
+            BUYHEXFIELD("BUYH"), // player buys a hexfield
+            BUILDSTRUCTURE("BILD"), // player builds a structure
+            UPGRADESTRUCTURE("UPGD"), // player upgrades a structure
+            TRADERESOURCES("TRAD"), // player offers a trade of resources to another player
+            RESOURCEBALANCE("BLNC"), // request the current resource balance of a player
+            STARTRITUAL("RITU"), // player starts a ritual
+            BLESSING("BLES"), // player gets blessed
+            CURSE("CURS"), // player gets cursed
+            USEARTIFACT("ARTF"), // player uses an artifact
+            FINDARTIFACT("FIND"), // player finds an artifact
+            // exception handling
+            OK("OK"), // OK response
+            ERROR("ERR"), // Error response
+            PING("PING"); // Ping command
 
-        public static final String PING = "PING"; // Ping command
+            private final String command;
+
+            Command(String command) {
+                this.command = command;
+            }
+
+            public String getCommand() {
+                return command;
+            }
+
+            public static Command fromCommand(String commandName) {
+                for(Command cmd : values()) {
+                    if(cmd.getCommand().equals(commandName)) {
+                        return cmd;
+                    }
+                }
+                throw new IllegalArgumentException("Unknown command: " + commandName);
+            }
+        }
     }
 }
 

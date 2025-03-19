@@ -249,17 +249,25 @@ public class GameServer {
                 boolean processed = true; // Assume command is processed, only change in default (error) case
                 logger.info("Server processing " + cmd);
 
-                switch (cmd.getCommand()) {
-                    case NetworkProtocol.PING:
+                NetworkProtocol.Command command;
+                try {
+                    command = NetworkProtocol.Command.fromCommand(cmd.getCommand());
+                } catch (IllegalArgumentException e) {
+                    logger.warning("Unknown command: " + cmd.getCommand());
+                    return;
+                }
+
+                switch (command) {
+                    case PING:
                         lastPingTime = System.currentTimeMillis();
                         break;
-                    case NetworkProtocol.TEST:
+                    case TEST:
                         logger.info("TEST");
                         break;
-                    case NetworkProtocol.OK:
+                    case OK:
                         processed = false;
                         break;
-                    case NetworkProtocol.ERROR:
+                    case ERROR:
                         processed = false;
                         logger.info("Client sent an error command.");
                         break;
