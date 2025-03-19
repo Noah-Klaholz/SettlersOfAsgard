@@ -161,7 +161,7 @@ public class GameServer {
 
     public Lobby getLobby(String id) {
         for(Lobby lobby : lobbies) {
-            lobby.getId().equals(id) {
+            if(lobby.getId().equals(id)) {
                 return lobby;
             }
         }
@@ -170,7 +170,7 @@ public class GameServer {
 
     public void removeLobby(Lobby lobby) {
         lobbies.remove(lobby);
-        logger.info("Removed Lobby :" + id);
+        logger.info("Removed Lobby :" + lobby.getId());
     }
 
     public List<Lobby> getLobbies(){
