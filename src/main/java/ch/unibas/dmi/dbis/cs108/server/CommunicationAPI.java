@@ -48,6 +48,7 @@ public interface CommunicationAPI {
         public final static String OK = "OK"; // OK response
         public final static String ERROR = "ERR"; // Error response
 
+        public static final String PING = "PING"; // Ping command
     }
 }
 

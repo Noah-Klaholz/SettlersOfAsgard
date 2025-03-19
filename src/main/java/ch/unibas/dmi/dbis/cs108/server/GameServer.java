@@ -1,5 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server;
 
+import ch.unibas.dmi.dbis.cs108.SETTINGS;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,6 +14,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The GameServer class is responsible for managing the clients and their connections.
@@ -33,6 +38,7 @@ public class GameServer {
         }
     }
 
+    private ScheduledExecutorService pingScheduler = Executors.newScheduledThreadPool(1);
     private boolean running;
     private int port;
     private ServerSocket serverSocket;
@@ -53,6 +59,9 @@ public class GameServer {
         try {
             serverSocket = new ServerSocket(port);
             logger.info("Server started on port " + port);
+
+            // Schedule ping task to check if clients are still connected
+            pingScheduler.scheduleAtFixedRate(this::pingClients, SETTINGS.Config.PING_INTERVAL.getValue(), SETTINGS.Config.PING_INTERVAL.getValue(), TimeUnit.MILLISECONDS);
 
             while (running) {
                 try {
@@ -79,6 +88,7 @@ public class GameServer {
      */
     public void shutdown() {
         running = false;
+        pingScheduler.shutdown();
         // Disconnect all clients
         broadcast("STDN:");
         for (ClientHandler client : clients) {  //forcefully close all sockets and clear the clients list
@@ -107,6 +117,14 @@ public class GameServer {
                 serverSocket.close();
             } catch (IOException e) {
                 logger.warning("Error closing server socket: " + e.getMessage());
+            }
+        }
+    }
+
+    public void pingClients() {
+        for (ClientHandler client : clients) {
+            if (client.isRunning()) {
+                client.sendPing();
             }
         }
     }
@@ -150,6 +168,7 @@ public class GameServer {
         private Socket socket;
         private PrintWriter out;
         private BufferedReader in;
+        private long lastPingTime = System.currentTimeMillis();
 
         public ClientHandler(Socket socket) {
             this.socket = socket;
@@ -203,6 +222,16 @@ public class GameServer {
             }
         }
 
+        public void sendPing() {
+            if(System.currentTimeMillis() - lastPingTime > SETTINGS.Config.TIMEOUT.getValue()) {
+                logger.warning("Client timed out: " + socket.getRemoteSocketAddress());
+                closeResources();
+                removeClient(this);
+            } else {
+                sendMessage("PING:");
+            }
+        }
+
         /**
          * Receives a message from the client and processes it. Answers with an OK or ERR response depending on success of processing.
          * @param received The message received from the client
@@ -221,6 +250,9 @@ public class GameServer {
                 logger.info("Server processing " + cmd);
 
                 switch (cmd.getCommand()) {
+                    case NetworkProtocol.PING:
+                        lastPingTime = System.currentTimeMillis();
+                        break;
                     case NetworkProtocol.TEST:
                         logger.info("TEST");
                         break;
@@ -229,7 +261,7 @@ public class GameServer {
                         break;
                     case NetworkProtocol.ERROR:
                         processed = false;
-                        logger.info("Server sent an error command.");
+                        logger.info("Client sent an error command.");
                         break;
                     default: // Error case
                         logger.warning("Unknown command: " + cmd.getCommand());
