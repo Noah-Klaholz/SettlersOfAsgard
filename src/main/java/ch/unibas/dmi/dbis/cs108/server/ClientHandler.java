@@ -26,7 +26,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         } catch (IOException e) {
-            Logger.getLogger(ClientHandler.class.getName()).severe("Error setting up client handler: " + e.getMessage());
+            logger.severe("Error setting up client handler: " + e.getMessage());
         }
     }
 
@@ -38,7 +38,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                 processMessage(received);
             }
         } catch (IOException e) {
-            Logger.getLogger(ClientHandler.class.getName()).info("Client disconnected unexpectedly: " + e.getMessage());
+            logger.info("Client disconnected unexpectedly: " + e.getMessage());
         } finally {
             closeResources();
             server.removeClient(this); // Notify the server to remove this client
@@ -50,7 +50,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         if (socket != null && !socket.isClosed()) {
             out.println(message);
         } else {
-            Logger.getLogger(ClientHandler.class.getName()).info("Client socket is closed. Unable to send message: " + message);
+            logger.info("Client socket is closed. Unable to send message: " + message);
         }
     }
 
@@ -117,7 +117,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             if(processed) {
                 sendMessage("OK:" + cmd.toString()); // Echo the command back to the client with an OK response
             } else {
-                sendMessage("ERR:" + cmd.toString()); // Echo the command back to the client with an ERR response
+                sendMessage("ERR:100;" + cmd.toString()); // Echo the command back to the client with an ERR response
             }
         } else {
             logger.warning("Invalid command: " + cmd);
@@ -142,6 +142,10 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         running = false;
     }
 
+    /**
+     * This method handles the creation of a lobby.
+     * @param cmd the transmitted command
+     */
     private void handleCreateLobby(Command cmd) {
         String lobbyId = cmd.getCommand();
         int maxPlayers = 4; //currently, maxPlayers is set to 4
@@ -154,6 +158,10 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         }
     }
 
+    /**
+     * This method handles a player (client) joining a Lobby.
+     * @param cmd the transmitted command
+     */
     private void handleJoinLobby(Command cmd) {
         String lobbyId = cmd.getCommand();
         Lobby lobby = server.getLobby(lobbyId);
@@ -165,16 +173,22 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         }
     }
 
+    /**
+     * This method handles a player (client) exiting a Lobby.
+      */
     private void handleLeaveLobby() {
         if (currentLobby != null) {
             currentLobby.removePlayer(this); // Remove the player from the lobby
             sendMessage("OK:LEFT_LOBBY:" + currentLobby.getId());
             currentLobby = null; // Clear the current lobby reference
         } else {
-            sendMessage("ERR:NOT_IN_LOBBY");
+            sendMessage("ERR:106;NOT_IN_LOBBY");
         }
     }
 
+    /**
+     * This method handles the starting of a game.
+     */
     private void handleStartGame() {
         if (currentLobby != null && currentLobby.getPlayers().get(0) == this) {
             //currentLobby.startGame(); // Start the game in the lobby
