@@ -102,7 +102,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                     handleCreateLobby(cmd);
                     break;
                 case JOIN:
-                    handleJoinLobby();
+                    handleJoinLobby(cmd);
                     break;
                 case EXIT:
                     handleLeaveLobby();
@@ -154,7 +154,16 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         }
     }
 
-    public void handleJoinLobby() {}
+    private void handleJoinLobby(Command cmd) {
+        String lobbyId = cmd.getCommand();
+        Lobby lobby = server.getLobby(lobbyId);
+        if (lobby != null && lobby.addPlayer(this)) {
+            currentLobby = lobby; // Set the current lobby
+            sendMessage("OK:JOINED_LOBBY:" + lobbyId);
+        } else {
+            sendMessage("ERR:106;JOIN_LOBBY_FAILED");
+        }
+    }
 
     public void handleLeaveLobby() {}
 
