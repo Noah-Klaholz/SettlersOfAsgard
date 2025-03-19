@@ -1,25 +1,28 @@
 plugins {
     id 'java-library'
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.1.0'
+    id 'org.openjfx.javafxplugin' version '0.0.13'
+    // id 'com.github.ben-manes.versions' version '0.46.0'
 }
 
 group 'ch.unibas.dmi.dbis'
 version '0.0.1-ALPHA'
 
 application {
-    mainClass = 'ch.unibas.dmi.dbis.cs108.example.HelloWorld'
+    mainClass = 'ch.unibas.dmi.dbis.cs108.example.Main'
 }
 
 javadoc {
     source = sourceSets.main.allJava
-    setDestinationDir(layout.buildDirectory.dir("docs/Documentation/javadoc").get().asFile)
+
+    destinationDir = file("$buildDir/docs/Documentation/javadoc")
+
     options.encoding = "UTF-8"
 }
 
 javafx {
     version = "19.0.2.1"
-    modules = ['javafx.controls', 'javafx.fxml']
+    modules = ['javafx.controls', 'javafx.fxml', 'javafx.base']
 }
 
 java {
@@ -33,18 +36,39 @@ repositories {
 }
 
 dependencies {
-    // JavaFX dependencies (explicit if needed)
-    implementation 'org.openjfx:javafx-controls:19.0.2.1'
-    implementation 'org.openjfx:javafx-fxml:19.0.2.1'
-
-    // JUnit dependencies
+    // JUnit BOM
     testImplementation platform('org.junit:junit-bom:5.9.2')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher' // Ensures tests can run in some cases
+    // JUnit Jupiter (the JUnit 5 engine)
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
+
+    // If you still need the older JUnit Vintage engine:
+    // testImplementation 'org.junit.vintage:junit-vintage-engine'
+
+    // example JavaFX library (though the plugin might already handle these)
+    implementation 'org.openjfx:javafx-controls:19.0.2.1'
 }
 
 test {
     useJUnitPlatform()
+    testLogging {
+        showStandardStreams = true
+        events "failed", "skipped", "passed", "standardOut", "standardError", "started"
+    }
+
+    // Set UTF-8 encoding for the test JVM
+    systemProperty "file.encoding", "utf-8"
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+tasks.withType(Test) {
+    systemProperty "file.encoding", "utf-8"
+}
+
+tasks.withType(JavaExec) {
+    systemProperty "file.encoding", "utf-8"
 }
 
 jar {
