@@ -74,7 +74,7 @@ class ServerTest {
         client.connect();
 
         // Send a test command
-        client.sendMessage(CommunicationAPI.NetworkProtocol.TEST + ":arg1,arg2,arg3");
+        client.sendMessage("Test:arg1,arg2,arg3");
 
         // Wait for the server to process the message
         Thread.sleep(1000); // Adjust the delay as needed
@@ -83,5 +83,34 @@ class ServerTest {
         client.disconnect();
 
         System.out.println("Test complete.");
+    }
+
+    /**
+     * Tests the connection loss handling of the {@link GameServer}. This test:
+     * Starts the server.
+     * Connects a client to the server.
+     * Simulates a client disconnect.
+     * Verifies that the server handles the disconnect properly.
+     * @throws IOException if an I/O error occurs during client-server communication.
+     * @throws InterruptedException if the test thread is interrupted while waiting.
+     */
+    @Test
+    public void testConnectionLossHandling() throws IOException, InterruptedException {
+        System.out.println("Testing connection loss handling");
+
+        // Start the client
+        GameClient client = new GameClient("127.0.0.1", 9000);
+        client.connect();
+
+        // Simulate client disconnect by closing the socket
+        client.disconnect();
+
+        // Wait for the server to handle the disconnect
+        Thread.sleep(1000); // Adjust the delay as needed
+
+        // Verify that the server has removed the client
+        Assertions.assertTrue(server.getClients().isEmpty(), "Server should have removed the disconnected client");
+
+        System.out.println("Connection loss handling test complete.");
     }
 }

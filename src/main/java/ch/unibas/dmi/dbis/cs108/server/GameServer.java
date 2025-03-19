@@ -2,7 +2,10 @@ package ch.unibas.dmi.dbis.cs108.server;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -12,6 +15,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -62,11 +66,11 @@ public class GameServer {
             while (running) {
                 try {
                     logger.info("Waiting for client connection...");
-                    ClientHandler client = new ClientHandler(serverSocket.accept(), this); // Pass 'this' to ClientHandler
+                    ClientHandler client = new ClientHandler(serverSocket.accept(), this);
                     clients.add(client);
                     executor.execute(client);
                 } catch (SocketException se) {
-                    if (!running) {
+                    if(!running) {
                         logger.info("Server socket closed. Exiting accept loop");
                         break; // Expected exception when server is shutting down
                     } else {
@@ -89,7 +93,7 @@ public class GameServer {
         broadcast("STDN:");
         for (ClientHandler client : clients) {  //forcefully close all sockets and clear the clients list
             try {
-                client.closeResources(); // Use closeResources() instead of closeSocket()
+                client.closeResources();
             } catch (Exception e) {
                 logger.warning("Error closing client socket: " + e.getMessage());
             }
@@ -130,7 +134,7 @@ public class GameServer {
      * @param message The message to broadcast
      */
     public void broadcast(String message) {
-        for (ClientHandler client : clients) {
+        for(ClientHandler client : clients) {
             client.sendMessage(message);
         }
     }
@@ -154,4 +158,9 @@ public class GameServer {
                 ", clients=" + clients.size() +
                 '}';
     }
+
+    public List<ClientHandler> getClients() {
+        return clients;
+    }
+
 }
