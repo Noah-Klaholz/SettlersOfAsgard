@@ -31,11 +31,13 @@ public class GameServer {
     private ServerSocket serverSocket;
     private ExecutorService executor;
     private List<ClientHandler> clients;
+    private List<Lobby> lobbies;
 
     public GameServer(int port) {
         this.port = port;
         clients = new CopyOnWriteArrayList<>();
         executor = Executors.newCachedThreadPool();
+        this.lobbies = new CopyOnWriteArrayList<>();
     }
 
     /**
@@ -148,6 +150,31 @@ public class GameServer {
 
     public List<ClientHandler> getClients() {
         return clients;
+    }
+
+    public Lobby createLobby(String id, int maxPlayers) {
+        Lobby lobby = new Lobby(id, maxPlayers);
+        lobbies.add(lobby);
+        logger.info("Created new Lobby :" + id);
+        return lobby;
+    }
+
+    public Lobby getLobby(String id) {
+        for(Lobby lobby : lobbies) {
+            lobby.getId().equals(id) {
+                return lobby;
+            }
+        }
+        return null;
+    }
+
+    public void removeLobby(Lobby lobby) {
+        lobbies.remove(lobby);
+        logger.info("Removed Lobby :" + id);
+    }
+
+    public List<Lobby> getLobbies(){
+        return lobbies;
     }
 
 }
