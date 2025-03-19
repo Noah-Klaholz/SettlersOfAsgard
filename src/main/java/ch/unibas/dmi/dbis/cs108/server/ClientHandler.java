@@ -14,6 +14,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     private GameServer server; // Reference to the GameServer
     private boolean running;
     private static final Logger logger = Logger.getLogger(ClientHandler.class.getName());
+    private Lobby currentLobby;
 
 
     public ClientHandler(Socket socket, GameServer server) {
@@ -98,7 +99,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                     logger.info("Client sent an error command.");
                     break;
                 case CREATELOBBY:
-                    handleCreateLobby();
+                    handleCreateLobby(cmd);
                     break;
                 case JOIN:
                     handleJoinLobby();
@@ -141,7 +142,17 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         running = false;
     }
 
-    public void handleCreateLobby() {}
+    private void handleCreateLobby(Command cmd) {
+        String lobbyId = cmd.getCommand();
+        int maxPlayers = 4; //currently, maxPlayers is set to 4
+        Lobby lobby = server.createLobby(lobbyId, maxPlayers);
+        if (lobby.addPlayer(this)) {
+            currentLobby = lobby;
+            sendMessage("OK:LOBBY_CREATED:" + lobbyId);
+        } else {
+            sendMessage("ERR:106;LOBBY_CREATION_FAILED");
+        }
+    }
 
     public void handleJoinLobby() {}
 
