@@ -1,5 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.networking.protocol;
 
+import java.time.Instant;
+
 /**
  * This class provides static methods to format messages according to the protocol.
  */
@@ -22,5 +24,11 @@ public class MessageFormatter {
 
     public String formatDisconnect(String playerId) {
         return "EXIT:" + playerId;
+    }
+
+    public String formatPing(String playerId) {
+        // ToDo: Implement Protocol for Ping Player ID and Time
+        // return "PING:" + playerId + ";" + Instant.now().toEpochMilli();
+        return "Ping:";
     }
 }
