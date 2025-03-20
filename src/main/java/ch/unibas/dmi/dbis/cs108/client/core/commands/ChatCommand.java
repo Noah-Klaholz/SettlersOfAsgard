@@ -11,12 +11,12 @@ public class ChatCommand implements GameCommand {
         this.message = message;
     }
 
-    public Player getSender() {
-        return null;
+    public String getMessage() {
+        return message;
     }
 
-    public String getMessage() {
-        return null;
+    public Player getSender() {
+        return sender;
     }
 
     @Override
