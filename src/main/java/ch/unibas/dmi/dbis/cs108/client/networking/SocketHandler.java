@@ -8,13 +8,21 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * SocketHandler class is responsible for handling the socket connection
+ */
 public class SocketHandler {
     private final Socket socket;
     private final PrintWriter out;
     private final BufferedReader in;
     private boolean connected = false;
 
-
+    /**
+     * Constructor
+     * @param host String
+     * @param port int
+     * @throws IOException
+     */
     public SocketHandler(String host, int port) throws IOException {
         try {
             socket = new Socket(host, port);
@@ -27,10 +35,18 @@ public class SocketHandler {
         }
     }
 
+    /**
+     * Checks if the socket is connected
+     * @return boolean
+     */
     public boolean isConnected() {
         return connected && socket != null && !socket.isClosed();
     }
 
+    /**
+     * Sends a message through the socket
+     * @param message String
+     */
     public void send(String message) {
         if (out != null && isConnected()) {
             out.println(message);
@@ -40,6 +56,11 @@ public class SocketHandler {
         }
     }
 
+    /**
+     * Receives a message from the socket
+     * @return String
+     * @throws IOException
+     */
     public String receive() throws IOException {
         if (in != null && isConnected() && in.ready()) {
             try {
@@ -53,6 +74,9 @@ public class SocketHandler {
         return null;
     }
 
+    /**
+     * Closes the socket connection
+     */
     public void close() {
         if (socket != null && !socket.isClosed()) {
             try {
