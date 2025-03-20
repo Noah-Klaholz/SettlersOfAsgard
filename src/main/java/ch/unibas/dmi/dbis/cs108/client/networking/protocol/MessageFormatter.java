@@ -14,4 +14,9 @@ public class MessageFormatter {
     public static String formatChatMessage(String playerId, String message) {
         return "CHTG:" + playerId + ";" + message;
     }
+
+    public String formatNameChange(String playerId, String newName) {
+        // ToDo: Implement Protocol for Name Change
+        return null;
+    }
 }
