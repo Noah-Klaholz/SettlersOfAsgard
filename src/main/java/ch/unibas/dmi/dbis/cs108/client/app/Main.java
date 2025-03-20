@@ -12,6 +12,14 @@ public class Main {
         GameClient client = null;
         AtomicBoolean running = new AtomicBoolean(true);
 
+        try {
+
+        } catch (Exception e) {
+
+        } finally {
+
+        }
+
         System.out.println("message");
     }
 
