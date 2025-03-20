@@ -48,7 +48,7 @@ public class MessageFormatter {
     public String formatPing(String playerId) {
         // ToDo: Implement Protocol for Ping Player ID and Time
         // return "PING:" + playerId + ";" + Instant.now().toEpochMilli();
-        return "Ping:";
+        return "PING:";
     }
 
     /**
