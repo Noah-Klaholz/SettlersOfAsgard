@@ -31,7 +31,8 @@ public class CommandSender {
     }
 
     public void sendDisconnect(Player player){
-
+        String message = formatter.formatDisconnect(player.getId());
+        socketHandler.send(message);
     }
 
     public void sendPing(Player player){
