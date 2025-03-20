@@ -6,6 +6,9 @@ import ch.unibas.dmi.dbis.cs108.client.networking.GameClient;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Demonstration entry point for a simple terminal-based chat.
+ */
 public class Main {
 
     /**
