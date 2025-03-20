@@ -74,7 +74,26 @@ public class Main {
     }
 
     private static Thread startMessageReceiverThread(GameClient client, AtomicBoolean running){
-        return null;
+        Thread thread = new Thread(() -> {
+            try {
+                while (running.get()) {
+                    // This method needs to be implemented in GameClient
+                    String message = client.receiveMessage();
+                    if (message != null) {
+                        System.out.println(message);
+                    }
+                    Thread.sleep(50); // Small delay to prevent CPU hogging
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (Exception e) {
+                System.err.println("Connection error: " + e.getMessage());
+                running.set(false); // Signal main thread to exit
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
+        return thread;
     }
 
 
