@@ -28,4 +28,8 @@ public class CommandSender {
     public void sendRegister(Player player) {
 
     }
+
+    public void sendDisconnect(Player player){
+
+    }
 }

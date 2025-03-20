@@ -39,7 +39,7 @@ public class GameClient {
 
     public void sendChat(String message) {
         if (isConnected()) {
-
+            commandSender.sendChatCommand(new ChatCommand(localPlayer, message));
         }
     }
 
@@ -53,5 +53,17 @@ public class GameClient {
             socketHandler.close();
             connected = false;
         }
+    }
+
+    public void changeName(String newName){
+
+    }
+
+    public void sendPing(){
+
+    }
+
+    public String receiveMessage(){
+        return null;
     }
 }
