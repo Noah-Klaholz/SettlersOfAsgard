@@ -41,8 +41,6 @@ public class Main {
             scanner.close();
             System.out.println("Client terminated.");
         }
-
-        System.out.println("message");
     }
 
 
@@ -54,7 +52,21 @@ public class Main {
 
 
     private static void processInput(AtomicBoolean running, Scanner scanner, GameClient client){
+        while (running.get()) {
+            String input = scanner.nextLine().trim();
 
+            if (input.equals("/exit")) {
+                running.set(false);
+                break;
+            } else if (input.startsWith("/changeName ")) {
+                String newName = input.replace("/changeName ", "").trim();
+                client.changeName(newName);
+            } else if (input.equals("/ping")) {
+                client.sendPing();
+            } else {
+                client.sendChat(input);
+            }
+        }
     }
 
     private static Thread startMessageReceiverThread(GameClient client, AtomicBoolean running){
