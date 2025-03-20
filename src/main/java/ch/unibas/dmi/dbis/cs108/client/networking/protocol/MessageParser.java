@@ -14,7 +14,11 @@ public class MessageParser {
     }
 
     public String parseRegistrationResponse(String rawMessage){
-        return null;
+        String[] parts = rawMessage.split("[:;]", 2);
+        if (parts.length == 2) {
+            return parts[1];
+        }
+        return "Unknown";
     }
 
     /**
