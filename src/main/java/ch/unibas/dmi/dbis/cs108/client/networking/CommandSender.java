@@ -25,6 +25,11 @@ public class CommandSender {
         socketHandler.send(message);
     }
 
+    public void sendChangeName(Player player, String newName){
+        String message = formatter.formatNameChange(player.getId(), newName);
+        socketHandler.send(message);
+    }
+
     public void sendRegister(Player player) {
 
     }
@@ -37,9 +42,7 @@ public class CommandSender {
 
     }
 
-    public void sendChangeName(Player player, String newName){
 
-    }
 
 
 }
