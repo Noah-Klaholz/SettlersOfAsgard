@@ -144,15 +144,34 @@ public class Lobby {
 
     /**
      * Starts the game in the lobby.
+     *
+     * @return true if the game was started successfully, false otherwise.
      */
     public boolean startGame() {
-        if(players.size() == maxPlayers) {
-            isGameStarted = true;
-            logger.info("Game started");
-            // start game here
-            return true;
+        // Check if the game is already started
+        if (isGameStarted) {
+            logger.warning("Game is already started in lobby " + id);
+            return false;
         }
-        logger.warning("Could not start game");
-        return false;
+
+        // Check if the lobby has the required number of players
+        if (players.size() != maxPlayers) {
+            logger.warning("Could not start game in lobby " + id + ": " + players.size() + " players (expected " + maxPlayers + ")");
+            return false;
+        }
+
+        // Start the game
+        isGameStarted = true;
+        logger.info("Game started in lobby " + id);
+
+        // Notify all players that the game has started
+        for (ClientHandler player : players) {
+            player.sendMessage("GAME_STARTED:");
+        }
+
+        // Additional game initialization logic can go here
+        // start game here
+
+        return true;
     }
 }
