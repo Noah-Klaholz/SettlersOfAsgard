@@ -8,6 +8,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Main {
 
+    /**
+     * Demonstration entry point for a simple terminal-based chat.
+     * @param args String[] Command line arguments
+     */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         GameClient client = null;
@@ -36,7 +40,7 @@ public class Main {
             e.printStackTrace();
         } finally {
             if (client != null && client.isConnected()) {
-                client.disconnect(); // Add this method to GameClient
+                client.disconnect();
             }
             scanner.close();
             System.out.println("Client terminated.");
@@ -44,8 +48,11 @@ public class Main {
     }
 
 
-    //after implementing GameClient
-
+    /**
+     * Check if the client is connected to the server
+     * @param client GameClient
+     * @return boolean
+     */
     private static boolean checkClient(GameClient client) {
         if (!client.isConnected()) { // Add this method to GameClient
             System.out.println("Failed to connect to server. Exiting...");
@@ -54,7 +61,12 @@ public class Main {
         return false;
     }
 
-
+    /**
+     * Process user input
+     * @param running AtomicBoolean
+     * @param scanner Scanner
+     * @param client GameClient
+     */
     private static void processInput(AtomicBoolean running, Scanner scanner, GameClient client) {
         while (running.get()) {
             String input = scanner.nextLine().trim();
@@ -73,6 +85,12 @@ public class Main {
         }
     }
 
+    /**
+     * Start a message receiver thread
+     * @param client GameClient
+     * @param running AtomicBoolean
+     * @return Thread
+     */
     private static Thread startMessageReceiverThread(GameClient client, AtomicBoolean running) {
         Thread thread = new Thread(() -> {
             try {
