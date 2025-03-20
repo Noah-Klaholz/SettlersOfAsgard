@@ -17,7 +17,7 @@ public class UseArtifactCommand implements GameCommand {
      * @return the command as a String
      */
     @Override
-    public String execute() {
-        return "USE_ARTIFACT:" + data;
+    public void execute() {
+        System.out.println("USE_ARTIFACT:" + data);
     }
 }
