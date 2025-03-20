@@ -1,10 +1,12 @@
 package ch.unibas.dmi.dbis.cs108.client.core.entities;
 
 public class Player {
-    private String id;
+    private final String id;
     private String name;
 
     public Player(String id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     public String getId() {
