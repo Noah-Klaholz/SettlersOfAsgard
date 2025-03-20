@@ -6,7 +6,11 @@ package ch.unibas.dmi.dbis.cs108.client.networking.protocol;
 public class MessageParser {
 
     public String parseChatMessage(String rawMessage){
-        return null;
+        String[] parts = rawMessage.split("[:;]", 3);
+        if (parts.length >= 3) {
+            return parts[1] + ": " + parts[2];
+        }
+        return "Invalid chat message format";
     }
 
     public String parseRegistrationResponse(String rawMessage){
