@@ -47,6 +47,10 @@ public class Main {
     //after implementing GameClient
 
     private static boolean checkClient(GameClient client){
+        if (!client.isConnected()) { // Add this method to GameClient
+            System.out.println("Failed to connect to server. Exiting...");
+            return true;
+        }
         return false;
     }
 
