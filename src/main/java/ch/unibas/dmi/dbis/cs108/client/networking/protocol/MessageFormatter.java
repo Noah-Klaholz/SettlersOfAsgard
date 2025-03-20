@@ -6,11 +6,12 @@ package ch.unibas.dmi.dbis.cs108.client.networking.protocol;
 public class MessageFormatter {
     /**
      * Formats a chat message.
-     * @param username The username of the sender.
-     * @param message The message to be sent.
+     *
+     * @param playerId The username of the sender.
+     * @param message  The message to be sent.
      * @return The formatted message.
      */
-    public static String formatChatMessage(String username, String message) {
-        return "CHAT:" + username + ":" + message;
+    public static String formatChatMessage(String playerId, String message) {
+        return "CHTG:" + playerId + ";" + message;
     }
 }
