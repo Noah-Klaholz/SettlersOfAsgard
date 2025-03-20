@@ -36,7 +36,8 @@ public class CommandSender {
     }
 
     public void sendPing(Player player){
-
+        String message = formatter.formatPing(player.getId());
+        socketHandler.send(message);
     }
 
     public void sendRegister(Player player) {
