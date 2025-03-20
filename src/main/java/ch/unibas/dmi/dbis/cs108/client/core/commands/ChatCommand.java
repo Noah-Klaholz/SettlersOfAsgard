@@ -20,7 +20,10 @@ public class ChatCommand implements GameCommand {
     }
 
     @Override
-    public String execute() {
-        return null;
+    public void execute() {
+        // Only handle local effects like:
+        // - Updating the local chat UI
+        // - Adding to chat history
+        System.out.println("Local: " + sender.getName() + ": " + message);
     }
 }
