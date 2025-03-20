@@ -46,6 +46,7 @@ public class Main {
     }
 
 
+    //after implementing GameClient
 
     private static boolean checkClient(GameClient client){
         return false;

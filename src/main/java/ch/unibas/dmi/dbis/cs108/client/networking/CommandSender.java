@@ -2,6 +2,7 @@ package ch.unibas.dmi.dbis.cs108.client.networking;
 
 import ch.unibas.dmi.dbis.cs108.client.core.commands.CommandFactory;
 import ch.unibas.dmi.dbis.cs108.client.core.commands.GameCommand;
+import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 
 /**
  * CommandSender class is responsible for sending commands to the server
@@ -9,11 +10,8 @@ import ch.unibas.dmi.dbis.cs108.client.core.commands.GameCommand;
 public class CommandSender {
     private GameClient client;
 
-    /**
-     * Constructor for CommandSender
-     * @param client GameClient
-     */
-    public CommandSender(GameClient client) {
+
+    public CommandSender(SocketHandler socketHandler) {
         this.client = client;
     }
 
@@ -25,5 +23,9 @@ public class CommandSender {
     public void sendCommand(String type, String data) {
         GameCommand command = CommandFactory.createCommand(type, data);
         client.sendMessage(command.execute());
+    }
+
+    public void sendRegister(Player player) {
+
     }
 }

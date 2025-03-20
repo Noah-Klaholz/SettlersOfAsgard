@@ -19,7 +19,7 @@ public class SocketHandler {
 
 
 
-    private SocketHandler(String serverAddress, int serverPort) throws IOException {
+    public SocketHandler(String serverAddress, int serverPort) throws IOException {
 
         try{
             this.socket = new Socket(serverAddress, serverPort);

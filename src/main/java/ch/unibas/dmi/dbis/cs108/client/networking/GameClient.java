@@ -2,101 +2,51 @@ package ch.unibas.dmi.dbis.cs108.client.networking;
 
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import ch.unibas.dmi.dbis.cs108.client.core.observer.GameEventListener;
+import ch.unibas.dmi.dbis.cs108.client.networking.protocol.MessageParser;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * The GameClient class is responsible for connecting to the server, sending messages to the server, and listening for messages from the server.
- */
 public class GameClient {
-    private static GameClient instance; // Singleton instance
-    private Socket socket;
-    private BufferedReader input;
-    private PrintWriter output;
-    private boolean connected;
-    private GameEventListener listener;
+    private final SocketHandler socketHandler;
+    private final CommandSender commandSender;
+    private final MessageParser parser;
     private final Player localPlayer;
+    private final AtomicLong lastPingTime = new AtomicLong(0);
+    private boolean connected = false;
 
-    /**
-     * Constructor for the GameClient.
-     *
-     * @param serverAddress The server address to connect to.
-     * @param port The port to connect to.
-     */
-    public GameClient(String serverAddress, int port, Player localPlayer) {
+
+    public GameClient(String host, int port, Player localPlayer) throws IOException {
         this.localPlayer = localPlayer;
         try {
-            socket = new Socket(serverAddress, port);
-            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            output = new PrintWriter(socket.getOutputStream(), true);
-            connected = true;
-            System.out.println("[Client] Connected to server at " + serverAddress + ":" + port);
+            this.socketHandler = new SocketHandler(host, port);
+            this.parser = new MessageParser();
+            this.commandSender = new CommandSender(socketHandler);
+            this.connected = true;
 
-            new Thread(this::listenForMessages).start();
+            // Send initial connection message
+            commandSender.sendRegister(localPlayer);
         } catch (IOException e) {
-            System.err.println("[Client] Connection failed: " + e.getMessage());
+            this.connected = false;
+            throw e;
         }
     }
 
-    /**
-     * Returns the singleton instance of the GameClient.
-     *
-     * @param serverAddress The server address to connect to.
-     * @param port The port to connect to.
-     * @return The singleton instance of the GameClient.
-     */
-    public static GameClient getInstance(String serverAddress, int port, Player localPlayer) {
-        if (instance == null) {
-            instance = new GameClient(serverAddress, port, localPlayer);
-        }
-        return instance;
-    }
 
-    /**
-     * Sets the listener for the GameClient.
-     *
-     * @param listener The listener to set.
-     */
-    public void setListener(GameEventListener listener) {
+    public void sendChat(String message) {
+        if (isConnected()) {
 
-        this.listener = listener;
-    }
-
-    /**
-     * Sends a message to the server.
-     *
-     * @param message The message to send.
-     */
-    public void sendMessage(String message) {
-        if (connected) {
-            output.println(message);
-            System.out.println("[Client] Sent: " + message);
-        } else {
-            System.out.println("[Client] Not connected to the server.");
         }
     }
 
     /**
      * Listens for messages from the server.
      */
-    private void listenForMessages() {
-        try {
-            String serverMessage;
-            while ((serverMessage = input.readLine()) != null) {
-                System.out.println("[Server] " + serverMessage);
-                if (listener != null) {
-                    listener.onMessageReceived(serverMessage); // Notify UI
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("[Client] Connection lost.");
-            connected = false;
-        }
-    }
+
 
     public boolean isConnected() {
         return false;
@@ -106,12 +56,6 @@ public class GameClient {
      * Disconnects from the server.
      */
     public void disconnect() {
-        try {
-            connected = false;
-            if (socket != null) socket.close();
-            System.out.println("[Client] Disconnected from server.");
-        } catch (IOException e) {
-            System.err.println("[Client] Error closing connection.");
-        }
+
     }
 }
