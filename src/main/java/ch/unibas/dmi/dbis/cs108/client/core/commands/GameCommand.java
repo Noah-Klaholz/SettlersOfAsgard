@@ -8,5 +8,5 @@ public interface GameCommand {
      * Executes the command
      * @return String
      */
-    String execute();
+    void execute();
 }

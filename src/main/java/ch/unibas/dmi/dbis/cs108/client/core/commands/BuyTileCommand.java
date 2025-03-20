@@ -18,7 +18,7 @@ public class BuyTileCommand implements GameCommand {
      * @return the command as a String
      */
     @Override
-    public String execute() {
-        return "BUY_TILE:" + data;
+    public void execute() {
+        System.out.println("BUY_TILE:" + data);
     }
 }
