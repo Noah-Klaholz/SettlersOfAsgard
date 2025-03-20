@@ -2,10 +2,11 @@ package ch.unibas.dmi.dbis.cs108.client.core.commands;
 
 public class UseArtifactCommand implements GameCommand {
 
-    private String data;
+    private final String data;
 
     /**
      * Constructor for the UseArtifactCommand
+     *
      * @param data the data for the command
      */
     public UseArtifactCommand(String data) {
@@ -14,6 +15,7 @@ public class UseArtifactCommand implements GameCommand {
 
     /**
      * Executes the command
+     *
      * @return the command as a String
      */
     @Override

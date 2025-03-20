@@ -1,7 +1,5 @@
 package ch.unibas.dmi.dbis.cs108.client.networking.protocol;
 
-import java.time.Instant;
-
 /**
  * This class provides static methods to format messages according to the protocol.
  */

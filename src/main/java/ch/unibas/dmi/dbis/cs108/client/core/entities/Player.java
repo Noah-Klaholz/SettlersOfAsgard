@@ -9,7 +9,8 @@ public class Player {
 
     /**
      * Constructor for Player class
-     * @param id String
+     *
+     * @param id   String
      * @param name String
      */
     public Player(String id, String name) {
@@ -19,6 +20,7 @@ public class Player {
 
     /**
      * Getter for id
+     *
      * @return String
      */
     public String getId() {
@@ -27,6 +29,7 @@ public class Player {
 
     /**
      * Getter for name
+     *
      * @return String
      */
     public String getName() {
@@ -35,6 +38,7 @@ public class Player {
 
     /**
      * Setter for name
+     *
      * @param name String
      */
     public void setName(String name) {

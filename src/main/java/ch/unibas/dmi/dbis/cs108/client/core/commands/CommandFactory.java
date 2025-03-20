@@ -6,6 +6,7 @@ package ch.unibas.dmi.dbis.cs108.client.core.commands;
 public class CommandFactory {
     /**
      * Creates a command
+     *
      * @param type Type of command
      * @param data Data of command
      * @return GameCommand

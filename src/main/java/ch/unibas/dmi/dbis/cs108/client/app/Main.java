@@ -46,7 +46,7 @@ public class Main {
 
     //after implementing GameClient
 
-    private static boolean checkClient(GameClient client){
+    private static boolean checkClient(GameClient client) {
         if (!client.isConnected()) { // Add this method to GameClient
             System.out.println("Failed to connect to server. Exiting...");
             return true;
@@ -55,7 +55,7 @@ public class Main {
     }
 
 
-    private static void processInput(AtomicBoolean running, Scanner scanner, GameClient client){
+    private static void processInput(AtomicBoolean running, Scanner scanner, GameClient client) {
         while (running.get()) {
             String input = scanner.nextLine().trim();
 
@@ -73,7 +73,7 @@ public class Main {
         }
     }
 
-    private static Thread startMessageReceiverThread(GameClient client, AtomicBoolean running){
+    private static Thread startMessageReceiverThread(GameClient client, AtomicBoolean running) {
         Thread thread = new Thread(() -> {
             try {
                 while (running.get()) {

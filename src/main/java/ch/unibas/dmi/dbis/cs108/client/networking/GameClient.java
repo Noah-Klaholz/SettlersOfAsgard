@@ -52,25 +52,25 @@ public class GameClient {
         }
     }
 
-    public void changeName(String newName){
+    public void changeName(String newName) {
         if (isConnected()) {
             commandSender.sendChangeName(localPlayer, newName);
             localPlayer.setName(newName);
         }
     }
 
-    public void sendPing(){
+    public void sendPing() {
         if (isConnected()) {
             lastPingTime.set(Instant.now().toEpochMilli());
             commandSender.sendPing(localPlayer);
         }
     }
 
-    public String receiveMessage(){
+    public String receiveMessage() {
         if (!isConnected()) {
             return null;
         }
-        try{
+        try {
             String rawMessage = socketHandler.receive();
             if (rawMessage != null) {
                 // Parse and handle different message types
@@ -85,7 +85,7 @@ public class GameClient {
                     return rawMessage;
                 }
             }
-        } catch(IOException e) {
+        } catch (IOException e) {
             connected = false;
             return "Connection error: " + e.getMessage();
         }

@@ -11,7 +11,8 @@ public class ChatCommand implements GameCommand {
 
     /**
      * Constructor for ChatCommand class
-     * @param sender Player
+     *
+     * @param sender  Player
      * @param message String
      */
     public ChatCommand(Player sender, String message) {
@@ -21,6 +22,7 @@ public class ChatCommand implements GameCommand {
 
     /**
      * Getter for message
+     *
      * @return String
      */
     public String getMessage() {
@@ -29,6 +31,7 @@ public class ChatCommand implements GameCommand {
 
     /**
      * Getter for sender
+     *
      * @return Player
      */
     public Player getSender() {

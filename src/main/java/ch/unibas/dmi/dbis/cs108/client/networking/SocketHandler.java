@@ -9,9 +9,9 @@ import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 
 public class SocketHandler {
-    private Socket socket;
-    private PrintWriter out;
-    private BufferedReader in;
+    private final Socket socket;
+    private final PrintWriter out;
+    private final BufferedReader in;
     private boolean connected = false;
 
 
@@ -31,7 +31,7 @@ public class SocketHandler {
         return connected && socket != null && !socket.isClosed();
     }
 
-    public void send(String message){
+    public void send(String message) {
         if (out != null && isConnected()) {
             out.println(message);
             if (out.checkError()) {
@@ -40,7 +40,7 @@ public class SocketHandler {
         }
     }
 
-    public String receive() throws IOException{
+    public String receive() throws IOException {
         if (in != null && isConnected() && in.ready()) {
             try {
                 String message = in.readLine();
@@ -53,7 +53,7 @@ public class SocketHandler {
         return null;
     }
 
-    public void close(){
+    public void close() {
         if (socket != null && !socket.isClosed()) {
             try {
                 socket.close();

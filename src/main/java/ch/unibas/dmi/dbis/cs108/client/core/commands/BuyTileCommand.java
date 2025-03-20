@@ -3,10 +3,11 @@ package ch.unibas.dmi.dbis.cs108.client.core.commands;
 
 public class BuyTileCommand implements GameCommand {
 
-    private String data;
+    private final String data;
 
     /**
      * Constructor for the BuyTileCommand
+     *
      * @param data the data for the command
      */
     public BuyTileCommand(String data) {
@@ -15,6 +16,7 @@ public class BuyTileCommand implements GameCommand {
 
     /**
      * Executes the command
+     *
      * @return the command as a String
      */
     @Override
