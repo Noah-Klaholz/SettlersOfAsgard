@@ -17,9 +17,12 @@ public class CommandSender {
         this.formatter = new MessageFormatter();
     }
 
-
-    public void sendCommand(String type, String data) {
-
+    public void sendChatCommand(ChatCommand chatCommand){
+        String message = formatter.formatChatMessage(
+                chatCommand.getSender().getId(),
+                chatCommand.getMessage()
+        );
+        socketHandler.send(message);
     }
 
     public void sendRegister(Player player) {
@@ -31,10 +34,6 @@ public class CommandSender {
     }
 
     public void sendPing(Player player){
-
-    }
-
-    public void sendChatCommand(ChatCommand chatCommand){
 
     }
 
