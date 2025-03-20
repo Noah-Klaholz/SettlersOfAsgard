@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.networking;
 
+import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import ch.unibas.dmi.dbis.cs108.client.core.observer.GameEventListener;
 
 import java.io.BufferedReader;
@@ -18,6 +19,7 @@ public class GameClient {
     private PrintWriter output;
     private boolean connected;
     private GameEventListener listener;
+    private final Player localPlayer;
 
     /**
      * Constructor for the GameClient.
@@ -25,7 +27,8 @@ public class GameClient {
      * @param serverAddress The server address to connect to.
      * @param port The port to connect to.
      */
-    private GameClient(String serverAddress, int port) {
+    public GameClient(String serverAddress, int port, Player localPlayer) {
+        this.localPlayer = localPlayer;
         try {
             socket = new Socket(serverAddress, port);
             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
