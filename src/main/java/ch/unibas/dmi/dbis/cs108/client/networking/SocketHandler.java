@@ -1,14 +1,10 @@
 package ch.unibas.dmi.dbis.cs108.client.networking;
-import java.io.InputStreamReader;
-import java.net.Socket;
-import ch.unibas.dmi.dbis.cs108.client.core.observer.GameEventListener;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.Socket;
 import java.net.SocketException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class SocketHandler {
     private Socket socket;
@@ -48,8 +44,14 @@ public class SocketHandler {
     }
 
     public void close(){
-
+        if (socket != null && !socket.isClosed()) {
+            try {
+                socket.close();
+                connected = false;
+            } catch (IOException e) {
+                System.err.println("Error closing socket: " + e.getMessage());
+            }
+        }
     }
-
 
 }
