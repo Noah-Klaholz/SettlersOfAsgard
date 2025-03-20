@@ -6,6 +6,7 @@ import ch.unibas.dmi.dbis.cs108.client.core.observer.GameEventListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.SocketException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -34,6 +35,15 @@ public class SocketHandler {
     }
 
     public String receive() throws IOException{
+        if (in != null && isConnected() && in.ready()) {
+            try {
+                String message = in.readLine();
+                return message;
+            } catch (SocketException e) {
+                connected = false;
+                throw e;
+            }
+        }
         return null;
     }
 
