@@ -37,5 +37,9 @@ public class CommandSender {
 
     }
 
+    public void sendChangeName(Player player, String newName){
+
+    }
+
 
 }

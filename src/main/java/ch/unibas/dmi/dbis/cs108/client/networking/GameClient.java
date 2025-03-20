@@ -45,20 +45,22 @@ public class GameClient {
     }
 
     public boolean isConnected() {
-        //todo: return connected && socketHandler != null && socketHandler.isConnected();
-        return false;
+        return connected && socketHandler != null && socketHandler.isConnected();
     }
 
     public void disconnect() {
         if (isConnected()) {
             commandSender.sendDisconnect(localPlayer);
-            //todo: socketHandler.close();
+            socketHandler.close();
             connected = false;
         }
     }
 
     public void changeName(String newName){
-
+        if (isConnected()) {
+            commandSender.sendChangeName(localPlayer, newName);
+            localPlayer.setName(newName);
+        }
     }
 
     public void sendPing(){
