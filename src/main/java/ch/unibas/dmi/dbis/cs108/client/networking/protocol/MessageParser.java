@@ -1,11 +1,17 @@
 package ch.unibas.dmi.dbis.cs108.client.networking.protocol;
 
 /**
- * This class provides static methods to parse messages according to the protocol.
+ * Parses messages received from the server
  */
 public class MessageParser {
 
-    public String parseChatMessage(String rawMessage){
+    /**
+     * Parses a chat message received from the server.
+     *
+     * @param rawMessage The raw message string received from the server.
+     * @return The parsed chat message in the format "sender: message".
+     */
+    public String parseChatMessage(String rawMessage) {
         String[] parts = rawMessage.split("[:;]", 3);
         if (parts.length >= 3) {
             return parts[1] + ": " + parts[2];
@@ -13,7 +19,13 @@ public class MessageParser {
         return "Invalid chat message format";
     }
 
-    public String parseRegistrationResponse(String rawMessage){
+    /**
+     * Parses a registration response received from the server.
+     *
+     * @param rawMessage The raw message string received from the server.
+     * @return The parsed registration response.
+     */
+    public String parseRegistrationResponse(String rawMessage) {
         String[] parts = rawMessage.split("[:;]", 2);
         if (parts.length == 2) {
             return parts[1];
@@ -21,6 +33,12 @@ public class MessageParser {
         return "Unknown";
     }
 
+    /**
+     * Parses a ping response received from the server.
+     *
+     * @param rawMessage The raw message string received from the server.
+     * @return The timestamp of the ping response.
+     */
     public long parsePingResponse(String rawMessage) {
         String[] parts = rawMessage.split("[:;]", 2);
         if (parts.length == 2) {
