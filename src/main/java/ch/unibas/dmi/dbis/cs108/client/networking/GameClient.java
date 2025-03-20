@@ -72,6 +72,14 @@ public class GameClient {
     }
 
     public String receiveMessage(){
+        if (!isConnected()) {
+            return null;
+        }
+        try{
+
+        } catch(IOException e) {
+            connected = false;
+        }
         return null;
     }
 }
