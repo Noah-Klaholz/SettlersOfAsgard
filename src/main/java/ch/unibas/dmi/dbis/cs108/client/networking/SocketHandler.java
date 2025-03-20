@@ -25,7 +25,12 @@ public class SocketHandler {
     }
 
     public void send(String message){
-
+        if (out != null && isConnected()) {
+            out.println(message);
+            if (out.checkError()) {
+                connected = false;
+            }
+        }
     }
 
     public String receive() throws IOException{
