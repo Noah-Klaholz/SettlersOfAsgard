@@ -142,5 +142,17 @@ public class Lobby {
                 '}';
     }
 
-
+    /**
+     * Starts the game in the lobby.
+     */
+    public boolean startGame() {
+        if(players.size() == maxPlayers) {
+            isGameStarted = true;
+            logger.info("Game started");
+            // start game here
+            return true;
+        }
+        logger.warning("Could not start game");
+        return false;
+    }
 }
