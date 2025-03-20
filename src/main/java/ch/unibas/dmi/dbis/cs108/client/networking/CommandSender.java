@@ -30,10 +30,6 @@ public class CommandSender {
         socketHandler.send(message);
     }
 
-    public void sendRegister(Player player) {
-
-    }
-
     public void sendDisconnect(Player player){
 
     }
@@ -42,7 +38,10 @@ public class CommandSender {
 
     }
 
-
+    public void sendRegister(Player player) {
+        String message = formatter.formatRegister(player.getId(), player.getName());
+        socketHandler.send(message);
+    }
 
 
 }
