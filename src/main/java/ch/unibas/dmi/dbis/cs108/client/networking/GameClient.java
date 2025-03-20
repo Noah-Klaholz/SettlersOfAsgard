@@ -48,6 +48,10 @@ public class GameClient {
     }
 
     public void disconnect() {
-
+        if (isConnected()) {
+            commandSender.sendDisconnect(localPlayer);
+            socketHandler.close();
+            connected = false;
+        }
     }
 }
