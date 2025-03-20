@@ -2,9 +2,11 @@ package ch.unibas.dmi.dbis.cs108.client.networking;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
 
 public class SocketHandler {
     private Socket socket;
@@ -13,8 +15,16 @@ public class SocketHandler {
     private boolean connected = false;
 
 
-    public SocketHandler(String serverAddress, int serverPort) throws IOException {
-
+    public SocketHandler(String host, int port) throws IOException {
+        try {
+            socket = new Socket(host, port);
+            out = new PrintWriter(socket.getOutputStream(), true, StandardCharsets.UTF_8);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+            connected = true;
+        } catch (IOException e) {
+            connected = false;
+            throw e;
+        }
     }
 
     public boolean isConnected() {
