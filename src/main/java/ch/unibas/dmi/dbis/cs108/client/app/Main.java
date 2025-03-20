@@ -32,9 +32,14 @@ public class Main {
             receiverThread.join(1000);
 
         } catch (Exception e) {
-
+            System.err.println("Error: " + e.getMessage());
+            e.printStackTrace();
         } finally {
-
+            if (client != null && client.isConnected()) {
+                client.disconnect(); // Add this method to GameClient
+            }
+            scanner.close();
+            System.out.println("Client terminated.");
         }
 
         System.out.println("message");

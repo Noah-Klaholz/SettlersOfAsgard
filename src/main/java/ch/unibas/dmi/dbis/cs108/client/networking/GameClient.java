@@ -49,9 +49,9 @@ public class GameClient {
      * @param port The port to connect to.
      * @return The singleton instance of the GameClient.
      */
-    public static GameClient getInstance(String serverAddress, int port) {
+    public static GameClient getInstance(String serverAddress, int port, Player localPlayer) {
         if (instance == null) {
-            instance = new GameClient(serverAddress, port);
+            instance = new GameClient(serverAddress, port, localPlayer);
         }
         return instance;
     }
@@ -62,6 +62,7 @@ public class GameClient {
      * @param listener The listener to set.
      */
     public void setListener(GameEventListener listener) {
+
         this.listener = listener;
     }
 
@@ -95,6 +96,10 @@ public class GameClient {
             System.err.println("[Client] Connection lost.");
             connected = false;
         }
+    }
+
+    public boolean isConnected() {
+        return false;
     }
 
     /**
