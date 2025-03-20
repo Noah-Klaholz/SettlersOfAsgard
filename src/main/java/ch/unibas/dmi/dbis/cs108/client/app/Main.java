@@ -41,24 +41,59 @@ public class Main {
             scanner.close();
             System.out.println("Client terminated.");
         }
-
-        System.out.println("message");
     }
 
 
     //after implementing GameClient
 
     private static boolean checkClient(GameClient client){
+        if (!client.isConnected()) { // Add this method to GameClient
+            System.out.println("Failed to connect to server. Exiting...");
+            return true;
+        }
         return false;
     }
 
 
     private static void processInput(AtomicBoolean running, Scanner scanner, GameClient client){
+        while (running.get()) {
+            String input = scanner.nextLine().trim();
 
+            if (input.equals("/exit")) {
+                running.set(false);
+                break;
+            } else if (input.startsWith("/changeName ")) {
+                String newName = input.replace("/changeName ", "").trim();
+                client.changeName(newName);
+            } else if (input.equals("/ping")) {
+                client.sendPing();
+            } else {
+                client.sendChat(input);
+            }
+        }
     }
 
     private static Thread startMessageReceiverThread(GameClient client, AtomicBoolean running){
-        return null;
+        Thread thread = new Thread(() -> {
+            try {
+                while (running.get()) {
+                    // This method needs to be implemented in GameClient
+                    String message = client.receiveMessage();
+                    if (message != null) {
+                        System.out.println(message);
+                    }
+                    Thread.sleep(50); // Small delay to prevent CPU hogging
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (Exception e) {
+                System.err.println("Connection error: " + e.getMessage());
+                running.set(false); // Signal main thread to exit
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
+        return thread;
     }
 
 
