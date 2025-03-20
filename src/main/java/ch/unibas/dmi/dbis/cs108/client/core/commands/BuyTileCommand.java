@@ -1,4 +1,4 @@
-package ch.unibas.dmi.dbis.cs108.client.commands;
+package ch.unibas.dmi.dbis.cs108.client.core.commands;
 
 
 public class BuyTileCommand implements GameCommand {

@@ -1,4 +1,4 @@
-package ch.unibas.dmi.dbis.cs108.client.commands;
+package ch.unibas.dmi.dbis.cs108.client.core.commands;
 
 /**
  * GameCommand interface is responsible for executing commands

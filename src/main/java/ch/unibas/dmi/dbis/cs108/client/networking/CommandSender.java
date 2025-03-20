@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.networking;
 
-import ch.unibas.dmi.dbis.cs108.client.commands.CommandFactory;
-import ch.unibas.dmi.dbis.cs108.client.commands.GameCommand;
+import ch.unibas.dmi.dbis.cs108.client.core.commands.CommandFactory;
+import ch.unibas.dmi.dbis.cs108.client.core.commands.GameCommand;
 
 /**
  * CommandSender class is responsible for sending commands to the server
