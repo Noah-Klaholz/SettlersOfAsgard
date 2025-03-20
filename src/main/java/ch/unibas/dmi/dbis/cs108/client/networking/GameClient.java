@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * GameClient class is responsible for handling the client-side of the game
+ */
 public class GameClient {
     private final SocketHandler socketHandler;
     private final CommandSender commandSender;
@@ -16,7 +19,13 @@ public class GameClient {
     private final AtomicLong lastPingTime = new AtomicLong(0);
     private boolean connected = false;
 
-
+    /**
+     * Constructor
+     * @param host String
+     * @param port int
+     * @param localPlayer Player
+     * @throws IOException
+     */
     public GameClient(String host, int port, Player localPlayer) throws IOException {
         this.localPlayer = localPlayer;
         try {
@@ -33,17 +42,27 @@ public class GameClient {
         }
     }
 
-
+    /**
+     * Sends a chat message to the server
+     * @param message String
+     */
     public void sendChat(String message) {
         if (isConnected()) {
             commandSender.sendChatCommand(new ChatCommand(localPlayer, message));
         }
     }
 
+    /**
+     * Checks if the client is connected to the server
+     * @return boolean
+     */
     public boolean isConnected() {
         return connected && socketHandler != null && socketHandler.isConnected();
     }
 
+    /**
+     * Disconnects the client from the server
+     */
     public void disconnect() {
         if (isConnected()) {
             commandSender.sendDisconnect(localPlayer);
@@ -52,6 +71,10 @@ public class GameClient {
         }
     }
 
+    /**
+     * Changes the name of the local player
+     * @param newName String
+     */
     public void changeName(String newName) {
         if (isConnected()) {
             commandSender.sendChangeName(localPlayer, newName);
@@ -59,6 +82,9 @@ public class GameClient {
         }
     }
 
+    /**
+     * Sends a ping message to the server
+     */
     public void sendPing() {
         if (isConnected()) {
             lastPingTime.set(Instant.now().toEpochMilli());
@@ -66,6 +92,10 @@ public class GameClient {
         }
     }
 
+    /**
+     * Receives a message from the server
+     * @return String
+     */
     public String receiveMessage() {
         if (!isConnected()) {
             return null;
