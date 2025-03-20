@@ -31,4 +31,8 @@ public class MessageFormatter {
         // return "PING:" + playerId + ";" + Instant.now().toEpochMilli();
         return "Ping:";
     }
+
+    public String formatRegister(String playerId, String playerName) {
+        return "JOIN:" + playerId + ";" + playerName;
+    }
 }
