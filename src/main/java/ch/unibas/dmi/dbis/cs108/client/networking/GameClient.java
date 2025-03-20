@@ -76,9 +76,23 @@ public class GameClient {
             return null;
         }
         try{
-
+            String rawMessage = socketHandler.receive();
+            if (rawMessage != null) {
+                // Parse and handle different message types
+                if (rawMessage.startsWith("PONG$")) {
+                    long roundTripTime = Instant.now().toEpochMilli() - lastPingTime.get();
+                    return "Server responded with pong! Round-trip time: " + roundTripTime + "ms";
+                } else if (rawMessage.startsWith("CHAT$")) {
+                    return parser.parseChatMessage(rawMessage);
+                } else if (rawMessage.startsWith("REGISTERED$")) {
+                    return "Successfully registered with ID: " + parser.parseRegistrationResponse(rawMessage);
+                } else {
+                    return rawMessage;
+                }
+            }
         } catch(IOException e) {
             connected = false;
+            return "Connection error: " + e.getMessage();
         }
         return null;
     }
