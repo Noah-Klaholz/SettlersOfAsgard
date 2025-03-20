@@ -19,4 +19,8 @@ public class MessageFormatter {
         // ToDo: Implement Protocol for Name Change
         return null;
     }
+
+    public String formatDisconnect(String playerId) {
+        return "EXIT:" + playerId;
+    }
 }
