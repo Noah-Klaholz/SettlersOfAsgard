@@ -1,6 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.networking;
 
-import ch.unibas.dmi.dbis.cs108.client.observer.GameEventListener;
+import ch.unibas.dmi.dbis.cs108.client.core.observer.GameEventListener;
 
 import java.io.BufferedReader;
 import java.io.IOException;
