@@ -10,93 +10,31 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class SocketHandler {
-    private static SocketHandler instance;
     private Socket socket;
-    private BufferedReader input;
-    private PrintWriter output;
-    private GameEventListener listener;
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
-
+    private PrintWriter out;
+    private BufferedReader in;
+    private boolean connected = false;
 
 
     public SocketHandler(String serverAddress, int serverPort) throws IOException {
 
-        try{
-            this.socket = new Socket(serverAddress, serverPort);
-            this.input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.output = new PrintWriter(socket.getOutputStream(), true);
-
-            System.out.println("[SocketHandler] Connected to server at " + serverAddress + ":" + serverPort);
-
-            startListening();
-        } catch (IOException e) {
-            System.err.println("[SocketHandler] Connection failed: " + e.getMessage());
-            throw e;
-        }
     }
 
-
-    public static synchronized SocketHandler getInstance(String serverAddress, int serverPort) throws IOException {
-
-        if (instance == null) {
-            instance = new SocketHandler(serverAddress, serverPort);
-        }
-        return instance;
+    public boolean isConnected() {
+        return false;
     }
 
-
-    public void setListener(GameEventListener listener) {
-
-        this.listener = listener;
+    public void send(String message){
 
     }
 
+    public String receive() throws IOException{
+        return null;
+    }
 
-    public void sendMessage(String message) {
-
-        if (output != null) {
-            output.println(message);
-            System.out.println("[SocketHandler] Sent: " + message);
-        } else {
-            System.err.println("[SocketHandler] Output stream is not available.");
-        }
+    public void close(){
 
     }
 
-    private void startListening() {
-
-        executorService.submit(() -> {
-            try {
-                String serverMessage;
-                while ((serverMessage = input.readLine()) != null) {
-                    System.out.println("[SocketHandler] Received: " + serverMessage);
-
-                    if (listener != null) {
-                        listener.onMessageReceived(serverMessage);
-                    }
-                }
-            } catch (IOException e) {
-                System.err.println("[SocketHandler] Disconnected from server: " + e.getMessage());
-            } finally {
-                closeConnection();
-            }
-        });
-
-
-    }
-
-    public void closeConnection() {
-
-        try {
-            if (socket != null) socket.close();
-            if (input != null) input.close();
-            if (output != null) output.close();
-            executorService.shutdownNow();
-            System.out.println("[SocketHandler] Connection closed.");
-        } catch (IOException e) {
-            System.err.println("[SocketHandler] Error closing connection: " + e.getMessage());
-        }
-
-    }
 
 }
