@@ -21,7 +21,7 @@ public class SocketHandler {
     }
 
     public boolean isConnected() {
-        return false;
+        return connected && socket != null && !socket.isClosed();
     }
 
     public void send(String message){
