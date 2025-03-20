@@ -43,18 +43,10 @@ public class GameClient {
         }
     }
 
-    /**
-     * Listens for messages from the server.
-     */
-
-
     public boolean isConnected() {
-        return false;
+        return connected && socketHandler != null && socketHandler.isConnected();
     }
 
-    /**
-     * Disconnects from the server.
-     */
     public void disconnect() {
 
     }
