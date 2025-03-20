@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.networking;
 
+import ch.unibas.dmi.dbis.cs108.client.core.commands.ChatCommand;
 import ch.unibas.dmi.dbis.cs108.client.core.commands.CommandFactory;
 import ch.unibas.dmi.dbis.cs108.client.core.commands.GameCommand;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
@@ -15,14 +16,9 @@ public class CommandSender {
         this.client = client;
     }
 
-    /**
-     * Sends a command to the server
-     * @param type Type of command
-     * @param data Data of command
-     */
+
     public void sendCommand(String type, String data) {
-        GameCommand command = CommandFactory.createCommand(type, data);
-        client.sendMessage(command.execute());
+
     }
 
     public void sendRegister(Player player) {
@@ -32,4 +28,14 @@ public class CommandSender {
     public void sendDisconnect(Player player){
 
     }
+
+    public void sendPing(Player player){
+
+    }
+
+    public void sendChatCommand(ChatCommand chatCommand){
+
+    }
+
+
 }

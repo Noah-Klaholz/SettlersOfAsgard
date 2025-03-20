@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.networking;
 
+import ch.unibas.dmi.dbis.cs108.client.core.commands.ChatCommand;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import ch.unibas.dmi.dbis.cs108.client.core.observer.GameEventListener;
 import ch.unibas.dmi.dbis.cs108.client.networking.protocol.MessageParser;
@@ -44,13 +45,14 @@ public class GameClient {
     }
 
     public boolean isConnected() {
-        return connected && socketHandler != null && socketHandler.isConnected();
+        //todo: return connected && socketHandler != null && socketHandler.isConnected();
+        return false;
     }
 
     public void disconnect() {
         if (isConnected()) {
             commandSender.sendDisconnect(localPlayer);
-            socketHandler.close();
+            //todo: socketHandler.close();
             connected = false;
         }
     }
