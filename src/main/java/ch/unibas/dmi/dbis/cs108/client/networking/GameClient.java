@@ -2,14 +2,10 @@ package ch.unibas.dmi.dbis.cs108.client.networking;
 
 import ch.unibas.dmi.dbis.cs108.client.core.commands.ChatCommand;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
-import ch.unibas.dmi.dbis.cs108.client.core.observer.GameEventListener;
 import ch.unibas.dmi.dbis.cs108.client.networking.protocol.MessageParser;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
+import java.time.Instant;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class GameClient {
@@ -45,27 +41,54 @@ public class GameClient {
     }
 
     public boolean isConnected() {
-        //todo: return connected && socketHandler != null && socketHandler.isConnected();
-        return false;
+        return connected && socketHandler != null && socketHandler.isConnected();
     }
 
     public void disconnect() {
         if (isConnected()) {
             commandSender.sendDisconnect(localPlayer);
-            //todo: socketHandler.close();
+            socketHandler.close();
             connected = false;
         }
     }
 
     public void changeName(String newName){
-
+        if (isConnected()) {
+            commandSender.sendChangeName(localPlayer, newName);
+            localPlayer.setName(newName);
+        }
     }
 
     public void sendPing(){
-
+        if (isConnected()) {
+            lastPingTime.set(Instant.now().toEpochMilli());
+            commandSender.sendPing(localPlayer);
+        }
     }
 
     public String receiveMessage(){
+        if (!isConnected()) {
+            return null;
+        }
+        try{
+            String rawMessage = socketHandler.receive();
+            if (rawMessage != null) {
+                // Parse and handle different message types
+                if (rawMessage.startsWith("PONG$")) {
+                    long roundTripTime = Instant.now().toEpochMilli() - lastPingTime.get();
+                    return "Server responded with pong! Round-trip time: " + roundTripTime + "ms";
+                } else if (rawMessage.startsWith("CHAT$")) {
+                    return parser.parseChatMessage(rawMessage);
+                } else if (rawMessage.startsWith("REGISTERED$")) {
+                    return "Successfully registered with ID: " + parser.parseRegistrationResponse(rawMessage);
+                } else {
+                    return rawMessage;
+                }
+            }
+        } catch(IOException e) {
+            connected = false;
+            return "Connection error: " + e.getMessage();
+        }
         return null;
     }
 }

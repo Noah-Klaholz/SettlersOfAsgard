@@ -1,102 +1,67 @@
 package ch.unibas.dmi.dbis.cs108.client.networking;
-import java.io.InputStreamReader;
-import java.net.Socket;
-import ch.unibas.dmi.dbis.cs108.client.core.observer.GameEventListener;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.net.Socket;
+import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
 
 public class SocketHandler {
-    private static SocketHandler instance;
     private Socket socket;
-    private BufferedReader input;
-    private PrintWriter output;
-    private GameEventListener listener;
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private PrintWriter out;
+    private BufferedReader in;
+    private boolean connected = false;
 
 
-
-    public SocketHandler(String serverAddress, int serverPort) throws IOException {
-
-        try{
-            this.socket = new Socket(serverAddress, serverPort);
-            this.input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.output = new PrintWriter(socket.getOutputStream(), true);
-
-            System.out.println("[SocketHandler] Connected to server at " + serverAddress + ":" + serverPort);
-
-            startListening();
+    public SocketHandler(String host, int port) throws IOException {
+        try {
+            socket = new Socket(host, port);
+            out = new PrintWriter(socket.getOutputStream(), true, StandardCharsets.UTF_8);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+            connected = true;
         } catch (IOException e) {
-            System.err.println("[SocketHandler] Connection failed: " + e.getMessage());
+            connected = false;
             throw e;
         }
     }
 
-
-    public static synchronized SocketHandler getInstance(String serverAddress, int serverPort) throws IOException {
-
-        if (instance == null) {
-            instance = new SocketHandler(serverAddress, serverPort);
-        }
-        return instance;
+    public boolean isConnected() {
+        return connected && socket != null && !socket.isClosed();
     }
 
-
-    public void setListener(GameEventListener listener) {
-
-        this.listener = listener;
-
-    }
-
-
-    public void sendMessage(String message) {
-
-        if (output != null) {
-            output.println(message);
-            System.out.println("[SocketHandler] Sent: " + message);
-        } else {
-            System.err.println("[SocketHandler] Output stream is not available.");
-        }
-
-    }
-
-    private void startListening() {
-
-        executorService.submit(() -> {
-            try {
-                String serverMessage;
-                while ((serverMessage = input.readLine()) != null) {
-                    System.out.println("[SocketHandler] Received: " + serverMessage);
-
-                    if (listener != null) {
-                        listener.onMessageReceived(serverMessage);
-                    }
-                }
-            } catch (IOException e) {
-                System.err.println("[SocketHandler] Disconnected from server: " + e.getMessage());
-            } finally {
-                closeConnection();
+    public void send(String message){
+        if (out != null && isConnected()) {
+            out.println(message);
+            if (out.checkError()) {
+                connected = false;
             }
-        });
-
-
+        }
     }
 
-    public void closeConnection() {
-
-        try {
-            if (socket != null) socket.close();
-            if (input != null) input.close();
-            if (output != null) output.close();
-            executorService.shutdownNow();
-            System.out.println("[SocketHandler] Connection closed.");
-        } catch (IOException e) {
-            System.err.println("[SocketHandler] Error closing connection: " + e.getMessage());
+    public String receive() throws IOException{
+        if (in != null && isConnected() && in.ready()) {
+            try {
+                String message = in.readLine();
+                return message;
+            } catch (SocketException e) {
+                connected = false;
+                throw e;
+            }
         }
+        return null;
+    }
 
+    public void close(){
+        if (socket != null && !socket.isClosed()) {
+            try {
+                socket.close();
+                connected = false;
+            } catch (IOException e) {
+                System.err.println("Error closing socket: " + e.getMessage());
+            }
+        }
     }
 
 }
