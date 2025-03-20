@@ -2,14 +2,9 @@ package ch.unibas.dmi.dbis.cs108.client.networking;
 
 import ch.unibas.dmi.dbis.cs108.client.core.commands.ChatCommand;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
-import ch.unibas.dmi.dbis.cs108.client.core.observer.GameEventListener;
 import ch.unibas.dmi.dbis.cs108.client.networking.protocol.MessageParser;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.time.Instant;
 import java.util.concurrent.atomic.AtomicLong;
 
