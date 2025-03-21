@@ -1,9 +1,12 @@
 package ch.unibas.dmi.dbis.cs108.client.networking.protocol;
 
+import java.util.logging.Logger;
 /**
  * This class provides static methods to format messages according to the protocol.
  */
 public class MessageFormatter {
+    private static final Logger logger = Logger.getLogger(MessageFormatter.class.getName());
+
     /**
      * Formats a chat message.
      *
@@ -12,7 +15,12 @@ public class MessageFormatter {
      * @return The formatted message.
      */
     public static String formatChatMessage(String playerId, String message) {
-        return "CHTG$" + playerId + "$" + message;
+        try {
+            return "CHTG$" + playerId + "$" + message;
+        } catch (Exception e) {
+            logger.severe("Failed to format chat message: " + e.getMessage());
+            return null;
+        }
     }
 
     /**
@@ -23,8 +31,13 @@ public class MessageFormatter {
      * @return The formatted message.
      */
     public String formatNameChange(String playerId, String newName) {
-        // ToDo: Implement Protocol for Name Change
-        return null;
+        try {
+            // ToDo: Implement Protocol for Name Change
+            return null;
+        } catch (Exception e) {
+            logger.severe("Failed to format name change: " + e.getMessage());
+            return null;
+        }
     }
 
     /**
@@ -34,7 +47,12 @@ public class MessageFormatter {
      * @return The formatted message.
      */
     public String formatDisconnect(String playerId) {
-        return "EXIT$" + playerId;
+        try {
+            return "EXIT$" + playerId;
+        } catch (Exception e) {
+            logger.severe("Failed to format disconnect: " + e.getMessage());
+            return null;
+        }
     }
 
     /**
@@ -44,9 +62,14 @@ public class MessageFormatter {
      * @return The formatted message.
      */
     public String formatPing(String playerId) {
-        // ToDo: Implement Protocol for Ping Player ID and Time
-        // return "PING:" + playerId + ";" + Instant.now().toEpochMilli();
-        return "PING";
+        try {
+            // ToDo: Implement Protocol for Ping Player ID and Time
+            // return "PING:" + playerId + ";" + Instant.now().toEpochMilli();
+            return "PING";
+        } catch (Exception e) {
+            logger.severe("Failed to format ping: " + e.getMessage());
+            return null;
+        }
     }
 
     /**
@@ -57,6 +80,11 @@ public class MessageFormatter {
      * @return The formatted message.
      */
     public String formatRegister(String playerId, String playerName) {
-        return "JOIN$" + playerId + "$" + playerName;
+        try {
+            return "JOIN$" + playerId + "$" + playerName;
+        } catch (Exception e) {
+            logger.severe("Failed to format register: " + e.getMessage());
+            return null;
+        }
     }
 }
