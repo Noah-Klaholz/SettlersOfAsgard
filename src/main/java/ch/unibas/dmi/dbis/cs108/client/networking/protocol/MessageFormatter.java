@@ -65,7 +65,7 @@ public class MessageFormatter {
         try {
             // ToDo: Implement Protocol for Ping Player ID and Time
             // return "PING:" + playerId + ";" + Instant.now().toEpochMilli();
-            return "PING";
+            return "PING$" + playerId;
         } catch (Exception e) {
             logger.severe("Failed to format ping: " + e.getMessage());
             return null;
@@ -84,6 +84,15 @@ public class MessageFormatter {
             return "JOIN$" + playerId + "$" + playerName;
         } catch (Exception e) {
             logger.severe("Failed to format register: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public String formatPong(String playerId) {
+        try {
+            return "PONG$" + playerId;
+        } catch (Exception e) {
+            logger.severe("Failed to format pong: " + e.getMessage());
             return null;
         }
     }
