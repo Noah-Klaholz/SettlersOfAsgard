@@ -12,7 +12,7 @@ public class MessageParser {
      * @return The parsed chat message in the format "sender: message".
      */
     public String parseChatMessage(String rawMessage) {
-        String[] parts = rawMessage.split("[:;]", 3);
+        String[] parts = rawMessage.split("[$]", 3);
         if (parts.length >= 3) {
             return parts[1] + ": " + parts[2];
         }
@@ -26,7 +26,7 @@ public class MessageParser {
      * @return The parsed registration response.
      */
     public String parseRegistrationResponse(String rawMessage) {
-        String[] parts = rawMessage.split("[:;]", 2);
+        String[] parts = rawMessage.split("[$]", 2);
         if (parts.length == 2) {
             return parts[1];
         }
@@ -40,7 +40,7 @@ public class MessageParser {
      * @return The timestamp of the ping response.
      */
     public long parsePingResponse(String rawMessage) {
-        String[] parts = rawMessage.split("[:;]", 2);
+        String[] parts = rawMessage.split("[$]", 2);
         if (parts.length == 2) {
             try {
                 return Long.parseLong(parts[1]);
