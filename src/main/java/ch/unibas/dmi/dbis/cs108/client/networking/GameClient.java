@@ -7,11 +7,13 @@ import ch.unibas.dmi.dbis.cs108.client.networking.protocol.MessageParser;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Logger;
 
 /**
  * GameClient class is responsible for handling the client-side of the game
  */
 public class GameClient {
+    private static final Logger logger = Logger.getLogger(GameClient.class.getName());
     private final SocketHandler socketHandler;
     private final CommandSender commandSender;
     private final MessageParser parser;
@@ -38,6 +40,7 @@ public class GameClient {
             commandSender.sendRegister(localPlayer);
         } catch (IOException e) {
             this.connected = false;
+            logger.severe("Failed to initialize GameClient: " + e.getMessage());
             throw e;
         }
     }
@@ -48,7 +51,11 @@ public class GameClient {
      */
     public void sendChat(String message) {
         if (isConnected()) {
-            commandSender.sendChatCommand(new ChatCommand(localPlayer, message));
+            try {
+                commandSender.sendChatCommand(new ChatCommand(localPlayer, message));
+            } catch (Exception e) {
+                logger.severe("Failed to send chat message: " + e.getMessage());
+            }
         }
     }
 
@@ -65,9 +72,13 @@ public class GameClient {
      */
     public void disconnect() {
         if (isConnected()) {
-            commandSender.sendDisconnect(localPlayer);
-            socketHandler.close();
-            connected = false;
+            try {
+                commandSender.sendDisconnect(localPlayer);
+                socketHandler.close();
+                connected = false;
+            } catch (Exception e) {
+                logger.severe("Failed to disconnect: " + e.getMessage());
+            }
         }
     }
 
@@ -77,8 +88,12 @@ public class GameClient {
      */
     public void changeName(String newName) {
         if (isConnected()) {
-            commandSender.sendChangeName(localPlayer, newName);
-            localPlayer.setName(newName);
+            try {
+                commandSender.sendChangeName(localPlayer, newName);
+                localPlayer.setName(newName);
+            } catch (Exception e) {
+                logger.severe("Failed to change name: " + e.getMessage());
+            }
         }
     }
 
@@ -87,8 +102,12 @@ public class GameClient {
      */
     public void sendPing() {
         if (isConnected()) {
-            lastPingTime.set(Instant.now().toEpochMilli());
-            commandSender.sendPing(localPlayer);
+            try {
+                lastPingTime.set(Instant.now().toEpochMilli());
+                commandSender.sendPing(localPlayer);
+            } catch (Exception e) {
+                logger.severe("Failed to send ping: " + e.getMessage());
+            }
         }
     }
 
