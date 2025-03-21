@@ -1,0 +1,39 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\geometry{a4paper, margin=2cm}
+
+\title{\textbf{QA-Entwurf -- Settlers of Asgard}}
+\author{[Jennifer Staisch, Noah Klaholz, Sebasian Müller, Vincent Schall]}
+\date{[Datum einfügen]}
+
+\begin{document}
+    \maketitle
+
+    \section*{Einleitung}
+    Dieses Dokument beschreibt die \textbf{Qualitätsanforderungen} für das rundenbasierte Strategiespiel \textit{Settlers of Asgard}. Ziel ist ein herausforderndes, aber leicht zugängliches Spiel mit hoher Performance, Stabilität und Erweiterbarkeit.
+
+    \section*{Kernanforderungen}
+    \begin{itemize}[leftmargin=0.5cm]
+        \item \textbf{Funktionalität:} Exakte Berechnung von Ressourcen und korrekte Umsetzung von Regeln. Multiplayer-Mechaniken mit zuverlässiger Synchronisation und Reconnect-Funktion.
+        \item \textbf{Performance:} Ladezeiten unter 5 Sekunden, Latenz im Multiplayer unter 100ms. Optimierung für Linux, macOS und Windows mit Auflösungen bis 4K.
+        \item \textbf{Sicherheit:} Schutz vor Manipulationen im Netzwerk. Automatische Speicherung des Spielfortschritts.
+        \item \textbf{Benutzerfreundlichkeit:} Klare UI für Einsteiger und Fortgeschrittene, inkl. optionalem Tutorial.
+        \item \textbf{Erweiterbarkeit:} Modularer Code für einfache Integration neuer Inhalte. Logging und Fehlererkennung zur Wartung.
+        \item \textbf{Qualitätssicherung:} Unit-Tests mit JUnit, Funktionstests und Playtesting zur Balancing-Optimierung.
+    \end{itemize}
+
+    \section*{Risiken und Gegenmaßnahmen}
+    \begin{itemize}[leftmargin=0.5cm]
+        \item \textbf{Serverausfälle} $\rightarrow$ Automatische Wiederverbindung.
+        \item \textbf{Unausgewogenes Gameplay} $\rightarrow$ Playtesting und Balancing-Updates.
+        \item \textbf{Sicherheitslücken} $\rightarrow$ Code-Reviews und Penetrationstests.
+        \item \textbf{Performance-Probleme} $\rightarrow$ Profiler-Analyse und gezielte Optimierungen.
+    \end{itemize}
+
+    \section*{Fazit}
+    Durch gezielte Qualitätssicherungsmaßnahmen wird sichergestellt, dass \textit{Settlers of Asgard} langfristig stabil, performant und erweiterbar bleibt.
+
+\end{document}
