@@ -2,27 +2,51 @@ plugins {
     id 'java-library'
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.13'
-    // id 'com.github.ben-manes.versions' version '0.46.0'
 }
 
 group 'ch.unibas.dmi.dbis'
 version '0.0.1-ALPHA'
 
 application {
-    mainClass = 'ch.unibas.dmi.dbis.cs108.example.Main'
+    mainClass = 'ch.unibas.dmi.dbis.cs108.client.app.Main'
 }
 
 javadoc {
     source = sourceSets.main.allJava
-
     destinationDir = file("$buildDir/docs/Documentation/javadoc")
-
     options.encoding = "UTF-8"
 }
 
 javafx {
     version = "19.0.2.1"
     modules = ['javafx.controls', 'javafx.fxml', 'javafx.base']
+}
+
+sourceSets {
+    main {
+        java.srcDirs = ['src/main/java']
+        resources.srcDirs = ['src/main/resources']
+    }
+    client {
+        java {
+            srcDirs = ['src/main/java']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+        compileClasspath += sourceSets.main.compileClasspath
+        runtimeClasspath += sourceSets.main.runtimeClasspath
+    }
+    server {
+        java {
+            srcDirs = ['src/main/java']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+        compileClasspath += sourceSets.main.compileClasspath
+        runtimeClasspath += sourceSets.main.runtimeClasspath
+    }
 }
 
 java {
@@ -36,16 +60,8 @@ repositories {
 }
 
 dependencies {
-    // JUnit BOM
     testImplementation platform('org.junit:junit-bom:5.9.2')
-    // JUnit Jupiter (the JUnit 5 engine)
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
-
-    // If you still need the older JUnit Vintage engine:
-    // testImplementation 'org.junit.vintage:junit-vintage-engine'
-
-    // example JavaFX library (though the plugin might already handle these)
-    implementation 'org.openjfx:javafx-controls:19.0.2.1'
 }
 
 test {
@@ -54,8 +70,6 @@ test {
         showStandardStreams = true
         events "failed", "skipped", "passed", "standardOut", "standardError", "started"
     }
-
-    // Set UTF-8 encoding for the test JVM
     systemProperty "file.encoding", "utf-8"
 }
 
@@ -72,6 +86,8 @@ tasks.withType(JavaExec) {
 }
 
 jar {
+    archiveBaseName = 'settlersOfAsgard'
+    archiveVersion = ''
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     manifest {
         attributes 'Main-Class': application.mainClass
@@ -82,3 +98,37 @@ jar {
         }
     }
 }
+
+task clientJar(type: Jar) {
+    archiveBaseName = 'settlersOfAsgard'
+    archiveVersion = ''
+    archiveClassifier = 'client'
+    from sourceSets.client.output
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    manifest {
+        attributes 'Main-Class': 'ch.unibas.dmi.dbis.cs108.client.app.Main'
+    }
+    from {
+        configurations.runtimeClasspath.collect { file ->
+            file.isDirectory() ? file : zipTree(file)
+        }
+    }
+}
+
+task serverJar(type: Jar) {
+    archiveBaseName = 'settlersOfAsgard'
+    archiveVersion = ''
+    archiveClassifier = 'server'
+    from sourceSets.server.output
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    manifest {
+        attributes 'Main-Class': 'ch.unibas.dmi.dbis.cs108.server.Main'
+    }
+    from {
+        configurations.runtimeClasspath.collect { file ->
+            file.isDirectory() ? file : zipTree(file)
+        }
+    }
+}
+
+build.dependsOn clientJar, serverJar
