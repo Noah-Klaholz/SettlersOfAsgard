@@ -1,13 +1,10 @@
-package ch.unibas.dmi.dbis.cs108.server;
+package ch.unibas.dmi.dbis.cs108.server.networking;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
+import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.SocketException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -15,7 +12,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**

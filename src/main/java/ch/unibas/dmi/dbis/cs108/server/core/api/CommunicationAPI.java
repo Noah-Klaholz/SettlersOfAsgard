@@ -1,4 +1,6 @@
-package ch.unibas.dmi.dbis.cs108.server;
+package ch.unibas.dmi.dbis.cs108.server.core.api;
+
+import ch.unibas.dmi.dbis.cs108.server.old.GameClient;
 
 import java.util.logging.*;
 import java.util.logging.Filter;

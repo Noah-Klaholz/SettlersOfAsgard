@@ -1,6 +1,7 @@
-package ch.unibas.dmi.dbis.cs108.server;
+package ch.unibas.dmi.dbis.cs108.server.app;
 
-import ch.unibas.dmi.dbis.cs108.client.*;
+import ch.unibas.dmi.dbis.cs108.server.networking.GameServer;
+
 import java.util.logging.Logger;
 
 /**

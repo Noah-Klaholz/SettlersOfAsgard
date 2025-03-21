@@ -1,6 +1,9 @@
-package ch.unibas.dmi.dbis.cs108.server;
+package ch.unibas.dmi.dbis.cs108.server.networking;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
+import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
+import ch.unibas.dmi.dbis.cs108.server.core.api.CommunicationAPI;
+import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 
 import java.io.*;
 import java.net.Socket;

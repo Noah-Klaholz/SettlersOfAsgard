@@ -1,8 +1,7 @@
 package ch.unibas.dmi.dbis.cs108;
 
-import ch.unibas.dmi.dbis.cs108.client.*;
 import ch.unibas.dmi.dbis.cs108.client.app.ClientMain;
-import ch.unibas.dmi.dbis.cs108.server.ServerMain;
+import ch.unibas.dmi.dbis.cs108.server.app.ServerMain;
 
 import java.util.logging.Logger;
 

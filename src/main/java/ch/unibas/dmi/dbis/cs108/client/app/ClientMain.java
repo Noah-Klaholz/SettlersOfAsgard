@@ -51,14 +51,13 @@ public class ClientMain {
             receiverThread.join(1000);
 
         } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
-            e.printStackTrace();
+            logger.warning("Client start-up error: " + e.getMessage());
         } finally {
             if (client != null && client.isConnected()) {
                 client.disconnect();
             }
             scanner.close();
-            System.out.println("Client terminated.");
+            logger.info("Client terminated.");
         }
     }
 
@@ -70,7 +69,7 @@ public class ClientMain {
      */
     private static boolean checkClient(GameClient client) {
         if (!client.isConnected()) { // Add this method to GameClient
-            System.out.println("Failed to connect to server. Exiting...");
+            logger.warning("Client failed to connect to server. Exiting...");
             return true;
         }
         return false;

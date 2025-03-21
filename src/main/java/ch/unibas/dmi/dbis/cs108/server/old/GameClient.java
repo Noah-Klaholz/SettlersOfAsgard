@@ -1,15 +1,14 @@
-package ch.unibas.dmi.dbis.cs108.server;
+package ch.unibas.dmi.dbis.cs108.server.old;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
+import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
+import ch.unibas.dmi.dbis.cs108.server.core.api.CommunicationAPI;
 
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.logging.Logger;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**

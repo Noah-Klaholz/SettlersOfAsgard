@@ -1,4 +1,6 @@
-package ch.unibas.dmi.dbis.cs108.server;
+package ch.unibas.dmi.dbis.cs108.server.core.structures;
+
+import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;

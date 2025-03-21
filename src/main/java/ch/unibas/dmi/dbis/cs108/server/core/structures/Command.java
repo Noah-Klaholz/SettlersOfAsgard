@@ -1,4 +1,4 @@
-package ch.unibas.dmi.dbis.cs108.server;
+package ch.unibas.dmi.dbis.cs108.server.core.structures;
 
 import java.util.Arrays;
 

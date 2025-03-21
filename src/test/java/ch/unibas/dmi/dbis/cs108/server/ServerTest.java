@@ -1,5 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server;
 
+import ch.unibas.dmi.dbis.cs108.server.networking.GameServer;
+import ch.unibas.dmi.dbis.cs108.server.old.GameClient;
 import org.junit.jupiter.api.*;
 
 import java.io.IOException;
