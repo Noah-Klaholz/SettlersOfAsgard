@@ -26,7 +26,7 @@ public class MessageParserTest {
 
         // Test with insufficient parts
         result = messageParser.parseChatMessage("CHTG$John");
-        assertEquals("Invalid chat message format", result);
+        assertEquals("Invalid chat message format: CHTG$John", result);
 
         // Test with empty message
         result = messageParser.parseChatMessage("CHTG$John$");
