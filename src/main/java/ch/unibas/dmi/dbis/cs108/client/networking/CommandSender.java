@@ -1,6 +1,8 @@
 package ch.unibas.dmi.dbis.cs108.client.networking;
 
 import ch.unibas.dmi.dbis.cs108.client.core.commands.ChatCommand;
+import ch.unibas.dmi.dbis.cs108.client.core.commands.PingCommand;
+import ch.unibas.dmi.dbis.cs108.client.core.commands.PongCommand;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import ch.unibas.dmi.dbis.cs108.client.networking.protocol.MessageFormatter;
 
@@ -91,5 +93,22 @@ public class CommandSender {
         }
     }
 
+    public void sendPingCommand(PingCommand pingCommand) {
+        try {
+            String message = formatter.formatPing(pingCommand.getSender().getId());
+            socketHandler.send(message);
+        } catch (Exception e) {
+            logger.severe("Failed to send ping command: " + e.getMessage());
+        }
+    }
+
+    public void sendPongCommand(PongCommand pongCommand) {
+        try {
+            String message = formatter.formatPong(pongCommand.getSender().getId());
+            socketHandler.send(message);
+        } catch (Exception e) {
+            logger.severe("Failed to send pong command: " + e.getMessage());
+        }
+    }
 
 }
