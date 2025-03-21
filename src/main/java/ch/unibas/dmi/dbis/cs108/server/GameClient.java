@@ -119,9 +119,9 @@ public class GameClient implements CommunicationAPI {
         if (cmd.isValid()) {
             logger.info("Client processing " + cmd);
 
-            NetworkProtocol.Command command;
+            NetworkProtocol.Commands command;
             try {
-                command = NetworkProtocol.Command.fromCommand(cmd.getCommand());
+                command = NetworkProtocol.Commands.fromCommand(cmd.getCommand());
             } catch (IllegalArgumentException e) {
                 logger.warning("Unknown command: " + cmd.getCommand());
                 return;

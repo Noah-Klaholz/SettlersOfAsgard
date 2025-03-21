@@ -23,7 +23,7 @@ public interface CommunicationAPI {
         /**
          * Enum for network protocol constants
          */
-        public enum Command {
+        public enum Commands {
             // administrative commands
             TEST("TEST"), // Test command
             SHUTDOWN("STDN"), // Shutdown command broadcast by server to disconnect all clients
@@ -56,7 +56,7 @@ public interface CommunicationAPI {
 
             private final String command;
 
-            Command(String command) {
+            Commands(String command) {
                 this.command = command;
             }
 
@@ -64,13 +64,13 @@ public interface CommunicationAPI {
                 return command;
             }
 
-            public static Command fromCommand(String commandName) {
-                for(Command cmd : values()) {
+            public static Commands fromCommand(String commandName) {
+                for(Commands cmd : values()) {
                     if(cmd.getCommand().equals(commandName)) {
                         return cmd;
                     }
                 }
-                throw new IllegalArgumentException("Unknown command: " + commandName);
+                throw new IllegalArgumentException("API-Unknown command: " + commandName);
             }
         }
     }

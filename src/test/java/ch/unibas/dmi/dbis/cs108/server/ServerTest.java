@@ -74,7 +74,7 @@ class ServerTest {
         client.connect();
 
         // Send a test command
-        client.sendMessage("Test:arg1,arg2,arg3");
+        client.sendMessage("TEST$arg1$arg2$arg3");
 
         // Wait for the server to process the message
         Thread.sleep(1000); // Adjust the delay as needed
@@ -114,5 +114,52 @@ class ServerTest {
         System.out.println("Connection loss handling test complete.");
     }
 
+    @Test
+    public void testClientToClientCommunicationInLobby() throws IOException, InterruptedException {
+        System.out.println("Testing client-to-client communication in lobby");
 
+        // Start the clients
+        GameClient client1 = new GameClient("127.0.0.1", 9000);
+        GameClient client2 = new GameClient("127.0.0.1", 9000);
+        client1.connect();
+        client2.connect();
+
+        // Create a message holder for client2
+        final String[] receivedMessage = {null};
+
+        // Override processMessage in client2 to capture the received message
+        GameClient client2WithOverride = new GameClient("127.0.0.1", 9000) {
+            @Override
+            public void processMessage(String received) {
+                super.processMessage(received);
+                if (received.startsWith("CHTG$")) {
+                    receivedMessage[0] = received.substring("CHTG$".length());
+                }
+            }
+        };
+        client2WithOverride.connect();
+
+        // Create and join a lobby
+        String lobbyId = "testLobby";
+        client1.sendMessage("CREA$" + lobbyId);
+        Thread.sleep(500); // Wait for the lobby to be created
+        client2WithOverride.sendMessage("JOIN$" + lobbyId);
+        Thread.sleep(500); // Wait for the client to join the lobby
+
+        // Send a global chat message from client1
+        String message = "Hello, Client2!";
+        client1.sendMessage("CHTG$" + message);
+
+        // Wait for the message to be processed
+        Thread.sleep(1000); // Adjust the delay as needed
+
+        // Assert that client2 received the message
+        Assertions.assertEquals(message, receivedMessage[0], "Client2 should have received the global chat message");
+
+        // Disconnect the clients
+        client1.disconnect();
+        client2WithOverride.disconnect();
+
+        System.out.println("Client-to-client communication in lobby test complete.");
+    }
 }

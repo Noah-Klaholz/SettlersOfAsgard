@@ -88,11 +88,11 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             boolean processed = true; // Assume command is processed, only change in default (error) case
             logger.info("Server processing " + cmd);
 
-            NetworkProtocol.Command command;
+            NetworkProtocol.Commands command;
             try {
-                command = NetworkProtocol.Command.fromCommand(cmd.getCommand());
+                command = NetworkProtocol.Commands.fromCommand(cmd.getCommand());
             } catch (IllegalArgumentException e) {
-                logger.warning("Unknown command: " + cmd.getCommand());
+                logger.warning("Protocol-Unknown command: " + cmd.getCommand());
                 return;
             }
 
@@ -126,7 +126,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                     handleStartGame();
                     break;
                 default: // Error case
-                    logger.warning("Unknown command: " + cmd.getCommand());
+                    logger.warning("Switch-Unknown command: " + cmd.getCommand());
                     processed = false;
             }
             if(processed) {
@@ -162,7 +162,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      * @param cmd the transmitted command
      */
     private void handleCreateLobby(Command cmd) {
-        String lobbyId = cmd.getCommand();
+        String lobbyId = cmd.getArgs()[0];
         int maxPlayers = 4; //currently, maxPlayers is set to 4
         Lobby lobby = server.createLobby(lobbyId, maxPlayers);
         if (lobby.addPlayer(this)) {
@@ -178,7 +178,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      * @param cmd the transmitted command
      */
     private void handleJoinLobby(Command cmd) {
-        String lobbyId = cmd.getCommand();
+        String lobbyId = cmd.getArgs()[0];
         Lobby lobby = server.getLobby(lobbyId);
         if (lobby != null && lobby.addPlayer(this)) {
             currentLobby = lobby; // Set the current lobby
