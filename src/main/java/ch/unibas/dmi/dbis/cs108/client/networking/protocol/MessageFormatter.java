@@ -12,7 +12,7 @@ public class MessageFormatter {
      * @return The formatted message.
      */
     public static String formatChatMessage(String playerId, String message) {
-        return "CHTG:" + playerId + ";" + message;
+        return "CHTG$" + playerId + "$" + message;
     }
 
     /**
@@ -34,7 +34,7 @@ public class MessageFormatter {
      * @return The formatted message.
      */
     public String formatDisconnect(String playerId) {
-        return "EXIT:" + playerId;
+        return "EXIT$" + playerId;
     }
 
     /**
@@ -46,7 +46,7 @@ public class MessageFormatter {
     public String formatPing(String playerId) {
         // ToDo: Implement Protocol for Ping Player ID and Time
         // return "PING:" + playerId + ";" + Instant.now().toEpochMilli();
-        return "PING:";
+        return "PING$";
     }
 
     /**
@@ -57,6 +57,6 @@ public class MessageFormatter {
      * @return The formatted message.
      */
     public String formatRegister(String playerId, String playerName) {
-        return "JOIN:" + playerId + ";" + playerName;
+        return "JOIN$" + playerId + "$" + playerName;
     }
 }
