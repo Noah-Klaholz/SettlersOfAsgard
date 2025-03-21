@@ -1,23 +1,32 @@
 package ch.unibas.dmi.dbis.cs108.server;
 
+import ch.unibas.dmi.dbis.cs108.SETTINGS;
+
 import java.io.*;
 import java.net.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The GameClient class is responsible for connecting to the server and sending/receiving messages.
  */
 public class GameClient implements CommunicationAPI {
-    private static final Logger logger = Logger.getLogger(GameClient.class.getName());
-
     private String host;
     private int port;
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
+    private long lastPingTime = System.currentTimeMillis();
+    private ScheduledExecutorService pingScheduler = Executors.newScheduledThreadPool(1);
+
 
 
     public GameClient(String host, int port) {
+        logger.setFilter(new PingFilter());
         this.host = host;
         this.port = port;
     }
@@ -32,11 +41,13 @@ public class GameClient implements CommunicationAPI {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             logger.info("Connected to server on port " + port);
 
+            // Schedule ping task
+            pingScheduler.scheduleAtFixedRate(this::sendPing, SETTINGS.Config.PING_INTERVAL.getValue(), SETTINGS.Config.PING_INTERVAL.getValue(), TimeUnit.MILLISECONDS);
+
             new Thread(() -> {
                 String received;
                 try {
                     while ((received = in.readLine()) != null) {
-                        System.out.println("Client received message: " + received);
                         processMessage(received);
                     }
                 } catch (SocketException se) {
@@ -51,6 +62,7 @@ public class GameClient implements CommunicationAPI {
     }
 
     public void disconnect() {
+        pingScheduler.shutdown();
         try {
             socket.close();
         } catch (IOException e) {
@@ -64,7 +76,16 @@ public class GameClient implements CommunicationAPI {
      */
     public void start() {
         //TODO implement client logic (Actual Game Logic) -> Game Should start here (call to main menu)
-        sendMessage(NetworkProtocol.TEST+":arg1,arg2,arg3");    // test command
+        sendMessage("TEST$arg1,arg2,arg3");    // test command
+    }
+
+    public void sendPing() {
+        if (System.currentTimeMillis() - lastPingTime > SETTINGS.Config.TIMEOUT.getValue()) {
+            logger.warning("Server timed out, disconnecting...");
+            disconnect();
+        } else {
+            sendMessage("PING$");
+        }
     }
 
     /**
@@ -78,6 +99,15 @@ public class GameClient implements CommunicationAPI {
     }
 
     /**
+     * Handles a received chat message from the server.
+     * For now: Just log the message //TODO: Implement actual chat handling
+     * @param cmd The command to handle
+     */
+    public void handleRecievedChatMessage(Command cmd) {
+        logger.info("Received chat message: " + cmd);
+    }
+
+    /**
      * Receives a message from the server and processes it. Answers with an OK or ERR response depending on success of processing.
      * @param received The received message from the server
      *                 Message String should be in the format "commandName:arg1,arg2,arg3"
@@ -88,17 +118,29 @@ public class GameClient implements CommunicationAPI {
         if (cmd.isValid()) {
             logger.info("Client processing " + cmd);
 
-            switch (cmd.getCommand()) {
-                case NetworkProtocol.TEST:
+            NetworkProtocol.Commands command;
+            try {
+                command = NetworkProtocol.Commands.fromCommand(cmd.getCommand());
+            } catch (IllegalArgumentException e) {
+                logger.warning("Unknown command: " + cmd.getCommand());
+                return;
+            }
+            switch (command) {
+                case CHATGLOBAL:
+                    handleRecievedChatMessage(cmd);
+                case PING:
+                    lastPingTime = System.currentTimeMillis();
+                    break;
+                case TEST:
                     logger.info("TEST");
                     break;
-                case NetworkProtocol.SHUTDOWN:
+                case SHUTDOWN:
                     logger.info("Server sent a shutdown command. Disconnecting...");
                     disconnect();
                     break;
-                case NetworkProtocol.OK:
+                case OK:
                     break;
-                case NetworkProtocol.ERROR:
+                case ERROR:
                     logger.info("Server sent an error command.");
                     break;
                 default:

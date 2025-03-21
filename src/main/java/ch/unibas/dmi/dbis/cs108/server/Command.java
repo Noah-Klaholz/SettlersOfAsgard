@@ -13,16 +13,16 @@ public class Command {
      * Creates a new command
      * @param message the String message
      * Prints out error Message in case of wrong formatting of message
-     * Correct formatting: commandName:arg1,arg2,arg3
+     * Correct formatting: commandName$arg1$arg2$arg3
      */
     public Command(String message) {
-        String[] parts = message.split(":", 2);
+        String[] parts = message.split("\\$", 2);
         if(parts.length != 2) {
             System.err.println("Invalid command: " + message);
             return;
         }
         this.command = parts[0];
-        this.args = parts[1].split(",");
+        this.args = Arrays.copyOfRange(parts, 1, parts.length);;
     }
 
     /**
@@ -57,7 +57,7 @@ public class Command {
      */
     @Override
     public String toString() {
-        String args = String.join(",", this.args);
-        return command + ":" + args;
+        String args = String.join("$", this.args);
+        return command + "$" + args;
     }
 }

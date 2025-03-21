@@ -8,7 +8,7 @@ group 'ch.unibas.dmi.dbis'
 version '0.0.1-ALPHA'
 
 application {
-    mainClass = 'ch.unibas.dmi.dbis.cs108.client.app.Main'
+    mainClass = 'ch.unibas.dmi.dbis.cs108.server.ServerMain'
 }
 
 javadoc {
@@ -62,6 +62,9 @@ repositories {
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.9.2')
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
+
+    testImplementation 'org.mockito:mockito-core:5.5.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.5.0'
 }
 
 test {

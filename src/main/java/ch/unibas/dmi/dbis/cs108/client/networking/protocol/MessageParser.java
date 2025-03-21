@@ -1,10 +1,10 @@
 package ch.unibas.dmi.dbis.cs108.client.networking.protocol;
-import java.util.logging.Logger;
+
 /**
  * Parses messages received from the server
  */
 public class MessageParser {
-    private static final Logger logger = Logger.getLogger(MessageParser.class.getName());
+
     /**
      * Parses a chat message received from the server.
      *
@@ -12,18 +12,11 @@ public class MessageParser {
      * @return The parsed chat message in the format "sender: message".
      */
     public String parseChatMessage(String rawMessage) {
-        if (rawMessage == null || rawMessage.isEmpty()) {
-            logger.severe("Received null or empty chat message");
-            return "Invalid chat message format: null or empty message";
-        }
-
         String[] parts = rawMessage.split("[$]", 3);
-        if (parts.length < 3) {
-            logger.severe("Invalid chat message format: " + rawMessage);
-            return "Invalid chat message format: " + rawMessage;
+        if (parts.length >= 3) {
+            return parts[1] + ": " + parts[2];
         }
-
-        return parts[1] + ": " + parts[2];
+        return "Invalid chat message format";
     }
 
     /**
@@ -37,7 +30,6 @@ public class MessageParser {
         if (parts.length == 2) {
             return parts[1];
         }
-        logger.severe("Invalid registration response format: " + rawMessage);
         return "Unknown";
     }
 
@@ -53,11 +45,9 @@ public class MessageParser {
             try {
                 return Long.parseLong(parts[1]);
             } catch (NumberFormatException e) {
-                logger.severe("Invalid ping response format: " + rawMessage);
                 return 0;
             }
         }
-        logger.severe("Invalid ping response format: " + rawMessage);
         return 0;
     }
 }
