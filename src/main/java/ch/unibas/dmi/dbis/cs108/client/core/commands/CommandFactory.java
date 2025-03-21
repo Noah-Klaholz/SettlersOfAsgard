@@ -1,5 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.core.commands;
 
+import ch.unibas.dmi.dbis.cs108.client.core.commands.Command;
+
 /**
  * CommandFactory class is responsible for creating commands
  */
@@ -9,9 +11,9 @@ public class CommandFactory {
      *
      * @param type Type of command
      * @param data Data of command
-     * @return GameCommand
+     * @return Command
      */
-    public static GameCommand createCommand(String type, String data) {
+    public static Command createCommand(String type, String data) {
         return null;
     }
 }
