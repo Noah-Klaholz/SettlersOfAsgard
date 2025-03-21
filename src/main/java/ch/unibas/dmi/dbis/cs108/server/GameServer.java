@@ -79,7 +79,7 @@ public class GameServer {
         running = false;
         pingScheduler.shutdown();
         // Disconnect all clients
-        broadcast("STDN:");
+        broadcast("STDN$");
         for (ClientHandler client : clients) {  //forcefully close all sockets and clear the clients list
             try {
                 client.closeResources();

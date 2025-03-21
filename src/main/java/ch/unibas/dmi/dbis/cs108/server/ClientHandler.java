@@ -60,7 +60,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             closeResources();
             server.removeClient(this);
         } else {
-            sendMessage("PING:");
+            sendMessage("PING$");
         }
     }
 
@@ -130,9 +130,9 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                     processed = false;
             }
             if(processed) {
-                sendMessage("OK:" + cmd.toString()); // Echo the command back to the client with an OK response
+                sendMessage("OK$" + cmd.toString()); // Echo the command back to the client with an OK response
             } else {
-                sendMessage("ERR:100;" + cmd.toString()); // Echo the command back to the client with an ERR response
+                sendMessage("ERR$100;" + cmd.toString()); // Echo the command back to the client with an ERR response
             }
         } else {
             logger.warning("Invalid command: " + cmd);
@@ -167,9 +167,9 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         Lobby lobby = server.createLobby(lobbyId, maxPlayers);
         if (lobby.addPlayer(this)) {
             currentLobby = lobby;
-            sendMessage("OK:LOBBY_CREATED:" + lobbyId);
+            sendMessage("OK$LOBBY_CREATED$" + lobbyId);
         } else {
-            sendMessage("ERR:106;LOBBY_CREATION_FAILED");
+            sendMessage("ERR$106$LOBBY_CREATION_FAILED");
         }
     }
 
@@ -182,9 +182,9 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         Lobby lobby = server.getLobby(lobbyId);
         if (lobby != null && lobby.addPlayer(this)) {
             currentLobby = lobby; // Set the current lobby
-            sendMessage("OK:JOINED_LOBBY:" + lobbyId);
+            sendMessage("OK$JOINED_LOBBY$" + lobbyId);
         } else {
-            sendMessage("ERR:106;JOIN_LOBBY_FAILED");
+            sendMessage("ERR$106$JOIN_LOBBY_FAILED");
         }
     }
 
@@ -193,10 +193,10 @@ public class ClientHandler implements Runnable, CommunicationAPI {
       */
     private void handleLeaveLobby() {
         if (currentLobby != null && currentLobby.removePlayer(this)) {
-            sendMessage("OK:LEFT_LOBBY:" + currentLobby.getId());
+            sendMessage("OK$LEFT_LOBBY$" + currentLobby.getId());
             currentLobby = null; // Clear the current lobby reference
         } else {
-            sendMessage("ERR:106;NOT_IN_LOBBY");
+            sendMessage("ERR$106$NOT_IN_LOBBY");
         }
     }
 
@@ -205,9 +205,9 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      */
     private void handleStartGame() {
         if (currentLobby != null && currentLobby.getPlayers().get(0) == this && currentLobby.startGame()) {
-            sendMessage("OK:GAME_STARTED");
+            sendMessage("OK$GAME_STARTED");
         } else {
-            sendMessage("ERR:106;CANNOT_START_GAME");
+            sendMessage("ERR$106$CANNOT_START_GAME");
         }
     }
 }
