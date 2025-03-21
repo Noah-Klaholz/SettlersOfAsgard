@@ -28,16 +28,24 @@ sourceSets {
         resources.srcDirs = ['src/main/resources']
     }
     client {
-        java.srcDirs = ['src/main/java/ch/unibas/dmi/dbis/cs108/client']
-        resources.srcDirs = ['src/client/resources']
-        compileClasspath += main.output
-        runtimeClasspath += main.output
+        java {
+            srcDirs = ['src/main/java']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+        compileClasspath += sourceSets.main.compileClasspath
+        runtimeClasspath += sourceSets.main.runtimeClasspath
     }
     server {
-        java.srcDirs = ['src/main/java/ch/unibas/dmi/dbis/cs108/server']
-        resources.srcDirs = ['src/server/resources']
-        compileClasspath += main.output
-        runtimeClasspath += main.output
+        java {
+            srcDirs = ['src/main/java']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+        compileClasspath += sourceSets.main.compileClasspath
+        runtimeClasspath += sourceSets.main.runtimeClasspath
     }
 }
 
@@ -95,7 +103,6 @@ task clientJar(type: Jar) {
     archiveBaseName = 'settlersOfAsgard'
     archiveVersion = ''
     archiveClassifier = 'client'
-    from sourceSets.main.output
     from sourceSets.client.output
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     manifest {
@@ -112,7 +119,6 @@ task serverJar(type: Jar) {
     archiveBaseName = 'settlersOfAsgard'
     archiveVersion = ''
     archiveClassifier = 'server'
-    from sourceSets.main.output
     from sourceSets.server.output
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     manifest {
