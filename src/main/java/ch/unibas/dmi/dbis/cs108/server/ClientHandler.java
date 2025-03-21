@@ -142,6 +142,10 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         running = false;
     }
 
+    public Lobby getCurrentLobby() {
+        return currentLobby;
+    }
+
     /**
      * This method handles the creation of a lobby.
      * @param cmd the transmitted command
