@@ -64,6 +64,18 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         }
     }
 
+    /**
+     * Sends a global chat message to all players in the lobby.
+     * @param cmd the command to send
+     */
+    public void sendGlobalChatMessage(Command cmd) {
+        if (currentLobby != null) {
+            currentLobby.broadcastMessage(cmd.toString());
+        } else {
+            sendMessage("ERR:106;NOT_IN_LOBBY");
+        }
+    }
+
     @Override
     public void processMessage(String received) {
         if (received == null || received.trim().isEmpty()) {
@@ -85,6 +97,9 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             }
 
             switch (command) {
+                case CHATGLOBAL:
+                    sendGlobalChatMessage(cmd);
+                    break;
                 case PING:
                     lastPingTime = System.currentTimeMillis();
                     break;

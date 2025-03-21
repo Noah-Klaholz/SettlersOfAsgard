@@ -100,6 +100,15 @@ public class GameClient implements CommunicationAPI {
     }
 
     /**
+     * Handles a received chat message from the server.
+     * For now: Just log the message //TODO: Implement actual chat handling
+     * @param cmd The command to handle
+     */
+    public void handleRecievedChatMessage(Command cmd) {
+        logger.info("Received chat message: " + cmd);
+    }
+
+    /**
      * Receives a message from the server and processes it. Answers with an OK or ERR response depending on success of processing.
      * @param received The received message from the server
      *                 Message String should be in the format "commandName:arg1,arg2,arg3"
@@ -118,6 +127,8 @@ public class GameClient implements CommunicationAPI {
                 return;
             }
             switch (command) {
+                case CHATGLOBAL:
+                    handleRecievedChatMessage(cmd);
                 case PING:
                     lastPingTime = System.currentTimeMillis();
                     break;

@@ -174,4 +174,15 @@ public class Lobby {
 
         return true;
     }
+
+    /**
+     * Broadcasts a message to all players in the lobby.
+     *
+     * @param message The message to broadcast
+     */
+    public void broadcastMessage(String message) {
+        for(ClientHandler player : players) {
+            player.sendMessage(message);
+        }
+    }
 }
