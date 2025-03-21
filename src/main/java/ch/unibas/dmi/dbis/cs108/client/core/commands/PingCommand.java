@@ -13,6 +13,7 @@ public class PingCommand implements Command {
         return sender;
     }
 
+    @Override
     public void execute() {
         System.out.println("Local: " + sender.getName() + " is pinging the server");
     }

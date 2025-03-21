@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.core.commands;
 
 
-public class BuyTileCommand implements GameCommand {
+public class BuyTileCommand implements Command {
 
     private final String data;
 

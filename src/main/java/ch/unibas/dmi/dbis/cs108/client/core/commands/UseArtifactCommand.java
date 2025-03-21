@@ -1,6 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.core.commands;
 
-public class UseArtifactCommand implements GameCommand {
+public class UseArtifactCommand implements Command {
 
     private final String data;
 
