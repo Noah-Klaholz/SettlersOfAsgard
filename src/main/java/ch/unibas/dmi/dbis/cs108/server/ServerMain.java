@@ -19,8 +19,8 @@ public class ServerMain {
     public static void main(String[] args) {
         if(args.length < 2) {
             logger.info("Usage:");
-            logger.info("Server: java -jar xyz.jar server <listenport>"); //TODO change project name and change xyz to the new name
-            logger.info("Client: java -jar xyz.jar client <serverip>:<serverport>"); //TODO change project name and change xyz to the new name
+            logger.info("Server: java -jar SettlersOfAsgard.jar server <listenport>");
+            logger.info("Client: java -jar SettlersOfAsgard.jar client <serverip>:<serverport>");
             System.exit(1);
         }
 
