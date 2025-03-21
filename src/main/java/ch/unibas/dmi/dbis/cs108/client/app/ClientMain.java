@@ -1,15 +1,19 @@
 package ch.unibas.dmi.dbis.cs108.client.app;
 
+import ch.unibas.dmi.dbis.cs108.Main;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import ch.unibas.dmi.dbis.cs108.client.networking.GameClient;
 
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Logger;
 
 /**
  * Demonstration entry point for a simple terminal-based chat.
  */
-public class Main {
+public class ClientMain {
+
+    private static final Logger logger = Logger.getLogger(ClientMain.class.getName());
 
     /**
      * Demonstration entry point for a simple terminal-based chat.
@@ -21,18 +25,26 @@ public class Main {
         AtomicBoolean running = new AtomicBoolean(true);
 
         try {
+            String[] serverAddress = args[1].split(":");
+            if (serverAddress.length != 2) {
+                logger.warning("Invalid server address. Expected: <serverip>:<serverport>");
+                System.exit(1);
+            }
+
+            int serverport = Integer.parseInt(serverAddress[1]);
+
             String systemName = System.getProperty("user.name");
             Player localPlayer = new Player(systemName, "InitialName");
 
-            System.out.println("Connecting to server at localhost:9999...");
+            logger.info("Connecting to server at " + serverAddress[0] + ":" + serverport + " as " + systemName + "...");
 
-            client = new GameClient("localhost", 9999, localPlayer);
+            client = new GameClient(serverAddress[0], serverport, localPlayer);
 
             if (checkClient(client)) return;
 
             Thread receiverThread = startMessageReceiverThread(client, running);
 
-            System.out.println("Connected. Type /changeName <name>, /ping, /exit, or your chat message.");
+            logger.info("Connected. Type /changeName <name>, /ping, /exit, or your chat message.");
 
             processInput(running, scanner, client);
 

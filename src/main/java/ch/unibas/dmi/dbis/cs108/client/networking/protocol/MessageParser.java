@@ -17,6 +17,7 @@ public class MessageParser {
             return parts[1] + ": " + parts[2];
         }
         return "Invalid chat message format";
+
     }
 
     /**
