@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.networking;
 
 import ch.unibas.dmi.dbis.cs108.client.core.commands.ChatCommand;
+import ch.unibas.dmi.dbis.cs108.client.core.commands.PingCommand;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import ch.unibas.dmi.dbis.cs108.client.networking.protocol.MessageParser;
 
@@ -23,8 +24,9 @@ public class GameClient {
 
     /**
      * Constructor
-     * @param host String
-     * @param port int
+     *
+     * @param host        String
+     * @param port        int
      * @param localPlayer Player
      * @throws IOException
      */
@@ -47,6 +49,7 @@ public class GameClient {
 
     /**
      * Sends a chat message to the server
+     *
      * @param message String
      */
     public void sendChat(String message) {
@@ -61,6 +64,7 @@ public class GameClient {
 
     /**
      * Checks if the client is connected to the server
+     *
      * @return boolean
      */
     public boolean isConnected() {
@@ -84,6 +88,7 @@ public class GameClient {
 
     /**
      * Changes the name of the local player
+     *
      * @param newName String
      */
     public void changeName(String newName) {
@@ -113,6 +118,7 @@ public class GameClient {
 
     /**
      * Receives a message from the server
+     *
      * @return String
      */
     public String receiveMessage() {
@@ -122,10 +128,23 @@ public class GameClient {
         try {
             String rawMessage = socketHandler.receive();
             if (rawMessage != null) {
-                // Parse and handle different message types
-                if (rawMessage.startsWith("PONG$")) {
-                    long roundTripTime = Instant.now().toEpochMilli() - lastPingTime.get();
-                    return "Server responded with pong! Round-trip time: " + roundTripTime + "ms";
+                // Automatically respond to server pings
+                if (rawMessage.startsWith("PING$")) {
+                    // Extract server ID if present
+                    String serverId = rawMessage.split("\\$").length > 1 ? rawMessage.split("\\$")[1] : "server";
+
+                    commandSender.sendPingCommand(new PingCommand(localPlayer));
+                    return null; // Don't show ping to user
+                }
+                // Handle pong responses
+                else if (rawMessage.startsWith("OK$PING$")) {
+                    // Only show result if we initiated a ping command
+                    if (lastPingTime.get() > 0) {
+                        long roundTripTime = Instant.now().toEpochMilli() - lastPingTime.get();
+                        lastPingTime.set(0); // Reset ping time
+                        return "Server responded with pong! Round-trip time: " + roundTripTime + "ms";
+                    }
+                    return null; // Don't show automatic pong responses
                 } else if (rawMessage.startsWith("CHAT$")) {
                     return parser.parseChatMessage(rawMessage);
                 } else if (rawMessage.startsWith("REGISTERED$")) {
