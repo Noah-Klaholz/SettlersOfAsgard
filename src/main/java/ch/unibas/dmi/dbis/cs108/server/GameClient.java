@@ -4,6 +4,7 @@ import ch.unibas.dmi.dbis.cs108.SETTINGS;
 
 import java.io.*;
 import java.net.*;
+import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
@@ -54,6 +55,15 @@ public class GameClient implements CommunicationAPI {
                     logger.info("Socket closed, exiting reading thread"); // Expected during shutdown
                 } catch (IOException e) {
                     logger.warning("IO exception: " + e.getMessage());
+                }
+            }).start();
+
+            // Start a new thread to read inputs from the terminal
+            new Thread(() -> {
+                Scanner scanner = new Scanner(System.in);
+                while (true) {
+                    String userInput = scanner.nextLine();
+                    sendMessage(userInput);
                 }
             }).start();
         } catch (Exception e) {
