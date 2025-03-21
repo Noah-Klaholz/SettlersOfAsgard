@@ -1,10 +1,22 @@
 package ch.unibas.dmi.dbis.cs108.server;
 
+import java.util.logging.*;
+import java.util.logging.Filter;
+import java.util.logging.LogRecord;
 /**
  * Interface for the communication between the server and the client
  * Message String should be in the format "commandName:arg1,arg2,arg3"
  */
 public interface CommunicationAPI {
+    static final Logger logger = Logger.getLogger(GameClient.class.getName());
+
+    public class PingFilter implements Filter {
+        @Override
+        public boolean isLoggable(LogRecord record) {
+            return !record.getMessage().contains("PING$");
+        }
+    }
+
     /**
      * Sends a message to the server
      * @param message the message to send

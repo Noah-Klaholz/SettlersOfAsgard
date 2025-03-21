@@ -15,8 +15,6 @@ import java.util.concurrent.TimeUnit;
  * The GameClient class is responsible for connecting to the server and sending/receiving messages.
  */
 public class GameClient implements CommunicationAPI {
-    private static final Logger logger = Logger.getLogger(GameClient.class.getName());
-
     private String host;
     private int port;
     private Socket socket;
@@ -28,6 +26,7 @@ public class GameClient implements CommunicationAPI {
 
 
     public GameClient(String host, int port) {
+        logger.setFilter(new PingFilter());
         this.host = host;
         this.port = port;
     }
