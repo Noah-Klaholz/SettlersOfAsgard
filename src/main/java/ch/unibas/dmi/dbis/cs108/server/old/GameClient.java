@@ -75,6 +75,11 @@ public class GameClient implements CommunicationAPI {
         }
     }
 
+    /**
+     * Disconnects the client from the server in following steps:
+     * - Shuts down the ping scheduler
+     * - Closes socket
+     */
     public void disconnect() {
         pingScheduler.shutdown();
         try {
@@ -93,6 +98,11 @@ public class GameClient implements CommunicationAPI {
         sendMessage("TEST$arg1,arg2,arg3");    // test command
     }
 
+    /**
+     * Sends a Ping to the Server using the sendMessage Method (only works when connected)
+     * Checks if the time since the last ping has exceeded the timeout value in
+     * @see SETTINGS
+     */
     public void sendPing() {
         if (System.currentTimeMillis() - lastPingTime > SETTINGS.Config.TIMEOUT.getValue()) {
             logger.warning("Server timed out, disconnecting...");
