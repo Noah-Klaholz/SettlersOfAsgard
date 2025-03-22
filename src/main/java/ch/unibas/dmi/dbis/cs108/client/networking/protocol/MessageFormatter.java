@@ -32,8 +32,7 @@ public class MessageFormatter {
      */
     public String formatNameChange(String playerId, String newName) {
         try {
-            // ToDo: Implement Protocol for Name Change
-            return null;
+            return "CHAN$" +  newName;
         } catch (Exception e) {
             logger.severe("Failed to format name change: " + e.getMessage());
             return null;
@@ -81,7 +80,7 @@ public class MessageFormatter {
      */
     public String formatRegister(String playerId, String playerName) {
         try {
-            return "REGI$" + playerId + "$" + playerName;
+            return "RGST$" + playerId + "$" + playerName;
         } catch (Exception e) {
             logger.severe("Failed to format register: " + e.getMessage());
             return null;
