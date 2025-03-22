@@ -210,6 +210,11 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         return currentLobby;
     }
 
+    /**
+     * Sets the current lobby the client is in.
+     * @param currentLobby
+     * @see Lobby
+     */
     public void setCurrentLobby(Lobby currentLobby) {
         this.currentLobby = currentLobby;
     }
