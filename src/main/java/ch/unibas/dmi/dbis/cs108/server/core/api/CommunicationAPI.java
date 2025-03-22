@@ -53,6 +53,7 @@ public interface CommunicationAPI {
             START("STRT"), // Start the game
             STATS("STAT"), // Request game state
             SYNCHRONIZE("SYNC"), // Request synchronization of the game
+            CHANGENAME("CHAN"), // Players changes his nickname
             // game mechanics
             STARTTURN("TURN"), // starts turn
             ENDTURN("ENDT"), // ends turn
