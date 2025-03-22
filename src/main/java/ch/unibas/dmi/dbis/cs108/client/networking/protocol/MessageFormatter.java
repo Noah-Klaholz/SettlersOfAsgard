@@ -81,7 +81,7 @@ public class MessageFormatter {
      */
     public String formatRegister(String playerId, String playerName) {
         try {
-            return "JOIN$" + playerId + "$" + playerName;
+            return "REGI" + playerId + "$" + playerName;
         } catch (Exception e) {
             logger.severe("Failed to format register: " + e.getMessage());
             return null;

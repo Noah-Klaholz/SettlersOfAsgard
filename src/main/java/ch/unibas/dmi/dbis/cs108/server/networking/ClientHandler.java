@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.networking;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
+import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
 import ch.unibas.dmi.dbis.cs108.server.core.api.CommunicationAPI;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
@@ -24,6 +25,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     private boolean running;
     private Lobby currentLobby;
     private String name;
+    private Player localPlayer = null;
 
 
     /**
@@ -163,6 +165,9 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                 case CHANGENAME:
                     handleChangeName(cmd);
                     break;
+                case REGISTER:
+                    handleRegister(cmd);
+                    break;
                 default: // Error case
                     logger.warning("Switch-Unknown command: " + cmd.getCommand());
                     processed = false;
@@ -278,6 +283,12 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         } else {
             sendMessage("ERR$106$CANNOT_START_GAME");
         }
+    }
+
+    private void handleRegister(Command cmd) {
+        String playerId = cmd.getArgs()[0];
+        String playerName = cmd.getArgs()[1];
+        this.localPlayer = new Player(playerId, playerName);
     }
 
     private void handleChangeName(Command cmd) {
