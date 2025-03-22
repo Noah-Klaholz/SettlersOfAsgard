@@ -34,8 +34,8 @@ public class Command {
         if (command == null) {
             return false;
         }
-        // Special cases: OK and ERR (always valid)
-        if (command.equals("OK") || command.equals("ERR")) {
+        // Special cases: OK, TEST and ERR (always valid)
+        if (command.equals("OK") || command.equals("ERR") || command.equals("TEST")) {
             return true;
         }
         // Validate command length (must be exactly 4 characters)
