@@ -30,7 +30,7 @@ public class MessageFormatter {
      * @param newName  The new name of the player.
      * @return The formatted message.
      */
-    public String formatNameChange(String playerId, String newName) {
+    public String formatNameChange(String newName) {
         try {
             return "CHAN$" +  newName;
         } catch (Exception e) {
