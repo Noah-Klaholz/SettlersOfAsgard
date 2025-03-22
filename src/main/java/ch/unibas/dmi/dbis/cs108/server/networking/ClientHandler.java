@@ -23,6 +23,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     private GameServer server; // Reference to the GameServer
     private boolean running;
     private Lobby currentLobby;
+    private String name;
 
 
     /**
