@@ -194,10 +194,18 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         return running;
     }
 
+    /**
+     * Stops the client handler.
+     */
     public void stop() {
         running = false;
     }
 
+    /**
+     * Returns the current lobby the client is in.
+     * @return the current Lobby as a
+     * @see Lobby
+     */
     public Lobby getCurrentLobby() {
         return currentLobby;
     }
