@@ -9,6 +9,9 @@ import static org.mockito.Mockito.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+/**
+ * Test class for the Lobby class.
+ */
 @ExtendWith(MockitoExtension.class)
 public class LobbyTest {
 
@@ -16,6 +19,9 @@ public class LobbyTest {
     private ClientHandler player1;
     private ClientHandler player2;
 
+    /**
+     * Set up the test environment.
+     */
     @BeforeEach
     void setUp() {
         lobby = new Lobby("lobby2", 2);
@@ -23,6 +29,9 @@ public class LobbyTest {
         player2 = mock(ClientHandler.class);
     }
 
+    /**
+     * Tests the addPlayer method.
+     */
     @Test
     void testAddPlayer() {
         // Test adding a player to the lobby
@@ -31,6 +40,10 @@ public class LobbyTest {
         assertTrue(lobby.getPlayers().contains(player1));
     }
 
+    /**
+     * Tests the addPlayer method when the lobby is full.
+     * Lobby should not add the player-
+     */
     @Test
     void testAddPlayerWhenFull() {
         // Test adding a player when the lobby is full
@@ -41,6 +54,9 @@ public class LobbyTest {
         assertEquals(2, lobby.getPlayers().size());
     }
 
+    /**
+     * Tests the removePlayer method.
+     */
     @Test
     void testRemovePlayer() {
         // Test removing a player from the lobby
@@ -50,6 +66,20 @@ public class LobbyTest {
         assertFalse(lobby.getPlayers().contains(player1));
     }
 
+    /**
+     * Tests the removePlayer method when the lobby is empty.
+     * Should not remove anything from the lobby and not throw an exception
+     */
+    @Test
+    void testRemovePlayerWhenEmpty() {
+        // Test removing a player from the lobby
+        assertFalse(lobby.removePlayer(player1));
+        assertTrue(lobby.getPlayers().isEmpty());
+    }
+
+    /**
+     * Tests the startGame method.
+     */
     @Test
     void testStartGame() {
         // Test starting the game in the lobby
@@ -58,6 +88,10 @@ public class LobbyTest {
         assertTrue(lobby.startGame());
     }
 
+    /**
+     * Tests the toString method.
+     * Should return a string representation of the lobby, including the id, number of players, max players, and game status.
+     */
     @Test
     void testToString() {
         // Test the toString method
