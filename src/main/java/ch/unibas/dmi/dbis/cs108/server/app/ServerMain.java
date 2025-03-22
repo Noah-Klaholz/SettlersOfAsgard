@@ -13,6 +13,7 @@ public class ServerMain {
 
     /**
      * Main method for the server
+     * Starts the server and adds a shutdown hook
      * @param portNr String indicating the port number
      */
     public static void main(String portNr) {
