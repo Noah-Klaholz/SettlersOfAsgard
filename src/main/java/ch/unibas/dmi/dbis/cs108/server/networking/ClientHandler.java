@@ -168,6 +168,9 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                 case REGISTER:
                     handleRegister(cmd);
                     break;
+                case LISTLOBBIES:
+                    handleListLobbies();
+                    break;
                 default: // Error case
                     logger.warning("Switch-Unknown command: " + cmd.getCommand());
                     processed = false;
@@ -245,6 +248,10 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         } else {
             sendMessage("ERR$106$LOBBY_CREATION_FAILED");
         }
+    }
+
+    public void handleListLobbies() {
+        System.out.println(server.getLobbies());
     }
 
     /**
