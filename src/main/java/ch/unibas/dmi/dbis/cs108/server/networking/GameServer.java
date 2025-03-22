@@ -106,6 +106,9 @@ public class GameServer {
         }
     }
 
+    /**
+     * Sends a ping message to all connected running clients.
+     */
     public void pingClients() {
         for (ClientHandler client : clients) {
             if (client.isRunning()) {
@@ -135,6 +138,10 @@ public class GameServer {
         }
     }
 
+    /**
+     * Returns the port, the serverStatus (running or not) and the number of connected clients.
+     * @return A string representation of the server
+     */
     @Override
     public String toString() {
         return "GameServer{" +
@@ -144,6 +151,11 @@ public class GameServer {
                 '}';
     }
 
+    /**
+     * Returns a list of all connected clients.
+     * @return A list of connected clients as ClientHandler objects
+     * @see ClientHandler
+     */
     public List<ClientHandler> getClients() {
         return clients;
     }
