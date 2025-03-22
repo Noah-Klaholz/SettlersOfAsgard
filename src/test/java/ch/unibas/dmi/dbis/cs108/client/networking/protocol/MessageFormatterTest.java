@@ -27,11 +27,8 @@ public class MessageFormatterTest {
 
     @Test
     public void testFormatNameChange() {
-        // This method is not implemented yet, so we expect null
-        String result = messageFormatter.formatNameChange("user123", "newName");
-        assertNull(result);
-
-        // TODO: Update this test when the method is implemented
+        String result = messageFormatter.formatNameChange("newName");
+        assertEquals("CHAN$newName", result);
     }
 
     @Test
@@ -56,10 +53,10 @@ public class MessageFormatterTest {
     @Test
     public void testFormatRegister() {
         String result = messageFormatter.formatRegister("user123", "John Doe");
-        assertEquals("JOIN$user123$John Doe", result);
+        assertEquals("RGST$user123$John Doe", result);
 
         // Test with special characters
         result = messageFormatter.formatRegister("user:123", "John; Doe");
-        assertEquals("JOIN$user:123$John; Doe", result);
+        assertEquals("RGST$user:123$John; Doe", result);
     }
 }
