@@ -16,7 +16,7 @@ public class MessageParser {
         if (parts.length >= 3) {
             return parts[1] + ": " + parts[2];
         }
-        return "Invalid chat message format";
+        return "Invalid chat message format: " + rawMessage;
 
     }
 
