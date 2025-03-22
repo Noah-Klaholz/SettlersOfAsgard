@@ -9,11 +9,17 @@ import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * This class tests the ping functionality of the server.
+ */
 class PingTest {
 
     private GameServer server;
     private Thread serverThread;
 
+    /**
+     * Set up the server before each test.
+     */
     @BeforeEach
     public void setUp() {
         CountDownLatch serverReady = new CountDownLatch(1);
@@ -32,6 +38,9 @@ class PingTest {
         }
     }
 
+    /**
+     * Tear down the server after each test.
+     */
     @AfterEach
     public void tearDown() {
         if (server != null) {
@@ -42,8 +51,12 @@ class PingTest {
         }
     }
 
+    /**
+     * Test the ping functionality of the server.
+     * @throws InterruptedException
+     */
     @Test
-    public void testPing() throws IOException, InterruptedException {
+    public void testPing() throws InterruptedException {
         GameClient client = new GameClient("127.0.0.1", 9000);
         client.connect();
 
