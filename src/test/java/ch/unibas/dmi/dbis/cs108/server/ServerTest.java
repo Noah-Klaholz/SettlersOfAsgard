@@ -1,8 +1,11 @@
 package ch.unibas.dmi.dbis.cs108.server;
 
+import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import ch.unibas.dmi.dbis.cs108.server.networking.GameServer;
-import ch.unibas.dmi.dbis.cs108.server.old.GameClient;
+import ch.unibas.dmi.dbis.cs108.client.networking.GameClient;
+import javafx.application.Platform;
 import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
@@ -58,33 +61,27 @@ class ServerTest {
     }
 
     /**
-     * Tests the interaction between the {@link GameServer} and a {@link GameClient}. This test:
+     * Tests adding a client to the {@link GameServer}. This test:
      * Starts the server.
      * Connects a client to the server.
-     * Sends a test message from the client to the server.
-     * Waits for the server to process the message.
-     * Disconnects the client.
+     * Verifies that the server has added the client.
      * @throws IOException if an I/O error occurs during client-server communication.
      * @throws InterruptedException if the test thread is interrupted while waiting.
      */
     @Test
-    public void testServer() throws IOException, InterruptedException {
+    public void testAddingClient() throws IOException, InterruptedException {
         System.out.println("Testing");
 
+        Player player = Mockito.mock(Player.class);
         // Start the client
-        GameClient client = new GameClient("127.0.0.1", 9000);
-        client.connect();
-
-        // Send a test command
-        client.sendMessage("TEST$arg1$arg2$arg3");
+        GameClient client = new GameClient("127.0.0.1", 9000, player);
 
         // Wait for the server to process the message
         Thread.sleep(1000); // Adjust the delay as needed
 
+        assert(server.getClients().size() == 1);
         // Disconnect the client
         client.disconnect();
-
-        System.out.println("Test complete.");
     }
 
     /**
@@ -100,9 +97,11 @@ class ServerTest {
     public void testConnectionLossHandling() throws IOException, InterruptedException {
         System.out.println("Testing connection loss handling");
 
+        // Start the player
+        Player player = Mockito.mock(Player.class);
         // Start the client
-        GameClient client = new GameClient("127.0.0.1", 9000);
-        client.connect();
+        GameClient client = new GameClient("127.0.0.1", 9000, player);
+
 
         // Simulate client disconnect by closing the socket
         client.disconnect();
@@ -121,36 +120,36 @@ class ServerTest {
         System.out.println("Testing client-to-client communication in lobby");
 
         // Start the clients
-        GameClient client1 = new GameClient("127.0.0.1", 9000);
-        GameClient client2 = new GameClient("127.0.0.1", 9000);
-        client1.connect();
-        client2.connect();
+        Player player1 = Mockito.mock(Player.class);
+        Player player2 = Mockito.mock(Player.class);
+        GameClient client1 = new GameClient("127.0.0.1", 9000, player1);
+        GameClient client2 = new GameClient("127.0.0.1", 9000, player2);
 
         // Create a message holder for client2
         final String[] receivedMessage = {null};
 
-        // Override processMessage in client2 to capture the received message
-        GameClient client2WithOverride = new GameClient("127.0.0.1", 9000) {
+        // Override the receiveMessage method to capture the received message
+        GameClient client2WithOverride = new GameClient("127.0.0.1", 9000, player2) {
             @Override
-            public void processMessage(String received) {
-                super.processMessage(received);
-                if (received.startsWith("CHTG$")) {
-                    receivedMessage[0] = received.substring("CHTG$".length());
+            public String receiveMessage() {
+                String received = super.receiveMessage();
+                if (received != null && received.startsWith("CHAT$")) {
+                    receivedMessage[0] = received.split("\\$", 2)[1];
                 }
+                return received;
             }
         };
-        client2WithOverride.connect();
 
         // Create and join a lobby
         String lobbyId = "testLobby";
-        client1.sendMessage("CREA$" + lobbyId);
+        client1.sendChat("CREA$" + lobbyId);
         Thread.sleep(500); // Wait for the lobby to be created
-        client2WithOverride.sendMessage("JOIN$" + lobbyId);
+        client2WithOverride.sendChat("JOIN$" + lobbyId);
         Thread.sleep(500); // Wait for the client to join the lobby
 
         // Send a global chat message from client1
         String message = "Hello, Client2!";
-        client1.sendMessage("CHTG$" + message);
+        client1.sendChat("CHTG$" + message);
 
         // Wait for the message to be processed
         Thread.sleep(1000); // Adjust the delay as needed
