@@ -12,6 +12,7 @@ public class StartApps {
     /**
      * Main method starting a local server and a client in a different terminal for easier testing.
      * The server is started on port 9000 and the client connects to it.
+     * Can differ between operating systems (macOS, Windows, Linux).
      * @param args
      */
     public static void main(String[] args) {
@@ -43,15 +44,21 @@ public class StartApps {
         try {
             // Detect OS
             String os = System.getProperty("os.name").toLowerCase();
+            System.out.println("OS: " + os);
 
             if (os.contains("mac")) {
+                System.out.println("Using Mac Terminal");
                 // macOS: Use AppleScript with Terminal
+                // Open new Terminal windows via AppleScript for server
                 Runtime.getRuntime().exec(new String[]{
-                        "osascript", "-e", "tell application \"Terminal\" to do script \"" + serverCmd + "\""
+                        "osascript", "-e",
+                        "tell application \"Terminal\" to do script \"" + serverCmd + "\""
                 });
 
+                // Open new Terminal windows via AppleScript for client
                 Runtime.getRuntime().exec(new String[]{
-                        "osascript", "-e", "tell application \"Terminal\" to do script \"" + clientCmd + "\""
+                        "osascript", "-e",
+                        "tell application \"Terminal\" to do script \"" + clientCmd + "\""
                 });
             } else if (os.contains("win")) {
                 // Windows: Use cmd.exe to open new command windows
