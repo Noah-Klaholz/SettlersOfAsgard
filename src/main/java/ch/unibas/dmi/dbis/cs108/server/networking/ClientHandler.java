@@ -9,6 +9,12 @@ import java.io.*;
 import java.net.Socket;
 import java.util.logging.Logger;
 
+/**
+ * The ClientHandler class is responsible for handling the communication between the server and a client.
+ * It serves as an interface for the server to access the client's socket and send messages to the client.
+ * It implements the Runnable interface to allow for multi-threading.
+ * It also implements the CommunicationAPI interface to allow for communication with the server.
+ */
 public class ClientHandler implements Runnable, CommunicationAPI {
     private Socket socket;
     private PrintWriter out;
@@ -19,6 +25,11 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     private Lobby currentLobby;
 
 
+    /**
+     * Constructor for the ClientHandler class.
+     * @param socket the client's socket
+     * @param server the GameServer
+     */
     public ClientHandler(Socket socket, GameServer server) {
         this.socket = socket;
         this.server = server;
