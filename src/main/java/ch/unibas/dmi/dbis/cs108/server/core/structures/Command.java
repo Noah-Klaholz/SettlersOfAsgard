@@ -30,9 +30,32 @@ public class Command {
      * @return true if the command is valid, false otherwise
      */
     public boolean isValid() {
-        // TODO: Implement checking for correct commandName and valid arguments (Netzwerkprotokoll vorher festlegen)
-        // Should check for correct command and arguments
-        return command != null && args != null;
+        // Check that the command is not null
+        if (command == null) {
+            return false;
+        }
+        // Special cases: OK and ERR (always valid)
+        if (command.equals("OK") || command.equals("ERR")) {
+            return true;
+        }
+        // Validate command length (must be exactly 4 characters)
+        if (command.length() != 4) {
+            return false;
+        }
+        // Check arguments for each command individually
+        return checkArgumentsSize();
+        // Later: add argument checking for game logic commands
+
+    }
+
+    public boolean checkArgumentsSize(){
+        return switch (command) {
+            case "LIST", "STRT", "STDN", "PING", "SYNC" -> args.length == 0;
+            case "RGST", "CHAN", "STAT" -> args.length == 1;
+            case "JOIN", "EXIT", "CHTG" -> args.length == 2;
+            case "CHTP" -> args.length == 3;
+            default -> false;
+        };
     }
 
     /**
