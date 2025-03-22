@@ -173,6 +173,9 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         }
     }
 
+    /**
+     * Closes the resources associated with the client handler.
+     */
     public void closeResources() {
         try {
             if (out != null) out.close();
@@ -183,6 +186,10 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         }
     }
 
+    /**
+     * Returns the running status of the client handler.
+     * @return true if the client handler is running, false otherwise
+     */
     public boolean isRunning() {
         return running;
     }
