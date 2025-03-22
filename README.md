@@ -17,3 +17,16 @@ Github Kollaboratoren: [Kollaboratoren](docs/Contributors/CONTRIBUTORS.txt).
 
 Eine Übersicht über den ständig aktualisierten Projektplan, Kalender und Aufgabenzuteilung findet sich hier:
 [Projektmanagement](https://tungsten-carrot-2b4.notion.site/1ad104ac2da581e0bd69d7f92ebc897b?v=1ad104ac2da581f5ba1b000c74035432&pvs=4)
+
+## Starten
+Via gradle die jar Files builden (sofern nicht bereits vorhanden):
+```shell
+./gradlew jar
+```
+Im Terminal: 
+```shell
+Server: java -jar SettlersOfAsgard.jar server <listenport>
+Client: java -jar SettlersOfAsgard.jar client <server-ip> <server-port>
+```
+Beachte: listenport und server-port müssen identisch sein.
+Die server-ip ist entweder die lokale IP-Adresse des Servers im Netzwerk oder "localhost".
