@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.networking;
 
+import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.client.core.commands.ChatCommand;
 import ch.unibas.dmi.dbis.cs108.client.core.commands.PingCommand;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
@@ -7,6 +8,9 @@ import ch.unibas.dmi.dbis.cs108.client.networking.protocol.MessageParser;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 
@@ -21,6 +25,8 @@ public class GameClient {
     private final Player localPlayer;
     private final AtomicLong lastPingTime = new AtomicLong(0);
     private boolean connected = false;
+    private ScheduledExecutorService pingScheduler = Executors.newScheduledThreadPool(1);
+
 
     /**
      * Constructor
@@ -37,6 +43,8 @@ public class GameClient {
             this.parser = new MessageParser();
             this.commandSender = new CommandSender(socketHandler);
             this.connected = true;
+            // Schedule ping task
+            pingScheduler.scheduleAtFixedRate(this::sendPing, SETTINGS.Config.PING_INTERVAL.getValue(), SETTINGS.Config.PING_INTERVAL.getValue(), TimeUnit.MILLISECONDS);
 
             // Send initial connection message
             commandSender.sendRegister(localPlayer);

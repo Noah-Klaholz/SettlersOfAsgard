@@ -6,7 +6,7 @@ package ch.unibas.dmi.dbis.cs108;
 public class SETTINGS {
     public enum Config {
         PING_INTERVAL(1000),
-        TIMEOUT(10 * 1000); // Milliseconds -> Test timeout is 10 seconds
+        TIMEOUT(20 * 1000); // Milliseconds -> Test timeout is 10 seconds
 
         private final int value;
 

@@ -37,7 +37,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         this.socket = socket;
         this.server = server;
         this.running = true;
-        logger.setFilter(new PingFilter());
+        //logger.setFilter(new PingFilter());
         try {
             socket.setSoTimeout(5000); // 5 second timeout
             out = new PrintWriter(socket.getOutputStream(), true);
@@ -61,9 +61,9 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             }
         } catch (IOException e) {
             logger.info("Client disconnected unexpectedly: " + e.getMessage());
-        } finally {
+        } finally { //TODO: Wird viel zu früh aufgerufen
             closeResources();
-            server.removeClient(this); // Notify the server to remove this client
+            //server.removeClient(this); // Notify the server to remove this client
         }
     }
 
