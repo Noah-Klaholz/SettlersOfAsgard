@@ -74,7 +74,7 @@ class PingTest {
         Thread.sleep(SETTINGS.Config.PING_INTERVAL.getValue() * 3L);
 
         // Check if the client received pings
-        // assertTrue(pingHandled.get(), "Client should have received pings from the server");
+        assertTrue(pingHandled.get(), "Client should have received pings from the server");
 
         // Disconnect the client
         client.disconnect();
