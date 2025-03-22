@@ -23,8 +23,11 @@ public class GameClient implements CommunicationAPI {
     private long lastPingTime = System.currentTimeMillis();
     private ScheduledExecutorService pingScheduler = Executors.newScheduledThreadPool(1);
 
-
-
+    /**
+     * Contstructor Method for Gameclient
+     * @param host ServerIp Adress
+     * @param port ServerPort
+     */
     public GameClient(String host, int port) {
         logger.setFilter(new PingFilter());
         this.host = host;
@@ -33,6 +36,8 @@ public class GameClient implements CommunicationAPI {
 
     /**
      * Connects to the server.
+     * Creates new Thread for receiving messages
+     * Creates new Thread for reading inputs from the terminal
      */
     public void connect() {
         try {
