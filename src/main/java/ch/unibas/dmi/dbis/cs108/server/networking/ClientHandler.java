@@ -160,6 +160,9 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                 case START:
                     handleStartGame();
                     break;
+                case CHANGENAME:
+                    handleChangeName(cmd);
+                    break;
                 default: // Error case
                     logger.warning("Switch-Unknown command: " + cmd.getCommand());
                     processed = false;
@@ -275,5 +278,9 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         } else {
             sendMessage("ERR$106$CANNOT_START_GAME");
         }
+    }
+
+    private void handleChangeName(Command cmd) {
+        name = cmd.getArgs()[1];
     }
 }
