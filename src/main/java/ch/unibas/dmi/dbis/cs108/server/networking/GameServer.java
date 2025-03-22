@@ -160,6 +160,13 @@ public class GameServer {
         return clients;
     }
 
+    /**
+     * Creates a new lobby with the given id and maximum number of players.
+     * @param id The id of the lobby
+     * @param maxPlayers The maximum number of players in the lobby
+     * @return The created lobby
+     * @see Lobby
+     */
     public Lobby createLobby(String id, int maxPlayers) {
         Lobby lobby = new Lobby(id, maxPlayers);
         lobbies.add(lobby);
@@ -167,6 +174,12 @@ public class GameServer {
         return lobby;
     }
 
+    /**
+     * Returns the lobby with the given id.
+     * @param id
+     * @return The lobby with the given id or null if no lobby with that id exists
+     * @see Lobby
+     */
     public Lobby getLobby(String id) {
         for(Lobby lobby : lobbies) {
             if(lobby.getId().equals(id)) {
@@ -176,11 +189,21 @@ public class GameServer {
         return null;
     }
 
+    /**
+     * Removes the given lobby from the list of lobbies.
+     * @param lobby
+     * @see Lobby
+     */
     public void removeLobby(Lobby lobby) {
         lobbies.remove(lobby);
         logger.info("Removed Lobby :" + lobby.getId());
     }
 
+    /**
+     * Returns a list of all lobbies.
+     * @return A list of all lobbies as Lobby objects
+     * @see Lobby
+     */
     public List<Lobby> getLobbies(){
         return lobbies;
     }
