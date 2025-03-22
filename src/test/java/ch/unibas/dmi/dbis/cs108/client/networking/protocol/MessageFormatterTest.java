@@ -45,7 +45,7 @@ public class MessageFormatterTest {
     public void testFormatPing() {
         // Current implementation returns "PING:"
         String result = messageFormatter.formatPing("user123");
-        assertEquals("PING", result);
+        assertEquals("PING$user123", result);
 
         // TODO: Update this test when the method is fully implemented
     }
