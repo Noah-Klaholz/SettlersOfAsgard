@@ -44,6 +44,11 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         }
     }
 
+    /**
+     * The run method is called when the thread is started.
+     * It listens for messages from the client and processes them.
+     * If the client disconnects, it closes the resources and notifies the server to remove this client.
+     */
     @Override
     public void run() {
         String received;
@@ -59,6 +64,10 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         }
     }
 
+    /**
+     * Sends a String message to the client.
+     * @param message the message String to send
+     */
     @Override
     public void sendMessage(String message) {
         if (socket != null && !socket.isClosed()) {
