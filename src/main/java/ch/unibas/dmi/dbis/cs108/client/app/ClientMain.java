@@ -9,14 +9,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 /**
- * Demonstration entry point for a simple terminal-based chat.
+ * ClientMain class
+ * This class is the main entry point for the client application.
  */
 public class ClientMain {
 
     private static final Logger logger = Logger.getLogger(ClientMain.class.getName());
 
     /**
-     * Demonstration entry point for a simple terminal-based chat.
+     * Main method
+     * Entry point for the client application.
      * @param args String[] Command line arguments
      */
     public static void main(String[] args) {
