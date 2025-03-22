@@ -38,8 +38,8 @@ public class StartApps {
         System.out.println("Using jar path: " + jarPath);
 
         // Commands for server and client
-        String serverCmd = "java -jar \"" + jarPath + "\" server 9000";
-        String clientCmd = "java -jar \"" + jarPath + "\" client localhost:9000";
+        String serverCmd = "java -jar " + jarPath + " server 9000";
+        String clientCmd = "java -jar " + jarPath + " client localhost:9000";
 
         try {
             // Detect OS
