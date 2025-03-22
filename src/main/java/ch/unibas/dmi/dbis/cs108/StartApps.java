@@ -17,7 +17,7 @@ public class StartApps {
     public static void main(String[] args) {
         String jarPath;
         try {
-            // Get the current code source location
+            // Get the current execution path
             jarPath = new File(
                     Main.class.getProtectionDomain()
                             .getCodeSource()
@@ -29,33 +29,71 @@ public class StartApps {
             return;
         }
 
-        // If running from the IDE, adjust the path to point to the jar in build/libs.
+        // Adjust the path if running from IntelliJ (i.e., build/classes instead of build/libs)
         if (jarPath.contains("/build/classes/")) {
-            // Modify this according to your project's specific directory structure and jar naming
             jarPath = jarPath.replace("/build/classes/java/main", "/build/libs/settlersOfAsgard.jar");
         }
 
         System.out.println("Using jar path: " + jarPath);
 
-        // Build the commands for server and client
-        String serverCmd = "java -jar " + jarPath + " server 9000";
-        String clientCmd = "java -jar " + jarPath + " client localhost:9000";
+        // Commands for server and client
+        String serverCmd = "java -jar \"" + jarPath + "\" server 9000";
+        String clientCmd = "java -jar \"" + jarPath + "\" client localhost:9000";
 
         try {
-            // Open new Terminal windows via AppleScript for server
-            Runtime.getRuntime().exec(new String[]{
-                    "osascript", "-e",
-                    "tell application \"Terminal\" to do script \"" + serverCmd + "\""
-            });
+            // Detect OS
+            String os = System.getProperty("os.name").toLowerCase();
 
-            // Open new Terminal windows via AppleScript for client
-            Runtime.getRuntime().exec(new String[]{
-                    "osascript", "-e",
-                    "tell application \"Terminal\" to do script \"" + clientCmd + "\""
-            });
+            if (os.contains("mac")) {
+                // macOS: Use AppleScript with Terminal
+                Runtime.getRuntime().exec(new String[]{
+                        "osascript", "-e", "tell application \"Terminal\" to do script \"" + serverCmd + "\""
+                });
+
+                Runtime.getRuntime().exec(new String[]{
+                        "osascript", "-e", "tell application \"Terminal\" to do script \"" + clientCmd + "\""
+                });
+            } else if (os.contains("win")) {
+                // Windows: Use cmd.exe to open new command windows
+                Runtime.getRuntime().exec(new String[]{
+                        "cmd.exe", "/c", "start", "cmd.exe", "/k", serverCmd
+                });
+
+                Runtime.getRuntime().exec(new String[]{
+                        "cmd.exe", "/c", "start", "cmd.exe", "/k", clientCmd
+                });
+            } else if (os.contains("nix") || os.contains("nux") || os.contains("linux")) {
+                // Linux: Use terminal emulators (adjust if needed)
+                String terminal = findAvailableTerminal();
+                if (terminal != null) {
+                    Runtime.getRuntime().exec(new String[]{terminal, "-e", serverCmd});
+                    Runtime.getRuntime().exec(new String[]{terminal, "-e", clientCmd});
+                } else {
+                    System.err.println("No compatible terminal emulator found!");
+                }
+            } else {
+                System.err.println("Unsupported OS: " + os);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Finds an available terminal emulator for Linux.
+     */
+    private static String findAvailableTerminal() {
+        String[] terminals = {"gnome-terminal", "konsole", "x-terminal-emulator", "xfce4-terminal", "lxterminal", "mate-terminal"};
+        for (String terminal : terminals) {
+            try {
+                Process process = Runtime.getRuntime().exec(new String[]{"which", terminal});
+                if (process.getInputStream().read() != -1) {
+                    return terminal; // Return the first available terminal
+                }
+            } catch (IOException ignored) {}
+        }
+        return null; // No terminal found
+    }
+
 
 }
