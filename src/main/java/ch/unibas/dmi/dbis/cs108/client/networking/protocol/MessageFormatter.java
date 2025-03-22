@@ -10,13 +10,13 @@ public class MessageFormatter {
     /**
      * Formats a chat message.
      *
-     * @param playerId The username of the sender.
+     * @param playerName The username of the sender.
      * @param message  The message to be sent.
      * @return The formatted message.
      */
-    public static String formatChatMessage(String playerId, String message) {
+    public static String formatChatMessage(String playerName, String message) {
         try {
-            return "CHTG$" + playerId + "$" + message;
+            return "CHTG$" + playerName + "$" + message;
         } catch (Exception e) {
             logger.severe("Failed to format chat message: " + e.getMessage());
             return null;
@@ -45,9 +45,9 @@ public class MessageFormatter {
      * @param playerId The username of the player.
      * @return The formatted message.
      */
-    public String formatDisconnect(String playerId) {
+    public String formatDisconnect(String playerName) {
         try {
-            return "EXIT$" + playerId;
+            return "EXIT$" + playerName;
         } catch (Exception e) {
             logger.severe("Failed to format disconnect: " + e.getMessage());
             return null;
@@ -60,11 +60,11 @@ public class MessageFormatter {
      * @param playerId The username of the player.
      * @return The formatted message.
      */
-    public String formatPing(String playerId) {
+    public String formatPing(String playerName) {
         try {
             // ToDo: Implement Protocol for Ping Player ID and Time
             // return "PING:" + playerId + ";" + Instant.now().toEpochMilli();
-            return "PING$" + playerId;
+            return "PING$" + playerName;
         } catch (Exception e) {
             logger.severe("Failed to format ping: " + e.getMessage());
             return null;
@@ -78,18 +78,18 @@ public class MessageFormatter {
      * @param playerName The name of the player.
      * @return The formatted message.
      */
-    public String formatRegister(String playerId, String playerName) {
+    public String formatRegister(String playerName) {
         try {
-            return "RGST$" + playerId + "$" + playerName;
+            return "RGST$" + playerName;
         } catch (Exception e) {
             logger.severe("Failed to format register: " + e.getMessage());
             return null;
         }
     }
 
-    public String formatPong(String playerId) {
+    public String formatPong(String playerName) {
         try {
-            return "PONG$" + playerId;
+            return "PONG$" + playerName;
         } catch (Exception e) {
             logger.severe("Failed to format pong: " + e.getMessage());
             return null;

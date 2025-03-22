@@ -50,8 +50,8 @@ public class Command {
 
     public boolean checkArgumentsSize(){
         return switch (command) {
-            case "LIST", "STRT", "STDN", "PING", "SYNC" -> args.length == 0;
-            case "RGST", "CHAN", "STAT" -> args.length == 1;
+            case "LIST", "STRT", "STDN", "SYNC" -> args.length == 0;
+            case "RGST", "CHAN", "STAT", "PING"  -> args.length == 1;
             case "JOIN", "EXIT", "CHTG" -> args.length == 2;
             case "CHTP" -> args.length == 3;
             default -> false;

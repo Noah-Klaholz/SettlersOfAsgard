@@ -4,7 +4,7 @@ package ch.unibas.dmi.dbis.cs108.client.core.entities;
  * Player class is responsible for creating a player object
  */
 public class Player {
-    private final String id;
+    //private final String id;
     private String name;
 
     /**
@@ -13,19 +13,21 @@ public class Player {
      * @param id   String
      * @param name String
      */
-    public Player(String id, String name) {
-        this.id = id;
+    public Player(String name) {
+        //this.id = id;
         this.name = name;
     }
 
+
     /**
+     *
      * Getter for id
      *
      * @return String
      */
-    public String getId() {
+    /*public String getId() {
         return id;
-    }
+    }*/
 
     /**
      * Getter for name

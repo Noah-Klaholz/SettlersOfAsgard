@@ -52,11 +52,11 @@ public class MessageFormatterTest {
 
     @Test
     public void testFormatRegister() {
-        String result = messageFormatter.formatRegister("user123", "John Doe");
-        assertEquals("RGST$user123$John Doe", result);
+        String result = messageFormatter.formatRegister("John Doe");
+        assertEquals("RGST$John Doe", result);
 
         // Test with special characters
-        result = messageFormatter.formatRegister("user:123", "John; Doe");
-        assertEquals("RGST$user:123$John; Doe", result);
+        result = messageFormatter.formatRegister("John; Doe");
+        assertEquals("RGST$John; Doe", result);
     }
 }

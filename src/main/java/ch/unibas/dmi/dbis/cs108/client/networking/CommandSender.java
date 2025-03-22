@@ -31,7 +31,7 @@ public class CommandSender {
     public void sendChatCommand(ChatCommand chatCommand) {
         try {
             String message = MessageFormatter.formatChatMessage(
-                    chatCommand.getSender().getId(),
+                    chatCommand.getSender().getName(),
                     chatCommand.getMessage()
             );
             socketHandler.send(message);
@@ -60,7 +60,7 @@ public class CommandSender {
      */
     public void sendDisconnect(Player player) {
         try {
-            String message = formatter.formatDisconnect(player.getId());
+            String message = formatter.formatDisconnect(player.getName());
             socketHandler.send(message);
         } catch (Exception e) {
             logger.severe("Failed to send disconnect command: " + e.getMessage());
@@ -73,7 +73,7 @@ public class CommandSender {
      */
     public void sendPing(Player player) {
         try {
-            String message = formatter.formatPing(player.getId());
+            String message = formatter.formatPing(player.getName());
             socketHandler.send(message);
         } catch (Exception e) {
             logger.severe("Failed to send ping command: " + e.getMessage());
@@ -86,7 +86,7 @@ public class CommandSender {
      */
     public void sendRegister(Player player) {
         try {
-            String message = formatter.formatRegister(player.getId(), player.getName());
+            String message = formatter.formatRegister(player.getName());
             socketHandler.send(message);
         } catch (Exception e) {
             logger.severe("Failed to send register command: " + e.getMessage());
@@ -95,7 +95,7 @@ public class CommandSender {
 
     public void sendPingCommand(PingCommand pingCommand) {
         try {
-            String message = formatter.formatPing(pingCommand.getSender().getId());
+            String message = formatter.formatPing(pingCommand.getSender().getName());
             socketHandler.send(message);
         } catch (Exception e) {
             logger.severe("Failed to send ping command: " + e.getMessage());
@@ -104,7 +104,7 @@ public class CommandSender {
 
     public void sendPongCommand(PongCommand pongCommand) {
         try {
-            String message = formatter.formatPong(pongCommand.getSender().getId());
+            String message = formatter.formatPong(pongCommand.getSender().getName());
             socketHandler.send(message);
         } catch (Exception e) {
             logger.severe("Failed to send pong command: " + e.getMessage());

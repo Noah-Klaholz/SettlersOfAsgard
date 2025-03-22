@@ -293,9 +293,8 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     }
 
     private void handleRegister(Command cmd) {
-        String playerId = cmd.getArgs()[0];
-        String playerName = cmd.getArgs()[1];
-        this.localPlayer = new Player(playerId, playerName);
+        String playerName = cmd.getArgs()[0];
+        this.localPlayer = new Player(playerName);
     }
 
     private void handleChangeName(Command cmd) {

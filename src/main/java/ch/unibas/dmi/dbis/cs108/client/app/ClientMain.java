@@ -36,7 +36,7 @@ public class ClientMain {
             int serverport = Integer.parseInt(serverAddress[1]);
 
             String systemName = System.getProperty("user.name");
-            Player localPlayer = new Player(systemName, "InitialName");
+            Player localPlayer = new Player(systemName);
 
             logger.info("Connecting to server at " + serverAddress[0] + ":" + serverport + " as " + systemName + "...");
 
