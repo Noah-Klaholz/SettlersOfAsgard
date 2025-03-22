@@ -213,6 +213,8 @@ public class ClientHandler implements Runnable, CommunicationAPI {
 
     public String getName() { return name; }
 
+    public void setName(String name) { this.name = name; }
+
     /**
      * Sets the current lobby the client is in.
      * @param currentLobby
