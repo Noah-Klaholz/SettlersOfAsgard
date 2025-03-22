@@ -23,6 +23,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     private GameServer server; // Reference to the GameServer
     private boolean running;
     private Lobby currentLobby;
+    private String name;
 
 
     /**
@@ -159,6 +160,9 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                 case START:
                     handleStartGame();
                     break;
+                case CHANGENAME:
+                    handleChangeName(cmd);
+                    break;
                 default: // Error case
                     logger.warning("Switch-Unknown command: " + cmd.getCommand());
                     processed = false;
@@ -209,6 +213,10 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     public Lobby getCurrentLobby() {
         return currentLobby;
     }
+
+    public String getName() { return name; }
+
+    public void setName(String name) { this.name = name; }
 
     /**
      * Sets the current lobby the client is in.
@@ -270,5 +278,9 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         } else {
             sendMessage("ERR$106$CANNOT_START_GAME");
         }
+    }
+
+    private void handleChangeName(Command cmd) {
+        name = cmd.getArgs()[1];
     }
 }
