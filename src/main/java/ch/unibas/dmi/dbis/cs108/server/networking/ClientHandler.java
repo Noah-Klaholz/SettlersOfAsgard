@@ -77,6 +77,10 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         }
     }
 
+    /**
+     * Sends a PING message to the corresponding client.
+     * If the client does not respond within the timeout period, the client is disconnected.
+     */
     public void sendPing() {
         if(System.currentTimeMillis() - lastPingTime > SETTINGS.Config.TIMEOUT.getValue()) {
             logger.warning("Client timed out: " + socket.getRemoteSocketAddress());
@@ -99,6 +103,13 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         }
     }
 
+    /**
+     * Processes a received message from the client.
+     * @param received the received message String
+     *                 The message is parsed into a Command object and processed accordingly.
+     *                 If the command is invalid, an error message is sent to the client.
+     *                 If the command is valid, it is processed according to the protocol.
+     */
     @Override
     public void processMessage(String received) {
         if (received == null || received.trim().isEmpty()) {
