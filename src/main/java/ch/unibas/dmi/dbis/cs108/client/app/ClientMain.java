@@ -14,7 +14,7 @@ import java.util.logging.Logger;
  * This class is the main entry point for the client application.
  */
 public class ClientMain {
-
+    private static final int MESSAGE_POLLING_DELAY = 50;
     private static final Logger logger = Logger.getLogger(ClientMain.class.getName());
 
     /**
@@ -138,7 +138,7 @@ public class ClientMain {
                     if (message != null) {
                         logger.info(message);
                     }
-                    Thread.sleep(50); // Small delay to prevent CPU hogging
+                    Thread.sleep(MESSAGE_POLLING_DELAY); // Small delay to prevent CPU hogging
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
