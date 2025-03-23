@@ -68,8 +68,13 @@ public class SocketHandler {
     public String receive() throws IOException {
         if (in != null && isConnected()) {
             try {
-                if (in.ready()) { // Only check ready() to avoid blocking
+                if (in.ready()) {
                     String message = in.readLine();
+                    if (message == null) {
+                        // Connection was closed by remote host
+                        connected = false;
+                        throw new IOException("Connection closed by remote host");
+                    }
                     return message;
                 }
             } catch (SocketException e) {
