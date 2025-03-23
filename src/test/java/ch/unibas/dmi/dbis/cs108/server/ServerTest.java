@@ -120,8 +120,8 @@ class ServerTest {
         System.out.println("Testing client-to-client communication in lobby");
 
         // Start the clients
-        Player player1 = Mockito.mock(Player.class);
-        Player player2 = Mockito.mock(Player.class);
+        Player player1 = new Player("player1");
+        Player player2 = new Player("player2");
         GameClient client1 = new GameClient("127.0.0.1", 9000, player1);
         GameClient client2 = new GameClient("127.0.0.1", 9000, player2);
 
@@ -142,10 +142,12 @@ class ServerTest {
 
         // Create and join a lobby
         String lobbyId = "testLobby";
-        client1.sendChat("CREA$" + lobbyId);
+        client1.createLobby(lobbyId);
         Thread.sleep(500); // Wait for the lobby to be created
+
+        client2.sendChat("JOIN$" + lobbyId);
         client2WithOverride.sendChat("JOIN$" + lobbyId);
-        Thread.sleep(500); // Wait for the client to join the lobby
+        Thread.sleep(500); // Wait for the clients to join the lobby
 
         // Send a global chat message from client1
         String message = "Hello, Client2!";

@@ -19,6 +19,8 @@ public class CommandFactory {
             case "CHAT" -> new ChatCommand(player, args[0]);
             case "PING" -> new PingCommand(player);
             case "PONG" -> new PongCommand(player, args.length > 0 ? args[0] : "server");
+            case "JOIN" -> new JoinLobbyCommand(player, args[0]);
+            case "CREA" -> new CreateLobbyCommand(player, args[0]);
             default -> null;
         };
     }
