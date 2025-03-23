@@ -55,6 +55,7 @@ public class SocketHandler {
             out.println(message);
             if (out.checkError()) {
                 connected = false;
+                throw new RuntimeException("Connection lost while sending data");
             }
         }
     }
