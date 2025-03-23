@@ -321,4 +321,12 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         server.broadcast(localPlayer.getName() + " changed name to " + newPlayerName);
         localPlayer.setName(newPlayerName);
     }
+
+    /**
+     * This method returns the localPlayer variable assigned to the ClientHandler
+     * @return the current localPlayer state
+     */
+    private Player getPlayer(){
+        return localPlayer;
+    }
 }
