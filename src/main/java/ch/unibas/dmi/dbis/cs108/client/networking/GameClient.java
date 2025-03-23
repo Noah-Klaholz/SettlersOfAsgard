@@ -176,7 +176,7 @@ public class GameClient {
                     return null; // Don't show automatic pong responses
                 } else if (rawMessage.startsWith("CHAT$")) {
                     return parser.parseChatMessage(rawMessage);
-                } else if (rawMessage.startsWith("REGISTERED$")) {
+                } else if (rawMessage.startsWith("OK$REGISTER$")) {
                     return "Successfully registered with ID: " + parser.parseRegistrationResponse(rawMessage);
                 } else {
                     return rawMessage;

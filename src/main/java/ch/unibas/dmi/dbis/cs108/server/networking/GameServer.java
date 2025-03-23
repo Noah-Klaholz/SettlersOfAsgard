@@ -171,9 +171,13 @@ public class GameServer {
      * @see Lobby
      */
     public Lobby createLobby(String id, int maxPlayers) {
+        if(getLobby(id) != null) { // If lobby with id already exists
+            logger.warning("Lobby with id " + id + " already exists");
+            return null;
+        }
         Lobby lobby = new Lobby(id, maxPlayers);
         lobbies.add(lobby);
-        logger.info("Created new Lobby :" + id);
+        logger.info("Created new Lobby: " + id);
         return lobby;
     }
 
