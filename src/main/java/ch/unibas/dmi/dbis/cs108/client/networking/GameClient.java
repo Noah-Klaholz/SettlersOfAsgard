@@ -63,6 +63,9 @@ public class GameClient {
      * @param message String
      */
     public void sendChat(String message) {
+        if (message == null || message.trim().isEmpty()) {
+            return;
+        }
         if (isConnected()) {
             try {
                 commandSender.sendChatCommand(new ChatCommand(localPlayer, message));
