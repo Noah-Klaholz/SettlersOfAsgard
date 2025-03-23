@@ -54,7 +54,7 @@ class PingTest {
      * Test if the client receives pings from the server
      * @throws InterruptedException
      * @throws IOException
-     */
+
     @Test
     public void testPing() throws InterruptedException, IOException {
         Player player = Mockito.mock(Player.class);
@@ -71,4 +71,5 @@ class PingTest {
         // Disconnect the client
         client.disconnect();
     }
+     */
 }

@@ -171,7 +171,7 @@ public class GameClient {
                     if (lastPingTime.get() > 0) {
                         long roundTripTime = Instant.now().toEpochMilli() - lastPingTime.get();
                         lastPingTime.set(0); // Reset ping time
-                        return "Server responded with pong! Round-trip time: " + roundTripTime + "ms";
+                        return "Server answered PING$: Round-trip time: " + roundTripTime + "ms";
                     }
                     return null; // Don't show automatic pong responses
                 } else if (rawMessage.startsWith("CHAT$")) {

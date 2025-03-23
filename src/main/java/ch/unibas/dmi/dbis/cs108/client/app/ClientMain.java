@@ -3,6 +3,7 @@ package ch.unibas.dmi.dbis.cs108.client.app;
 import ch.unibas.dmi.dbis.cs108.Main;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import ch.unibas.dmi.dbis.cs108.client.networking.GameClient;
+import ch.unibas.dmi.dbis.cs108.server.core.api.CommunicationAPI.PingFilter;
 
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -25,6 +26,7 @@ public class ClientMain {
         Scanner scanner = new Scanner(System.in);
         GameClient client = null;
         AtomicBoolean running = new AtomicBoolean(true);
+        logger.setFilter(new PingFilter());
 
         try {
             String[] serverAddress = args[1].split(":");
@@ -114,7 +116,7 @@ public class ClientMain {
                     // This method needs to be implemented in GameClient
                     String message = client.receiveMessage();
                     if (message != null) {
-                        System.out.println(message);
+                        logger.info(message);
                     }
                     Thread.sleep(50); // Small delay to prevent CPU hogging
                 }
