@@ -46,7 +46,20 @@ public class GameClient {
             this.connected = true;
             logger.info("Connected to " + host + ":" + port);
             // Schedule ping task
-            pingScheduler.scheduleAtFixedRate(this::sendPing, SETTINGS.Config.PING_INTERVAL.getValue(), SETTINGS.Config.PING_INTERVAL.getValue(), TimeUnit.MILLISECONDS);
+            // Add timeout check
+            pingScheduler.scheduleAtFixedRate(() -> {
+                        // Check if we're waiting for a ping response
+                        if (lastPingTime.get() > 0) {
+                            long elapsed = Instant.now().toEpochMilli() - lastPingTime.get();
+                            if (elapsed > SETTINGS.Config.TIMEOUT.getValue()) {
+                                logger.warning("Ping timeout detected. Disconnecting...");
+                                disconnect();
+                                return;
+                            }
+                        }
+                        sendPing();
+                    }, SETTINGS.Config.PING_INTERVAL.getValue(),
+                    SETTINGS.Config.PING_INTERVAL.getValue(), TimeUnit.MILLISECONDS);
 
             // Send initial connection message
             commandSender.sendRegister(localPlayer);
