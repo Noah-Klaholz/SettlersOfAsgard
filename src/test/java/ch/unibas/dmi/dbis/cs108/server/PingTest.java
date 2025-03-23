@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
+import ch.unibas.dmi.dbis.cs108.client.app.ClientMain;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import ch.unibas.dmi.dbis.cs108.server.networking.GameServer;
 import ch.unibas.dmi.dbis.cs108.client.networking.GameClient;
@@ -57,18 +58,9 @@ class PingTest {
     @Test
     public void testPing() throws InterruptedException, IOException {
         Player player = Mockito.mock(Player.class);
-        GameClient client = Mockito.spy(new GameClient("127.0.0.1", 9000, player));
+        ClientMain clientMain = new ClientMain();
+        ClientMain.main(new String[]{"localhost:9000"});
         AtomicBoolean pingHandled = new AtomicBoolean(false);
-
-        doAnswer(invocation -> {
-            String message = invocation.getArgument(0);
-            if (message.contains("PING$")) {
-                pingHandled.set(true);
-                return true;
-            }
-            return false;
-        }).when(client).receiveMessage();
-
 
         // Wait for a few ping intervals to ensure ping-pong messages are exchanged
         Thread.sleep(SETTINGS.Config.PING_INTERVAL.getValue() * 3L);
