@@ -60,6 +60,12 @@ public class StartApps {
                         "osascript", "-e",
                         "tell application \"Terminal\" to do script \"" + clientCmd + "\""
                 });
+
+                // Open new Terminal windows via AppleScript for client
+                Runtime.getRuntime().exec(new String[]{
+                        "osascript", "-e",
+                        "tell application \"Terminal\" to do script \"" + clientCmd + "\""
+                });
             } else if (os.contains("win")) {
                 // Windows: Use cmd.exe to open new command windows
                 Runtime.getRuntime().exec(new String[]{
