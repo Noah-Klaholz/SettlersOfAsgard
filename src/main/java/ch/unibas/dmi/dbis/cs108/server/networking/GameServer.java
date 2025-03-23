@@ -140,6 +140,13 @@ public class GameServer {
     public void removeClient(ClientHandler client) {
         if (clients.contains(client)) {
             clients.remove(client);
+            Lobby clientLobby = client.getCurrentLobby();
+            if(clientLobby != null) {
+                clientLobby.removePlayer(client);
+                if(clientLobby.isEmpty()) {
+                    removeLobby(clientLobby);
+                }
+            }
             logger.info("Removed " + client);
         }
     }

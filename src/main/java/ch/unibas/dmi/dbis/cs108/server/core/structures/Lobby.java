@@ -126,6 +126,12 @@ public class Lobby {
     }
 
     /**
+     * Checks if the lobby is empty
+     * @return True if the lobby is empty, else false
+     */
+    public boolean isEmpty(){return players.isEmpty();}
+
+    /**
      * Returns the state of the lobby, including:
      * 1. The id
      * 2. The players
