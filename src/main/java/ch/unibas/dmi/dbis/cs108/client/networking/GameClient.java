@@ -125,6 +125,10 @@ public class GameClient {
         }
     }
 
+    /**
+     * Creates a new lobby
+     * @param lobbyName the name of the lobby
+     */
     public void createLobby(String lobbyName) {
         if (isConnected()) {
             try {
@@ -135,6 +139,10 @@ public class GameClient {
         }
     }
 
+    /**
+     * Joins a lobby
+     * @param lobbyName the name of the lobby
+     */
     public void joinLobby(String lobbyName) {
         if (isConnected()) {
             try {
