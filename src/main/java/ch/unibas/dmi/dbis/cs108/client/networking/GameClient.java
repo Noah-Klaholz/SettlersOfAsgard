@@ -1,10 +1,10 @@
 package ch.unibas.dmi.dbis.cs108.client.networking;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
-import ch.unibas.dmi.dbis.cs108.client.core.commands.ChatCommand;
-import ch.unibas.dmi.dbis.cs108.client.core.commands.PingCommand;
-import ch.unibas.dmi.dbis.cs108.client.core.commands.PongCommand;
+import ch.unibas.dmi.dbis.cs108.client.core.commands.chat.ChatCommand;
+import ch.unibas.dmi.dbis.cs108.client.core.commands.chat.PongCommand;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
+import ch.unibas.dmi.dbis.cs108.client.networking.protocol.DisplayFormatter;
 import ch.unibas.dmi.dbis.cs108.client.networking.protocol.MessageParser;
 
 import java.io.IOException;
@@ -180,13 +180,11 @@ public class GameClient {
                 if (rawMessage.startsWith("STDN$")) {
                     System.out.println("Server sent shutdown Command, disconnecting and shutting down.");
                     disconnect();
-                    //TODO falls es noch mehr Ressourcen zum closen gibt, dann hier!
                 }
                 // Automatically respond to server pings
                 if (rawMessage.startsWith("PING$")) {
                     String serverId = rawMessage.split("\\$").length > 1 ? rawMessage.split("\\$")[1] : "server";
-
-                    commandSender.sendPingCommand(new PingCommand(localPlayer));
+                    commandSender.sendPongCommand(new PongCommand(localPlayer, serverId));
                     return null;
                 }
                 // Handle pong responses
@@ -201,11 +199,10 @@ public class GameClient {
                         lastPingTime.set(0); // Reset ping time
                         return "Server answered PING$: Round-trip time: " + roundTripTime + "ms";
                     }
-                    return null; // Don't show automatic pong responses
-                } else if (rawMessage.startsWith("ERR$")) {
-                    return "Error: " + parser.parseErrorResponse(rawMessage);
+                    return null;
                 } else {
-                    return rawMessage;
+                    // Format the message for display
+                    return DisplayFormatter.formatForDisplay(rawMessage);
                 }
             }
         } catch (IOException e) {
