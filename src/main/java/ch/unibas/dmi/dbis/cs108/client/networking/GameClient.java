@@ -59,7 +59,6 @@ public class GameClient {
 
     /**
      * Sends a chat message to the server
-     *
      * @param message String
      */
     public void sendChat(String message) {
@@ -77,7 +76,6 @@ public class GameClient {
 
     /**
      * Checks if the client is connected to the server
-     *
      * @return boolean
      */
     public boolean isConnected() {
@@ -140,7 +138,6 @@ public class GameClient {
 
     /**
      * Creates a new lobby
-     *
      * @param lobbyName the name of the lobby
      */
     public void createLobby(String lobbyName) {
@@ -155,7 +152,6 @@ public class GameClient {
 
     /**
      * Joins a lobby
-     *
      * @param lobbyName the name of the lobby
      */
     public void joinLobby(String lobbyName) {
@@ -170,7 +166,6 @@ public class GameClient {
 
     /**
      * Receives a message from the server
-     *
      * @return String
      */
     public String receiveMessage() {

@@ -52,6 +52,11 @@ public class MessageParser {
         return 0;
     }
 
+    /**
+     * Parses through errorResponses -> Not used anymore?
+     * @param rawMessage
+     * @return
+     */
     public String parseErrorResponse(String rawMessage) {
         if(rawMessage.startsWith("ERR$106$PLAYER_ALREADY_EXISTS")) {
             return "Player already exists. Change your name with /changeName";

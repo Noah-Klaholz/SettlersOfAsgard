@@ -53,6 +53,11 @@ public class CommandSender {
         }
     }
 
+    /**
+     * Sends a joinLobby Message
+     * @param player the local player
+     * @param lobbyName the name of the lobby to be joined
+     */
     public void sendJoinLobby(Player player, String lobbyName) {
         try {
             String message = formatter.formatJoinLobby(player.getName(), lobbyName);
@@ -62,6 +67,11 @@ public class CommandSender {
         }
     }
 
+    /**
+     * Sends a createLobby Message
+     * @param player the local Player
+     * @param lobbyName the Name of the Lobby to be created
+     */
     public void sendCreateLobby(Player player, String lobbyName) {
         try {
             String message = formatter.formatCreateLobby(player.getName(), lobbyName);
