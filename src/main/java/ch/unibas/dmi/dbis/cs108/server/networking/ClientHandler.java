@@ -266,7 +266,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      * @param cmd the transmitted command
      */
     private void handleJoinLobby(Command cmd) {
-        String lobbyId = cmd.getArgs()[0];
+        String lobbyId = cmd.getArgs()[1];
         Lobby lobby = server.getLobby(lobbyId);
         if (lobby != null && lobby.addPlayer(this)) {
             currentLobby = lobby; // Set the current lobby
