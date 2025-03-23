@@ -111,6 +111,11 @@ public class CommandSender {
         }
     }
 
+    /**
+     * Sends a leave lobby command to the server
+     * @param localPlayer the Player
+     * @param lobbyName the name of the lobby
+     */
     public void sendLeaveLobby(Player localPlayer, String lobbyName) {
         try {
             String message = formatter.formatLeaveLobby(localPlayer.getName(), lobbyName);
@@ -120,6 +125,9 @@ public class CommandSender {
         }
     }
 
+    /**
+     * Sends a start game command to the server
+     */
     public void sendStartGame() {
         try {
             String message = formatter.formatStartGame();
@@ -129,6 +137,9 @@ public class CommandSender {
         }
     }
 
+    /**
+     * Sends a list lobbies command to the server
+     */
     public void sendListLobbies() {
         try {
             String message = formatter.formatListLobbies();
@@ -138,6 +149,9 @@ public class CommandSender {
         }
     }
 
+    /**
+     * Sends a ping command to the server
+     */
     public void sendPingCommand(PingCommand pingCommand) {
         try {
             String message = formatter.formatPing(pingCommand.getSender().getName());
@@ -147,6 +161,9 @@ public class CommandSender {
         }
     }
 
+    /**
+     * Sends a pong command to the server
+     */
     public void sendPongCommand(PongCommand pongCommand) {
         try {
             String message = formatter.formatPong(pongCommand.getSender().getName());
