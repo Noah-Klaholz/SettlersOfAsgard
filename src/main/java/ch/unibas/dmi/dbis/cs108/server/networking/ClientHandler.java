@@ -25,7 +25,6 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     private GameServer server; // Reference to the GameServer
     private boolean running;
     private Lobby currentLobby;
-    private String name;
     private Player localPlayer = null;
     private static final Logger logger = Logger.getLogger(ClientHandler.class.getName());
 
@@ -224,11 +223,6 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     public Lobby getCurrentLobby() {
         return currentLobby;
     }
-
-    public String getName() { return name; }
-
-    public void setName(String name) { this.name = name; }
-
     /**
      * Sets the current lobby the client is in.
      * @param currentLobby
@@ -254,6 +248,9 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         }
     }
 
+    /**
+     * This method handles the listing of all lobbies.
+     */
     public void handleListLobbies() {
         List<Lobby> lobbies = server.getLobbies();
         StringBuilder sb = new StringBuilder("Lobbies: ");
@@ -304,11 +301,13 @@ public class ClientHandler implements Runnable, CommunicationAPI {
 
     /**
      * This method handles the registration of a player.
+     * Gets called immediately when a player connects
      * @param cmd the transmitted command
      */
     private void handleRegister(Command cmd) {
         String playerName = cmd.getArgs()[0];
         this.localPlayer = new Player(playerName);
+        logger.info("Registering player: " + playerName);
     }
 
     /**
@@ -318,7 +317,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     private void handleChangeName(Command cmd) {
         String newPlayerName = cmd.getArgs()[0];
         sendMessage("OK$CHANGE_NAME$" + newPlayerName);
-        server.broadcast(name + " changed name to " + newPlayerName);
-        name = newPlayerName;
+        server.broadcast(localPlayer.getName() + " changed name to " + newPlayerName);
+        localPlayer.setName(newPlayerName);
     }
 }
