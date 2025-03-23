@@ -40,7 +40,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         this.server = server;
         this.running = true;
         try {
-            socket.setSoTimeout(5000); // 5 second timeout
+            socket.setSoTimeout(SETTINGS.Config.TIMEOUT.getValue()); // 5 second timeout
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         } catch (IOException e) {
