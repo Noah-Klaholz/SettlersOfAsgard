@@ -91,9 +91,12 @@ public class SocketHandler {
     public void close() {
         if (socket != null && !socket.isClosed()) {
             try {
-                socket.close();
                 connected = false;
+                if (in != null) in.close();
+                if (out != null) out.close();
+                socket.close();
             } catch (IOException e) {
+                // Already disconnected, just log
                 System.err.println("Error closing socket: " + e.getMessage());
             }
         }
