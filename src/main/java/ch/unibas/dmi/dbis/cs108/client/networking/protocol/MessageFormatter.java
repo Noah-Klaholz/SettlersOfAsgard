@@ -112,4 +112,13 @@ public class MessageFormatter {
             return null;
         }
     }
+
+    public String formatLeaveLobby(String playerName, String lobbyName) {
+        try {
+            return "EXIT$" + playerName + "$" + lobbyName;
+        } catch (Exception e) {
+            logger.severe("Failed to format leave lobby: " + e.getMessage());
+            return null;
+        }
+    }
 }

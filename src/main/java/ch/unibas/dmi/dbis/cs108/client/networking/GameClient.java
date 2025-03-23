@@ -189,11 +189,17 @@ public class GameClient {
         return null;
     }
 
-    //TODO: Implement the following methods
     /**
      * Leaves the current lobby
      */
-    public void leaveLobby() {
+    public void leaveLobby(String lobbyName) {
+        if (isConnected()) {
+            try {
+                commandSender.sendLeaveLobby(localPlayer, lobbyName);
+            } catch (Exception e) {
+                logger.severe("Failed to leave lobby: " + e.getMessage());
+            }
+        }
     }
 
     /**
@@ -201,11 +207,25 @@ public class GameClient {
      * @param lobbyId
      */
     public void startGame(String lobbyId) {
+        if (isConnected()) {
+            try {
+                commandSender.sendStartGame(lobbyId);
+            } catch (Exception e) {
+                logger.severe("Failed to start game in lobby: " + e.getMessage());
+            }
+        }
     }
 
     /**
      * Lists all available lobbies
      */
     public void listLobbies() {
+        if (isConnected()) {
+            try {
+                commandSender.sendListLobbies();
+            } catch (Exception e) {
+                logger.severe("Failed to list lobbies: " + e.getMessage());
+            }
+        }
     }
 }

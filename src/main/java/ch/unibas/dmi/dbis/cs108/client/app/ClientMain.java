@@ -101,7 +101,8 @@ public class ClientMain {
                 String lobbyId = input.replace("/join ", "").trim();
                 client.joinLobby(lobbyId);
             } else if (input.startsWith("/leave ")) {
-                client.leaveLobby();
+                String lobbyId = input.replace("/join ", "").trim();
+                client.leaveLobby(lobbyId);
             } else if (input.startsWith("/create ")) {
                 String lobbyName = input.replace("/create ", "").trim();
                 client.createLobby(lobbyName);
@@ -111,7 +112,7 @@ public class ClientMain {
             } else if (input.startsWith("/list")) {
                 client.listLobbies();
             } else if (input.startsWith("/help")) {
-                logger.info("Available commands: /changeName <name>, /ping, /exit, /join <lobbyId>, /leave, /create <lobbyName>, /start <lobbyId>, /list, /help");
+                logger.info("Available commands: /changeName <name>, /ping, /exit, /join <lobbyId>, /leave <lobbyId>, /create <lobbyName>, /start <lobbyId>, /list, /help");
             } else {
                 client.sendChat(input);
             }

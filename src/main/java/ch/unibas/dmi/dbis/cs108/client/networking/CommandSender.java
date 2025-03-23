@@ -111,6 +111,21 @@ public class CommandSender {
         }
     }
 
+    public void sendLeaveLobby(Player localPlayer, String lobbyName) {
+        try {
+            String message = formatter.formatLeaveLobby(localPlayer.getName(), lobbyName);
+            socketHandler.send(message);
+        } catch (Exception e) {
+            logger.severe("Failed to send pong command: " + e.getMessage());
+        }
+    }
+
+    public void sendStartGame(String lobbyId) {
+    }
+
+    public void sendListLobbies() {
+    }
+
     public void sendPingCommand(PingCommand pingCommand) {
         try {
             String message = formatter.formatPing(pingCommand.getSender().getName());
@@ -128,5 +143,4 @@ public class CommandSender {
             logger.severe("Failed to send pong command: " + e.getMessage());
         }
     }
-
 }
