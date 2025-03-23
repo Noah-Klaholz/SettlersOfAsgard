@@ -55,6 +55,10 @@ public class Command {
 
     }
 
+    /**
+     * Checks whether the command has the correct number of arguments appended
+     * @return
+     */
     public boolean checkArgumentsSize(){
         return switch (command) {
             case "LIST", "STRT", "STDN", "SYNC" -> args.length == 0;
