@@ -199,6 +199,15 @@ public class GameServer {
         return null;
     }
 
+    public boolean containsPlayerName(String playerName){
+        for (ClientHandler client : clients) {
+            if(client.getPlayer().getName().equals(playerName)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Removes the given lobby from the list of lobbies.
      * @see Lobby
