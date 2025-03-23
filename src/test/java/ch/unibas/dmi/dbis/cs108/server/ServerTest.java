@@ -95,13 +95,13 @@ class ServerTest {
      */
     @Test
     public void testConnectionLossHandling() throws IOException, InterruptedException {
-        System.out.println("Testing connection loss handling");
-
         // Start the player
-        Player player = Mockito.mock(Player.class);
+        Player player = new Player("player1");
         // Start the client
         GameClient client = new GameClient("127.0.0.1", 9000, player);
 
+        // Wait for the server to process the message
+        Thread.sleep(1000); // Adjust the delay as needed
 
         // Simulate client disconnect by closing the socket
         client.disconnect();

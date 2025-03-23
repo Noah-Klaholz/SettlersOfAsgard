@@ -113,6 +113,9 @@ public class GameServer {
         for (ClientHandler client : clients) {
             if (client.isRunning()) {
                 client.sendPing();
+            } else {
+                logger.info("Client " + client + " is not running. Removing from list.");
+                removeClient(client);
             }
         }
     }

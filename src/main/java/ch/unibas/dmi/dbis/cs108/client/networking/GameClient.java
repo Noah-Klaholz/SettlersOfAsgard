@@ -43,6 +43,7 @@ public class GameClient {
             this.parser = new MessageParser();
             this.commandSender = new CommandSender(socketHandler);
             this.connected = true;
+            logger.info("Connected to " + host + ":" + port);
             // Schedule ping task
             pingScheduler.scheduleAtFixedRate(this::sendPing, SETTINGS.Config.PING_INTERVAL.getValue(), SETTINGS.Config.PING_INTERVAL.getValue(), TimeUnit.MILLISECONDS);
 
@@ -85,7 +86,7 @@ public class GameClient {
     public void disconnect() {
         if (isConnected()) {
             try {
-                commandSender.sendDisconnect(localPlayer);
+                //commandSender.sendDisconnect(localPlayer);
                 socketHandler.close();
                 connected = false;
             } catch (Exception e) {
