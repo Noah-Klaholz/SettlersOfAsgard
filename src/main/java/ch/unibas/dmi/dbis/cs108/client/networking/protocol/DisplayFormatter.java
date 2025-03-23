@@ -30,9 +30,27 @@ public class DisplayFormatter {
             return formatLobbyList(rawMessage);
         } else if (rawMessage.startsWith("OK$")) {
             return formatSuccessMessage(rawMessage);
+        } else if (rawMessage.startsWith("PING$")) {
+            return null; // Don't display ping messages
+        } else if (rawMessage.startsWith("EXIT$")) {
+            return formatExitMessage(rawMessage);
         }
 
         return rawMessage; // Default fallback
+    }
+
+    /**
+     * Formats an exit message
+     *
+     * @param rawMessage the raw message that gets transmitted
+     * @return the formatted message
+     */
+    private static String formatExitMessage(String rawMessage) {
+        String[] parts = rawMessage.split("\\$", 2);
+        if (parts.length >= 2) {
+            return parts[1] + " has disconnected from the server";
+        }
+        return rawMessage;
     }
 
     /**
