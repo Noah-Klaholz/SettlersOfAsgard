@@ -139,6 +139,9 @@ public class DisplayFormatter {
      * @return the formatted message
      */
     private static String formatSuccessMessage(String rawMessage) {
+        if (rawMessage.startsWith("OK$PING$")) {
+            return null; // Don't display ping responses
+        }
         return "Success: " + rawMessage.substring(3);
     }
 }
