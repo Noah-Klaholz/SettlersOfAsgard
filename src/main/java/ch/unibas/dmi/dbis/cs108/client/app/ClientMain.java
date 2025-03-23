@@ -29,6 +29,10 @@ public class ClientMain {
         logger.setFilter(new PingFilter());
 
         try {
+            if (args.length < 2) {
+                logger.warning("Missing server address. Usage: java ClientMain <serverip>:<serverport>");
+                System.exit(1);
+            }
             String[] serverAddress = args[1].split(":");
             if (serverAddress.length != 2) {
                 logger.warning("Invalid server address. Expected: <serverip>:<serverport>");
