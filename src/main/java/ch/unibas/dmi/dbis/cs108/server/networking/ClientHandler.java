@@ -158,7 +158,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                 case JOIN:
                     handleJoinLobby(cmd);
                     break;
-                case EXIT:
+                case LEAVE:
                     handleLeaveLobby();
                     break;
                 case START:
