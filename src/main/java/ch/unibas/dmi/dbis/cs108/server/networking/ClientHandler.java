@@ -307,8 +307,13 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      */
     private void handleRegister(Command cmd) {
         String playerName = cmd.getArgs()[0];
-        this.localPlayer = new Player(playerName);
-        logger.info("Registering player: " + playerName);
+        if (!server.containsPlayerName(playerName)) {
+            this.localPlayer = new Player(playerName);
+            sendMessage("OK$PLAYER_REGISTERED$" + playerName);
+        }
+        else {
+            sendMessage("ERR$106$PLAYER_ALREADY_EXISTS");
+        }
     }
 
     /**
@@ -317,9 +322,14 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      */
     private void handleChangeName(Command cmd) {
         String newPlayerName = cmd.getArgs()[0];
-        sendMessage("OK$CHANGE_NAME$" + newPlayerName);
-        server.broadcast(localPlayer.getName() + " changed name to " + newPlayerName);
-        localPlayer.setName(newPlayerName);
+        if (!server.containsPlayerName(newPlayerName)){
+            sendMessage("OK$CHANGE_NAME$" + newPlayerName);
+            server.broadcast(localPlayer.getName() + " changed name to " + newPlayerName);
+            localPlayer.setName(newPlayerName);
+        }
+        else {
+            sendMessage("ERR$106$PLAYER_ALREADY_EXISTS");
+        }
     }
 
     /**
