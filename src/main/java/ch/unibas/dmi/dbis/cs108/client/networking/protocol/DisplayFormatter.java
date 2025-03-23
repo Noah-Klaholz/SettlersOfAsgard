@@ -93,6 +93,8 @@ public class DisplayFormatter {
             return "Could not use System name as PlayerName. Please change your Name with /changeName.";
         } else if(rawMessage.startsWith("ERR$106$LOBBY_CREATION_FAILED")) {
             return "Could not create lobby, because a lobby with this name already exists. You can join an existing lobby with /join.";
+        } else if(rawMessage.startsWith("ERR$106$JOIN_LOBBY_FAILED")) {
+            return "Could not join lobby, because lobby does not exist. Create a new one with /create.";
         }
         return "Error: " + rawMessage.substring(4);
     }
