@@ -241,7 +241,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         String lobbyId = cmd.getArgs()[1];
         int maxPlayers = 4; //currently, maxPlayers is set to 4
         Lobby lobby = server.createLobby(lobbyId, maxPlayers);
-        if (lobby.addPlayer(this)) {
+        if (lobby != null && lobby.addPlayer(this)) {
             currentLobby = lobby;
             sendMessage("OK$LOBBY_CREATED$" + lobbyId);
         } else {
