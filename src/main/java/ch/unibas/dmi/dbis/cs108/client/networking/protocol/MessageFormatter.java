@@ -25,14 +25,12 @@ public class MessageFormatter {
 
     /**
      * Formats a name change request.
-     *
-     * @param playerId The username of the player.
      * @param newName  The new name of the player.
      * @return The formatted message.
      */
-    public String formatNameChange(String playerId, String newName) {
+    public String formatNameChange(String newName) {
         try {
-            return "CHAN$" + playerId + "$" +  newName;
+            return "CHAN$" +  newName;
         } catch (Exception e) {
             logger.severe("Failed to format name change: " + e.getMessage());
             return null;

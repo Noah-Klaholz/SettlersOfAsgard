@@ -103,7 +103,7 @@ public class GameClient {
     public void changeName(String newName) {
         if (isConnected()) {
             try {
-                commandSender.sendChangeName(localPlayer, newName);
+                commandSender.sendChangeName(newName);
                 localPlayer.setName(newName);
             } catch (Exception e) {
                 logger.severe("Failed to change name: " + e.getMessage());
