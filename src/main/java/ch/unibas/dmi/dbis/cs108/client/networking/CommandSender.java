@@ -7,6 +7,7 @@ import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import ch.unibas.dmi.dbis.cs108.client.networking.protocol.MessageFormatter;
 
 import java.util.logging.Logger;
+
 /**
  * CommandSender class is responsible for sending commands to the server
  */
@@ -17,6 +18,7 @@ public class CommandSender {
 
     /**
      * Constructor
+     *
      * @param socketHandler SocketHandler
      */
     public CommandSender(SocketHandler socketHandler) {
@@ -26,6 +28,7 @@ public class CommandSender {
 
     /**
      * Sends a chat command to the server
+     *
      * @param chatCommand ChatCommand
      */
     public void sendChatCommand(ChatCommand chatCommand) {
@@ -42,6 +45,7 @@ public class CommandSender {
 
     /**
      * Sends a change name command to the server
+     *
      * @param newName String
      */
     public void sendChangeName(String newName) {
@@ -55,7 +59,8 @@ public class CommandSender {
 
     /**
      * Sends a joinLobby Message
-     * @param player the local player
+     *
+     * @param player    the local player
      * @param lobbyName the name of the lobby to be joined
      */
     public void sendJoinLobby(Player player, String lobbyName) {
@@ -69,7 +74,8 @@ public class CommandSender {
 
     /**
      * Sends a createLobby Message
-     * @param player the local Player
+     *
+     * @param player    the local Player
      * @param lobbyName the Name of the Lobby to be created
      */
     public void sendCreateLobby(Player player, String lobbyName) {
@@ -83,6 +89,7 @@ public class CommandSender {
 
     /**
      * Sends a disconnect command to the server
+     *
      * @param player Player
      */
     public void sendDisconnect(Player player) {
@@ -96,6 +103,7 @@ public class CommandSender {
 
     /**
      * Sends a ping command to the server
+     *
      * @param player Player
      */
     public void sendPing(Player player) {
@@ -109,6 +117,7 @@ public class CommandSender {
 
     /**
      * Sends a register command to the server
+     *
      * @param player Player
      */
     public void sendRegister(Player player) {
@@ -122,15 +131,16 @@ public class CommandSender {
 
     /**
      * Sends a leave lobby command to the server
+     *
      * @param localPlayer the Player
-     * @param lobbyName the name of the lobby
+     * @param lobbyName   the name of the lobby
      */
     public void sendLeaveLobby(Player localPlayer, String lobbyName) {
         try {
             String message = formatter.formatLeaveLobby(localPlayer.getName(), lobbyName);
             socketHandler.send(message);
         } catch (Exception e) {
-            logger.severe("Failed to send pong command: " + e.getMessage());
+            logger.severe("Failed to send leave lobby command: " + e.getMessage());
         }
     }
 
@@ -142,7 +152,7 @@ public class CommandSender {
             String message = formatter.formatStartGame();
             socketHandler.send(message);
         } catch (Exception e) {
-            logger.severe("Failed to send pong command: " + e.getMessage());
+            logger.severe("Failed to send start game command: " + e.getMessage());
         }
     }
 
@@ -154,7 +164,7 @@ public class CommandSender {
             String message = formatter.formatListLobbies();
             socketHandler.send(message);
         } catch (Exception e) {
-            logger.severe("Failed to send pong command: " + e.getMessage());
+            logger.severe("Failed to send list lobbies command: " + e.getMessage());
         }
     }
 
