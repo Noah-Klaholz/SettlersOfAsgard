@@ -178,6 +178,10 @@ public class GameClient {
                     // Only show result if we initiated a ping command
                     if (lastPingTime.get() > 0) {
                         long roundTripTime = Instant.now().toEpochMilli() - lastPingTime.get();
+                        if(roundTripTime > SETTINGS.Config.TIMEOUT.getValue()) {
+                            logger.severe("Server timed out, disconnecting.");
+                            disconnect();
+                        }
                         lastPingTime.set(0); // Reset ping time
                         return "Server answered PING$: Round-trip time: " + roundTripTime + "ms";
                     }
