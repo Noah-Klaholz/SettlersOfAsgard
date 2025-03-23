@@ -204,12 +204,11 @@ public class GameClient {
 
     /**
      * Starts the game in the current lobby
-     * @param lobbyId
      */
-    public void startGame(String lobbyId) {
+    public void startGame() {
         if (isConnected()) {
             try {
-                commandSender.sendStartGame(lobbyId);
+                commandSender.sendStartGame();
             } catch (Exception e) {
                 logger.severe("Failed to start game in lobby: " + e.getMessage());
             }

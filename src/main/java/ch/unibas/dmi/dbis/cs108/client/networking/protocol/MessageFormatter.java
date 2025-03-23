@@ -121,4 +121,13 @@ public class MessageFormatter {
             return null;
         }
     }
+
+    public String formatStartGame() {
+        try {
+            return "STRT$";
+        } catch (Exception e) {
+            logger.severe("Failed to format start game: " + e.getMessage());
+            return null;
+        }
+    }
 }

@@ -120,7 +120,13 @@ public class CommandSender {
         }
     }
 
-    public void sendStartGame(String lobbyId) {
+    public void sendStartGame() {
+        try {
+            String message = formatter.formatStartGame();
+            socketHandler.send(message);
+        } catch (Exception e) {
+            logger.severe("Failed to send pong command: " + e.getMessage());
+        }
     }
 
     public void sendListLobbies() {

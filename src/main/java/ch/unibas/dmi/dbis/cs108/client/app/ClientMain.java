@@ -106,10 +106,10 @@ public class ClientMain {
             } else if (input.startsWith("/create ")) {
                 String lobbyName = input.replace("/create ", "").trim();
                 client.createLobby(lobbyName);
-            } else if (input.startsWith("/start ")) { //TODO implement this method in GameClient -> Not yet Working
+            } else if (input.startsWith("/start ")) { //TODO implement in GameServer
                 String lobbyId = input.replace("/start ", "").trim();
-                client.startGame(lobbyId);
-            } else if (input.startsWith("/list")) {
+                client.startGame();
+            } else if (input.startsWith("/list")) { //TODO: Implement listLobbies in GameClient and GameServer
                 client.listLobbies();
             } else if (input.startsWith("/help")) {
                 logger.info("Available commands: /changeName <name>, /ping, /exit, /join <lobbyId>, /leave <lobbyId>, /create <lobbyName>, /start <lobbyId>, /list, /help");
