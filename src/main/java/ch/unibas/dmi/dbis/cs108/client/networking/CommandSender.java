@@ -47,7 +47,7 @@ public class CommandSender {
      */
     public void sendChangeName(Player player, String newName) {
         try {
-            String message = formatter.formatNameChange(newName);
+            String message = formatter.formatNameChange(player.getName(), newName);
             socketHandler.send(message);
         } catch (Exception e) {
             logger.severe("Failed to send change name command: " + e.getMessage());

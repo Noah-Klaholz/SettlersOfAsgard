@@ -301,6 +301,8 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     }
 
     private void handleChangeName(Command cmd) {
-        name = cmd.getArgs()[1];
+        String newPlayerName = cmd.getArgs()[1];
+        sendMessage("OK$CHANGE_NAME$" + newPlayerName);
+        server.broadcast(name + " changed name to " + newPlayerName);
     }
 }

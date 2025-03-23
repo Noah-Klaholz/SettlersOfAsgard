@@ -30,24 +30,25 @@ public class MessageFormatter {
      * @param newName  The new name of the player.
      * @return The formatted message.
      */
-    public String formatNameChange(String newName) {
+    public String formatNameChange(String playerId, String newName) {
         try {
-            return "CHAN$" +  newName;
+            return "CHAN$" + playerId + "$" +  newName;
         } catch (Exception e) {
             logger.severe("Failed to format name change: " + e.getMessage());
             return null;
         }
     }
 
+    //TODO Was macht das hier?? -> Server überprüft automatisch, glaub das ist nicht nötig
     /**
      * Formats a disconnect notification.
      *
-     * @param playerId The username of the player.
+     * @param playerName The username of the player.
      * @return The formatted message.
      */
     public String formatDisconnect(String playerName) {
         try {
-            return "EXIT$" + playerName;
+            return "EXIT$" + playerName; // Es gibt keinen Exit Command
         } catch (Exception e) {
             logger.severe("Failed to format disconnect: " + e.getMessage());
             return null;
@@ -57,7 +58,7 @@ public class MessageFormatter {
     /**
      * Formats a ping message.
      *
-     * @param playerId The username of the player.
+     * @param playerName The username of the player.
      * @return The formatted message.
      */
     public String formatPing(String playerName) {
@@ -73,8 +74,6 @@ public class MessageFormatter {
 
     /**
      * Formats a registration request.
-     *
-     * @param playerId   The username of the player.
      * @param playerName The name of the player.
      * @return The formatted message.
      */

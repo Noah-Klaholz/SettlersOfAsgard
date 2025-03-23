@@ -188,4 +188,24 @@ public class GameClient {
         }
         return null;
     }
+
+    //TODO: Implement the following methods
+    /**
+     * Leaves the current lobby
+     */
+    public void leaveLobby() {
+    }
+
+    /**
+     * Starts the game in the current lobby
+     * @param lobbyId
+     */
+    public void startGame(String lobbyId) {
+    }
+
+    /**
+     * Lists all available lobbies
+     */
+    public void listLobbies() {
+    }
 }
