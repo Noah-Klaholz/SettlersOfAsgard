@@ -46,7 +46,7 @@ public class MessageFormatter {
      */
     public String formatDisconnect(String playerName) {
         try {
-            return "EXIT$" + playerName; // Es gibt keinen Exit Command
+            return "EXIT$" + playerName;
         } catch (Exception e) {
             logger.severe("Failed to format disconnect: " + e.getMessage());
             return null;
