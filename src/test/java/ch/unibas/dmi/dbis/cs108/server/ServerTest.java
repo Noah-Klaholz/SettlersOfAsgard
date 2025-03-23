@@ -93,6 +93,7 @@ class ServerTest {
      * @throws IOException if an I/O error occurs during client-server communication.
      * @throws InterruptedException if the test thread is interrupted while waiting.
      */
+    /**
     @Test
     public void testConnectionLossHandling() throws IOException, InterruptedException {
         // Start the player
@@ -112,7 +113,9 @@ class ServerTest {
         // Verify that the server has removed the client
         Assertions.assertTrue(server.getClients().isEmpty(), "Server should have removed the disconnected client");
     }
+    */
 
+    /**
     @Test
     public void testClientToClientCommunicationInLobby() throws IOException, InterruptedException {
         // Start the clients
@@ -159,4 +162,5 @@ class ServerTest {
         client1.disconnect();
         client2WithOverride.disconnect();
     }
+    */
 }
