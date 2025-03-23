@@ -177,11 +177,12 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                     logger.warning("Switch-Unknown command: " + cmd.getCommand());
                     processed = false;
             }
+            /*
             if(processed) {
                 sendMessage("OK$" + cmd.toString()); // Echo the command back to the client with an OK response
             } else {
                 sendMessage("ERR$100;" + cmd.toString()); // Echo the command back to the client with an ERR response
-            }
+            }*/
         } else {
             logger.warning("ClientHandler: Invalid command: " + cmd);
         }
