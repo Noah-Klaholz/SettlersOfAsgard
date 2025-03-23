@@ -302,11 +302,19 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         }
     }
 
+    /**
+     * This method handles the registration of a player.
+     * @param cmd the transmitted command
+     */
     private void handleRegister(Command cmd) {
         String playerName = cmd.getArgs()[0];
         this.localPlayer = new Player(playerName);
     }
 
+    /**
+     * This method handles the changing of a player's name.
+     * @param cmd the transmitted command
+     */
     private void handleChangeName(Command cmd) {
         String newPlayerName = cmd.getArgs()[0];
         sendMessage("OK$CHANGE_NAME$" + newPlayerName);
