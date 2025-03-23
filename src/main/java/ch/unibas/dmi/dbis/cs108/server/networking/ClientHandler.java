@@ -181,7 +181,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                 sendMessage("ERR$100;" + cmd.toString()); // Echo the command back to the client with an ERR response
             }
         } else {
-            logger.warning("Invalid command: " + cmd);
+            logger.warning("ClientHandler: Invalid command: " + cmd);
         }
     }
 
@@ -239,7 +239,8 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      * @param cmd the transmitted command
      */
     private void handleCreateLobby(Command cmd) {
-        String lobbyId = cmd.getArgs()[0];
+        String hostname = cmd.getArgs()[0]; // Falls wir später mal den Hostnamen speichern wollen -> könnte man in Lobby hinzufügen
+        String lobbyId = cmd.getArgs()[1];
         int maxPlayers = 4; //currently, maxPlayers is set to 4
         Lobby lobby = server.createLobby(lobbyId, maxPlayers);
         if (lobby.addPlayer(this)) {

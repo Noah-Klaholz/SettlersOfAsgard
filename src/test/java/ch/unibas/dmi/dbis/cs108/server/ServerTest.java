@@ -111,14 +111,10 @@ class ServerTest {
 
         // Verify that the server has removed the client
         Assertions.assertTrue(server.getClients().isEmpty(), "Server should have removed the disconnected client");
-
-        System.out.println("Connection loss handling test complete.");
     }
 
     @Test
     public void testClientToClientCommunicationInLobby() throws IOException, InterruptedException {
-        System.out.println("Testing client-to-client communication in lobby");
-
         // Start the clients
         Player player1 = new Player("player1");
         Player player2 = new Player("player2");
@@ -145,13 +141,13 @@ class ServerTest {
         client1.createLobby(lobbyId);
         Thread.sleep(500); // Wait for the lobby to be created
 
-        client2.sendChat("JOIN$" + lobbyId);
-        client2WithOverride.sendChat("JOIN$" + lobbyId);
+        client2.joinLobby(lobbyId);
+        client2WithOverride.joinLobby(lobbyId);
         Thread.sleep(500); // Wait for the clients to join the lobby
 
         // Send a global chat message from client1
         String message = "Hello, Client2!";
-        client1.sendChat("CHTG$" + message);
+        client1.sendChat(message);
 
         // Wait for the message to be processed
         Thread.sleep(1000); // Adjust the delay as needed
@@ -162,7 +158,5 @@ class ServerTest {
         // Disconnect the clients
         client1.disconnect();
         client2WithOverride.disconnect();
-
-        System.out.println("Client-to-client communication in lobby test complete.");
     }
 }

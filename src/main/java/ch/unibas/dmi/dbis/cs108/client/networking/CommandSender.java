@@ -54,6 +54,24 @@ public class CommandSender {
         }
     }
 
+    public void sendJoinLobby(Player player, String lobbyName) {
+        try {
+            String message = formatter.formatJoinLobby(player.getName(), lobbyName);
+            socketHandler.send(message);
+        } catch (Exception e) {
+            logger.severe("Failed to send join lobby command: " + e.getMessage());
+        }
+    }
+
+    public void sendCreateLobby(Player player, String lobbyName) {
+        try {
+            String message = formatter.formatCreateLobby(player.getName(), lobbyName);
+            socketHandler.send(message);
+        } catch (Exception e) {
+            logger.severe("Failed to send create lobby command: " + e.getMessage());
+        }
+    }
+
     /**
      * Sends a disconnect command to the server
      * @param player Player

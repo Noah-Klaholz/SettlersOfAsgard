@@ -86,7 +86,7 @@ public class GameClient {
     public void disconnect() {
         if (isConnected()) {
             try {
-                //commandSender.sendDisconnect(localPlayer);
+                //commandSender.sendDisconnect(localPlayer); Nicht nötig, Server überprüft Connection Status regelmäßig (und es gibt keinen Disconnect Command)
                 socketHandler.close();
                 connected = false;
             } catch (Exception e) {
@@ -121,6 +121,26 @@ public class GameClient {
                 commandSender.sendPing(localPlayer);
             } catch (Exception e) {
                 logger.severe("Failed to send ping: " + e.getMessage());
+            }
+        }
+    }
+
+    public void createLobby(String lobbyName) {
+        if (isConnected()) {
+            try {
+                commandSender.sendCreateLobby(localPlayer, lobbyName);
+            } catch (Exception e) {
+                logger.severe("Failed to create lobby: " + e.getMessage());
+            }
+        }
+    }
+
+    public void joinLobby(String lobbyName) {
+        if (isConnected()) {
+            try {
+                commandSender.sendJoinLobby(localPlayer, lobbyName);
+            } catch (Exception e) {
+                logger.severe("Failed to join lobby: " + e.getMessage());
             }
         }
     }

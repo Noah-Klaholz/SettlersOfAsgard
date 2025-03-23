@@ -2,6 +2,8 @@ package ch.unibas.dmi.dbis.cs108.server.core.structures;
 
 import java.util.Arrays;
 
+import static ch.unibas.dmi.dbis.cs108.server.core.api.CommunicationAPI.logger;
+
 /**
  * Represents a command that is sent between a client to the server
  */
@@ -16,9 +18,9 @@ public class Command {
      * Correct formatting: commandName$arg1$arg2$arg3
      */
     public Command(String message) {
-        String[] parts = message.split("\\$", 2);
-        if(parts.length != 2) {
-            System.err.println("Invalid command: " + message);
+        String[] parts = message.split("\\$");
+        if(parts.length == 0){
+            System.err.println("Trying to create invalid command: " + message);
             return;
         }
         this.command = parts[0];
@@ -32,6 +34,7 @@ public class Command {
     public boolean isValid() {
         // Check that the command is not null
         if (command == null) {
+            logger.warning("Invalid Command: Cannot be null");
             return false;
         }
         // Special cases: OK, TEST and ERR (always valid)
@@ -40,6 +43,7 @@ public class Command {
         }
         // Validate command length (must be exactly 4 characters)
         if (command.length() != 4) {
+            logger.warning("Command length is not 4 characters: " + command);
             return false;
         }
         // Check arguments for each command individually
@@ -52,9 +56,12 @@ public class Command {
         return switch (command) {
             case "LIST", "STRT", "STDN", "SYNC" -> args.length == 0;
             case "RGST", "CHAN", "STAT", "PING"  -> args.length == 1;
-            case "JOIN", "EXIT", "CHTG" -> args.length == 2;
+            case "JOIN", "EXIT", "CHTG", "CREA" -> args.length == 2;
             case "CHTP" -> args.length == 3;
-            default -> false;
+            default -> {
+                logger.warning("Invalid Command arguments size: " + command + " " + args.length);
+                yield false;
+            }
         };
     }
 

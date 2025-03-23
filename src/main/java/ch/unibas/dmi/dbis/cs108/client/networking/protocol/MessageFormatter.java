@@ -95,4 +95,22 @@ public class MessageFormatter {
             return null;
         }
     }
+
+    public String formatCreateLobby(String playerName, String lobbyName) {
+        try {
+            return "CREA$" + playerName + "$" + lobbyName;
+        } catch (Exception e) {
+            logger.severe("Failed to format create lobby: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public String formatJoinLobby(String playerName, String lobbyName) {
+        try {
+            return "JOIN$" + playerName + "$" + lobbyName;
+        } catch (Exception e) {
+            logger.severe("Failed to format join lobby: " + e.getMessage());
+            return null;
+        }
+    }
 }
