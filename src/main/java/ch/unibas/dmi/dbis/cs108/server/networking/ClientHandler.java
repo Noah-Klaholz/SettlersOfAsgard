@@ -39,7 +39,6 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         this.socket = socket;
         this.server = server;
         this.running = true;
-        //logger.setFilter(new PingFilter());
         try {
             socket.setSoTimeout(5000); // 5 second timeout
             out = new PrintWriter(socket.getOutputStream(), true);
