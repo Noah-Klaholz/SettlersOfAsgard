@@ -81,6 +81,10 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             out.println(message);
         } else {
             logger.info("Client socket is closed. Unable to send message: " + message);
+            if (running) {
+                running = false;
+                server.removeClient(this);
+            }
         }
     }
 
