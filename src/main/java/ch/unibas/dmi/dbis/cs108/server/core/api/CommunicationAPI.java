@@ -10,8 +10,6 @@ import java.util.logging.LogRecord;
  * Message String should be in the format "commandName:arg1,arg2,arg3"
  */
 public interface CommunicationAPI {
-    static final Logger logger = Logger.getLogger(GameClient.class.getName());
-
     /**
      * Filter for the logger to filter out ping messages to avoid clutter in the terminal
      */

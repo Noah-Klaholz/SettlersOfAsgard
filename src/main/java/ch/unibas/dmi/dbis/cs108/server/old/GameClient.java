@@ -10,6 +10,7 @@ import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 /**
  * The GameClient class is responsible for connecting to the server and sending/receiving messages.
@@ -22,6 +23,7 @@ public class GameClient implements CommunicationAPI {
     private BufferedReader in;
     private long lastPingTime = System.currentTimeMillis();
     private ScheduledExecutorService pingScheduler = Executors.newScheduledThreadPool(1);
+    private final Logger logger = Logger.getLogger(GameClient.class.getName());
 
     /**
      * Contstructor Method for Gameclient

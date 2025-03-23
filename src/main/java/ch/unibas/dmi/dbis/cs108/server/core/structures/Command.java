@@ -1,13 +1,15 @@
 package ch.unibas.dmi.dbis.cs108.server.core.structures;
 
 import java.util.Arrays;
+import java.util.logging.Logger;
 
-import static ch.unibas.dmi.dbis.cs108.server.core.api.CommunicationAPI.logger;
+import static ch.unibas.dmi.dbis.cs108.server.core.api.CommunicationAPI.PingFilter;
 
 /**
  * Represents a command that is sent between a client to the server
  */
 public class Command {
+    private static final Logger logger = Logger.getLogger(Command.class.getName());
     private String command;
     private String[] args;
 
@@ -18,6 +20,7 @@ public class Command {
      * Correct formatting: commandName$arg1$arg2$arg3
      */
     public Command(String message) {
+        logger.setFilter(new PingFilter());
         String[] parts = message.split("\\$");
         if(parts.length == 0){
             System.err.println("Trying to create invalid command: " + message);

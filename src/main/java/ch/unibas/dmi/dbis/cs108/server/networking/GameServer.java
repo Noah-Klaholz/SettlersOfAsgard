@@ -1,7 +1,9 @@
 package ch.unibas.dmi.dbis.cs108.server.networking;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
+import ch.unibas.dmi.dbis.cs108.server.core.api.CommunicationAPI;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
+import ch.unibas.dmi.dbis.cs108.server.core.api.CommunicationAPI.PingFilter;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -30,6 +32,7 @@ public class GameServer {
     private List<Lobby> lobbies;
 
     public GameServer(int port) {
+        logger.setFilter(new PingFilter());
         this.port = port;
         clients = new CopyOnWriteArrayList<>();
         executor = Executors.newCachedThreadPool();

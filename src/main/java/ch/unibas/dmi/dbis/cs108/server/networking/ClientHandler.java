@@ -26,6 +26,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     private Lobby currentLobby;
     private String name;
     private Player localPlayer = null;
+    private static final Logger logger = Logger.getLogger(ClientHandler.class.getName());
 
 
     /**
@@ -34,6 +35,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      * @param server the GameServer
      */
     public ClientHandler(Socket socket, GameServer server) {
+        logger.setFilter(new PingFilter());
         this.socket = socket;
         this.server = server;
         this.running = true;
