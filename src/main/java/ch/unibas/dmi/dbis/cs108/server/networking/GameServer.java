@@ -201,9 +201,11 @@ public class GameServer {
 
     public boolean containsPlayerName(String playerName){
         for (ClientHandler client : clients) {
-            if(client.getPlayer().getName().equals(playerName)){
-                return true;
-            }
+             if(client.getPlayer()!= null) {
+                 if (client.getPlayer().getName().equals(playerName)) {
+                     return true;
+                 }
+             }
         }
         return false;
     }
