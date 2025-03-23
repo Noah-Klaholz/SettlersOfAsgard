@@ -3,7 +3,7 @@ package ch.unibas.dmi.dbis.cs108.client.core.commands;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 
 /**
- * ChatCommand class is responsible for creating a chat command
+ * LeaveLobbyCommand class is responsible for handling lobby exit operations
  */
 public class LeaveLobbyCommand implements Command {
     private final Player sender;
