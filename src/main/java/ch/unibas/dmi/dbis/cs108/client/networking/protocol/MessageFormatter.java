@@ -130,4 +130,13 @@ public class MessageFormatter {
             return null;
         }
     }
+
+    public String formatListLobbies() {
+        try {
+            return "LIST$";
+        } catch (Exception e) {
+            logger.severe("Failed to format list lobbies: " + e.getMessage());
+            return null;
+        }
+    }
 }

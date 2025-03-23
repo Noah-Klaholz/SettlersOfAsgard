@@ -130,6 +130,12 @@ public class CommandSender {
     }
 
     public void sendListLobbies() {
+        try {
+            String message = formatter.formatListLobbies();
+            socketHandler.send(message);
+        } catch (Exception e) {
+            logger.severe("Failed to send pong command: " + e.getMessage());
+        }
     }
 
     public void sendPingCommand(PingCommand pingCommand) {
