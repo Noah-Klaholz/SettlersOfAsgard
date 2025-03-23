@@ -29,6 +29,10 @@ public class ClientMain {
         logger.setFilter(new PingFilter());
 
         try {
+            if (args.length < 2) {
+                logger.warning("Missing server address. Usage: java ClientMain <serverip>:<serverport>");
+                System.exit(1);
+            }
             String[] serverAddress = args[1].split(":");
             if (serverAddress.length != 2) {
                 logger.warning("Invalid server address. Expected: <serverip>:<serverport>");
@@ -101,7 +105,7 @@ public class ClientMain {
                 String lobbyId = input.replace("/join ", "").trim();
                 client.joinLobby(lobbyId);
             } else if (input.startsWith("/leave ")) {
-                String lobbyId = input.replace("/join ", "").trim();
+                String lobbyId = input.replace("/leave ", "").trim();
                 client.leaveLobby(lobbyId);
             } else if (input.startsWith("/create ")) {
                 String lobbyName = input.replace("/create ", "").trim();

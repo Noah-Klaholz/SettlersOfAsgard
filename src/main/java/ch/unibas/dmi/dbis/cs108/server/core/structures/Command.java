@@ -3,7 +3,7 @@ package ch.unibas.dmi.dbis.cs108.server.core.structures;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
-import static ch.unibas.dmi.dbis.cs108.server.core.api.CommunicationAPI.PingFilter;
+import static ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.PingFilter;
 
 /**
  * Represents a command that is sent between a client to the server
