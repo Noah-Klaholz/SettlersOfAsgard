@@ -25,8 +25,8 @@ Via gradle die jar Files builden (sofern nicht bereits vorhanden):
 ```
 Im Terminal: 
 ```shell
-Server: java -jar SettlersOfAsgard.jar server <listenport>
-Client: java -jar SettlersOfAsgard.jar client <server-ip> <server-port>
+Server: java -jar /build/libs/SettlersOfAsgard.jar server <listenport>
+Client: java -jar /build/libs/SettlersOfAsgard.jar client <server-ip> <server-port>
 ```
 Beachte: listenport und server-port müssen identisch sein.
 Die server-ip ist entweder die lokale IP-Adresse des Servers im Netzwerk oder "localhost".
