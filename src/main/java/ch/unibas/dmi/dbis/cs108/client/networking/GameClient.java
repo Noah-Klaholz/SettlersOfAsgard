@@ -2,6 +2,7 @@ package ch.unibas.dmi.dbis.cs108.client.networking;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.client.core.commands.ChatCommand;
+import ch.unibas.dmi.dbis.cs108.client.core.commands.PingCommand;
 import ch.unibas.dmi.dbis.cs108.client.core.commands.PongCommand;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import ch.unibas.dmi.dbis.cs108.client.networking.protocol.MessageParser;
@@ -185,7 +186,7 @@ public class GameClient {
                 if (rawMessage.startsWith("PING$")) {
                     String serverId = rawMessage.split("\\$").length > 1 ? rawMessage.split("\\$")[1] : "server";
 
-                    commandSender.sendPongCommand(new PongCommand(localPlayer, serverId));
+                    commandSender.sendPingCommand(new PingCommand(localPlayer));
                     return null;
                 }
                 // Handle pong responses

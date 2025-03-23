@@ -52,7 +52,7 @@ public class ClientMain {
 
             Thread receiverThread = startMessageReceiverThread(client, running);
 
-            logger.info("Connected. Type /help, /changeName <name>, /create <lobbyId>, /join <lobbyId>, /start <lobbyId>, /exit, or your chat message.");
+            logger.info("Connected. Type /help to view available commands");
 
             processInput(running, scanner, client);
 
