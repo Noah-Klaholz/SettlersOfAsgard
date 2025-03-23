@@ -19,6 +19,7 @@ public class SocketHandler {
 
     /**
      * Constructor
+     *
      * @param host String
      * @param port int
      * @throws IOException
@@ -37,6 +38,7 @@ public class SocketHandler {
 
     /**
      * Checks if the socket is connected
+     *
      * @return boolean
      */
     public boolean isConnected() {
@@ -45,6 +47,7 @@ public class SocketHandler {
 
     /**
      * Sends a message through the socket
+     *
      * @param message String
      */
     public void send(String message) {
@@ -58,14 +61,17 @@ public class SocketHandler {
 
     /**
      * Receives a message from the socket
+     *
      * @return String
      * @throws IOException
      */
     public String receive() throws IOException {
-        if (in != null && isConnected() && in.ready()) {
+        if (in != null && isConnected()) {
             try {
-                String message = in.readLine();
-                return message;
+                if (in.ready()) { // Only check ready() to avoid blocking
+                    String message = in.readLine();
+                    return message;
+                }
             } catch (SocketException e) {
                 connected = false;
                 throw e;
