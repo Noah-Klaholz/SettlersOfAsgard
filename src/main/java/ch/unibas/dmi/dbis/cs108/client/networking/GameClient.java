@@ -212,7 +212,7 @@ public class GameClient {
                 if (rawMessage.startsWith("STDN$")) {
                     System.out.println("Server sent shutdown Command, disconnecting and shutting down.");
                     disconnect();
-                    System.exit(0);
+                    return "Server has shut down. Client will terminate.";
                 }
                 // Automatically respond to server pings
                 if (rawMessage.startsWith("PING$")) {
