@@ -64,7 +64,8 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             logger.info("Client disconnected unexpectedly: " + e.getMessage());
         } finally { //TODO: Wird viel zu früh aufgerufen
             closeResources();
-            //server.removeClient(this); // Notify the server to remove this client
+            server.removeClient(this); // Notify the server to remove this client
+            running = false;
         }
     }
 
