@@ -64,6 +64,9 @@ public class DisplayFormatter {
     }
 
     private static String formatErrorMessage(String rawMessage) {
+        if(rawMessage.startsWith("ERR$106$PLAYER_ALREADY_EXISTS")) {
+            return "Could not use System name as PlayerName. Please change your Name with /changeName.";
+        }
         return "Error: " + rawMessage.substring(4);
     }
 
