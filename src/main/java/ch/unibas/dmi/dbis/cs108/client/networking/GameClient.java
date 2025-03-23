@@ -2,7 +2,7 @@ package ch.unibas.dmi.dbis.cs108.client.networking;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.client.core.commands.ChatCommand;
-import ch.unibas.dmi.dbis.cs108.client.core.commands.PingCommand;
+import ch.unibas.dmi.dbis.cs108.client.core.commands.PongCommand;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import ch.unibas.dmi.dbis.cs108.client.networking.protocol.MessageParser;
 
@@ -136,6 +136,7 @@ public class GameClient {
 
     /**
      * Creates a new lobby
+     *
      * @param lobbyName the name of the lobby
      */
     public void createLobby(String lobbyName) {
@@ -150,6 +151,7 @@ public class GameClient {
 
     /**
      * Joins a lobby
+     *
      * @param lobbyName the name of the lobby
      */
     public void joinLobby(String lobbyName) {
@@ -174,25 +176,24 @@ public class GameClient {
         try {
             String rawMessage = socketHandler.receive();
             if (rawMessage != null) {
-                if(rawMessage.startsWith("STDN$")) {
+                if (rawMessage.startsWith("STDN$")) {
                     System.out.println("Server sent shutdown Command, disconnecting and shutting down.");
                     disconnect();
                     //TODO falls es noch mehr Ressourcen zum closen gibt, dann hier!
                 }
                 // Automatically respond to server pings
                 if (rawMessage.startsWith("PING$")) {
-                    // Extract server ID if present
                     String serverId = rawMessage.split("\\$").length > 1 ? rawMessage.split("\\$")[1] : "server";
 
-                    commandSender.sendPingCommand(new PingCommand(localPlayer));
-                    return null; // Don't show ping to user
+                    commandSender.sendPongCommand(new PongCommand(localPlayer, serverId));
+                    return null;
                 }
                 // Handle pong responses
                 else if (rawMessage.startsWith("OK$PING$")) {
                     // Only show result if we initiated a ping command
                     if (lastPingTime.get() > 0) {
                         long roundTripTime = Instant.now().toEpochMilli() - lastPingTime.get();
-                        if(roundTripTime > SETTINGS.Config.TIMEOUT.getValue()) {
+                        if (roundTripTime > SETTINGS.Config.TIMEOUT.getValue()) {
                             logger.severe("Server timed out, disconnecting.");
                             disconnect();
                         }
@@ -202,8 +203,7 @@ public class GameClient {
                     return null; // Don't show automatic pong responses
                 } else if (rawMessage.startsWith("ERR$")) {
                     return "Error: " + parser.parseErrorResponse(rawMessage);
-                }
-                else {
+                } else {
                     return rawMessage;
                 }
             }
