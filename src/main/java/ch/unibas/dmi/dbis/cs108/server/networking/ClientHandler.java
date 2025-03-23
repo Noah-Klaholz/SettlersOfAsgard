@@ -255,7 +255,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     public void handleListLobbies() {
         List<Lobby> lobbies = server.getLobbies();
         StringBuilder sb = new StringBuilder("Lobbies: ");
-        if(lobbies.get(0).isEmpty()) {
+        if(lobbies.isEmpty()) {
             sb.append("No available lobbies. Create your own with /create");
         } else if(lobbies.size() == 1) {
             sb.append(lobbies.get(0).getId());
