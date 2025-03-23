@@ -3,7 +3,7 @@ package ch.unibas.dmi.dbis.cs108.server.networking;
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
-import ch.unibas.dmi.dbis.cs108.server.core.api.CommunicationAPI;
+import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 
 import java.io.*;
@@ -177,11 +177,12 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                     logger.warning("Switch-Unknown command: " + cmd.getCommand());
                     processed = false;
             }
+            /*
             if(processed) {
                 sendMessage("OK$" + cmd.toString()); // Echo the command back to the client with an OK response
             } else {
                 sendMessage("ERR$100;" + cmd.toString()); // Echo the command back to the client with an ERR response
-            }
+            }*/
         } else {
             logger.warning("ClientHandler: Invalid command: " + cmd);
         }
@@ -306,8 +307,13 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      */
     private void handleRegister(Command cmd) {
         String playerName = cmd.getArgs()[0];
-        this.localPlayer = new Player(playerName);
-        logger.info("Registering player: " + playerName);
+        if (!server.containsPlayerName(playerName)) {
+            this.localPlayer = new Player(playerName);
+            sendMessage("OK$PLAYER_REGISTERED$" + playerName);
+        }
+        else {
+            sendMessage("ERR$106$PLAYER_ALREADY_EXISTS");
+        }
     }
 
     /**
@@ -316,8 +322,21 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      */
     private void handleChangeName(Command cmd) {
         String newPlayerName = cmd.getArgs()[0];
-        sendMessage("OK$CHANGE_NAME$" + newPlayerName);
-        server.broadcast(localPlayer.getName() + " changed name to " + newPlayerName);
-        localPlayer.setName(newPlayerName);
+        if (!server.containsPlayerName(newPlayerName)){
+            sendMessage("OK$CHANGE_NAME$" + newPlayerName);
+            server.broadcast(localPlayer.getName() + " changed name to " + newPlayerName);
+            localPlayer.setName(newPlayerName);
+        }
+        else {
+            sendMessage("ERR$106$PLAYER_ALREADY_EXISTS");
+        }
+    }
+
+    /**
+     * This method returns the localPlayer variable assigned to the ClientHandler
+     * @return the current localPlayer state
+     */
+    public  Player getPlayer(){
+        return localPlayer;
     }
 }
