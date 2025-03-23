@@ -326,7 +326,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      * This method returns the localPlayer variable assigned to the ClientHandler
      * @return the current localPlayer state
      */
-    private Player getPlayer(){
+    public  Player getPlayer(){
         return localPlayer;
     }
 }
