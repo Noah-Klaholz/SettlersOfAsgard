@@ -91,7 +91,7 @@ public class MessageFormatter {
      */
     public String formatPong(String playerName) {
         try {
-            return "PONG$" + playerName;
+            return "OK$PING$" + playerName;
         } catch (Exception e) {
             logger.severe("Failed to format pong: " + e.getMessage());
             return null;
