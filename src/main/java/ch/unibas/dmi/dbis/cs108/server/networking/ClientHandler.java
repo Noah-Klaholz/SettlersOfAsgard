@@ -8,6 +8,7 @@ import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -254,7 +255,12 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     }
 
     public void handleListLobbies() {
-        System.out.println(server.getLobbies());
+        List<Lobby> lobbies = server.getLobbies();
+        StringBuilder sb = new StringBuilder("Loobies: ");
+        for (Lobby lobby : lobbies) {
+            sb.append(lobby.getId()).append(", ");
+        }
+        sendMessage(sb.toString());
     }
 
     /**
@@ -302,8 +308,9 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     }
 
     private void handleChangeName(Command cmd) {
-        String newPlayerName = cmd.getArgs()[1];
+        String newPlayerName = cmd.getArgs()[0];
         sendMessage("OK$CHANGE_NAME$" + newPlayerName);
         server.broadcast(name + " changed name to " + newPlayerName);
+        name = newPlayerName;
     }
 }

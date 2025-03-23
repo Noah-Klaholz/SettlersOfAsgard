@@ -182,11 +182,10 @@ public class GameClient {
                         return "Server answered PING$: Round-trip time: " + roundTripTime + "ms";
                     }
                     return null; // Don't show automatic pong responses
-                } else if (rawMessage.startsWith("CHAT$")) {
-                    return parser.parseChatMessage(rawMessage);
-                } else if (rawMessage.startsWith("OK$REGISTER$")) {
-                    return "Successfully registered with ID: " + parser.parseRegistrationResponse(rawMessage);
-                } else {
+                } else if (rawMessage.startsWith("ERR$")) {
+                    return "Error: " + parser.parseErrorResponse(rawMessage);
+                }
+                else {
                     return rawMessage;
                 }
             }

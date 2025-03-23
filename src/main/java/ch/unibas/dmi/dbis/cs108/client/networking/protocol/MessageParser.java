@@ -51,4 +51,8 @@ public class MessageParser {
         }
         return 0;
     }
+
+    public String parseErrorResponse(String rawMessage) {
+        return "Server sent Error message: " + rawMessage;
+    }
 }
