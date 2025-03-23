@@ -1,8 +1,8 @@
 package ch.unibas.dmi.dbis.cs108.client.networking;
 
-import ch.unibas.dmi.dbis.cs108.client.core.commands.ChatCommand;
-import ch.unibas.dmi.dbis.cs108.client.core.commands.PingCommand;
-import ch.unibas.dmi.dbis.cs108.client.core.commands.PongCommand;
+import ch.unibas.dmi.dbis.cs108.client.core.commands.chat.ChatCommand;
+import ch.unibas.dmi.dbis.cs108.client.core.commands.chat.PingCommand;
+import ch.unibas.dmi.dbis.cs108.client.core.commands.chat.PongCommand;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import ch.unibas.dmi.dbis.cs108.client.networking.protocol.MessageFormatter;
 

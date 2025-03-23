@@ -1,23 +1,24 @@
-package ch.unibas.dmi.dbis.cs108.client.core.commands;
+package ch.unibas.dmi.dbis.cs108.client.core.commands.chat;
 
+import ch.unibas.dmi.dbis.cs108.client.core.commands.Command;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 
 /**
- * ChatCommand class is responsible for creating a chat command
+ * LeaveLobbyCommand class is responsible for handling lobby exit operations
  */
-public class ChatCommand implements Command {
+public class LeaveLobbyCommand implements Command {
     private final Player sender;
-    private final String message;
+    private final String lobbyId;
 
     /**
      * Constructor for ChatCommand class
      *
      * @param sender  Player
-     * @param message String
+     * @param lobbyId String
      */
-    public ChatCommand(Player sender, String message) {
+    public LeaveLobbyCommand(Player sender, String lobbyId) {
         this.sender = sender;
-        this.message = message;
+        this.lobbyId = lobbyId;
     }
 
     /**
@@ -25,8 +26,8 @@ public class ChatCommand implements Command {
      *
      * @return String
      */
-    public String getMessage() {
-        return message;
+    public String getLobbyId() {
+        return lobbyId;
     }
 
     /**
@@ -46,6 +47,6 @@ public class ChatCommand implements Command {
         // Only handle local effects like:
         // - Updating the local chat UI
         // - Adding to chat history
-        System.out.println("Local: " + sender.getName() + ": " + message);
+        System.out.println(sender.getName() + " left Lobby: " + lobbyId);
     }
 }

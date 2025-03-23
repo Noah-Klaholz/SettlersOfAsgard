@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.core.commands;
 
+import ch.unibas.dmi.dbis.cs108.client.core.commands.chat.*;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 
 /**
