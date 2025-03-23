@@ -4,14 +4,15 @@ import ch.unibas.dmi.dbis.cs108.client.core.commands.Command;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 
 /**
- * LeaveLobbyCommand class is responsible for handling lobby exit operations
+ * LeaveLobbyCommand class is responsible for creating a chat command
+ * This command is used to leave a lobby
  */
 public class LeaveLobbyCommand implements Command {
     private final Player sender;
     private final String lobbyId;
 
     /**
-     * Constructor for ChatCommand class
+     * Constructor for LeaveLobbyCommand class
      *
      * @param sender  Player
      * @param lobbyId String

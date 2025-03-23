@@ -4,14 +4,15 @@ import ch.unibas.dmi.dbis.cs108.client.core.commands.Command;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 
 /**
- * ChatCommand class is responsible for creating a chat command
+ * CreateLobbyCommand class is responsible for creating a chat command
+ * This command is used to create a lobby
  */
 public class CreateLobbyCommand implements Command {
     private final Player sender;
     private final String lobbyId;
 
     /**
-     * Constructor for ChatCommand class
+     * Constructor for CreateLobbyCommand class
      *
      * @param sender  Player
      * @param lobbyId String
@@ -21,7 +22,7 @@ public class CreateLobbyCommand implements Command {
         this.lobbyId = lobbyId;
     }
 
-    /**
+   /**
      * Getter for message
      *
      * @return String
@@ -39,7 +40,7 @@ public class CreateLobbyCommand implements Command {
         return sender;
     }
 
-    /**
+   /**
      * Executes the command
      */
     @Override

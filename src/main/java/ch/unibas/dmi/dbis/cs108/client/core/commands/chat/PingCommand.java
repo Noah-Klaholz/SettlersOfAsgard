@@ -4,15 +4,15 @@ import ch.unibas.dmi.dbis.cs108.client.core.commands.Command;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 
 /**
- * PingCommand class is responsible for creating a ping command
- * This command is used to check the connection to the server
+ * PingCommand class is responsible for creating a chat command
+ * This command is used to ping the server
  */
 public class PingCommand implements Command {
     private final Player sender;
 
     /**
-     * Constructor for the PingCommand
-     * @param sender
+     * Constructor for PingCommand class
+     * @param sender Player
      */
     public PingCommand(Player sender) {
         this.sender = sender;

@@ -4,14 +4,15 @@ import ch.unibas.dmi.dbis.cs108.client.core.commands.Command;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 
 /**
- * ChatCommand class is responsible for creating a chat command
+ * JoinLobbyCommand class is responsible for creating a chat command
+ * This command is used to join a lobby
  */
 public class JoinLobbyCommand implements Command {
     private final Player sender;
     private final String lobbyId;
 
     /**
-     * Constructor for ChatCommand class
+     * Constructor for JoinLobbyCommand class
      *
      * @param sender  Player
      * @param lobbyId String

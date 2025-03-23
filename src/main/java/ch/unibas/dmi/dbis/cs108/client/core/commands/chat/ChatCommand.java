@@ -5,6 +5,7 @@ import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 
 /**
  * ChatCommand class is responsible for creating a chat command
+ * This command is used to send a message to the chat
  */
 public class ChatCommand implements Command {
     private final Player sender;
