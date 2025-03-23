@@ -86,6 +86,11 @@ public class MessageFormatter {
         }
     }
 
+    /**
+     * Formats a pong message.
+     * @param playerName
+     * @return
+     */
     public String formatPong(String playerName) {
         try {
             return "PONG$" + playerName;
@@ -95,6 +100,12 @@ public class MessageFormatter {
         }
     }
 
+    /**
+     * Formats a create lobby message.
+     * @param playerName The name of the player.
+     * @param lobbyName The name of the lobby.
+     * @return The formatted message.
+     */
     public String formatCreateLobby(String playerName, String lobbyName) {
         try {
             return "CREA$" + playerName + "$" + lobbyName;
@@ -104,6 +115,12 @@ public class MessageFormatter {
         }
     }
 
+    /**
+     * Formats a join lobby message.
+     * @param playerName The name of the player.
+     * @param lobbyName  The name of the lobby.
+     * @return The formatted message.
+     */
     public String formatJoinLobby(String playerName, String lobbyName) {
         try {
             return "JOIN$" + playerName + "$" + lobbyName;
@@ -113,6 +130,12 @@ public class MessageFormatter {
         }
     }
 
+    /**
+     * Formats a leave lobby message.
+     * @param playerName The name of the player.
+     * @param lobbyName The name of the lobby.
+     * @return The formatted message.
+     */
     public String formatLeaveLobby(String playerName, String lobbyName) {
         try {
             return "EXIT$" + playerName + "$" + lobbyName;
@@ -122,6 +145,10 @@ public class MessageFormatter {
         }
     }
 
+    /**
+     * Formats a start game message.
+     * @return The formatted message.
+     */
     public String formatStartGame() {
         try {
             return "STRT$";
@@ -131,6 +158,10 @@ public class MessageFormatter {
         }
     }
 
+    /**
+     * Formats a list lobbies message.
+     * @return The formatted message.
+     */
     public String formatListLobbies() {
         try {
             return "LIST$";
