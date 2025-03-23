@@ -96,7 +96,6 @@ public class GameClient implements CommunicationAPI {
      * Starts the client and sends a test message to the server.
      */
     public void start() {
-        //TODO implement client logic (Actual Game Logic) -> Game Should start here (call to main menu)
         sendMessage("TEST$arg1,arg2,arg3");    // test command
     }
 
@@ -126,7 +125,7 @@ public class GameClient implements CommunicationAPI {
 
     /**
      * Handles a received chat message from the server.
-     * For now: Just log the message //TODO: Implement actual chat handling
+     * For now: Just log the message
      * @param cmd The command to handle
      */
     public void handleRecievedChatMessage(Command cmd) {

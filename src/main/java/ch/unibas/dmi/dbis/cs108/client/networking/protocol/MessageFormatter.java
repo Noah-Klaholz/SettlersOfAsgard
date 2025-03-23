@@ -39,7 +39,7 @@ public class MessageFormatter {
         }
     }
 
-    //TODO Was macht das hier?? -> Server überprüft automatisch, glaub das ist nicht nötig
+    //TODO Was macht das hier? -> Server überprüft automatisch, glaub das ist nicht nötig
     /**
      * Formats a disconnect notification.
      *
