@@ -45,6 +45,8 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         } catch (IOException e) {
             logger.severe("Error setting up client handler: " + e.getMessage());
+            closeResources();
+            running = false;
         }
     }
 
