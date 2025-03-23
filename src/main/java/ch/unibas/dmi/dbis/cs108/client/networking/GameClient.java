@@ -86,9 +86,18 @@ public class GameClient {
     public void disconnect() {
         if (isConnected()) {
             try {
-                //commandSender.sendDisconnect(localPlayer); Nicht nötig, Server überprüft Connection Status regelmäßig (und es gibt keinen Disconnect Command)
                 socketHandler.close();
                 connected = false;
+                if (pingScheduler != null) {
+                    pingScheduler.shutdown();
+                    try {
+                        if (!pingScheduler.awaitTermination(500, TimeUnit.MILLISECONDS)) {
+                            pingScheduler.shutdownNow();
+                        }
+                    } catch (InterruptedException e) {
+                        pingScheduler.shutdownNow();
+                    }
+                }
             } catch (Exception e) {
                 logger.severe("Failed to disconnect: " + e.getMessage());
             }
