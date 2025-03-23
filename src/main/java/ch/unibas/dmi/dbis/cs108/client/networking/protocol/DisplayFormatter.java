@@ -35,6 +35,11 @@ public class DisplayFormatter {
         return rawMessage; // Default fallback
     }
 
+    /**
+     * Formats a chat Message to be displayed in the terminal correctly
+     * @param rawMessage the raw message that gets transmitted
+     * @return the formatted message
+     */
     private static String formatChatMessage(String rawMessage) {
         String[] parts = rawMessage.split("\\$", 3);
         if (parts.length >= 3) {
@@ -43,10 +48,20 @@ public class DisplayFormatter {
         return rawMessage;
     }
 
+    /**
+     * Formats a notification message (Info) to be displayed as such
+     * @param rawMessage the raw message that gets transmitted
+     * @return the formatted message
+     */
     private static String formatNotification(String rawMessage) {
         return "Info: " + rawMessage.substring(5);
     }
 
+    /**
+     * Formats a join message
+     * @param rawMessage the raw message that gets transmitted
+     * @return the formatted message
+     */
     private static String formatJoinMessage(String rawMessage) {
         String[] parts = rawMessage.split("\\$", 3);
         if (parts.length >= 3) {
@@ -55,6 +70,11 @@ public class DisplayFormatter {
         return rawMessage;
     }
 
+    /**
+     * Formats a leave-lobby message
+     * @param rawMessage the raw message that gets transmitted
+     * @return the formatted message
+     */
     private static String formatLeaveMessage(String rawMessage) {
         String[] parts = rawMessage.split("\\$", 3);
         if (parts.length >= 3) {
@@ -63,6 +83,11 @@ public class DisplayFormatter {
         return rawMessage;
     }
 
+    /**
+     * Formats error messages to be displayed as hints to the player
+     * @param rawMessage the error message
+     * @return the player hint
+     */
     private static String formatErrorMessage(String rawMessage) {
         if(rawMessage.startsWith("ERR$106$PLAYER_ALREADY_EXISTS")) {
             return "Could not use System name as PlayerName. Please change your Name with /changeName.";
@@ -72,10 +97,20 @@ public class DisplayFormatter {
         return "Error: " + rawMessage.substring(4);
     }
 
+    /**
+     * Formats a lobby-List to be displayed
+     * @param rawMessage the lobby-list-message
+     * @return the formatted list
+     */
     private static String formatLobbyList(String rawMessage) {
         return "Available lobbies: " + rawMessage.substring(5);
     }
 
+    /**
+     * Formats a success-message to be displayed
+     * @param rawMessage the raw success-message
+     * @return the formatted message
+     */
     private static String formatSuccessMessage(String rawMessage) {
         return "Success: " + rawMessage.substring(3);
     }

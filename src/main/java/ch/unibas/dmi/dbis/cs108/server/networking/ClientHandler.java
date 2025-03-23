@@ -226,7 +226,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     }
     /**
      * Sets the current lobby the client is in.
-     * @param currentLobby
+     * @param currentLobby the current lobby of the respective player
      * @see Lobby
      */
     public void setCurrentLobby(Lobby currentLobby) {
