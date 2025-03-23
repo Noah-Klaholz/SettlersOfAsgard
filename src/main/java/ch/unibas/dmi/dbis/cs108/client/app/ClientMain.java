@@ -1,6 +1,5 @@
 package ch.unibas.dmi.dbis.cs108.client.app;
 
-import ch.unibas.dmi.dbis.cs108.Main;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import ch.unibas.dmi.dbis.cs108.client.networking.GameClient;
 import ch.unibas.dmi.dbis.cs108.server.core.api.CommunicationAPI.PingFilter;
@@ -20,6 +19,7 @@ public class ClientMain {
     /**
      * Main method
      * Entry point for the client application.
+     *
      * @param args String[] Command line arguments
      */
     public static void main(String[] args) {
@@ -72,6 +72,7 @@ public class ClientMain {
 
     /**
      * Check if the client is connected to the server
+     *
      * @param client GameClient
      * @return boolean
      */
@@ -85,9 +86,10 @@ public class ClientMain {
 
     /**
      * Process user input
+     *
      * @param running AtomicBoolean
      * @param scanner Scanner
-     * @param client GameClient
+     * @param client  GameClient
      */
     private static void processInput(AtomicBoolean running, Scanner scanner, GameClient client) {
         while (running.get()) {
@@ -125,7 +127,8 @@ public class ClientMain {
 
     /**
      * Start a message receiver thread
-     * @param client GameClient
+     *
+     * @param client  GameClient
      * @param running AtomicBoolean
      * @return Thread
      */
@@ -137,6 +140,11 @@ public class ClientMain {
                     String message = client.receiveMessage();
                     if (message != null) {
                         System.out.println(message);
+                        // If server shutdown was detected, the message will be returned before System.exit
+                        if (message.contains("Server has shut down")) {
+                            running.set(false);
+                            break;
+                        }
                     }
                     Thread.sleep(MESSAGE_POLLING_DELAY); // Small delay to prevent CPU hogging
                 }
