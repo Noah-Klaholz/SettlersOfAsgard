@@ -2,7 +2,7 @@ package ch.unibas.dmi.dbis.cs108.server.old;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
-import ch.unibas.dmi.dbis.cs108.server.core.api.CommunicationAPI;
+import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 
 import java.io.*;
 import java.net.*;

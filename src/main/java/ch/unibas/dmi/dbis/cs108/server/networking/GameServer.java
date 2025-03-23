@@ -3,7 +3,7 @@ package ch.unibas.dmi.dbis.cs108.server.networking;
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.server.core.api.CommunicationAPI;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
-import ch.unibas.dmi.dbis.cs108.server.core.api.CommunicationAPI.PingFilter;
+import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.PingFilter;
 
 import java.io.IOException;
 import java.net.ServerSocket;
