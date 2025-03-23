@@ -53,6 +53,9 @@ public class MessageParser {
     }
 
     public String parseErrorResponse(String rawMessage) {
+        if(rawMessage.startsWith("ERR$106$PLAYER_ALREADY_EXISTS")) {
+            return "Player already exists. Change your name with /changeName";
+        }
         return "Server sent Error message: " + rawMessage;
     }
 }

@@ -184,9 +184,7 @@ public class GameClient {
                 }
                 // Automatically respond to server pings
                 if (rawMessage.startsWith("PING$")) {
-                    String serverId = rawMessage.split("\\$").length > 1 ? rawMessage.split("\\$")[1] : "server";
-
-                    commandSender.sendPingCommand(new PingCommand(localPlayer));
+                    // commandSender.sendPingCommand(new PingCommand(localPlayer)); Unnecessary due to scheduler
                     return null;
                 }
                 // Handle pong responses
