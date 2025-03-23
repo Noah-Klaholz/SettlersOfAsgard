@@ -37,6 +37,7 @@ public class DisplayFormatter {
 
     /**
      * Formats a chat Message to be displayed in the terminal correctly
+     *
      * @param rawMessage the raw message that gets transmitted
      * @return the formatted message
      */
@@ -50,6 +51,7 @@ public class DisplayFormatter {
 
     /**
      * Formats a notification message (Info) to be displayed as such
+     *
      * @param rawMessage the raw message that gets transmitted
      * @return the formatted message
      */
@@ -59,6 +61,7 @@ public class DisplayFormatter {
 
     /**
      * Formats a join message
+     *
      * @param rawMessage the raw message that gets transmitted
      * @return the formatted message
      */
@@ -72,6 +75,7 @@ public class DisplayFormatter {
 
     /**
      * Formats a leave-lobby message
+     *
      * @param rawMessage the raw message that gets transmitted
      * @return the formatted message
      */
@@ -85,15 +89,16 @@ public class DisplayFormatter {
 
     /**
      * Formats error messages to be displayed as hints to the player
+     *
      * @param rawMessage the error message
      * @return the player hint
      */
     private static String formatErrorMessage(String rawMessage) {
-        if(rawMessage.startsWith("ERR$106$PLAYER_ALREADY_EXISTS")) {
+        if (rawMessage.startsWith("ERR$106$PLAYER_ALREADY_EXISTS")) {
             return "Could not use System name as PlayerName. Please change your Name with /changeName.";
-        } else if(rawMessage.startsWith("ERR$106$LOBBY_CREATION_FAILED")) {
+        } else if (rawMessage.startsWith("ERR$106$LOBBY_CREATION_FAILED")) {
             return "Could not create lobby, because a lobby with this name already exists. You can join an existing lobby with /join.";
-        } else if(rawMessage.startsWith("ERR$106$JOIN_LOBBY_FAILED")) {
+        } else if (rawMessage.startsWith("ERR$106$JOIN_LOBBY_FAILED")) {
             return "Could not join lobby, because lobby does not exist. Create a new one with /create.";
         }
         return "Error: " + rawMessage.substring(4);
@@ -101,6 +106,7 @@ public class DisplayFormatter {
 
     /**
      * Formats a lobby-List to be displayed
+     *
      * @param rawMessage the lobby-list-message
      * @return the formatted list
      */
@@ -110,6 +116,7 @@ public class DisplayFormatter {
 
     /**
      * Formats a success-message to be displayed
+     *
      * @param rawMessage the raw success-message
      * @return the formatted message
      */
