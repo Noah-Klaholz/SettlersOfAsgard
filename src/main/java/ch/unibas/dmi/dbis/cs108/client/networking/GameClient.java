@@ -102,21 +102,37 @@ public class GameClient {
      */
     public void disconnect() {
         if (isConnected()) {
+            // Send disconnect message before closing if possible
             try {
+                commandSender.sendDisconnect(localPlayer);
+            } catch (Exception e) {
+                // Just log, continue with disconnect
+                logger.info("Failed to send disconnect message: " + e.getMessage());
+            }
+
+            try {
+                connected = false; // Set flag first to prevent recursive calls
                 socketHandler.close();
-                connected = false;
-                if (pingScheduler != null) {
+
+                // Shutdown ping scheduler properly
+                if (pingScheduler != null && !pingScheduler.isShutdown()) {
                     pingScheduler.shutdown();
                     try {
                         if (!pingScheduler.awaitTermination(500, TimeUnit.MILLISECONDS)) {
                             pingScheduler.shutdownNow();
                         }
                     } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
                         pingScheduler.shutdownNow();
                     }
                 }
+
+                // Reset ping time
+                lastPingTime.set(0);
+
+                logger.info("Disconnected from server");
             } catch (Exception e) {
-                logger.severe("Failed to disconnect: " + e.getMessage());
+                logger.severe("Error during disconnect: " + e.getMessage());
             }
         }
     }
