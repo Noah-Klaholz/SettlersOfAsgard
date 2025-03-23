@@ -165,6 +165,11 @@ public class GameClient {
         try {
             String rawMessage = socketHandler.receive();
             if (rawMessage != null) {
+                if(rawMessage.startsWith("STDN$")) {
+                    System.out.println("Server sent shutdown Command, disconnecting and shutting down.");
+                    disconnect();
+                    //TODO falls es noch mehr Ressourcen zum closen gibt, dann hier!
+                }
                 // Automatically respond to server pings
                 if (rawMessage.startsWith("PING$")) {
                     // Extract server ID if present
