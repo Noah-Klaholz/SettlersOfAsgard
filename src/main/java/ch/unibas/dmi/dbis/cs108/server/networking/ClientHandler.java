@@ -349,8 +349,9 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             sendMessage("OK$RGST$" + playerName);
         }
         else {
-            this.localPlayer = new Player(playerName+"2"); // Adds playerName2 as a new Player
-            sendMessage("ERR$106$PLAYER_ALREADY_EXISTS"); // Tells Client to tell player about changeName
+            String newPlayerName = playerName + "2";
+            this.localPlayer = new Player(newPlayerName); // Adds playerName2 as a new Player
+            sendMessage("ERR$106$PLAYER_ALREADY_EXISTS$"+newPlayerName); // Tells Client to tell player about changeName
         }
     }
 

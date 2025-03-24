@@ -5,6 +5,7 @@ import ch.unibas.dmi.dbis.cs108.client.core.commands.chat.ChatCommand;
 import ch.unibas.dmi.dbis.cs108.client.core.commands.chat.PongCommand;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import ch.unibas.dmi.dbis.cs108.client.networking.protocol.DisplayFormatter;
+import ch.unibas.dmi.dbis.cs108.client.networking.protocol.ErrorMessageParser;
 import ch.unibas.dmi.dbis.cs108.client.networking.protocol.MessageParser;
 
 import java.io.IOException;
@@ -23,6 +24,7 @@ public class GameClient {
     private final SocketHandler socketHandler;
     private final CommandSender commandSender;
     private final MessageParser parser;
+    private final ErrorMessageParser errorMessageParser;
     private final Player localPlayer;
     private final AtomicLong lastPingTime = new AtomicLong(0);
     private boolean connected = false;
@@ -41,6 +43,7 @@ public class GameClient {
         this.localPlayer = localPlayer;
         try {
             this.socketHandler = new SocketHandler(host, port);
+            this.errorMessageParser = new ErrorMessageParser();
             this.parser = new MessageParser();
             this.commandSender = new CommandSender(socketHandler);
             this.connected = true;
@@ -139,7 +142,6 @@ public class GameClient {
         if (isConnected()) {
             try {
                 commandSender.sendChangeName(newName);
-                localPlayer.setName(newName);
             } catch (Exception e) {
                 logger.severe("Failed to change name: " + e.getMessage());
             }
@@ -225,6 +227,12 @@ public class GameClient {
                         lastPingTime.set(0); // Reset ping time
                     }
                     return null;
+                } else if (rawMessage.startsWith("OK$CHAN$")) {
+                    String newName = rawMessage.replace("OK$CHAN$", "").trim();
+                    localPlayer.setName(newName);
+                } else if (rawMessage.startsWith("ERR$")) {
+                    errorMessageParser.parseErrorMessage(rawMessage, this);
+                    return DisplayFormatter.formatForDisplay(rawMessage);
                 } else {
                     // Format the message for display
                     return DisplayFormatter.formatForDisplay(rawMessage);
