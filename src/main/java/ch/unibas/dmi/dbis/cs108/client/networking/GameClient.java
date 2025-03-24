@@ -52,7 +52,7 @@ public class GameClient {
                         if (lastPingTime.get() > 0) {
                             long elapsed = Instant.now().toEpochMilli() - lastPingTime.get();
                             if (elapsed > SETTINGS.Config.TIMEOUT.getValue()) {
-                                logger.warning("Ping timeout detected. Disconnecting...");
+                                logger.severe("Ping timeout detected. Disconnecting...");
                                 disconnect();
                                 return;
                             }
@@ -101,6 +101,12 @@ public class GameClient {
      * Disconnects the client from the server
      */
     public void disconnect() {
+        // Always stop the ping scheduler first, regardless of connection state
+        if (pingScheduler != null && !pingScheduler.isShutdown()) {
+            pingScheduler.shutdownNow(); // Force immediate shutdown
+            pingScheduler = Executors.newScheduledThreadPool(1); // Create a new instance for future reconnects
+        }
+
         if (isConnected()) {
             // Send disconnect message before closing if possible
             try {
@@ -113,19 +119,6 @@ public class GameClient {
             try {
                 connected = false; // Set flag first to prevent recursive calls
                 socketHandler.close();
-
-                // Shutdown ping scheduler properly
-                if (pingScheduler != null && !pingScheduler.isShutdown()) {
-                    pingScheduler.shutdown();
-                    try {
-                        if (!pingScheduler.awaitTermination(500, TimeUnit.MILLISECONDS)) {
-                            pingScheduler.shutdownNow();
-                        }
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        pingScheduler.shutdownNow();
-                    }
-                }
 
                 // Reset ping time
                 lastPingTime.set(0);
