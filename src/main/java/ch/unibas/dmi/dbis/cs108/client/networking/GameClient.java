@@ -135,7 +135,6 @@ public class GameClient {
 
     /**
      * Changes the name of the local player
-     *
      * @param newName String
      */
     public void changeName(String newName) {
@@ -146,6 +145,10 @@ public class GameClient {
                 logger.severe("Failed to change name: " + e.getMessage());
             }
         }
+    }
+
+    public void setName(String newName) {
+        localPlayer.setName(newName);
     }
 
     /**
