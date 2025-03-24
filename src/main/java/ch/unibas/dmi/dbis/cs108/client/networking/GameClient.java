@@ -223,7 +223,6 @@ public class GameClient {
                             disconnect();
                         }
                         lastPingTime.set(0); // Reset ping time
-                        return "Server answered PING$: Round-trip time: " + roundTripTime + "ms";
                     }
                     return null;
                 } else {
