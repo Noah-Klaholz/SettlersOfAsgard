@@ -30,21 +30,26 @@ public class ClientMain {
 
         try {
             if (args.length < 2) {
-                logger.warning("Missing server address. Usage: java ClientMain <serverip>:<serverport>");
+                logger.warning("Missing server address. Usage: java ClientMain <serverip>:<serverport> [username]");
                 System.exit(1);
             }
             String[] serverAddress = args[1].split(":");
             if (serverAddress.length != 2) {
-                logger.warning("Invalid server address. Expected: <serverip>:<serverport>");
+                logger.warning("Invalid server address. Expected: <serverip>:<serverport> [username]");
                 System.exit(1);
             }
 
             int serverport = Integer.parseInt(serverAddress[1]);
 
-            String systemName = System.getProperty("user.name");
-            Player localPlayer = new Player(systemName);
+            String username;
+            if(args.length > 2) {
+                username = args[2];
+            } else {
+                username = System.getProperty("user.name");
+            }
+            Player localPlayer = new Player(username);
 
-            logger.info("Connecting to server at " + serverAddress[0] + ":" + serverport + " as " + systemName + "...");
+            logger.info("Connecting to server at " + serverAddress[0] + ":" + serverport + " as " + username + "...");
 
             client = new GameClient(serverAddress[0], serverport, localPlayer);
 

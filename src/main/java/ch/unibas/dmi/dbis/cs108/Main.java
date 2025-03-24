@@ -23,7 +23,7 @@ public class Main {
         if(args.length < 2) {
             logger.info("Usage:");
             logger.info("Server: java -jar SettlersOfAsgard.jar server <listenport>");
-            logger.info("Client: java -jar SettlersOfAsgard.jar client <serverip>:<serverport>");
+            logger.info("Client: java -jar SettlersOfAsgard.jar client <serverip>:<serverport> [username]");
             System.exit(1);
         }
 
