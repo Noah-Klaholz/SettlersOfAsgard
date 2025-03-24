@@ -59,12 +59,12 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     public void run() {
         String received;
         try {
-            while ((received = in.readLine()) != null) {
+            while (running && (received = in.readLine()) != null) {
                 processMessage(received);
             }
         } catch (IOException e) {
             logger.info("Client disconnected unexpectedly: " + e.getMessage());
-        } finally { //TODO: Wird viel zu früh aufgerufen
+        } finally {
             closeResources();
             server.removeClient(this); // Notify the server to remove this client
             running = false;
@@ -77,8 +77,14 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      */
     @Override
     public void sendMessage(String message) {
-        if (socket != null && !socket.isClosed()) {
+        if (out != null && socket != null && !socket.isClosed()) {
             out.println(message);
+            if (out.checkError()) { // Check if there was an error during write
+                logger.warning("Error sending message to client, closing connection.");
+                closeResources();
+                server.removeClient(this);
+                running = false;
+            }
         } else {
             logger.info("Client socket is closed. Unable to send message: " + message);
             if (running) {
@@ -94,9 +100,10 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      */
     public void sendPing() {
         if(System.currentTimeMillis() - lastPingTime > SETTINGS.Config.TIMEOUT.getValue()) {
-            logger.warning("Client timed out: " + socket.getRemoteSocketAddress());
+            logger.warning("Client timed out: " + (socket != null ? socket.getRemoteSocketAddress() : "unknown"));
             closeResources();
             server.removeClient(this);
+            running = false;
         } else {
             sendMessage("PING$");
         }
@@ -123,6 +130,9 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      */
     @Override
     public void processMessage(String received) {
+        // Update last ping time for any valid message
+        lastPingTime = System.currentTimeMillis();
+
         if (received == null || received.trim().isEmpty()) {
             logger.warning("Received null or empty message");
             sendMessage("ERR0R:103;Null");
@@ -146,7 +156,6 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                     sendGlobalChatMessage(cmd);
                     break;
                 case PING:
-                    lastPingTime = System.currentTimeMillis();
                     break;
                 case TEST:
                     logger.info("TEST");
@@ -199,9 +208,18 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      */
     public void closeResources() {
         try {
-            if (out != null) out.close();
-            if (in != null) in.close();
-            if (socket != null && !socket.isClosed()) socket.close();
+            if (out != null) {
+                out.close();
+                out = null;
+            }
+            if (in != null) {
+                in.close();
+                in = null;
+            }
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
+                socket = null;
+            }
         } catch (IOException e) {
             Logger.getLogger(ClientHandler.class.getName()).warning("Error closing resources: " + e.getMessage());
         }
@@ -230,6 +248,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     public Lobby getCurrentLobby() {
         return currentLobby;
     }
+
     /**
      * Sets the current lobby the client is in.
      * @param currentLobby the current lobby of the respective player
@@ -238,6 +257,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     public void setCurrentLobby(Lobby currentLobby) {
         this.currentLobby = currentLobby;
     }
+
     /**
      * This method handles the creation of a lobby.
      * @param cmd the transmitted command
@@ -293,9 +313,11 @@ public class ClientHandler implements Runnable, CommunicationAPI {
       */
     private void handleLeaveLobby() {
         if (currentLobby != null && currentLobby.removePlayer(this)) {
-            sendMessage("OK$LEFT_LOBBY$" + currentLobby.getId());
-            if(server.getLobby(currentLobby.getId()).isEmpty()) {
-                server.removeLobby(currentLobby);
+            String lobbyId = currentLobby.getId();
+            sendMessage("OK$LEFT_LOBBY$" + lobbyId);
+            Lobby lobby = server.getLobby(lobbyId);
+            if(lobby != null && lobby.isEmpty()) {
+                server.removeLobby(lobby);
             }
             currentLobby = null; // Clear the current lobby reference
         } else {
@@ -352,7 +374,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      * This method returns the localPlayer variable assigned to the ClientHandler
      * @return the current localPlayer state
      */
-    public  Player getPlayer(){
+    public Player getPlayer(){
         return localPlayer;
     }
 }
