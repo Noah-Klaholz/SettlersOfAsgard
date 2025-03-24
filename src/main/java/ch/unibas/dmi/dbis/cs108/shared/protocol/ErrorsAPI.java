@@ -1,5 +1,8 @@
 package ch.unibas.dmi.dbis.cs108.shared.protocol;
 
+/**
+ * Class for the errors that can be sent by the server
+ */
 public class ErrorsAPI {
 
     /**

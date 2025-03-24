@@ -147,6 +147,10 @@ public class GameClient {
         }
     }
 
+    /**
+     * Getter for the local player
+     * @param newName String
+     */
     public void setName(String newName) {
         localPlayer.setName(newName);
     }
