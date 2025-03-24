@@ -117,7 +117,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         if (currentLobby != null) {
             currentLobby.broadcastMessage(cmd.toString());
         } else {
-            sendMessage("ERR:106;NOT_IN_LOBBY");
+            sendMessage("ERR$106$NOT_IN_LOBBY");
         }
     }
 
@@ -135,7 +135,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
 
         if (received == null || received.trim().isEmpty()) {
             logger.warning("Received null or empty message");
-            sendMessage("ERR0R:103;Null");
+            sendMessage("ERR0R$103$Null");
             return;
         }
         Command cmd = new Command(received);

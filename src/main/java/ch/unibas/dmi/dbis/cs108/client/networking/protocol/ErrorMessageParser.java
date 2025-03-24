@@ -13,5 +13,6 @@ public class ErrorMessageParser {
     public void parseErrorMessage(String rawMessage, GameClient client) {
         String[] parts = rawMessage.split("[$]", 2);
         String errorMessage = parts[1];
+
     }
 }
