@@ -136,7 +136,7 @@ public class ClientMain {
                     // This method needs to be implemented in GameClient
                     String message = client.receiveMessage();
                     if (message != null) {
-                        logger.info(message);
+                        System.out.println(message);
                     }
                     Thread.sleep(MESSAGE_POLLING_DELAY); // Small delay to prevent CPU hogging
                 }

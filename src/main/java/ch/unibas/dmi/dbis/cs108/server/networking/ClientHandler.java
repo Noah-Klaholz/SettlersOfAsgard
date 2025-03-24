@@ -39,7 +39,6 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         this.socket = socket;
         this.server = server;
         this.running = true;
-        //logger.setFilter(new PingFilter());
         try {
             socket.setSoTimeout(5000); // 5 second timeout
             out = new PrintWriter(socket.getOutputStream(), true);
@@ -158,7 +157,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                 case JOIN:
                     handleJoinLobby(cmd);
                     break;
-                case EXIT:
+                case LEAVE:
                     handleLeaveLobby();
                     break;
                 case START:
@@ -226,7 +225,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     }
     /**
      * Sets the current lobby the client is in.
-     * @param currentLobby
+     * @param currentLobby the current lobby of the respective player
      * @see Lobby
      */
     public void setCurrentLobby(Lobby currentLobby) {
@@ -255,7 +254,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     public void handleListLobbies() {
         List<Lobby> lobbies = server.getLobbies();
         StringBuilder sb = new StringBuilder("Lobbies: ");
-        if(lobbies.get(0).isEmpty()) {
+        if(lobbies.isEmpty()) {
             sb.append("No available lobbies. Create your own with /create");
         } else if(lobbies.size() == 1) {
             sb.append(lobbies.get(0).getId());
@@ -321,7 +320,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             sendMessage("OK$PLAYER_REGISTERED$" + playerName);
         }
         else {
-            this.localPlayer = new Player("_"+playerName+"_"); // Adds _playerName_ as a new Player
+            this.localPlayer = new Player(playerName+"2"); // Adds playerName2 as a new Player
             sendMessage("ERR$106$PLAYER_ALREADY_EXISTS"); // Tells Client to tell player about changeName
         }
     }

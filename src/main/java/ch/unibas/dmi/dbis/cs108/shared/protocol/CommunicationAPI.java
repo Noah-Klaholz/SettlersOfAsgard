@@ -51,6 +51,7 @@ public interface CommunicationAPI {
             SYNCHRONIZE("SYNC"), // Request synchronization of the game
             CHANGENAME("CHAN"), // Players changes his nickname
             REGISTER("RGST"), // Register a new player
+            LEAVE("LEAV"), // Leave current lobby
             // game mechanics
             STARTTURN("TURN"), // starts turn
             ENDTURN("ENDT"), // ends turn
