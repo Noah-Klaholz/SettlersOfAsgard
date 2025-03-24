@@ -140,7 +140,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         }
         Command cmd = new Command(received);
         if (cmd.isValid()) {
-            boolean processed = true; // Assume command is processed, only change in default (error) case
+            boolean answer = false; // Assume command does not have to be answered
             logger.info("Server processing " + cmd);
 
             NetworkProtocol.Commands command;
@@ -156,15 +156,14 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                     sendGlobalChatMessage(cmd);
                     break;
                 case PING:
+                    answer = true;
                     break;
                 case TEST:
                     logger.info("TEST");
                     break;
                 case OK:
-                    processed = false;
                     break;
                 case ERROR:
-                    processed = false;
                     logger.info("Client sent an error command.");
                     break;
                 case CREATELOBBY:
@@ -188,16 +187,19 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                 case LISTLOBBIES:
                     handleListLobbies();
                     break;
+                case EXIT:
+                    logger.info("Client sent an exit command.");
+                    handleLeaveLobby();
+                    server.removeClient(this);
+                    break;
                 default: // Error case
                     logger.warning("Switch-Unknown command: " + cmd.getCommand());
-                    processed = false;
             }
-            /*
-            if(processed) {
+            if(answer) {
                 sendMessage("OK$" + cmd.toString()); // Echo the command back to the client with an OK response
             } else {
                 sendMessage("ERR$100;" + cmd.toString()); // Echo the command back to the client with an ERR response
-            }*/
+            }
         } else {
             logger.warning("ClientHandler: Invalid command: " + cmd);
         }
@@ -269,7 +271,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         Lobby lobby = server.createLobby(lobbyId, maxPlayers);
         if (lobby != null && lobby.addPlayer(this)) {
             currentLobby = lobby;
-            sendMessage("OK$LOBBY_CREATED$" + lobbyId);
+            sendMessage("OK$CREA$" + lobbyId);
         } else {
             sendMessage("ERR$106$LOBBY_CREATION_FAILED");
         }
@@ -302,7 +304,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         Lobby lobby = server.getLobby(lobbyId);
         if (lobby != null && lobby.addPlayer(this)) {
             currentLobby = lobby; // Set the current lobby
-            sendMessage("OK$JOINED_LOBBY$" + lobbyId);
+            sendMessage("OK$JOIN$" + lobbyId);
         } else {
             sendMessage("ERR$106$JOIN_LOBBY_FAILED");
         }
@@ -314,7 +316,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     private void handleLeaveLobby() {
         if (currentLobby != null && currentLobby.removePlayer(this)) {
             String lobbyId = currentLobby.getId();
-            sendMessage("OK$LEFT_LOBBY$" + lobbyId);
+            sendMessage("OK$LEAV$" + lobbyId);
             Lobby lobby = server.getLobby(lobbyId);
             if(lobby != null && lobby.isEmpty()) {
                 server.removeLobby(lobby);
@@ -330,7 +332,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      */
     private void handleStartGame() {
         if (currentLobby != null && currentLobby.getPlayers().get(0) == this && currentLobby.startGame()) {
-            sendMessage("OK$GAME_STARTED");
+            sendMessage("OK$STRT");
             //TODO Start Game
         } else {
             sendMessage("ERR$106$CANNOT_START_GAME");
@@ -346,7 +348,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         String playerName = cmd.getArgs()[0];
         if (!server.containsPlayerName(playerName)) {
             this.localPlayer = new Player(playerName);
-            sendMessage("OK$PLAYER_REGISTERED$" + playerName);
+            sendMessage("OK$RGST$" + playerName);
         }
         else {
             this.localPlayer = new Player(playerName+"2"); // Adds playerName2 as a new Player
@@ -361,7 +363,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     private void handleChangeName(Command cmd) {
         String newPlayerName = cmd.getArgs()[0];
         if (!server.containsPlayerName(newPlayerName)){
-            sendMessage("OK$CHANGE_NAME$" + newPlayerName);
+            sendMessage("OK$CHAN$" + newPlayerName);
             server.broadcast(localPlayer.getName() + " changed name to " + newPlayerName);
             localPlayer.setName(newPlayerName);
         }
