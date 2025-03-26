@@ -194,4 +194,20 @@ public class MessageFormatter {
             return null;
         }
     }
+
+    public String formatWhisper(String playerName, String whisper) {
+        try {
+            String[] parts = whisper.split(" ");
+            if(parts.length == 2) {
+                String receiver = parts[0];
+                String message = parts[1];
+                return "CHTP$" + playerName + "$" + receiver + "$" + message;
+            } else {
+                throw new IllegalArgumentException("Not enough arguments for whisper");
+            }
+        } catch (Exception e) {
+            logger.severe("Failed to format whisper: " + e.getMessage());
+            return null;
+        }
+    }
 }

@@ -215,4 +215,13 @@ public class CommandSender {
             logger.severe("Failed to send list all players command: " + e.getMessage());
         }
     }
+
+    public void sendWhisper(String playerName,String whisper) {
+        try {
+            String message = formatter.formatWhisper(playerName, whisper);
+            socketHandler.send(message);
+        } catch (Exception e) {
+            logger.severe("Failed to send whisper command: " + e.getMessage());
+        }
+    }
 }
