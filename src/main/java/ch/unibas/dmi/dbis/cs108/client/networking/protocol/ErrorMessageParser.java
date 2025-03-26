@@ -34,6 +34,9 @@ public class ErrorMessageParser {
          * E.g. Player already exists is a normal error -> no logging!
          */
         switch(err) {
+            case PLAYER_DOES_NOT_EXIST:
+                logger.warning("Player does not exist");
+                break;
             case NULL_MESSAGE_RECIEVED:
                 logger.warning("Null message received");
                 break;
