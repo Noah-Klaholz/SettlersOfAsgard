@@ -190,6 +190,10 @@ public class CommandHandler {
         String[] parts = cmd.getArgs();
         String senderName = parts[0];
         String receiverName = parts[1];
+        if(receiverName.equals(senderName)) {
+            sendMessage("ERR$106$CANNOT_WHISPER_TO_SELF");
+            return;
+        }
         String message = parts[2];
         if (server.containsPlayerName(receiverName)) {
             server.getClients().forEach(client -> {

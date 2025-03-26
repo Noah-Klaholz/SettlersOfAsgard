@@ -34,6 +34,9 @@ public class ErrorMessageParser {
          * E.g. Player already exists is a normal error -> no logging!
          */
         switch(err) {
+            case CANNOT_WHISPER_TO_SELF:
+                logger.warning("Cannot whisper to self");
+                break;
             case PLAYER_DOES_NOT_EXIST:
                 logger.warning("Player does not exist");
                 break;
