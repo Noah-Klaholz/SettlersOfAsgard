@@ -3,6 +3,7 @@ package ch.unibas.dmi.dbis.cs108.server.networking;
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
+import ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 
@@ -23,10 +24,11 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     private PrintWriter out;
     private BufferedReader in;
     private long lastPingTime = System.currentTimeMillis();
-    private GameServer server; // Reference to the GameServer
+    protected GameServer server; // Reference to the GameServer
+    private CommandHandler ch; // Reference to a CommandHandler
     private boolean running;
-    private Lobby currentLobby;
-    private Player localPlayer = null;
+    protected Lobby currentLobby;
+    protected Player localPlayer = null;
     private static final Logger logger = Logger.getLogger(ClientHandler.class.getName());
 
 
@@ -40,6 +42,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         this.socket = socket;
         this.server = server;
         this.running = true;
+        this.ch = new CommandHandler(this);
         try {
             socket.setSoTimeout(SETTINGS.Config.TIMEOUT.getValue()); // 5 second timeout
             out = new PrintWriter(socket.getOutputStream(), true);
@@ -73,6 +76,28 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     }
 
     /**
+     * Closes the resources associated with the client handler.
+     */
+    public void closeResources() {
+        try {
+            if (out != null) {
+                out.close();
+                out = null;
+            }
+            if (in != null) {
+                in.close();
+                in = null;
+            }
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
+                socket = null;
+            }
+        } catch (IOException e) {
+            Logger.getLogger(ClientHandler.class.getName()).warning("Error closing resources: " + e.getMessage());
+        }
+    }
+
+    /**
      * Sends a String message to the client.
      * @param message the message String to send
      */
@@ -96,6 +121,14 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     }
 
     /**
+     * Sends a global chat message to all players in the server.
+     * @param cmd the command to send
+     */
+    public void sendGlobalChatMessage(Command cmd) {
+        server.broadcast(cmd.toString());
+    }
+
+    /**
      * Sends a PING message to the corresponding client.
      * If the client does not respond within the timeout period, the client is disconnected.
      */
@@ -111,12 +144,57 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     }
 
     /**
-     * Sends a global chat message to all players in the lobby.
-     * @param cmd the command to send
+     * Returns the running status of the client handler.
+     * @return true if the client handler is running, false otherwise
      */
-    public void sendGlobalChatMessage(Command cmd) {
-        server.broadcast(cmd.toString());
+    public boolean isRunning() {
+        return running;
     }
+
+    /**
+     * Stops the client handler.
+     */
+    public void stop() {
+        running = false;
+    }
+
+
+    public GameServer getServer() {return server;}
+
+    /**
+     * Returns the current lobby the client is in.
+     * @return the current Lobby as a
+     * @see Lobby
+     */
+    public Lobby getCurrentLobby() {
+        return currentLobby;
+    }
+
+    /**
+     * Sets the current lobby the client is in.
+     * @param currentLobby the current lobby of the respective player
+     * @see Lobby
+     */
+    public void setCurrentLobby(Lobby currentLobby) {
+        this.currentLobby = currentLobby;
+    }
+
+    /**
+     * This method returns the localPlayer variable assigned to the ClientHandler
+     * @return the current localPlayer state
+     */
+    public Player getPlayer(){return localPlayer;}
+
+    /**
+     * Sets the local player to the given Player argument
+     * @param player
+     */
+    public void setPlayer(Player player){localPlayer = player;}
+    /**
+     * This method returns the name of the localPlayer assigned to the ClientHandler
+     * @return the name of the current localPlayer
+     */
+    public String getPlayerName() {return localPlayer.getName();}
 
     /**
      * Processes a received message from the client.
@@ -164,32 +242,32 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                     logger.info("Client sent an error command.");
                     break;
                 case CREATELOBBY:
-                    handleCreateLobby(cmd);
+                    ch.handleCreateLobby(cmd);
                     break;
                 case JOIN:
-                    handleJoinLobby(cmd);
+                    ch.handleJoinLobby(cmd);
                     break;
                 case LEAVE:
-                    handleLeaveLobby();
+                    ch.handleLeaveLobby();
                     break;
                 case START:
-                    handleStartGame();
+                    ch.handleStartGame();
                     break;
                 case CHANGENAME:
-                    handleChangeName(cmd);
+                    ch.handleChangeName(cmd);
                     break;
                 case REGISTER:
-                    handleRegister(cmd);
+                    ch.handleRegister(cmd);
                     break;
                 case LISTLOBBIES:
-                    handleListLobbies();
+                    ch.handleListLobbies();
                     break;
                 case LISTPLAYERS:
-                    handleListPlayers(cmd);
+                    ch.handleListPlayers(cmd);
                     break;
                 case EXIT:
                     logger.info("Client sent an exit command.");
-                    handleLeaveLobby();
+                    ch.handleLeaveLobby();
                     server.removeClient(this);
                     break;
                 default: // Error case
@@ -202,208 +280,4 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             logger.warning("ClientHandler: Invalid command: " + cmd);
         }
     }
-
-    private void handleListPlayers(Command cmd) {
-        String[] arg = cmd.getArgs();
-        if(arg.length != 1) {
-            sendMessage("ERR$101$INVALID_ARGUMENTS");
-            return;
-        } else {
-            String list;
-            if(arg[0].equals("LOBBY")) {
-                if(currentLobby != null) {
-                    list = currentLobby.listPlayers();
-                    sendMessage(list);
-                } else {
-                    sendMessage("ERR$106$NOT_IN_LOBBY");
-                }
-            } else if(arg[0].equals("SERVER")) {
-                list = server.listPlayers();
-                sendMessage(list);
-            } else {
-                sendMessage("ERR$101$INVALID_ARGUMENTS");
-            }
-
-        }
-    }
-
-    /**
-     * Closes the resources associated with the client handler.
-     */
-    public void closeResources() {
-        try {
-            if (out != null) {
-                out.close();
-                out = null;
-            }
-            if (in != null) {
-                in.close();
-                in = null;
-            }
-            if (socket != null && !socket.isClosed()) {
-                socket.close();
-                socket = null;
-            }
-        } catch (IOException e) {
-            Logger.getLogger(ClientHandler.class.getName()).warning("Error closing resources: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Returns the running status of the client handler.
-     * @return true if the client handler is running, false otherwise
-     */
-    public boolean isRunning() {
-        return running;
-    }
-
-    /**
-     * Stops the client handler.
-     */
-    public void stop() {
-        running = false;
-    }
-
-    /**
-     * Returns the current lobby the client is in.
-     * @return the current Lobby as a
-     * @see Lobby
-     */
-    public Lobby getCurrentLobby() {
-        return currentLobby;
-    }
-
-    /**
-     * Sets the current lobby the client is in.
-     * @param currentLobby the current lobby of the respective player
-     * @see Lobby
-     */
-    public void setCurrentLobby(Lobby currentLobby) {
-        this.currentLobby = currentLobby;
-    }
-
-    /**
-     * This method handles the creation of a lobby.
-     * @param cmd the transmitted command
-     */
-    private void handleCreateLobby(Command cmd) {
-        String hostname = cmd.getArgs()[0]; // Falls wir später mal den Hostnamen speichern wollen -> könnte man in Lobby hinzufügen
-        String lobbyId = cmd.getArgs()[1];
-        int maxPlayers = 4; //currently, maxPlayers is set to 4
-        Lobby lobby = server.createLobby(lobbyId, maxPlayers);
-        if (lobby != null && lobby.addPlayer(this)) {
-            currentLobby = lobby;
-            sendMessage("OK$CREA$" + lobbyId);
-        } else {
-            sendMessage("ERR$106$LOBBY_CREATION_FAILED");
-        }
-    }
-
-    /**
-     * This method handles the listing of all lobbies.
-     */
-    public void handleListLobbies() {
-        List<Lobby> lobbies = server.getLobbies();
-
-        if (lobbies.isEmpty()) {
-            sendMessage("Lobbies: No available lobbies. Create your own with /create");
-            return;
-        }
-
-        String lobbyList = lobbies.stream()
-                .map(Lobby::getId)
-                .collect(Collectors.joining(", "));
-
-        sendMessage("Lobbies: " + lobbyList);
-    }
-
-    /**
-     * This method handles a player (client) joining a Lobby.
-     * @param cmd the transmitted command
-     */
-    private void handleJoinLobby(Command cmd) {
-        String lobbyId = cmd.getArgs()[1];
-        Lobby lobby = server.getLobby(lobbyId);
-        if (lobby != null && lobby.addPlayer(this)) {
-            currentLobby = lobby; // Set the current lobby
-            sendMessage("OK$JOIN$" + lobbyId);
-        } else {
-            sendMessage("ERR$106$JOIN_LOBBY_FAILED");
-        }
-    }
-
-    /**
-     * This method handles a player (client) exiting a Lobby.
-      */
-    private void handleLeaveLobby() {
-        if (currentLobby != null && currentLobby.removePlayer(this)) {
-            String lobbyId = currentLobby.getId();
-            sendMessage("OK$LEAV$" + lobbyId);
-            Lobby lobby = server.getLobby(lobbyId);
-            if(lobby != null && lobby.isEmpty()) {
-                server.removeLobby(lobby);
-            }
-            currentLobby = null; // Clear the current lobby reference
-        } else {
-            sendMessage("ERR$106$NOT_IN_LOBBY");
-        }
-    }
-
-    /**
-     * This method handles the starting of a game.
-     */
-    private void handleStartGame() {
-        if (currentLobby != null && currentLobby.getPlayers().get(0) == this && currentLobby.startGame()) {
-            sendMessage("OK$STRT");
-            //TODO Start Game
-        } else {
-            sendMessage("ERR$106$CANNOT_START_GAME");
-        }
-    }
-
-    /**
-     * This method handles the registration of a player.
-     * Gets called immediately when a player connects
-     * @param cmd the transmitted command
-     */
-    private void handleRegister(Command cmd) {
-        String playerName = cmd.getArgs()[0];
-        if (!server.containsPlayerName(playerName)) {
-            this.localPlayer = new Player(playerName);
-            sendMessage("OK$RGST$" + playerName);
-        }
-        else {
-            playerName = playerName + "2";
-            this.localPlayer = new Player(playerName); // Adds playerName2 as a new Player
-            sendMessage("ERR$106$PLAYER_ALREADY_EXISTS$"+playerName); // Tells Client to tell player about changeName
-        }
-    }
-
-    /**
-     * This method handles the changing of a player's name.
-     * @param cmd the transmitted command
-     */
-    private void handleChangeName(Command cmd) {
-        String newPlayerName = cmd.getArgs()[0];
-        if (!server.containsPlayerName(newPlayerName)){
-            sendMessage("OK$CHAN$" + newPlayerName);
-            server.broadcast(localPlayer.getName() + " changed name to " + newPlayerName);
-            localPlayer.setName(newPlayerName);
-        }
-        else {
-            newPlayerName = newPlayerName + "2";
-            this.localPlayer = new Player(newPlayerName); // Adds playerName2 as a new Player
-            sendMessage("ERR$106$PLAYER_ALREADY_EXISTS$"+newPlayerName); // Tells Client to tell player about changeName
-        }
-    }
-
-    /**
-     * This method returns the localPlayer variable assigned to the ClientHandler
-     * @return the current localPlayer state
-     */
-    public Player getPlayer(){
-        return localPlayer;
-    }
-
-    public String getPlayerName() {return localPlayer.getName();}
 }

@@ -201,7 +201,7 @@ public class Lobby {
         }
 
         String playerList = players.stream()
-                .map(client -> client.getPlayer().getName())
+                .map(ClientHandler::getPlayerName)
                 .collect(Collectors.joining(", "));
 
         return "Players: " + playerList;

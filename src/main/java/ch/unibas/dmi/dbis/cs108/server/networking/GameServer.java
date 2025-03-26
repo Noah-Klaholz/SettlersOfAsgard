@@ -243,7 +243,7 @@ public class GameServer {
         }
 
         String playerList = clients.stream()
-                .map(client -> client.getPlayer().getName())
+                .map(ClientHandler::getPlayerName)
                 .collect(Collectors.joining(", "));
 
         return "Players: " + playerList;
