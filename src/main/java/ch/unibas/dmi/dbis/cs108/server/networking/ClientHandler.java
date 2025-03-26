@@ -10,6 +10,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * The ClientHandler class is responsible for handling the communication between the server and a client.
@@ -187,6 +188,9 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                 case LISTLOBBIES:
                     handleListLobbies();
                     break;
+                case LISTPLAYERS:
+                    handleListPlayers(cmd);
+                    break;
                 case EXIT:
                     logger.info("Client sent an exit command.");
                     handleLeaveLobby();
@@ -200,6 +204,30 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             }
         } else {
             logger.warning("ClientHandler: Invalid command: " + cmd);
+        }
+    }
+
+    private void handleListPlayers(Command cmd) {
+        String[] arg = cmd.getArgs();
+        if(arg.length != 1) {
+            sendMessage("ERR$101$INVALID_ARGUMENTS");
+            return;
+        } else {
+            String list;
+            if(arg[0].equals("LOBBY")) {
+                if(currentLobby != null) {
+                    list = currentLobby.listPlayers();
+                    sendMessage(list);
+                } else {
+                    sendMessage("ERR$106$NOT_IN_LOBBY");
+                }
+            } else if(arg[0].equals("SERVER")) {
+                list = server.listPlayers();
+                sendMessage(list);
+            } else {
+                sendMessage("ERR$101$INVALID_ARGUMENTS");
+            }
+
         }
     }
 
@@ -280,17 +308,17 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      */
     public void handleListLobbies() {
         List<Lobby> lobbies = server.getLobbies();
-        StringBuilder sb = new StringBuilder("Lobbies: ");
-        if(lobbies.isEmpty()) {
-            sb.append("No available lobbies. Create your own with /create");
-        } else if(lobbies.size() == 1) {
-            sb.append(lobbies.get(0).getId());
-        } else {
-            for (Lobby lobby : lobbies) {
-                sb.append(lobby.getId()).append(", ");
-            }
+
+        if (lobbies.isEmpty()) {
+            sendMessage("Lobbies: No available lobbies. Create your own with /create");
+            return;
         }
-        sendMessage(sb.toString());
+
+        String lobbyList = lobbies.stream()
+                .map(Lobby::getId)
+                .collect(Collectors.joining(", "));
+
+        sendMessage("Lobbies: " + lobbyList);
     }
 
     /**
@@ -380,4 +408,6 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     public Player getPlayer(){
         return localPlayer;
     }
+
+    public String getPlayerName() {return localPlayer.getName();}
 }

@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.networking;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
+import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import ch.unibas.dmi.dbis.cs108.server.core.api.CommunicationAPI;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.PingFilter;
@@ -15,6 +16,7 @@ import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * The GameServer class is responsible for managing the clients and their connections.
@@ -235,4 +237,15 @@ public class GameServer {
         return lobbies;
     }
 
+    public String listPlayers() {
+        if (clients.isEmpty()) {
+            return "Players: No available players";
+        }
+
+        String playerList = clients.stream()
+                .map(client -> client.getPlayer().getName())
+                .collect(Collectors.joining(", "));
+
+        return "Players: " + playerList;
+    }
 }

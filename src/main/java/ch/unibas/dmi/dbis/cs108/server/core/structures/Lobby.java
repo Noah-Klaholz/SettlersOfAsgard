@@ -5,6 +5,7 @@ import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * An instance of this class represents a Lobby. It provides functionality regarding managing players and starting games.
@@ -192,5 +193,17 @@ public class Lobby {
         for(ClientHandler player : players) {
             player.sendMessage(message);
         }
+    }
+
+    public String listPlayers() {
+        if (players.isEmpty()) {
+            return "Players: No available players";
+        }
+
+        String playerList = players.stream()
+                .map(client -> client.getPlayer().getName())
+                .collect(Collectors.joining(", "));
+
+        return "Players: " + playerList;
     }
 }
