@@ -93,7 +93,6 @@ class ServerTest {
      * @throws IOException if an I/O error occurs during client-server communication.
      * @throws InterruptedException if the test thread is interrupted while waiting.
      */
-    /**
     @Test
     public void testConnectionLossHandling() throws IOException, InterruptedException {
         // Start the player
@@ -113,54 +112,5 @@ class ServerTest {
         // Verify that the server has removed the client
         Assertions.assertTrue(server.getClients().isEmpty(), "Server should have removed the disconnected client");
     }
-    */
 
-    /**
-    @Test
-    public void testClientToClientCommunicationInLobby() throws IOException, InterruptedException {
-        // Start the clients
-        Player player1 = new Player("player1");
-        Player player2 = new Player("player2");
-        GameClient client1 = new GameClient("127.0.0.1", 9000, player1);
-        GameClient client2 = new GameClient("127.0.0.1", 9000, player2);
-
-        // Create a message holder for client2
-        final String[] receivedMessage = {null};
-
-        // Override the receiveMessage method to capture the received message
-        GameClient client2WithOverride = new GameClient("127.0.0.1", 9000, player2) {
-            @Override
-            public String receiveMessage() {
-                String received = super.receiveMessage();
-                if (received != null && received.startsWith("CHAT$")) {
-                    receivedMessage[0] = received.split("\\$", 2)[1];
-                }
-                return received;
-            }
-        };
-
-        // Create and join a lobby
-        String lobbyId = "testLobby";
-        client1.createLobby(lobbyId);
-        Thread.sleep(500); // Wait for the lobby to be created
-
-        client2.joinLobby(lobbyId);
-        client2WithOverride.joinLobby(lobbyId);
-        Thread.sleep(500); // Wait for the clients to join the lobby
-
-        // Send a global chat message from client1
-        String message = "Hello, Client2!";
-        client1.sendChat(message);
-
-        // Wait for the message to be processed
-        Thread.sleep(1000); // Adjust the delay as needed
-
-        // Assert that client2 received the message
-        Assertions.assertEquals(message, receivedMessage[0], "Client2 should have received the global chat message");
-
-        // Disconnect the clients
-        client1.disconnect();
-        client2WithOverride.disconnect();
-    }
-    */
 }
