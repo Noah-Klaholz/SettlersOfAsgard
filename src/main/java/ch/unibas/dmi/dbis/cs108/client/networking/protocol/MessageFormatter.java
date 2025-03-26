@@ -197,7 +197,7 @@ public class MessageFormatter {
 
     public String formatWhisper(String playerName, String whisper) {
         try {
-            String[] parts = whisper.split(" ");
+            String[] parts = whisper.split(" ", 2);
             if(parts.length == 2) {
                 String receiver = parts[0];
                 String message = parts[1];

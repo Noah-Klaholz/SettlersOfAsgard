@@ -99,6 +99,7 @@ public class ClientMain {
     private static void processInput(AtomicBoolean running, Scanner scanner, GameClient client) {
         while (running.get()) {
             String input = scanner.nextLine().trim();
+            input = input.replaceAll("[$]", " ").trim();
 
             if (input.equals("/exit")) {
                 running.set(false);
