@@ -191,7 +191,16 @@ public class CommandHandler {
         String senderName = parts[0];
         String receiverName = parts[1];
         String message = parts[2];
-        if(server.containsPlayerName(receiverName)) {
+        if (server.containsPlayerName(senderName)) {
+            server.getClients().forEach(client -> {
+                if(client.isRunning() && client.getPlayerName().equals(senderName)) {
+                    client.sendMessage(receiverName + ": " + message);
+                    sendMessage("OK$CHTP$");
+                }
+            });
+        } else {
+            sendMessage("ERR$105$NO_PLAYER_FOUND_PRIVATE_MESSAGE$"+senderName);
         }
+
     }
 }

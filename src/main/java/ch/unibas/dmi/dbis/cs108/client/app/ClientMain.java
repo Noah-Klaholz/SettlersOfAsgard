@@ -126,8 +126,11 @@ public class ClientMain {
                 client.listLobbyPlayers();
             } else if (input.startsWith("/allPlayers")) {
                 client.listAllPlayers();
+            } else if (input.startsWith("@")) {
+                String whisper = input.replace("@", "").trim();
+                client.sendPrivateMessage(whisper);
             } else if (input.startsWith("/help")) {
-                logger.info("Available commands: /changeName <name>, /ping, /exit, /join <lobbyId>, /leave <lobbyId>, /create <lobbyName>, /start <lobbyId>, /listLobbies, /lobbyPlayers, /allPlayers, /help");
+                logger.info("Available commands: /changeName <name>, /ping, /exit, /join <lobbyId>, /leave <lobbyId>, /create <lobbyName>, /start <lobbyId>, /listLobbies, /lobbyPlayers, /allPlayers, /help. Typing anything else will be a global chat-message");
             } else {
                 client.sendChat(input);
             }

@@ -228,11 +228,9 @@ public class ClientHandler implements Runnable, CommunicationAPI {
 
             switch (command) {
                 case CHATPRIVATE:
-                    answer = true;
                     ch.handlePrivateMessage(cmd);
                     break;
                 case CHATGLOBAL:
-                    answer = true;
                     sendGlobalChatMessage(cmd);
                     break;
                 case PING:

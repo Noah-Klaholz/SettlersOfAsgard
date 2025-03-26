@@ -317,4 +317,14 @@ public class GameClient {
             }
         }
     }
+
+    public void sendPrivateMessage(String whisper) {
+        if(isConnected()) {
+            try {
+                commandSender.sendWhisper(whisper);
+            } catch (Exception e) {
+                logger.severe("Failed to send private message: " + e.getMessage());
+            }
+        }
+    }
 }
