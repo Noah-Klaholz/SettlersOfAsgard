@@ -194,7 +194,7 @@ public class CommandHandler {
         if (server.containsPlayerName(receiverName)) {
             server.getClients().forEach(client -> {
                 if(client.isRunning() && client.getPlayerName().equals(receiverName)) {
-                    client.sendMessage(senderName + ": " + message);
+                    client.sendMessage("<Whisper>" + senderName + ": " + message);
                     sendMessage("OK$CHTP$");
                 }
             });
