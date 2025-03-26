@@ -120,10 +120,14 @@ public class ClientMain {
             } else if (input.startsWith("/start ")) {
                 String lobbyId = input.replace("/start ", "").trim();
                 client.startGame();
-            } else if (input.startsWith("/list")) {
+            } else if (input.startsWith("/listLobbies")) {
                 client.listLobbies();
+            }else if (input.startsWith("/lobbyPlayers")) {
+                client.listLobbyPlayers();
+            } else if (input.startsWith("/allPlayers")) {
+                client.listAllPlayers();
             } else if (input.startsWith("/help")) {
-                logger.info("Available commands: /changeName <name>, /ping, /exit, /join <lobbyId>, /leave <lobbyId>, /create <lobbyName>, /start <lobbyId>, /list, /help");
+                logger.info("Available commands: /changeName <name>, /ping, /exit, /join <lobbyId>, /leave <lobbyId>, /create <lobbyName>, /start <lobbyId>, /listLobbies, /lobbyPlayers, /allPlayers, /help");
             } else {
                 client.sendChat(input);
             }

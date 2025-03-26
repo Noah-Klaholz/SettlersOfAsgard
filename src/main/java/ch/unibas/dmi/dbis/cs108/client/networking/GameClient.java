@@ -291,4 +291,30 @@ public class GameClient {
             }
         }
     }
+
+    /**
+     * Lists all players in the current lobby
+     */
+    public void listLobbyPlayers() {
+        if(isConnected()) {
+            try {
+                commandSender.sendListLobbyPlayers();
+            } catch (Exception e) {
+                logger.severe("Failed to list lobby players: " + e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Lists all players in the server
+     */
+    public void listAllPlayers() {
+        if(isConnected()) {
+            try {
+                commandSender.sendListAllPlayers();
+            } catch (Exception e) {
+                logger.severe("Failed to list all players: " + e.getMessage());
+            }
+        }
+    }
 }

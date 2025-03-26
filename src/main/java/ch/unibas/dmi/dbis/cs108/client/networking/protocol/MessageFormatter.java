@@ -168,4 +168,30 @@ public class MessageFormatter {
             return null;
         }
     }
+
+    /**
+     * Formats a list lobby players message.
+     * @return The formatted message.
+     */
+    public String formatListLobbyPlayers() {
+        try {
+            return "LSTP$LOBBY";
+        } catch (Exception e) {
+            logger.severe("Failed to format list lobby players: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Formats a list all players message.
+     * @return The formatted message.
+     */
+    public String formatListAllPlayers() {
+        try {
+            return "LSTP$SERVER";
+        } catch (Exception e) {
+            logger.severe("Failed to format list all players: " + e.getMessage());
+            return null;
+        }
+    }
 }

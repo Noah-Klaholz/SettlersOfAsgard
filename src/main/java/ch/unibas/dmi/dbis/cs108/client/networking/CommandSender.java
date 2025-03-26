@@ -191,4 +191,28 @@ public class CommandSender {
             logger.severe("Failed to send pong command: " + e.getMessage());
         }
     }
+
+    /**
+     * Sends a list lobby players command to the server
+     */
+    public void sendListLobbyPlayers() {
+        try {
+            String message = formatter.formatListLobbyPlayers();
+            socketHandler.send(message);
+        } catch (Exception e) {
+            logger.severe("Failed to send list lobby players command: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Sends a list all players command to the server
+     */
+    public void sendListAllPlayers() {
+        try {
+            String message = formatter.formatListAllPlayers();
+            socketHandler.send(message);
+        } catch (Exception e) {
+            logger.severe("Failed to send list all players command: " + e.getMessage());
+        }
+    }
 }

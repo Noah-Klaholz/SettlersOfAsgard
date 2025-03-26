@@ -46,7 +46,7 @@ public interface CommunicationAPI {
             CHATPRIVATE("CHTP"), // Send a whisper message to only one player
             CREATELOBBY("CREA"), // Creates a new Lobby
             LISTLOBBIES("LIST"), // List all current Lobbies
-            LISTPLAYERS("LISP"), // List all players in the lobby/server depending on argument (LOBBY/SERVER)
+            LISTPLAYERS("LSTP"), // List all players in the lobby/server depending on argument (LOBBY/SERVER)
             START("STRT"), // Start the game
             STATS("STAT"), // Request game state
             SYNCHRONIZE("SYNC"), // Request synchronization of the game
