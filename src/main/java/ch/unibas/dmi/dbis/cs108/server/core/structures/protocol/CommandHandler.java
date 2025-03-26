@@ -182,4 +182,16 @@ public class CommandHandler {
         }
     }
 
+    /**
+     * This method handles the sending of a private message to another player.
+     * @param cmd the transmitted command
+     */
+    public void handlePrivateMessage(Command cmd) {
+        String[] parts = cmd.getArgs();
+        String senderName = parts[0];
+        String receiverName = parts[1];
+        String message = parts[2];
+        if(server.containsPlayerName(receiverName)) {
+        }
+    }
 }
