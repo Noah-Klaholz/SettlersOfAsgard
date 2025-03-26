@@ -195,15 +195,16 @@ public class MessageFormatter {
         }
     }
 
-    public String formatWhisper(String playerName, String whisper) {
+    public String formatWhisper(String senderName, String whisper) {
         try {
             String[] parts = whisper.split(" ", 2);
-            if(parts.length == 2) {
+            if (parts.length == 2) {
                 String receiver = parts[0];
                 String message = parts[1];
-                return "CHTP$" + playerName + "$" + receiver + "$" + message;
+                return "CHTP$" + senderName + "$" + receiver + "$" + message;
             } else {
-                throw new IllegalArgumentException("Not enough arguments for whisper");
+                logger.info("Invalid whisper: " + whisper);
+                return null;
             }
         } catch (Exception e) {
             logger.severe("Failed to format whisper: " + e.getMessage());

@@ -318,10 +318,11 @@ public class GameClient {
         }
     }
 
-    public void sendPrivateMessage(String whisper) {
+    public void sendPrivateMessage(String input) {
         if(isConnected()) {
             try {
-                commandSender.sendWhisper(localPlayer.getName(), whisper);
+                String message = input.replace("@", "").trim();
+                commandSender.sendWhisper(localPlayer.getName(), message);
             } catch (Exception e) {
                 logger.severe("Failed to send private message: " + e.getMessage());
             }

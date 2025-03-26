@@ -216,9 +216,9 @@ public class CommandSender {
         }
     }
 
-    public void sendWhisper(String playerName,String whisper) {
+    public void sendWhisper(String localPlayerName,String whisper) {
         try {
-            String message = formatter.formatWhisper(playerName, whisper);
+            String message = formatter.formatWhisper(localPlayerName, whisper);
             socketHandler.send(message);
         } catch (Exception e) {
             logger.severe("Failed to send whisper command: " + e.getMessage());

@@ -98,14 +98,14 @@ public class ClientMain {
      */
     private static void processInput(AtomicBoolean running, Scanner scanner, GameClient client) {
         while (running.get()) {
-            String input = scanner.nextLine().trim();
-            input = input.replaceAll("[$]", " ").trim();
+            String input = scanner.nextLine().trim().toLowerCase();
+            input = input.replaceAll("[$]", "").trim();
 
             if (input.equals("/exit")) {
                 running.set(false);
                 break;
-            } else if (input.startsWith("/changeName ")) {
-                String newName = input.replace("/changeName ", "").trim();
+            } else if (input.startsWith("/changename ")) {
+                String newName = input.replace("/changename ", "").trim();
                 client.changeName(newName);
             } else if (input.equals("/ping")) {
                 client.sendPing();
@@ -121,17 +121,16 @@ public class ClientMain {
             } else if (input.startsWith("/start ")) {
                 String lobbyId = input.replace("/start ", "").trim();
                 client.startGame();
-            } else if (input.startsWith("/listLobbies")) {
+            } else if (input.startsWith("/listlobbies")) {
                 client.listLobbies();
-            }else if (input.startsWith("/lobbyPlayers")) {
+            }else if (input.startsWith("/lobbyplayers")) {
                 client.listLobbyPlayers();
-            } else if (input.startsWith("/allPlayers")) {
+            } else if (input.startsWith("/allplayers")) {
                 client.listAllPlayers();
             } else if (input.startsWith("@")) {
-                String whisper = input.replace("@", "").trim();
-                client.sendPrivateMessage(whisper);
+                client.sendPrivateMessage(input);
             } else if (input.startsWith("/help")) {
-                logger.info("Available commands: /changeName <name>, /ping, /exit, /join <lobbyId>, /leave <lobbyId>, /create <lobbyName>, /start <lobbyId>, /listLobbies, /lobbyPlayers, /allPlayers, /help. Typing anything else will be a global chat-message");
+                logger.info("Available commands: /changeName <name>, /ping, /exit, /join <lobbyId>, /leave <lobbyId>, /create <lobbyName>, /start <lobbyId>, /listLobbies, /lobbyPlayers, /allPlayers, /help. Use @<playerName> to whisper. Typing anything else will be a global chat-message");
             } else {
                 client.sendChat(input);
             }
