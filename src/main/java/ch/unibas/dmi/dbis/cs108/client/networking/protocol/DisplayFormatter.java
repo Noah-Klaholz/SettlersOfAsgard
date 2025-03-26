@@ -113,7 +113,7 @@ public class DisplayFormatter {
      */
     private static String formatErrorMessage(String rawMessage) {
         if (rawMessage.startsWith("ERR$106$PLAYER_ALREADY_EXISTS")) {
-            return "Could not use System name as PlayerName. Please change your Name with /changeName.";
+            return "Could not use name as PlayerName because a player with that name already exists. Please change your Name with /changeName.";
         } else if (rawMessage.startsWith("ERR$106$LOBBY_CREATION_FAILED")) {
             return "Could not create lobby, because a lobby with this name already exists. You can join an existing lobby with /join.";
         } else if (rawMessage.startsWith("ERR$106$JOIN_LOBBY_FAILED")) {
