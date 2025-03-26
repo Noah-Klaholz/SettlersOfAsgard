@@ -115,11 +115,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      * @param cmd the command to send
      */
     public void sendGlobalChatMessage(Command cmd) {
-        if (currentLobby != null) {
-            currentLobby.broadcastMessage(cmd.toString());
-        } else {
-            sendMessage("ERR$106$NOT_IN_LOBBY");
-        }
+        server.broadcast(cmd.toString());
     }
 
     /**
