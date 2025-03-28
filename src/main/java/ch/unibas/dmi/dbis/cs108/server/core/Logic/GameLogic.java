@@ -1,4 +1,173 @@
 package ch.unibas.dmi.dbis.cs108.server.core.Logic;
 
-public class GameLogic {
+/**
+ * Implementation of the GameLogicInterface that provides the core game logic functionality.
+ * This class handles all game mechanics including game flow, player turns, and player actions
+ * such as buying tiles, placing structures, and using artifacts.
+ */
+public class GameLogic implements GameLogicInterface {
+
+    public GameLogic() {}
+
+    /**
+     * Initializes and starts a new game.
+     * This method sets up the initial game state, including player order,
+     * game field configuration, and starting resources.
+     */
+    @Override
+    public void startGame() {
+
+    }
+
+    /**
+     * Finalizes and ends the current game.
+     * This method calculates final scores, determines the winner,
+     * and cleans up game resources.
+     */
+    @Override
+    public void endGame() {
+
+    }
+
+    /**
+     * Begins a player's turn.
+     * This method initializes the turn state, provides the player with turn-based
+     * resources, and enables their ability to perform actions.
+     *
+     * @param playerID The unique identifier of the player whose turn is starting
+     */
+    @Override
+    public void startTurn(String playerID) {
+
+    }
+
+    /**
+     * Concludes a player's turn.
+     * This method finalizes any pending actions, applies end-of-turn effects,
+     * and transitions to the next player's turn.
+     *
+     * @param playerID The unique identifier of the player whose turn is ending
+     */
+    @Override
+    public void endTurn(String playerID) {
+
+    }
+
+    /**
+     * Processes a player's request to buy a tile at the specified coordinates.
+     * Validates the purchase against game rules and updates the game state
+     * if the purchase is successful.
+     *
+     * @param x The x-coordinate of the tile to purchase
+     * @param y The y-coordinate of the tile to purchase
+     * @param playerID The unique identifier of the player attempting to buy the tile
+     */
+    @Override
+    public void buyTile(int x, int y, String playerID) {
+
+    }
+
+    /**
+     * Handles a player's request to place a structure at the specified coordinates.
+     * This method verifies the placement is valid according to game rules,
+     * deducts the required resources, and updates the game state with the new structure.
+     *
+     * @param x The x-coordinate where the structure will be placed
+     * @param y The y-coordinate where the structure will be placed
+     * @param structureID The identifier of the structure to place
+     * @param playerID The unique identifier of the player placing the structure
+     */
+    @Override
+    public void placeStructure(int x, int y, String structureID, String playerID) {
+
+    }
+
+    /**
+     * Processes a player's request to use a structure at the specified coordinates.
+     * This method validates the action, applies the structure's effects based on the use type,
+     * and updates the game state accordingly.
+     *
+     * @param x The x-coordinate of the structure to use
+     * @param y The y-coordinate of the structure to use
+     * @param structureID The identifier of the structure to use
+     * @param useType The specific way the structure should be used
+     * @param playerID The unique identifier of the player using the structure
+     */
+    @Override
+    public void useStructure(int x, int y, String structureID, String useType, String playerID) {
+
+    }
+
+    /**
+     * Handles a player's request to upgrade a statue at the specified coordinates.
+     * This method verifies the upgrade is valid, deducts the required resources,
+     * and enhances the statue's capabilities.
+     *
+     * @param x The x-coordinate of the statue to upgrade
+     * @param y The y-coordinate of the statue to upgrade
+     * @param statueID The identifier of the statue to upgrade
+     * @param playerID The unique identifier of the player upgrading the statue
+     */
+    @Override
+    public void upgradeStatue(int x, int y, String statueID, String playerID) {
+
+    }
+
+    /**
+     * Processes a player's request to use a statue at the specified coordinates.
+     * This method validates the action, applies the statue's effects based on the use type,
+     * and updates the game state accordingly.
+     *
+     * @param x The x-coordinate of the statue to use
+     * @param y The y-coordinate of the statue to use
+     * @param statueID The identifier of the statue to use
+     * @param useType The specific way the statue should be used
+     * @param playerID The unique identifier of the player using the statue
+     */
+    @Override
+    public void useStatue(int x, int y, String statueID, String useType, String playerID) {
+
+    }
+
+    /**
+     * Handles the activation of an artifact that affects the game field.
+     * This method applies the artifact's effects to the specified location
+     * and updates the game state accordingly.
+     *
+     * @param x The x-coordinate where the field artifact will be used
+     * @param y The y-coordinate where the field artifact will be used
+     * @param artifactID The identifier of the artifact to use
+     */
+    @Override
+    public void useFieldArtifact(int x, int y, int artifactID) {
+
+    }
+
+    /**
+     * Processes the activation of an artifact that directly affects a player.
+     * This method applies the artifact's effects to the specified player
+     * and updates the game state accordingly.
+     *
+     * @param artifactID The identifier of the artifact to use
+     * @param playerID The unique identifier of the player who will be affected
+     */
+    @Override
+    public void usePlayerArtifact(int artifactID, String playerID) {
+
+    }
+
+    /**
+     * Handles a player's request to use a trap at the specified coordinates.
+     * This method activates the trap's effect, potentially affecting other players
+     * or game elements, and updates the game state accordingly.
+     *
+     * @param x The x-coordinate of the trap to use
+     * @param y The y-coordinate of the trap to use
+     * @param trapID The identifier of the trap to use
+     * @param playerID The unique identifier of the player using the trap
+     */
+    @Override
+    public void useTrap(int x, int y, String trapID, String playerID) {
+
+    }
 }

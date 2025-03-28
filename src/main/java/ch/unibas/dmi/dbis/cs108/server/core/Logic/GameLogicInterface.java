@@ -1,0 +1,22 @@
+package ch.unibas.dmi.dbis.cs108.server.core.Logic;
+
+/**
+ * Interface for the GameLogic
+ * Contains all the methods that are needed to implement the game logic
+ * The GameLogic class implements this interface
+ */
+public interface GameLogicInterface {
+    public void startGame(); // Starts the game
+    public void endGame(); // Ends the game
+    public void startTurn(String playerID); // Starts the turn of a player
+    public void endTurn(String playerID); // Ends the turn of a player
+    public void buyTile(int x, int y, String playerID); // Buys a tile
+    public void placeStructure(int x, int y, String structureID, String playerID); // Works as buy and place function for Structures
+    public void useStructure(int x, int y, String structureID, String useType, String playerID); // Uses a structure
+    public void upgradeStatue(int x, int y, String statueID, String playerID); // Upgrades a statue
+    public void useStatue(int x, int y, String statueID, String useType, String playerID); // Uses a statue
+    public void useFieldArtifact(int x, int y, int artifactID); // Uses a field artifact
+    public void usePlayerArtifact(int artifactID, String playerID); // Uses a player artifact
+    public void useTrap(int x, int y, String trapID, String playerID); // Uses a trap
+
+}
