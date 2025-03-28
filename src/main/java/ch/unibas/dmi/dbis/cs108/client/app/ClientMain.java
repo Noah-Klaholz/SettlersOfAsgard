@@ -91,7 +91,6 @@ public class ClientMain {
 
     /**
      * Process user input
-     *
      * @param running AtomicBoolean
      * @param scanner Scanner
      * @param client  GameClient
@@ -129,10 +128,12 @@ public class ClientMain {
                 client.listAllPlayers();
             } else if (input.startsWith("@")) {
                 client.sendPrivateMessage(input);
+            } else if (input.startsWith("/global ")) {
+                client.sendChat(input);
             } else if (input.startsWith("/help")) {
                 logger.info("Available commands: /changeName <name>, /ping, /exit, /join <lobbyId>, /leave <lobbyId>, /create <lobbyName>, /start <lobbyId>, /listLobbies, /lobbyPlayers, /allPlayers, /help. Use @<playerName> to whisper. Typing anything else will be a global chat-message");
             } else {
-                client.sendChat(input);
+                client.sendLobbyChat(input);
             }
         }
     }

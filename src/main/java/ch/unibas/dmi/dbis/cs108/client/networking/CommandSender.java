@@ -224,4 +224,16 @@ public class CommandSender {
             logger.severe("Failed to send whisper command: " + e.getMessage());
         }
     }
+
+    public void sendLobbyChatCommand(ChatCommand chatCommand) {
+        try {
+            String message = MessageFormatter.formatLobbyChatMessage(
+                    chatCommand.getSender().getName(),
+                    chatCommand.getMessage()
+            );
+            socketHandler.send(message);
+        } catch (Exception e) {
+            logger.severe("Failed to send chat command: " + e.getMessage());
+        }
+    }
 }

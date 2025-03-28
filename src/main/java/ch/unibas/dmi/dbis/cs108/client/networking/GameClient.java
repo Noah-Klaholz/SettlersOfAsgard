@@ -328,4 +328,17 @@ public class GameClient {
             }
         }
     }
+
+    public void sendLobbyChat(String input) {
+        if (input.trim().isEmpty()) {
+            return;
+        }
+        if (isConnected()) {
+            try {
+                commandSender.sendLobbyChatCommand(new ChatCommand(localPlayer, input));
+            } catch (Exception e) {
+                logger.severe("Failed to send chat message: " + e.getMessage());
+            }
+        }
+    }
 }

@@ -23,6 +23,15 @@ public class MessageFormatter {
         }
     }
 
+    public static String formatLobbyChatMessage(String playerName, String message) {
+        try {
+            return "CHTL$" + playerName + "$" + message;
+        } catch (Exception e) {
+            logger.severe("Failed to format chat message: " + e.getMessage());
+            return null;
+        }
+    }
+
     /**
      * Formats a name change request.
      * @param newName  The new name of the player.
