@@ -224,4 +224,15 @@ public class CommandHandler {
         }
 
     }
+
+    public void handleLobbyMessage(Command cmd) {
+        String senderName = cmd.getArgs()[0];
+        String message = cmd.getArgs()[1];
+        if (currentLobby != null) {
+            currentLobby.broadcastMessage(senderName + ": " + message);
+            sendMessage("OK$CHTL$");
+        } else {
+            sendMessage("ERR$106$NOT_IN_LOBBY");
+        }
+    }
 }

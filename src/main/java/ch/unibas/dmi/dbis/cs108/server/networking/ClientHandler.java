@@ -227,6 +227,9 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             }
 
             switch (command) {
+                case CHATLOBBY:
+                    ch.handleLobbyMessage(cmd);
+                    break;
                 case CHATPRIVATE:
                     ch.handlePrivateMessage(cmd);
                     break;
