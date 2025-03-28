@@ -96,10 +96,10 @@ public class CommandHandler {
         }
 
         String lobbyList = lobbies.stream()
-                .map(Lobby::getId)
-                .collect(Collectors.joining(", "));
+                .map(lobby -> lobby.getId() + " " + lobby.getStatus())
+                .collect(Collectors.joining("\n"));
 
-        ch.sendMessage("Lobbies: " + lobbyList);
+        ch.sendMessage("Lobbies: \n" + lobbyList);
     }
 
     /**

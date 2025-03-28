@@ -43,8 +43,8 @@ public class Lobby {
 
     public enum LobbyStatus {
         IN_LOBBY("In lobby"),
-        IN_GAME("In game"),
-        GAME_ENDED("Game ended");
+        IN_GAME("In-Game"),
+        GAME_ENDED("Game has ended");
 
         private final String status;
 
@@ -125,8 +125,7 @@ public class Lobby {
 
     /**
      * Gets the value of isGameStarted.
-     *
-     * @return The current value of isGameStarted.
+     * @return The current value of isGameStarted as a String
      */
     public String getStatus() {
         return status.getStatus();
