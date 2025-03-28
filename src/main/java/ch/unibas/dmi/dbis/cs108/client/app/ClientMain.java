@@ -132,7 +132,9 @@ public class ClientMain {
                 String message = input.replace("/global ", "").trim();
                 client.sendChat(message);
             } else if (input.startsWith("/help")) {
-                logger.info("Available commands: /changeName <name>, /ping, /exit, /join <lobbyId>, /leave <lobbyId>, /create <lobbyName>, /start <lobbyId>, /listLobbies, /lobbyPlayers, /allPlayers, /help. Use @<playerName> to whisper and /global for global chat. If you are in a lobby, typing any non-command results in a lobbyChatMessage.");
+                logger.info("Available commands: /changeName <name>, /ping, /exit, /join <lobbyId>, /leave <lobbyId>, /create <lobbyName>, /start <lobbyId>, /listLobbies, " +
+                        "/lobbyPlayers, /allPlayers, /help. Use @<playerName> to whisper and /global for global chat. Typing any non-command results in a lobbyChatMessage, " +
+                        "if you are in a lobby and in a globalChat Message if not.");
             } else {
                 client.sendLobbyChat(input);
             }

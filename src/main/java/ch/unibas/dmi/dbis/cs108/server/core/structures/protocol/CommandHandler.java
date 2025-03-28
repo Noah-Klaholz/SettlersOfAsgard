@@ -235,4 +235,14 @@ public class CommandHandler {
             sendMessage("ERR$106$NOT_IN_LOBBY");
         }
     }
+
+    public void handleGlobalChatMessage(Command cmd) {
+        if(cmd.getCommand().equals("CHTL")) {
+            String command = cmd.toString().replace("CHTL", "CHTG").trim();
+            ch.sendGlobalChatMessage(new Command(command));
+        } else {
+            ch.sendGlobalChatMessage(cmd);
+        }
+    }
+
 }
