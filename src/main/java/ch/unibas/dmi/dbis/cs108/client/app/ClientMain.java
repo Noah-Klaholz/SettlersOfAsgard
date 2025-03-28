@@ -112,8 +112,7 @@ public class ClientMain {
                 String lobbyId = input.replace("/join ", "").trim();
                 client.joinLobby(lobbyId);
             } else if (input.startsWith("/leave ")) {
-                String lobbyId = input.replace("/leave ", "").trim();
-                client.leaveLobby(lobbyId);
+                client.leaveLobby();
             } else if (input.startsWith("/create ")) {
                 String lobbyName = input.replace("/create ", "").trim();
                 client.createLobby(lobbyName);

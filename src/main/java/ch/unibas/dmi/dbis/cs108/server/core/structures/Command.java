@@ -62,8 +62,8 @@ public class Command {
     public boolean checkArgumentsSize(){
         return switch (command) {
             case "LIST", "STRT", "STDN", "SYNC" -> args.length == 0;
-            case "RGST", "CHAN", "STAT", "PING", "EXIT", "LSTP"  -> args.length == 1;
-            case "JOIN", "LEAV", "CHTG", "CHTL", "CREA" -> args.length == 2;
+            case "RGST", "LEAV", "CHAN", "STAT", "PING", "EXIT", "LSTP"  -> args.length == 1;
+            case "JOIN", "CHTG", "CHTL", "CREA" -> args.length == 2;
             case "CHTP" -> args.length == 3;
             default -> {
                 logger.warning("Invalid Command arguments size: " + command + " " + args.length);

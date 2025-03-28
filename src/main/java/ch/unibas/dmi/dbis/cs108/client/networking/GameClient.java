@@ -256,10 +256,10 @@ public class GameClient {
     /**
      * Leaves the current lobby
      */
-    public void leaveLobby(String lobbyName) {
+    public void leaveLobby() {
         if (isConnected()) {
             try {
-                commandSender.sendLeaveLobby(localPlayer, lobbyName);
+                commandSender.sendLeaveLobby(localPlayer);
             } catch (Exception e) {
                 logger.severe("Failed to leave lobby: " + e.getMessage());
             }
