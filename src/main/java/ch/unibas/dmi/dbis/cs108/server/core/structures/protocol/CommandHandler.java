@@ -44,6 +44,13 @@ public class CommandHandler {
         ch.setPlayer(player);
     }
 
+    private void joinLobby(Lobby lobby) {
+        if(ch.getCurrentLobby() != null) {
+            ch.getCurrentLobby().removePlayer(ch);
+        }
+        setCurrentLobby(lobby);
+    }
+
     public void handleListPlayers(Command cmd) {
         String[] arg = cmd.getArgs();
         if(arg.length != 1) {
@@ -72,12 +79,15 @@ public class CommandHandler {
      * @param cmd the transmitted command
      */
     public void handleCreateLobby(Command cmd) {
+        if (currentLobby != null) {
+            handleLeaveLobby();
+        }
         String hostname = cmd.getArgs()[0]; // Falls wir später mal den Hostnamen speichern wollen -> könnte man in Lobby hinzufügen
         String lobbyId = cmd.getArgs()[1];
         int maxPlayers = 4; //currently, maxPlayers is set to 4
         Lobby lobby = server.createLobby(lobbyId, maxPlayers);
         if (lobby != null && lobby.addPlayer(ch)) {
-            setCurrentLobby(lobby);
+            joinLobby(lobby);
             sendMessage("OK$CREA$" + lobbyId);
         } else {
             sendMessage("ERR$106$LOBBY_CREATION_FAILED");
@@ -96,7 +106,7 @@ public class CommandHandler {
         }
 
         String lobbyList = lobbies.stream()
-                .map(lobby -> lobby.getId() + " " + lobby.getStatus())
+                .map(lobby -> lobby.getId() + ":  " + lobby.getStatus())
                 .collect(Collectors.joining("\n"));
 
         ch.sendMessage("Lobbies: \n" + lobbyList);
@@ -107,10 +117,13 @@ public class CommandHandler {
      * @param cmd the transmitted command
      */
     public void handleJoinLobby(Command cmd) {
+        if (currentLobby != null) {
+            handleLeaveLobby();
+        }
         String lobbyId = cmd.getArgs()[1];
         Lobby lobby = server.getLobby(lobbyId);
         if (lobby != null && lobby.addPlayer(ch)) {
-            setCurrentLobby(lobby);
+            joinLobby(lobby);
             sendMessage("OK$JOIN$" + lobbyId);
         } else {
             sendMessage("ERR$106$JOIN_LOBBY_FAILED");
