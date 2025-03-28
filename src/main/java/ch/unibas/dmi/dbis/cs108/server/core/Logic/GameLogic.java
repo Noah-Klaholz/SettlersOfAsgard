@@ -139,7 +139,7 @@ public class GameLogic implements GameLogicInterface {
      * @param artifactID The identifier of the artifact to use
      */
     @Override
-    public void useFieldArtifact(int x, int y, int artifactID) {
+    public void useFieldArtifact(int x, int y, int artifactID, String useType) {
 
     }
 
@@ -152,7 +152,7 @@ public class GameLogic implements GameLogicInterface {
      * @param playerID The unique identifier of the player who will be affected
      */
     @Override
-    public void usePlayerArtifact(int artifactID, String playerID) {
+    public void usePlayerArtifact(int artifactID, String playerID, String useType) {
 
     }
 
