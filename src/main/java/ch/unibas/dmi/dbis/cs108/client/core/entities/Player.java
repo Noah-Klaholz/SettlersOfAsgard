@@ -5,6 +5,7 @@ package ch.unibas.dmi.dbis.cs108.client.core.entities;
  */
 public class Player {
     //private final String id;
+    //todo: add player id
     private String name;
 
     /**
