@@ -2,7 +2,7 @@ package ch.unibas.dmi.dbis.cs108.client.app;
 
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import ch.unibas.dmi.dbis.cs108.client.networking.GameClient;
-import ch.unibas.dmi.dbis.cs108.server.core.api.CommunicationAPI.PingFilter;
+import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.PingFilter;
 
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -129,9 +129,10 @@ public class ClientMain {
             } else if (input.startsWith("@")) {
                 client.sendPrivateMessage(input);
             } else if (input.startsWith("/global ")) {
-                client.sendChat(input);
+                String message = input.replace("/global ", "").trim();
+                client.sendChat(message);
             } else if (input.startsWith("/help")) {
-                logger.info("Available commands: /changeName <name>, /ping, /exit, /join <lobbyId>, /leave <lobbyId>, /create <lobbyName>, /start <lobbyId>, /listLobbies, /lobbyPlayers, /allPlayers, /help. Use @<playerName> to whisper. Typing anything else will be a global chat-message");
+                logger.info("Available commands: /changeName <name>, /ping, /exit, /join <lobbyId>, /leave <lobbyId>, /create <lobbyName>, /start <lobbyId>, /listLobbies, /lobbyPlayers, /allPlayers, /help. Use @<playerName> to whisper and /global for global chat. If you are in a lobby, typing any non-command results in a lobbyChatMessage.");
             } else {
                 client.sendLobbyChat(input);
             }
