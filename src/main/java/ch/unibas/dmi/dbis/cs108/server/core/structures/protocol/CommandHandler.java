@@ -153,14 +153,22 @@ public class CommandHandler {
      */
     public void handleRegister(Command cmd) {
         String playerName = cmd.getArgs()[0];
-        if (!server.containsPlayerName(playerName)) {
-            setLocalPlayer(new Player(playerName));
-            sendMessage("OK$RGST$" + playerName);
-        }
-        else {
-            playerName = playerName + "2";
-            setLocalPlayer(new Player(playerName)); // Adds playerName2 as a new Player
-            sendMessage("ERR$106$PLAYER_ALREADY_EXISTS$"+playerName); // Tells Client to tell player about changeName
+        synchronized (server) {
+            if (!server.containsPlayerName(playerName)) {
+                setLocalPlayer(new Player(playerName));
+                sendMessage("OK$RGST$" + playerName);
+            }
+            else {
+                // Find a unique name by adding numbers
+                String uniqueName = playerName;
+                int suffix = 2;
+                while (server.containsPlayerName(uniqueName)) {
+                    uniqueName = playerName + suffix++;
+                }
+
+                setLocalPlayer(new Player(uniqueName));
+                sendMessage("ERR$106$PLAYER_ALREADY_EXISTS$" + uniqueName);
+            }
         }
     }
 
@@ -170,15 +178,24 @@ public class CommandHandler {
      */
     public void handleChangeName(Command cmd) {
         String newPlayerName = cmd.getArgs()[0];
-        if (!server.containsPlayerName(newPlayerName)){
-            sendMessage("OK$CHAN$" + newPlayerName);
-            server.broadcast(localPlayer.getName() + " changed name to " + newPlayerName);
-            setLocalPlayerName(newPlayerName);
-        }
-        else {
-            newPlayerName = newPlayerName + "2";
-            setLocalPlayerName(newPlayerName); // Change the name to the enw name
-            sendMessage("ERR$106$PLAYER_ALREADY_EXISTS$"+newPlayerName); // Tells Client to tell player about changeName
+
+        synchronized(server) {
+            if (!server.containsPlayerName(newPlayerName)){
+                sendMessage("OK$CHAN$" + newPlayerName);
+                server.broadcast(localPlayer.getName() + " changed name to " + newPlayerName);
+                setLocalPlayerName(newPlayerName);
+            }
+            else {
+                // Generate unique name
+                String uniqueName = newPlayerName;
+                int suffix = 2;
+                while (server.containsPlayerName(uniqueName)) {
+                    uniqueName = newPlayerName + suffix++;
+                }
+
+                setLocalPlayerName(uniqueName);
+                sendMessage("ERR$106$PLAYER_ALREADY_EXISTS$" + uniqueName);
+            }
         }
     }
 
