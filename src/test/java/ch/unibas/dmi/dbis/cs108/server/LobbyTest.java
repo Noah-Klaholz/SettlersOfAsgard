@@ -96,7 +96,7 @@ public class LobbyTest {
     void testToString() {
         // Test the toString method
         lobby.addPlayer(player1);
-        String expected = "Lobby{id='lobby2', players=1, maxPlayers=2, isGameStarted=false}";
+        String expected = "Lobby{id='lobby2', players=1, maxPlayers=2, status=In lobby}";
         assertEquals(expected, lobby.toString());
     }
 }
