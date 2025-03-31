@@ -323,8 +323,8 @@ public class GameClient {
         }
     }
 
-    public void sendPrivateMessage(String input) {
-        if (isConnected()) {
+    public void sendPrivateChat(String input) {
+        if(isConnected()) {
             try {
                 String message = input.replace("@", "").trim();
                 commandSender.sendWhisper(localPlayer.getName(), message);
