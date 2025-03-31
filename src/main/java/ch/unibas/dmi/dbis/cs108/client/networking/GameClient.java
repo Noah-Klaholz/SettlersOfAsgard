@@ -318,7 +318,7 @@ public class GameClient {
         }
     }
 
-    public void sendPrivateMessage(String input) {
+    public void sendPrivateChat(String input) {
         if(isConnected()) {
             try {
                 String message = input.replace("@", "").trim();
