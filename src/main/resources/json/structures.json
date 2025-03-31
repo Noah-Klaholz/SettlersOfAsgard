@@ -1,0 +1,70 @@
+[
+  {
+    "_comment": "Here are descriptions for useTypes",
+    "//todo": "add costs",
+
+
+    "Energy": "USE: Used with Energy",
+    "Gift": "USE: Gives a choosable Object",
+    "RandomGift": "USE: Gives a random Object",
+    "Protection": "USE: Prevents Debuff (next Round",
+    "RandomTile": "USE: Used on a free to buy Tile chosen by the game",
+    "RiverFarm": "ROUND: Placed on a River Tile: farms ressource"
+  },
+  {
+    "name": "Rune Table",
+    "usage": "Converts 4 Energy to x Runes",
+    "description": "",
+    "useType": "Structure",
+    "id": 1,
+    "cost": 0
+  },
+  {
+    "name": "Mimisbrunnr",
+    "usage": "Gives 1 random Artifact per Round",
+    "description": "",
+    "useType": "RandomGift",
+    "id": 2,
+    "cost": 0
+  },
+  {
+    "name": "Helgrindr",
+    "usage": "",
+    "description": "Prevents Debuffs",
+    "useType": "Protection",
+    "id": 3,
+    "cost": 0
+  },
+  {
+    "name": "Huginn and Muninn",
+    "usage": "Shows where 1 Artifact is on a buyable Tile",
+    "description": "",
+    "useType": "RandomTile",
+    "id": 4,
+    "cost": 0
+  },
+  {
+    "name": "Ran's Hall",
+    "usage": "Catches mythological fish when placed on a River Tile: gives +1 Energy per Round",
+    "description": "",
+    "useType": "RiverFarm",
+    "id": 5,
+    "cost": 0
+  },
+  {
+    "name": "Surtur's Smeltery",
+    "usage": "Enables the production of Artifacts",
+    "description": "",
+    "useType": "Energy",
+    "id": 6,
+    "cost": 0
+  },
+  {
+    "name": "Tree",
+    "usage": "Only placable on a River Tile: farms Runes",
+    "description": "",
+    "useType": "RiverFarm",
+    "id": 7,
+    "cost": 0
+  }
+]
