@@ -13,7 +13,7 @@ application {
 
 javadoc {
     source = sourceSets.main.allJava
-    destinationDir = file("$buildDir/docs/Documentation/javadoc")
+    destinationDir = layout.buildDirectory.dir("docs/Documentation/javadoc").get().asFile
     options.encoding = "UTF-8"
 }
 
@@ -76,15 +76,15 @@ test {
     systemProperty "file.encoding", "utf-8"
 }
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.encoding = "UTF-8"
 }
 
-tasks.withType(Test) {
+tasks.withType(Test).configureEach {
     systemProperty "file.encoding", "utf-8"
 }
 
-tasks.withType(JavaExec) {
+tasks.withType(JavaExec).configureEach {
     systemProperty "file.encoding", "utf-8"
 }
 
@@ -102,7 +102,7 @@ jar {
     }
 }
 
-task clientJar(type: Jar) {
+tasks.register('clientJar', Jar) {
     archiveBaseName = 'settlersOfAsgard'
     archiveVersion = ''
     archiveClassifier = 'client'
@@ -118,7 +118,7 @@ task clientJar(type: Jar) {
     }
 }
 
-task serverJar(type: Jar) {
+tasks.register('serverJar', Jar) {
     archiveBaseName = 'settlersOfAsgard'
     archiveVersion = ''
     archiveClassifier = 'server'
@@ -134,7 +134,7 @@ task serverJar(type: Jar) {
     }
 }
 
-task 'build-cs108' {
+tasks.register('build-cs108') {
     dependsOn jar, clientJar, serverJar, javadoc
     description = 'Builds all JAR files and Javadocs'
     group = 'build'
