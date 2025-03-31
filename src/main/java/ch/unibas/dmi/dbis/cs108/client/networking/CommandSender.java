@@ -133,11 +133,10 @@ public class CommandSender {
      * Sends a leave lobby command to the server
      *
      * @param localPlayer the Player
-     * @param lobbyName   the name of the lobby
      */
-    public void sendLeaveLobby(Player localPlayer, String lobbyName) {
+    public void sendLeaveLobby(Player localPlayer) {
         try {
-            String message = formatter.formatLeaveLobby(localPlayer.getName(), lobbyName);
+            String message = formatter.formatLeaveLobby(localPlayer.getName());
             socketHandler.send(message);
         } catch (Exception e) {
             logger.severe("Failed to send leave lobby command: " + e.getMessage());
@@ -222,6 +221,18 @@ public class CommandSender {
             socketHandler.send(message);
         } catch (Exception e) {
             logger.severe("Failed to send whisper command: " + e.getMessage());
+        }
+    }
+
+    public void sendLobbyChatCommand(ChatCommand chatCommand) {
+        try {
+            String message = MessageFormatter.formatLobbyChatMessage(
+                    chatCommand.getSender().getName(),
+                    chatCommand.getMessage()
+            );
+            socketHandler.send(message);
+        } catch (Exception e) {
+            logger.severe("Failed to send chat command: " + e.getMessage());
         }
     }
 }

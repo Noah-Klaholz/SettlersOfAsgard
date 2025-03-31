@@ -23,6 +23,15 @@ public class MessageFormatter {
         }
     }
 
+    public static String formatLobbyChatMessage(String playerName, String message) {
+        try {
+            return "CHTL$" + playerName + "$" + message;
+        } catch (Exception e) {
+            logger.severe("Failed to format chat message: " + e.getMessage());
+            return null;
+        }
+    }
+
     /**
      * Formats a name change request.
      * @param newName  The new name of the player.
@@ -131,12 +140,11 @@ public class MessageFormatter {
     /**
      * Formats a leave lobby message.
      * @param playerName The name of the player.
-     * @param lobbyName The name of the lobby.
      * @return The formatted message.
      */
-    public String formatLeaveLobby(String playerName, String lobbyName) {
+    public String formatLeaveLobby(String playerName) {
         try {
-            return "LEAV$" + playerName + "$" + lobbyName;
+            return "LEAV$" + playerName + "$";
         } catch (Exception e) {
             logger.severe("Failed to format leave lobby: " + e.getMessage());
             return null;

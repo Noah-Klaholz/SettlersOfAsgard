@@ -43,6 +43,7 @@ public interface CommunicationAPI {
             JOIN("JOIN"), // Player joins a game
             EXIT("EXIT"), // Player exits a game
             CHATGLOBAL("CHTG"), // Send a message to all players
+            CHATLOBBY("CHTL"), // Send a message to all players in the lobby
             CHATPRIVATE("CHTP"), // Send a whisper message to only one player
             CREATELOBBY("CREA"), // Creates a new Lobby
             LISTLOBBIES("LIST"), // List all current Lobbies

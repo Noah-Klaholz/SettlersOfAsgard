@@ -27,7 +27,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     protected GameServer server; // Reference to the GameServer
     private CommandHandler ch; // Reference to a CommandHandler
     private boolean running;
-    protected Lobby currentLobby;
+    protected Lobby currentLobby = null;
     protected Player localPlayer = null;
     private static final Logger logger = Logger.getLogger(ClientHandler.class.getName());
 
@@ -163,7 +163,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
 
     /**
      * Returns the current lobby the client is in.
-     * @return the current Lobby as a
+     * @return the current Lobby as a Lobby object
      * @see Lobby
      */
     public Lobby getCurrentLobby() {
@@ -227,6 +227,13 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             }
 
             switch (command) {
+                case CHATLOBBY:
+                    if(getCurrentLobby() != null) {
+                        ch.handleLobbyMessage(cmd);
+                    } else {
+                        ch.handleGlobalChatMessage(cmd);
+                    }
+                    break;
                 case CHATPRIVATE:
                     ch.handlePrivateMessage(cmd);
                     break;

@@ -32,15 +32,30 @@ public class Lobby {
     private int maxPlayers;
 
     /**
-     * A boolean to indicate if the game is running or not.
+     * An enum indicating the status of the lobby
      */
-    private boolean isGameStarted;
+    private LobbyStatus status;
 
     /**
      * Logger to log important events.
      */
     private static final Logger logger = Logger.getLogger(Lobby.class.getName());
 
+    public enum LobbyStatus {
+        IN_LOBBY("In lobby"),
+        IN_GAME("In-Game"),
+        GAME_ENDED("Game has ended");
+
+        private final String status;
+
+        LobbyStatus(String status) {
+            this.status = status;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+    }
     /**
      * Constructs a new Lobby.
      *
@@ -51,7 +66,7 @@ public class Lobby {
         this.id = id;
         this.maxPlayers = maxPlayers;
         this.players = new CopyOnWriteArrayList<>();
-        this.isGameStarted = false;
+        this.status = LobbyStatus.IN_LOBBY;
     }
 
     /**
@@ -81,7 +96,7 @@ public class Lobby {
      * @return True if the action was successful, else false.
      */
     public boolean addPlayer(ClientHandler player) {
-        if(players.size() < maxPlayers && !isGameStarted) {
+        if(players.size() < maxPlayers && status == LobbyStatus.IN_LOBBY) {
             players.add(player);
             logger.info(player.toString() + " has joined Lobby: " + id);
             return true;
@@ -110,11 +125,10 @@ public class Lobby {
 
     /**
      * Gets the value of isGameStarted.
-     *
-     * @return The current value of isGameStarted.
+     * @return The current value of isGameStarted as a String
      */
-    public boolean isGameStarted(){
-        return isGameStarted;
+    public String getStatus() {
+        return status.getStatus();
     }
 
     /**
@@ -147,7 +161,7 @@ public class Lobby {
                 "id='" + id + '\'' +
                 ", players=" + players.size() +
                 ", maxPlayers=" + maxPlayers +
-                ", isGameStarted=" + isGameStarted +
+                ", status=" + getStatus() +
                 '}';
     }
 
@@ -159,7 +173,7 @@ public class Lobby {
      */
     public boolean startGame() {
         // Check if the game is already started
-        if (isGameStarted) {
+        if (status == LobbyStatus.IN_GAME) {
             logger.warning("Game is already started in lobby " + id);
             return false;
         }
@@ -171,7 +185,7 @@ public class Lobby {
         }
 
         // Start the game
-        isGameStarted = true;
+        status = LobbyStatus.IN_GAME;
         logger.info("Game started in lobby " + id);
 
         // Notify all players that the game has started
@@ -182,6 +196,17 @@ public class Lobby {
         // Additional game initialization logic can go here
         // start game here
 
+        return true;
+    }
+
+    /**
+     * Ends the game
+     * @return true if the operation was successful, false otherwise
+     */
+    public boolean endGame() {
+        if (status == LobbyStatus.IN_GAME) {
+            status = LobbyStatus.GAME_ENDED;
+        }
         return true;
     }
 

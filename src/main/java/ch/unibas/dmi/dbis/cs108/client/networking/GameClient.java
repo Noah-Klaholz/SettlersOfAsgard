@@ -256,10 +256,10 @@ public class GameClient {
     /**
      * Leaves the current lobby
      */
-    public void leaveLobby(String lobbyName) {
+    public void leaveLobby() {
         if (isConnected()) {
             try {
-                commandSender.sendLeaveLobby(localPlayer, lobbyName);
+                commandSender.sendLeaveLobby(localPlayer);
             } catch (Exception e) {
                 logger.severe("Failed to leave lobby: " + e.getMessage());
             }
@@ -325,6 +325,19 @@ public class GameClient {
                 commandSender.sendWhisper(localPlayer.getName(), message);
             } catch (Exception e) {
                 logger.severe("Failed to send private message: " + e.getMessage());
+            }
+        }
+    }
+
+    public void sendLobbyChat(String input) {
+        if (input.trim().isEmpty()) {
+            return;
+        }
+        if (isConnected()) {
+            try {
+                commandSender.sendLobbyChatCommand(new ChatCommand(localPlayer, input));
+            } catch (Exception e) {
+                logger.severe("Failed to send chat message: " + e.getMessage());
             }
         }
     }
