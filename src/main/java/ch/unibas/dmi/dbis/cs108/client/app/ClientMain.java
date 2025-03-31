@@ -126,7 +126,7 @@ public class ClientMain {
             } else if (input.startsWith("/allplayers")) {
                 client.listAllPlayers();
             } else if (input.startsWith("@")) {
-                client.sendPrivateMessage(input);
+                client.sendPrivateChat(input);
             } else if (input.startsWith("/global ")) {
                 String message = input.replace("/global ", "").trim();
                 client.sendChat(message);
