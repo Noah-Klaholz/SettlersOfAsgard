@@ -134,4 +134,10 @@ task serverJar(type: Jar) {
     }
 }
 
+task 'build-cs108' {
+    dependsOn jar, clientJar, serverJar, javadoc
+    description = 'Builds all JAR files and Javadocs'
+    group = 'build'
+}
+
 build.dependsOn clientJar, serverJar
