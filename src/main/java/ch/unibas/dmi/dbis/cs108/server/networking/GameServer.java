@@ -1,8 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.server.networking;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
-import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
-import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.PingFilter;
 
@@ -10,12 +8,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.SocketException;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.logging.Logger;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -25,13 +19,13 @@ import java.util.stream.Collectors;
 public class GameServer {
     private static final Logger logger = Logger.getLogger(GameServer.class.getName());
 
-    private ScheduledExecutorService pingScheduler = Executors.newScheduledThreadPool(1);
+    private final ScheduledExecutorService pingScheduler = Executors.newScheduledThreadPool(1);
     private boolean running;
-    private int port;
+    private final int port;
     private ServerSocket serverSocket;
-    private ExecutorService executor;
-    private List<ClientHandler> clients;
-    private List<Lobby> lobbies;
+    private final ExecutorService executor;
+    private final List<ClientHandler> clients;
+    private final List<Lobby> lobbies;
 
     public GameServer(int port) {
         logger.setFilter(new PingFilter());
@@ -60,7 +54,7 @@ public class GameServer {
                     clients.add(client);
                     executor.execute(client);
                 } catch (SocketException se) {
-                    if(!running) {
+                    if (!running) {
                         logger.info("Server socket closed. Exiting accept loop");
                         break; // Expected exception when server is shutting down
                     } else {
@@ -127,25 +121,27 @@ public class GameServer {
 
     /**
      * Broadcasts a message to all connected clients.
+     *
      * @param message The message to broadcast
      */
     public void broadcast(String message) {
-        for(ClientHandler client : clients) {
+        for (ClientHandler client : clients) {
             client.sendMessage(message);
         }
     }
 
     /**
      * Removes a client from the list of connected clients.
+     *
      * @param client The client to remove
      */
     public void removeClient(ClientHandler client) {
         if (clients.contains(client)) {
             clients.remove(client);
             Lobby clientLobby = client.getCurrentLobby();
-            if(clientLobby != null) {
+            if (clientLobby != null) {
                 clientLobby.removePlayer(client);
-                if(clientLobby.isEmpty()) {
+                if (clientLobby.isEmpty()) {
                     removeLobby(clientLobby);
                 }
             }
@@ -155,6 +151,7 @@ public class GameServer {
 
     /**
      * Returns the port, the serverStatus (running or not) and the number of connected clients.
+     *
      * @return A string representation of the server
      */
     @Override
@@ -168,6 +165,7 @@ public class GameServer {
 
     /**
      * Returns a list of all connected clients.
+     *
      * @return A list of connected clients as ClientHandler objects
      * @see ClientHandler
      */
@@ -177,13 +175,14 @@ public class GameServer {
 
     /**
      * Creates a new lobby with the given id and maximum number of players.
-     * @param id The id of the lobby
+     *
+     * @param id         The id of the lobby
      * @param maxPlayers The maximum number of players in the lobby
      * @return The created lobby
      * @see Lobby
      */
     public Lobby createLobby(String id, int maxPlayers) {
-        if(getLobby(id) != null) { // If lobby with id already exists
+        if (getLobby(id) != null) { // If lobby with id already exists
             logger.warning("Lobby with id " + id + " already exists");
             return null;
         }
@@ -195,32 +194,34 @@ public class GameServer {
 
     /**
      * Returns the lobby with the given id.
+     *
      * @param id
      * @return The lobby with the given id or null if no lobby with that id exists
      * @see Lobby
      */
     public Lobby getLobby(String id) {
-        for(Lobby lobby : lobbies) {
-            if(lobby.getId().equals(id)) {
+        for (Lobby lobby : lobbies) {
+            if (lobby.getId().equals(id)) {
                 return lobby;
             }
         }
         return null;
     }
 
-    public boolean containsPlayerName(String playerName){
+    public boolean containsPlayerName(String playerName) {
         for (ClientHandler client : clients) {
-             if(client.getPlayer() != null) {
-                 if (client.getPlayerName().equals(playerName)) {
-                     return true;
-                 }
-             }
+            if (client.getPlayer() != null) {
+                if (client.getPlayerName().equals(playerName)) {
+                    return true;
+                }
+            }
         }
         return false;
     }
 
     /**
      * Removes the given lobby from the list of lobbies.
+     *
      * @see Lobby
      */
     public void removeLobby(Lobby lobby) {
@@ -230,10 +231,11 @@ public class GameServer {
 
     /**
      * Returns a list of all lobbies.
+     *
      * @return A list of all lobbies as Lobby objects
      * @see Lobby
      */
-    public List<Lobby> getLobbies(){
+    public List<Lobby> getLobbies() {
         return lobbies;
     }
 

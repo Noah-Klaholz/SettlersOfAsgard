@@ -17,49 +17,30 @@ import java.util.stream.Collectors;
 public class Lobby {
 
     /**
+     * Logger to log important events.
+     */
+    private static final Logger logger = Logger.getLogger(Lobby.class.getName());
+    /**
      * A unique String representing the name of the lobby.
      */
-    private String id;
-
+    private final String id;
     /**
      * A list of the current players in the lobby.
      */
-    private List<ClientHandler> players;
-
+    private final List<ClientHandler> players;
     /**
      * The maximal number of players that are allowed in one lobby.
      */
-    private int maxPlayers;
-
+    private final int maxPlayers;
     /**
      * An enum indicating the status of the lobby
      */
     private LobbyStatus status;
 
     /**
-     * Logger to log important events.
-     */
-    private static final Logger logger = Logger.getLogger(Lobby.class.getName());
-
-    public enum LobbyStatus {
-        IN_LOBBY("In lobby"),
-        IN_GAME("In-Game"),
-        GAME_ENDED("Game has ended");
-
-        private final String status;
-
-        LobbyStatus(String status) {
-            this.status = status;
-        }
-
-        public String getStatus() {
-            return status;
-        }
-    }
-    /**
      * Constructs a new Lobby.
      *
-     * @param id The unique String containing the name of the lobby.
+     * @param id         The unique String containing the name of the lobby.
      * @param maxPlayers The maximal amount of players allowed in the lobby.
      */
     public Lobby(String id, int maxPlayers) {
@@ -96,7 +77,7 @@ public class Lobby {
      * @return True if the action was successful, else false.
      */
     public boolean addPlayer(ClientHandler player) {
-        if(players.size() < maxPlayers && status == LobbyStatus.IN_LOBBY) {
+        if (players.size() < maxPlayers && status == LobbyStatus.IN_LOBBY) {
             players.add(player);
             logger.info(player.toString() + " has joined Lobby: " + id);
             return true;
@@ -114,7 +95,7 @@ public class Lobby {
      * @return True if the action was successful, else false.
      */
     public boolean removePlayer(ClientHandler player) {
-        if(!players.isEmpty() && players.contains(player)) {
+        if (!players.isEmpty() && players.contains(player)) {
             players.remove(player);
             logger.info(player.toString() + " has been removed from Lobby: " + id);
             return true;
@@ -125,6 +106,7 @@ public class Lobby {
 
     /**
      * Gets the value of isGameStarted.
+     *
      * @return The current value of isGameStarted as a String
      */
     public String getStatus() {
@@ -136,15 +118,18 @@ public class Lobby {
      *
      * @return True if the lobby is full, else false.
      */
-    public boolean isFull(){
+    public boolean isFull() {
         return players.size() == maxPlayers;
     }
 
     /**
      * Checks if the lobby is empty
+     *
      * @return True if the lobby is empty, else false
      */
-    public boolean isEmpty(){return players.isEmpty();}
+    public boolean isEmpty() {
+        return players.isEmpty();
+    }
 
     /**
      * Returns the state of the lobby, including:
@@ -164,7 +149,6 @@ public class Lobby {
                 ", status=" + getStatus() +
                 '}';
     }
-
 
     /**
      * Starts the game in the lobby.
@@ -201,6 +185,7 @@ public class Lobby {
 
     /**
      * Ends the game
+     *
      * @return true if the operation was successful, false otherwise
      */
     public boolean endGame() {
@@ -212,10 +197,11 @@ public class Lobby {
 
     /**
      * Broadcasts a message to all players in the lobby.
+     *
      * @param message The message to broadcast
      */
     public void broadcastMessage(String message) {
-        for(ClientHandler player : players) {
+        for (ClientHandler player : players) {
             player.sendMessage(message);
         }
     }
@@ -230,5 +216,21 @@ public class Lobby {
                 .collect(Collectors.joining(", "));
 
         return "Players: " + playerList;
+    }
+
+    public enum LobbyStatus {
+        IN_LOBBY("In lobby"),
+        IN_GAME("In-Game"),
+        GAME_ENDED("Game has ended");
+
+        private final String status;
+
+        LobbyStatus(String status) {
+            this.status = status;
+        }
+
+        public String getStatus() {
+            return status;
+        }
     }
 }

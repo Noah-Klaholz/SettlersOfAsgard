@@ -4,8 +4,12 @@ import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 
-import java.io.*;
-import java.net.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.SocketException;
 import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -16,17 +20,18 @@ import java.util.logging.Logger;
  * The GameClient class is responsible for connecting to the server and sending/receiving messages.
  */
 public class GameClient implements CommunicationAPI {
-    private String host;
-    private int port;
+    private final Logger logger = Logger.getLogger(GameClient.class.getName());
+    private final String host;
+    private final int port;
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
     private long lastPingTime = System.currentTimeMillis();
-    private ScheduledExecutorService pingScheduler = Executors.newScheduledThreadPool(1);
-    private final Logger logger = Logger.getLogger(GameClient.class.getName());
+    private final ScheduledExecutorService pingScheduler = Executors.newScheduledThreadPool(1);
 
     /**
      * Contstructor Method for Gameclient
+     *
      * @param host ServerIp Adress
      * @param port ServerPort
      */
@@ -102,6 +107,7 @@ public class GameClient implements CommunicationAPI {
     /**
      * Sends a Ping to the Server using the sendMessage Method (only works when connected)
      * Checks if the time since the last ping has exceeded the timeout value in
+     *
      * @see SETTINGS
      */
     public void sendPing() {
@@ -115,6 +121,7 @@ public class GameClient implements CommunicationAPI {
 
     /**
      * Sends a message to the server.
+     *
      * @param message The message to send
      */
     @Override
@@ -126,6 +133,7 @@ public class GameClient implements CommunicationAPI {
     /**
      * Handles a received chat message from the server.
      * For now: Just log the message
+     *
      * @param cmd The command to handle
      */
     public void handleRecievedChatMessage(Command cmd) {
@@ -134,6 +142,7 @@ public class GameClient implements CommunicationAPI {
 
     /**
      * Receives a message from the server and processes it. Answers with an OK or ERR response depending on success of processing.
+     *
      * @param received The received message from the server
      *                 Message String should be in the format "commandName:arg1,arg2,arg3"
      */

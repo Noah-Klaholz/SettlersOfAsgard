@@ -7,7 +7,8 @@ package ch.unibas.dmi.dbis.cs108.server.core.Logic;
  */
 public class GameLogic implements GameLogicInterface {
 
-    public GameLogic() {}
+    public GameLogic() {
+    }
 
     /**
      * Initializes and starts a new game.
@@ -58,8 +59,8 @@ public class GameLogic implements GameLogicInterface {
      * Validates the purchase against game rules and updates the game state
      * if the purchase is successful.
      *
-     * @param x The x-coordinate of the tile to purchase
-     * @param y The y-coordinate of the tile to purchase
+     * @param x        The x-coordinate of the tile to purchase
+     * @param y        The y-coordinate of the tile to purchase
      * @param playerID The unique identifier of the player attempting to buy the tile
      */
     @Override
@@ -72,10 +73,10 @@ public class GameLogic implements GameLogicInterface {
      * This method verifies the placement is valid according to game rules,
      * deducts the required resources, and updates the game state with the new structure.
      *
-     * @param x The x-coordinate where the structure will be placed
-     * @param y The y-coordinate where the structure will be placed
+     * @param x           The x-coordinate where the structure will be placed
+     * @param y           The y-coordinate where the structure will be placed
      * @param structureID The identifier of the structure to place
-     * @param playerID The unique identifier of the player placing the structure
+     * @param playerID    The unique identifier of the player placing the structure
      */
     @Override
     public void placeStructure(int x, int y, String structureID, String playerID) {
@@ -87,11 +88,11 @@ public class GameLogic implements GameLogicInterface {
      * This method validates the action, applies the structure's effects based on the use type,
      * and updates the game state accordingly.
      *
-     * @param x The x-coordinate of the structure to use
-     * @param y The y-coordinate of the structure to use
+     * @param x           The x-coordinate of the structure to use
+     * @param y           The y-coordinate of the structure to use
      * @param structureID The identifier of the structure to use
-     * @param useType The specific way the structure should be used
-     * @param playerID The unique identifier of the player using the structure
+     * @param useType     The specific way the structure should be used
+     * @param playerID    The unique identifier of the player using the structure
      */
     @Override
     public void useStructure(int x, int y, String structureID, String useType, String playerID) {
@@ -103,8 +104,8 @@ public class GameLogic implements GameLogicInterface {
      * This method verifies the upgrade is valid, deducts the required resources,
      * and enhances the statue's capabilities.
      *
-     * @param x The x-coordinate of the statue to upgrade
-     * @param y The y-coordinate of the statue to upgrade
+     * @param x        The x-coordinate of the statue to upgrade
+     * @param y        The y-coordinate of the statue to upgrade
      * @param statueID The identifier of the statue to upgrade
      * @param playerID The unique identifier of the player upgrading the statue
      */
@@ -118,10 +119,10 @@ public class GameLogic implements GameLogicInterface {
      * This method validates the action, applies the statue's effects based on the use type,
      * and updates the game state accordingly.
      *
-     * @param x The x-coordinate of the statue to use
-     * @param y The y-coordinate of the statue to use
+     * @param x        The x-coordinate of the statue to use
+     * @param y        The y-coordinate of the statue to use
      * @param statueID The identifier of the statue to use
-     * @param useType The specific way the statue should be used
+     * @param useType  The specific way the statue should be used
      * @param playerID The unique identifier of the player using the statue
      */
     @Override
@@ -134,8 +135,8 @@ public class GameLogic implements GameLogicInterface {
      * This method applies the artifact's effects to the specified location
      * and updates the game state accordingly.
      *
-     * @param x The x-coordinate where the field artifact will be used
-     * @param y The y-coordinate where the field artifact will be used
+     * @param x          The x-coordinate where the field artifact will be used
+     * @param y          The y-coordinate where the field artifact will be used
      * @param artifactID The identifier of the artifact to use
      */
     @Override
@@ -149,7 +150,7 @@ public class GameLogic implements GameLogicInterface {
      * and updates the game state accordingly.
      *
      * @param artifactID The identifier of the artifact to use
-     * @param playerID The unique identifier of the player who will be affected
+     * @param playerID   The unique identifier of the player who will be affected
      */
     @Override
     public void usePlayerArtifact(int artifactID, String playerID, String useType) {
@@ -161,9 +162,9 @@ public class GameLogic implements GameLogicInterface {
      * This method activates the trap's effect, potentially affecting other players
      * or game elements, and updates the game state accordingly.
      *
-     * @param x The x-coordinate of the trap to use
-     * @param y The y-coordinate of the trap to use
-     * @param trapID The identifier of the trap to use
+     * @param x        The x-coordinate of the trap to use
+     * @param y        The y-coordinate of the trap to use
+     * @param trapID   The identifier of the trap to use
      * @param playerID The unique identifier of the player using the trap
      */
     @Override

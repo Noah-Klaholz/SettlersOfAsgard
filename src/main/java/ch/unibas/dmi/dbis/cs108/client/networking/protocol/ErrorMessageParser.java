@@ -10,6 +10,7 @@ import java.util.logging.Logger;
  */
 public class ErrorMessageParser {
     private static final Logger logger = Logger.getLogger(ErrorMessageParser.class.getName());
+
     /**
      * Parses an error message received from the server.
      *
@@ -33,7 +34,7 @@ public class ErrorMessageParser {
          * Only log for unexpected errors
          * E.g. Player already exists is a normal error -> no logging!
          */
-        switch(err) {
+        switch (err) {
             case CANNOT_WHISPER_TO_SELF:
                 logger.warning("Cannot whisper to self");
                 break;

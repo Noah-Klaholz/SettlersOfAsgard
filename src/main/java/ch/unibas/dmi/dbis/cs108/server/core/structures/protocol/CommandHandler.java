@@ -6,7 +6,6 @@ import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 import ch.unibas.dmi.dbis.cs108.server.networking.GameServer;
 
-import java.net.Socket;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,6 +14,7 @@ public class CommandHandler {
     private final GameServer server;
     private Lobby currentLobby;
     private Player localPlayer;
+
     /**
      * Constructor for the ClientHandler class.
      */
@@ -45,7 +45,7 @@ public class CommandHandler {
     }
 
     private void joinLobby(Lobby lobby) {
-        if(ch.getCurrentLobby() != null) {
+        if (ch.getCurrentLobby() != null) {
             ch.getCurrentLobby().removePlayer(ch);
         }
         setCurrentLobby(lobby);
@@ -53,18 +53,18 @@ public class CommandHandler {
 
     public void handleListPlayers(Command cmd) {
         String[] arg = cmd.getArgs();
-        if(arg.length != 1) {
+        if (arg.length != 1) {
             sendMessage("ERR$101$INVALID_ARGUMENTS");
         } else {
             String list;
-            if(arg[0].equals("LOBBY")) {
-                if(currentLobby != null) {
+            if (arg[0].equals("LOBBY")) {
+                if (currentLobby != null) {
                     list = currentLobby.listPlayers();
                     sendMessage(list);
                 } else {
                     sendMessage("ERR$106$NOT_IN_LOBBY");
                 }
-            } else if(arg[0].equals("SERVER")) {
+            } else if (arg[0].equals("SERVER")) {
                 list = server.listPlayers();
                 sendMessage(list);
             } else {
@@ -76,6 +76,7 @@ public class CommandHandler {
 
     /**
      * This method handles the creation of a lobby.
+     *
      * @param cmd the transmitted command
      */
     public void handleCreateLobby(Command cmd) {
@@ -114,6 +115,7 @@ public class CommandHandler {
 
     /**
      * This method handles a player (client) joining a Lobby.
+     *
      * @param cmd the transmitted command
      */
     public void handleJoinLobby(Command cmd) {
@@ -138,7 +140,7 @@ public class CommandHandler {
             String lobbyId = currentLobby.getId();
             sendMessage("OK$LEAV$" + lobbyId);
             Lobby lobby = server.getLobby(lobbyId);
-            if(lobby != null && lobby.isEmpty()) {
+            if (lobby != null && lobby.isEmpty()) {
                 server.removeLobby(lobby);
             }
             setCurrentLobby(null);
@@ -162,6 +164,7 @@ public class CommandHandler {
     /**
      * This method handles the registration of a player.
      * Gets called immediately when a player connects
+     *
      * @param cmd the transmitted command
      */
     public void handleRegister(Command cmd) {
@@ -170,8 +173,7 @@ public class CommandHandler {
             if (!server.containsPlayerName(playerName)) {
                 setLocalPlayer(new Player(playerName));
                 sendMessage("OK$RGST$" + playerName);
-            }
-            else {
+            } else {
                 // Find a unique name by adding numbers
                 String uniqueName = playerName;
                 int suffix = 2;
@@ -187,18 +189,18 @@ public class CommandHandler {
 
     /**
      * This method handles the changing of a player's name.
+     *
      * @param cmd the transmitted command
      */
     public void handleChangeName(Command cmd) {
         String newPlayerName = cmd.getArgs()[0];
 
-        synchronized(server) {
-            if (!server.containsPlayerName(newPlayerName)){
+        synchronized (server) {
+            if (!server.containsPlayerName(newPlayerName)) {
                 sendMessage("OK$CHAN$" + newPlayerName);
                 server.broadcast(localPlayer.getName() + " changed name to " + newPlayerName);
                 setLocalPlayerName(newPlayerName);
-            }
-            else {
+            } else {
                 // Generate unique name
                 String uniqueName = newPlayerName;
                 int suffix = 2;
@@ -214,26 +216,27 @@ public class CommandHandler {
 
     /**
      * This method handles the sending of a private message to another player.
+     *
      * @param cmd the transmitted command
      */
     public void handlePrivateMessage(Command cmd) {
         String[] parts = cmd.getArgs();
         String senderName = parts[0];
         String receiverName = parts[1];
-        if(receiverName.equals(senderName)) {
+        if (receiverName.equals(senderName)) {
             sendMessage("ERR$106$CANNOT_WHISPER_TO_SELF");
             return;
         }
         String message = parts[2];
         if (server.containsPlayerName(receiverName)) {
             server.getClients().forEach(client -> {
-                if(client.isRunning() && client.getPlayerName().equals(receiverName)) {
+                if (client.isRunning() && client.getPlayerName().equals(receiverName)) {
                     client.sendMessage("<Whisper>" + senderName + ": " + message);
                     sendMessage("OK$CHTP$");
                 }
             });
         } else {
-            sendMessage("ERR$105$NO_PLAYER_FOUND_PRIVATE_MESSAGE$"+senderName);
+            sendMessage("ERR$105$NO_PLAYER_FOUND_PRIVATE_MESSAGE$" + senderName);
         }
 
     }
@@ -250,7 +253,7 @@ public class CommandHandler {
     }
 
     public void handleGlobalChatMessage(Command cmd) {
-        if(cmd.getCommand().equals("CHTL")) {
+        if (cmd.getCommand().equals("CHTL")) {
             String command = cmd.toString().replace("CHTL", "CHTG").trim();
             ch.sendGlobalChatMessage(new Command(command));
         } else {

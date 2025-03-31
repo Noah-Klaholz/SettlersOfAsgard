@@ -14,6 +14,7 @@ public class PongCommand implements Command {
 
     /**
      * Constructor for the PongCommand.
+     *
      * @param sender
      * @param targetId
      */
@@ -24,6 +25,7 @@ public class PongCommand implements Command {
 
     /**
      * Getter for the sender of the pong command.
+     *
      * @return
      */
     public Player getSender() {
@@ -32,6 +34,7 @@ public class PongCommand implements Command {
 
     /**
      * Getter for the targetId of the pong command.
+     *
      * @return
      */
     public String getTargetId() {

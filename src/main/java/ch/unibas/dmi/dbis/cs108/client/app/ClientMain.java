@@ -42,7 +42,7 @@ public class ClientMain {
             int serverport = Integer.parseInt(serverAddress[1]);
 
             String username;
-            if(args.length > 2) {
+            if (args.length > 2) {
                 username = args[2];
             } else {
                 username = System.getProperty("user.name");
@@ -91,6 +91,7 @@ public class ClientMain {
 
     /**
      * Process user input
+     *
      * @param running AtomicBoolean
      * @param scanner Scanner
      * @param client  GameClient
@@ -121,7 +122,7 @@ public class ClientMain {
                 client.startGame();
             } else if (input.startsWith("/listlobbies")) {
                 client.listLobbies();
-            }else if (input.startsWith("/lobbyplayers")) {
+            } else if (input.startsWith("/lobbyplayers")) {
                 client.listLobbyPlayers();
             } else if (input.startsWith("/allplayers")) {
                 client.listAllPlayers();

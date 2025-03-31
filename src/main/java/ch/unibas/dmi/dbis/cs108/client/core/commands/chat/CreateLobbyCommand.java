@@ -22,7 +22,7 @@ public class CreateLobbyCommand implements Command {
         this.lobbyId = lobbyId;
     }
 
-   /**
+    /**
      * Getter for message
      *
      * @return String
@@ -40,7 +40,7 @@ public class CreateLobbyCommand implements Command {
         return sender;
     }
 
-   /**
+    /**
      * Executes the command
      */
     @Override
