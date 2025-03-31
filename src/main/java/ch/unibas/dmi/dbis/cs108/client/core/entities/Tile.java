@@ -6,7 +6,7 @@ public class Tile {
     private final int y;
     private boolean hasStructure;
     private String owner;
-    private int price;
+    private final int price;
     private Structure structure;
     private Statue statue;
     private Artifact artifact;
