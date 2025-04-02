@@ -272,4 +272,7 @@ public class CommandHandler {
 
     public void handleSynchronize() {
     }
+
+    public void handleGetGameStatus(Command cmd) {
+    }
 }
