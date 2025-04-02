@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.server.core.structures;
 
+import ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 
 import java.util.List;
@@ -36,6 +37,8 @@ public class Lobby {
      * An enum indicating the status of the lobby
      */
     private LobbyStatus status;
+
+    private GameLogic gameLogic;
 
     /**
      * Constructs a new Lobby.
@@ -173,12 +176,16 @@ public class Lobby {
         logger.info("Game started in lobby " + id);
 
         // Notify all players that the game has started
+        broadcastMessage("Game started in lobby " + id);
         for (ClientHandler player : players) {
-            player.sendMessage("GAME_STARTED:");
+            player.startGame();
         }
 
         // Additional game initialization logic can go here
+        this.gameLogic = new GameLogic();
+
         // start game here
+        gameLogic.startGame();
 
         return true;
     }

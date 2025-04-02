@@ -262,7 +262,7 @@ public class CommandHandler {
             ch.sendGlobalChatMessage(cmd);
         }
     }
-    
+
     /**
      * Handles start turn command from client
      */
@@ -293,11 +293,9 @@ public class CommandHandler {
 
     /**
      * Handles request for game status
-     * @param cmd the transmitted command
      */
-    public void handleGetGameStatus(Command cmd) {
+    public void handleGetGameStatus() {
         try {
-            String playerName = cmd.getArgs()[0];
             // TODO: Implement game status retrieval logic
         } catch (Exception e) {
             logger.severe("Failed to handle game status request: " + e.getMessage());
@@ -307,16 +305,9 @@ public class CommandHandler {
 
     /**
      * Handles request for price information
-     * @param cmd the transmitted command
      */
-    public void handleGetPrices(Command cmd) {
-        try {
-            String playerName = cmd.getArgs()[0];
-            // TODO: Implement price retrieval logic
-        } catch (Exception e) {
-            logger.severe("Failed to handle price request: " + e.getMessage());
-            sendMessage("ERR$106$PRICE_REQUEST_FAILED");
-        }
+    public void handleGetPrices() {
+        //TODO: Implement price retrieval logic
     }
 
     /**

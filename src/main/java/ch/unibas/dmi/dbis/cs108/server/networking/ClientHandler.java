@@ -77,6 +77,10 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         }
     }
 
+    public void startGame() {
+        sendMessage(NetworkProtocol.Commands.START+"$");
+    }
+
     /**
      * Closes the resources associated with the client handler.
      */
@@ -313,10 +317,10 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                     ch.handleSynchronize();
                     break;
                 case GETGAMESTATUS:
-                    ch.handleGetGameStatus(cmd);
+                    ch.handleGetGameStatus();
                     break;
                 case GETPRICES:
-                    ch.handleGetPrices(cmd);
+                    ch.handleGetPrices();
                     break;
                 case BUYTILE:
                     ch.handleBuyTile(cmd);
