@@ -300,6 +300,57 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                     ch.handleLeaveLobby();
                     server.removeClient(this);
                     break;
+                case STARTTURN:
+                    ch.handleStartTurn();
+                    break;
+                case ENDTURN:
+                    ch.handleEndTurn();
+                    break;
+                case STATS:
+                    ch.handleStats();
+                    break;
+                case SYNCHRONIZE:
+                    ch.handleSynchronize();
+                    break;
+                case GETGAMESTATUS:
+                    ch.handleGetGameStatus(cmd);
+                    break;
+                case GETPRICES:
+                    ch.handleGetPrices(cmd);
+                    break;
+                case BUYTILE:
+                    ch.handleBuyTile(cmd);
+                    break;
+                case PLACESTRUCTURE:
+                    ch.handlePlaceStructure(cmd);
+                    break;
+                case USESTRUCTURE:
+                    ch.handleUseStructure(cmd);
+                    break;
+                case UPGRADESTATUE:
+                    ch.handleUpgradeStatue(cmd);
+                    break;
+                case USESTATUE:
+                    ch.handleUseStatue(cmd);
+                    break;
+                case USEPLAYERARTIFACT:
+                    ch.handleUsePlayerArtifact(cmd);
+                    break;
+                case USETRAP:
+                    ch.handleUseTrap(cmd);
+                    break;
+                case BUYHEXFIELD:
+                    ch.handleBuyHexField(cmd);
+                    break;
+                case BUILDSTRUCTURE:
+                    ch.handleBuildStructure(cmd);
+                    break;
+                case UPGRADESTRUCTURE:
+                    ch.handleUpgradeStructure(cmd);
+                    break;
+                case USEARTIFACT:
+                    ch.handleUseArtifact(cmd);
+                    break;
                 default: // Error case
                     logger.warning("Switch-Unknown command: " + cmd.getCommand());
             }

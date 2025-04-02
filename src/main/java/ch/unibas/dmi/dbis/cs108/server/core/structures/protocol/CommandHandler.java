@@ -261,4 +261,15 @@ public class CommandHandler {
         }
     }
 
+    public void handleStartTurn() {
+    }
+
+    public void handleEndTurn() {
+    }
+
+    public void handleStats() {
+    }
+
+    public void handleSynchronize() {
+    }
 }
