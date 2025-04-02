@@ -72,6 +72,18 @@ public class Lobby {
     }
 
     /**
+     * Gets the current gameLogic
+     * Returns null if game is not yet started
+     * @return
+     */
+    public GameLogic getGameLogic() {
+        if(status != LobbyStatus.IN_GAME) {
+            logger.warning("Not yet in game, cannot return gameLogic from current Lobby.");
+            return null;
+        }
+        return this.gameLogic;
+    }
+    /**
      * Adds a player to the lobby if two requirements are met:
      * 1. There are at most maxPlayers-1 players already in the lobby.
      * 2. The game has not started yet.

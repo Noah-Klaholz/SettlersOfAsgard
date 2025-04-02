@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.core.structures.protocol;
 
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
+import ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
@@ -14,6 +15,7 @@ public class CommandHandler {
     Logger logger = Logger.getLogger(CommandHandler.class.getName());
     private final ClientHandler ch;
     private final GameServer server;
+    private GameLogic gameLogic;
     private Lobby currentLobby;
     private Player localPlayer;
 
@@ -156,8 +158,8 @@ public class CommandHandler {
      */
     public void handleStartGame() {
         if (currentLobby != null && currentLobby.getPlayers().get(0) == ch && currentLobby.startGame()) {
+            this.gameLogic = currentLobby.getGameLogic();
             sendMessage("OK$STRT");
-            //TODO Start Game
         } else {
             sendMessage("ERR$106$CANNOT_START_GAME");
         }
@@ -267,21 +269,33 @@ public class CommandHandler {
      * Handles start turn command from client
      */
     public void handleStartTurn() {
-        // TODO: Implement start turn logic
+        try {
+            this.gameLogic.startTurn(localPlayer.getName());
+        } catch (Exception e) {
+            logger.warning("Could not start turn because game is not started yet.");
+        }
     }
 
     /**
      * Handles end turn command from client
      */
     public void handleEndTurn() {
-        // TODO: Implement end turn logic
+        try {
+            this.gameLogic.endTurn(localPlayer.getName());
+        } catch (Exception e) {
+            logger.warning("Could not end turn because game is not started yet.");
+        }
     }
 
     /**
      * Handles stats request from client
      */
     public void handleStats() {
-        // TODO: Implement stats logic
+        try {
+            this.gameLogic.getGameState();
+        } catch (Exception e) {
+            logger.warning("Could not get GameState because game is not started yet.");
+        }
     }
 
     /**
