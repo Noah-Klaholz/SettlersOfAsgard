@@ -40,6 +40,14 @@ public class SocketNetworkClient implements NetworkClient {
                 future.complete(null);
                 LOGGER.info("Connected to " + host + ":" + port);
             } catch (Exception e) {
+                // Ensure the socket is closed if a connection error occurs.
+                if (socket != null && !socket.isClosed()) {
+                    try {
+                        socket.close();
+                    } catch (IOException ioEx) {
+                        LOGGER.log(Level.WARNING, "Error closing socket after connection failure", ioEx);
+                    }
+                }
                 future.completeExceptionally(e);
                 LOGGER.log(Level.SEVERE, "Failed to connect", e);
             }
