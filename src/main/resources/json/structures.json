@@ -2,8 +2,6 @@
   {
     "_comment": "Here are descriptions for useTypes",
     "//todo": "add costs",
-
-
     "Energy": "USE: Used with Energy",
     "Gift": "USE: Gives a choosable Object",
     "RandomGift": "USE: Gives a random Object",
