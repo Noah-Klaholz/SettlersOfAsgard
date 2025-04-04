@@ -1,11 +1,13 @@
 package ch.unibas.dmi.dbis.cs108.client.core.entities;
 
+import java.util.UUID;
+
 /**
  * Player class is responsible for creating a player object
  */
 public class Player {
     //private final String id;
-    //todo: add player id
+    private final UUID player_id;
     private String name;
 
     /**
@@ -16,7 +18,7 @@ public class Player {
      * @param name String
      */
     public Player(String name) {
-        //this.id = id;
+        this.player_id = UUID.randomUUID();
         this.name = name;
     }
 
@@ -47,5 +49,14 @@ public class Player {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * Getter for player id
+     *
+     * @return player_id
+     */
+    public UUID getPlayer_id() {
+        return player_id;
     }
 }
