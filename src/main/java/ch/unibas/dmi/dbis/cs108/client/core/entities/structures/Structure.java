@@ -1,4 +1,4 @@
-package ch.unibas.dmi.dbis.cs108.client.core.entities.structure;
+package ch.unibas.dmi.dbis.cs108.client.core.entities.structures;
 
 public abstract class Structure {
     protected final int id;
