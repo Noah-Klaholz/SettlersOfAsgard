@@ -3,15 +3,16 @@ package ch.unibas.dmi.dbis.cs108.server.networking;
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
+import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
-import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * The ClientHandler class is responsible for handling the communication between the server and a client.
@@ -20,20 +21,21 @@ import java.util.stream.Collectors;
  * It also implements the CommunicationAPI interface to allow for communication with the server.
  */
 public class ClientHandler implements Runnable, CommunicationAPI {
+    private static final Logger logger = Logger.getLogger(ClientHandler.class.getName());
+    protected GameServer server; // Reference to the GameServer
+    protected Lobby currentLobby = null;
+    protected Player localPlayer = null;
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
     private long lastPingTime = System.currentTimeMillis();
-    protected GameServer server; // Reference to the GameServer
-    private CommandHandler ch; // Reference to a CommandHandler
+    private final CommandHandler ch; // Reference to a CommandHandler
     private boolean running;
-    protected Lobby currentLobby = null;
-    protected Player localPlayer = null;
-    private static final Logger logger = Logger.getLogger(ClientHandler.class.getName());
 
 
     /**
      * Constructor for the ClientHandler class.
+     *
      * @param socket the client's socket
      * @param server the GameServer
      */
@@ -99,6 +101,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
 
     /**
      * Sends a String message to the client.
+     *
      * @param message the message String to send
      */
     @Override
@@ -122,6 +125,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
 
     /**
      * Sends a global chat message to all players in the server.
+     *
      * @param cmd the command to send
      */
     public void sendGlobalChatMessage(Command cmd) {
@@ -133,7 +137,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      * If the client does not respond within the timeout period, the client is disconnected.
      */
     public void sendPing() {
-        if(System.currentTimeMillis() - lastPingTime > SETTINGS.Config.TIMEOUT.getValue()) {
+        if (System.currentTimeMillis() - lastPingTime > SETTINGS.Config.TIMEOUT.getValue()) {
             logger.warning("Client timed out: " + (socket != null ? socket.getRemoteSocketAddress() : "unknown"));
             closeResources();
             server.removeClient(this);
@@ -145,6 +149,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
 
     /**
      * Returns the running status of the client handler.
+     *
      * @return true if the client handler is running, false otherwise
      */
     public boolean isRunning() {
@@ -159,10 +164,13 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     }
 
 
-    public GameServer getServer() {return server;}
+    public GameServer getServer() {
+        return server;
+    }
 
     /**
      * Returns the current lobby the client is in.
+     *
      * @return the current Lobby as a Lobby object
      * @see Lobby
      */
@@ -172,6 +180,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
 
     /**
      * Sets the current lobby the client is in.
+     *
      * @param currentLobby the current lobby of the respective player
      * @see Lobby
      */
@@ -181,23 +190,34 @@ public class ClientHandler implements Runnable, CommunicationAPI {
 
     /**
      * This method returns the localPlayer variable assigned to the ClientHandler
+     *
      * @return the current localPlayer state
      */
-    public Player getPlayer(){return localPlayer;}
+    public Player getPlayer() {
+        return localPlayer;
+    }
 
     /**
      * Sets the local player to the given Player argument
+     *
      * @param player
      */
-    public void setPlayer(Player player){localPlayer = player;}
+    public void setPlayer(Player player) {
+        localPlayer = player;
+    }
+
     /**
      * This method returns the name of the localPlayer assigned to the ClientHandler
+     *
      * @return the name of the current localPlayer
      */
-    public String getPlayerName() {return localPlayer.getName();}
+    public String getPlayerName() {
+        return localPlayer.getName();
+    }
 
     /**
      * Processes a received message from the client.
+     *
      * @param received the received message String
      *                 The message is parsed into a Command object and processed accordingly.
      *                 If the command is invalid, an error message is sent to the client.
@@ -228,7 +248,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
 
             switch (command) {
                 case CHATLOBBY:
-                    if(getCurrentLobby() != null) {
+                    if (getCurrentLobby() != null) {
                         ch.handleLobbyMessage(cmd);
                     } else {
                         ch.handleGlobalChatMessage(cmd);
@@ -283,8 +303,8 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                 default: // Error case
                     logger.warning("Switch-Unknown command: " + cmd.getCommand());
             }
-            if(answer) {
-                sendMessage("OK$" + cmd.toString()); // Echo the command back to the client with an OK response
+            if (answer) {
+                sendMessage("OK$" + cmd); // Echo the command back to the client with an OK response
             }
         } else {
             logger.warning("ClientHandler: Invalid command: " + cmd);

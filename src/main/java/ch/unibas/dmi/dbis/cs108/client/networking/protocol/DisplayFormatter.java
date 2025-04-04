@@ -141,10 +141,10 @@ public class DisplayFormatter {
     private static String formatSuccessMessage(String rawMessage) {
         return null;
         /**
-        if (rawMessage.startsWith("OK$PING$")) {
-            return null; // Don't display ping responses
-        }
-        return "Success: " + rawMessage.substring(3);
+         if (rawMessage.startsWith("OK$PING$")) {
+         return null; // Don't display ping responses
+         }
+         return "Success: " + rawMessage.substring(3);
          */
     }
 }

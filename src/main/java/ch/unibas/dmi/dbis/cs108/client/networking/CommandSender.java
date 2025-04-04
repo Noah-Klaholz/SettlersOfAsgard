@@ -215,7 +215,7 @@ public class CommandSender {
         }
     }
 
-    public void sendWhisper(String localPlayerName,String whisper) {
+    public void sendWhisper(String localPlayerName, String whisper) {
         try {
             String message = formatter.formatWhisper(localPlayerName, whisper);
             socketHandler.send(message);

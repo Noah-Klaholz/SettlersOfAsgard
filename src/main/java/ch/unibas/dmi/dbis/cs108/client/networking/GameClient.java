@@ -4,12 +4,15 @@ import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.client.core.commands.chat.ChatCommand;
 import ch.unibas.dmi.dbis.cs108.client.core.commands.chat.PongCommand;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
+import ch.unibas.dmi.dbis.cs108.client.core.observer.GameEventListener;
 import ch.unibas.dmi.dbis.cs108.client.networking.protocol.DisplayFormatter;
 import ch.unibas.dmi.dbis.cs108.client.networking.protocol.ErrorMessageParser;
 import ch.unibas.dmi.dbis.cs108.client.networking.protocol.MessageParser;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -27,9 +30,9 @@ public class GameClient {
     private final ErrorMessageParser errorMessageParser;
     private final Player localPlayer;
     private final AtomicLong lastPingTime = new AtomicLong(0);
+    private final List<GameEventListener> gameEventListeners = new ArrayList<>();
     private boolean connected = false;
     private ScheduledExecutorService pingScheduler = Executors.newScheduledThreadPool(1);
-
 
     /**
      * Constructor
@@ -135,6 +138,7 @@ public class GameClient {
 
     /**
      * Changes the name of the local player
+     *
      * @param newName String
      */
     public void changeName(String newName) {
@@ -149,6 +153,7 @@ public class GameClient {
 
     /**
      * Getter for the local player
+     *
      * @param newName String
      */
     public void setName(String newName) {
@@ -296,7 +301,7 @@ public class GameClient {
      * Lists all players in the current lobby
      */
     public void listLobbyPlayers() {
-        if(isConnected()) {
+        if (isConnected()) {
             try {
                 commandSender.sendListLobbyPlayers();
             } catch (Exception e) {
@@ -309,7 +314,7 @@ public class GameClient {
      * Lists all players in the server
      */
     public void listAllPlayers() {
-        if(isConnected()) {
+        if (isConnected()) {
             try {
                 commandSender.sendListAllPlayers();
             } catch (Exception e) {
@@ -339,6 +344,24 @@ public class GameClient {
             } catch (Exception e) {
                 logger.severe("Failed to send chat message: " + e.getMessage());
             }
+        }
+    }
+
+    public void registerGameEventListener(GameEventListener listener) {
+        if (!gameEventListeners.contains(listener)) {
+            gameEventListeners.add(listener);
+            logger.info("Registered new game event listener");
+        }
+    }
+
+    public void unregisterGameEventListener(GameEventListener listener) {
+        gameEventListeners.remove(listener);
+    }
+
+    // Call this method when messages are received from server
+    protected void notifyListeners(String message) {
+        for (GameEventListener listener : new ArrayList<>(gameEventListeners)) {
+            listener.onMessageReceived(message);
         }
     }
 }

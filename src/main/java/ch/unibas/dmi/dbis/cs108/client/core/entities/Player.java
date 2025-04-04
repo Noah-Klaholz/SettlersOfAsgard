@@ -10,8 +10,9 @@ public class Player {
 
     /**
      * Constructor for Player class
-     *
+     * <p>
      * //@param id   String
+     *
      * @param name String
      */
     public Player(String name) {

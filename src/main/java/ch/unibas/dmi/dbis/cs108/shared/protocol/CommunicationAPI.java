@@ -9,17 +9,8 @@ import java.util.logging.LogRecord;
  */
 public interface CommunicationAPI {
     /**
-     * Filter for the logger to filter out ping messages to avoid clutter in the terminal
-     */
-    public class PingFilter implements Filter {
-        @Override
-        public boolean isLoggable(LogRecord record) {
-            return !record.getMessage().contains("PING$");
-        }
-    }
-
-    /**
      * Sends a message to the server
+     *
      * @param message the message to send
      */
     void sendMessage(String message);
@@ -28,6 +19,16 @@ public interface CommunicationAPI {
      * Receives a message from the server
      */
     void processMessage(String received);
+
+    /**
+     * Filter for the logger to filter out ping messages to avoid clutter in the terminal
+     */
+    class PingFilter implements Filter {
+        @Override
+        public boolean isLoggable(LogRecord record) {
+            return !record.getMessage().contains("PING$");
+        }
+    }
 
     /**
      * Utility class for network protocol constants
@@ -76,6 +77,7 @@ public interface CommunicationAPI {
 
             /**
              * Constructor for the enum
+             *
              * @param command
              */
             Commands(String command) {
@@ -83,26 +85,28 @@ public interface CommunicationAPI {
             }
 
             /**
+             * Returns the command enum from a command string
+             *
+             * @param commandName
+             * @return the command enum
+             */
+            public static Commands fromCommand(String commandName) {
+                for (Commands cmd : values()) {
+                    if (cmd.getCommand().equals(commandName)) {
+                        return cmd;
+                    }
+                }
+                throw new IllegalArgumentException("API-Unknown command: " + commandName);
+            }
+
+            /**
              * Getter for the command
+             *
              * @return the command
              * @see #command
              */
             public String getCommand() {
                 return command;
-            }
-
-            /**
-             * Returns the command enum from a command string
-             * @param commandName
-             * @return the command enum
-             */
-            public static Commands fromCommand(String commandName) {
-                for(Commands cmd : values()) {
-                    if(cmd.getCommand().equals(commandName)) {
-                        return cmd;
-                    }
-                }
-                throw new IllegalArgumentException("API-Unknown command: " + commandName);
             }
         }
     }

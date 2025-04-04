@@ -12,6 +12,7 @@ public class PingCommand implements Command {
 
     /**
      * Constructor for PingCommand class
+     *
      * @param sender Player
      */
     public PingCommand(Player sender) {
@@ -20,6 +21,7 @@ public class PingCommand implements Command {
 
     /**
      * Getter for sender
+     *
      * @return Player who sent the command
      */
     public Player getSender() {

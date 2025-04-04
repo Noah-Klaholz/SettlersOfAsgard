@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.networking.protocol;
 
 import java.util.logging.Logger;
+
 /**
  * This class provides static methods to format messages according to the protocol.
  */
@@ -11,7 +12,7 @@ public class MessageFormatter {
      * Formats a chat message.
      *
      * @param playerName The username of the sender.
-     * @param message  The message to be sent.
+     * @param message    The message to be sent.
      * @return The formatted message.
      */
     public static String formatChatMessage(String playerName, String message) {
@@ -34,12 +35,13 @@ public class MessageFormatter {
 
     /**
      * Formats a name change request.
-     * @param newName  The new name of the player.
+     *
+     * @param newName The new name of the player.
      * @return The formatted message.
      */
     public String formatNameChange(String newName) {
         try {
-            return "CHAN$" +  newName;
+            return "CHAN$" + newName;
         } catch (Exception e) {
             logger.severe("Failed to format name change: " + e.getMessage());
             return null;
@@ -47,6 +49,7 @@ public class MessageFormatter {
     }
 
     //TODO Was macht das hier? -> Server überprüft automatisch, glaub das ist nicht nötig
+
     /**
      * Formats a disconnect notification.
      *
@@ -81,6 +84,7 @@ public class MessageFormatter {
 
     /**
      * Formats a registration request.
+     *
      * @param playerName The name of the player.
      * @return The formatted message.
      */
@@ -95,6 +99,7 @@ public class MessageFormatter {
 
     /**
      * Formats a pong message.
+     *
      * @param playerName
      * @return
      */
@@ -109,8 +114,9 @@ public class MessageFormatter {
 
     /**
      * Formats a create lobby message.
+     *
      * @param playerName The name of the player.
-     * @param lobbyName The name of the lobby.
+     * @param lobbyName  The name of the lobby.
      * @return The formatted message.
      */
     public String formatCreateLobby(String playerName, String lobbyName) {
@@ -124,6 +130,7 @@ public class MessageFormatter {
 
     /**
      * Formats a join lobby message.
+     *
      * @param playerName The name of the player.
      * @param lobbyName  The name of the lobby.
      * @return The formatted message.
@@ -139,6 +146,7 @@ public class MessageFormatter {
 
     /**
      * Formats a leave lobby message.
+     *
      * @param playerName The name of the player.
      * @return The formatted message.
      */
@@ -153,6 +161,7 @@ public class MessageFormatter {
 
     /**
      * Formats a start game message.
+     *
      * @return The formatted message.
      */
     public String formatStartGame() {
@@ -166,6 +175,7 @@ public class MessageFormatter {
 
     /**
      * Formats a list lobbies message.
+     *
      * @return The formatted message.
      */
     public String formatListLobbies() {
@@ -179,6 +189,7 @@ public class MessageFormatter {
 
     /**
      * Formats a list lobby players message.
+     *
      * @return The formatted message.
      */
     public String formatListLobbyPlayers() {
@@ -192,6 +203,7 @@ public class MessageFormatter {
 
     /**
      * Formats a list all players message.
+     *
      * @return The formatted message.
      */
     public String formatListAllPlayers() {

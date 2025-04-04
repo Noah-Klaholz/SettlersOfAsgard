@@ -14,13 +14,13 @@ public class Main {
 
     /**
      * Main method for the server and the client
-     * @param args
-     * Usage in terminal:
-     * Server: java -jar xyz.jar server <listenport>
-     * Client: java -jar xyz.jar client <serverip>:<serverport>
+     *
+     * @param args Usage in terminal:
+     *             Server: java -jar xyz.jar server <listenport>
+     *             Client: java -jar xyz.jar client <serverip>:<serverport>
      */
     public static void main(String[] args) {
-        if(args.length < 2) {
+        if (args.length < 2) {
             logger.info("Usage:");
             logger.info("Server: java -jar SettlersOfAsgard.jar server <listenport>");
             logger.info("Client: java -jar SettlersOfAsgard.jar client <serverip>:<serverport> [username]");
