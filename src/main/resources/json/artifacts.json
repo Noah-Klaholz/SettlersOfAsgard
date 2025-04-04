@@ -15,73 +15,85 @@
     "name": "Freyja's Necklace",
     "description": "",
     "useType": "RuneStructure",
-    "id": 10
+    "id": 10,
+    "chance": 0.3
   },
   {
     "name": "Freyr's Golden Apple",
     "description": "",
     "useType": "EnergyStructure",
-    "id": 11
+    "id": 11,
+    "chance": 0.3
   },
   {
     "name": "Tear of Yggdrasil",
     "description": "",
     "useType": "Player",
-    "id": 12
+    "id": 12,
+    "chance": 0.3
   },
   {
     "name": "Fragment of Mjölnir",
     "description": "",
     "useType": "Tile",
-    "id": 13
+    "id": 13,
+    "chance": 0.3
   },
   {
     "name": "Fenrir's Bones",
     "description": "",
     "useType": "RuneStructure",
-    "id": 14
+    "id": 14,
+    "chance": 0.3
   },
   {
     "name": "Hel's Shadow",
     "description": "",
     "useType": "Player",
-    "id": 15
+    "id": 15,
+    "chance": 0.3
   },
   {
     "name": "Flame of Muspelheim",
     "description": "",
     "useType": "Price",
-    "id": 16
+    "id": 16,
+    "chance": 0.3
   },
 
   {
     "name": "Ice Splinter of Niflheim",
     "description": "",
     "useType": "Player",
-    "id": 17
+    "id": 17,
+    "chance": 0.3
   },
   {
     "name": "Blood of Jörmungandr",
     "description": "",
     "useType": "RiverStructure",
-    "id": 18
+    "id": 18,
+    "chance": 0.3
   },
   {
     "name": "Ashes of Surtr",
     "description": "",
     "useType": "PlayerPrice",
-    "id": 19
+    "id": 19,
+    "chance": 0.3
   },
   {
     "name": "Odin's Eye",
     "description": "",
     "useType": "RandomTile",
-    "id": 20
+    "id": 20,
+    "chance": 0.3
   },
   {
     "name": "Fenrir's Chains",
     "description": "",
     "useType": "Trap",
-    "id": 21
+    "id": 21,
+    "chance": 0.3
   }
 ]
