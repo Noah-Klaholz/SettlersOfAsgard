@@ -59,4 +59,32 @@ public class Player {
     public UUID getPlayer_id() {
         return player_id;
     }
+
+    public void buyTile(int x, int y, String playerID){
+
+    }
+
+    public void placeStructure(int x, int y, String structureID, String playerID){
+
+    }
+
+    public void useStructure(int x, int y, String structureID, String useType, String playerID){
+
+    }
+
+    public void upgradeStatue(int x, int y, String statueID, String playerID){
+
+    }
+
+    public void useStatue(int x, int y, String statueID, String useType, String playerID){
+
+    }
+
+    public void useFieldArtifact(int x, int y, int artifactID, String useType){
+
+    }
+
+    public void usePlayerArtifact(int artifactID, String playerID, String useType){
+
+    }
 }
