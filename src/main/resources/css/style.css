@@ -1,0 +1,151 @@
+/* Norse Mythology Theme - Improved for JavaFX */
+
+/* Global Styles */
+.root {
+    -fx-background-color: #1a2133; /* Deep blue-gray like night sky */
+    -fx-font-family: "Avenir", "Segoe UI", "Roboto", sans-serif;
+    -fx-font-size: 14px;
+}
+
+/* Header and Navigation */
+.header, .navbar {
+    -fx-background-color: linear-gradient(to bottom, #2a2f40, #1a2133);
+    -fx-padding: 12px 20px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 8, 0, 0, 3);
+    -fx-border-width: 0 0 2px 0;
+    -fx-border-color: #e4c065; /* Gold trim like Norse jewelry */
+}
+
+.header-title, .navbar-title {
+    -fx-font-family: "Cinzel", "Trajan Pro", serif;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e4c065; /* Brighter gold for better contrast */
+}
+
+/* Button Styles - Shield-like design */
+.button {
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #3a3a45, #2a2a35);
+    -fx-text-fill: #e4c065;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-border-width: 1px;
+    -fx-border-color: #e4c065;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 4, 0, 0, 1);
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #4a4a55, #3a3a45);
+    -fx-effect: dropshadow(three-pass-box, rgba(228, 192, 101, 0.4), 8, 0, 0, 0);
+}
+
+.button:pressed {
+    -fx-background-color: #2a2a35;
+    -fx-effect: innershadow(three-pass-box, rgba(0, 0, 0, 0.4), 4, 0, 0, 1);
+}
+
+/* Input Field Styles - Rune-carved look */
+.text-field {
+    -fx-background-color: #2c3347;
+    -fx-border-color: #4c5366;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+    -fx-padding: 8px;
+    -fx-text-fill: #f0f0f0;
+}
+
+.text-field:focused {
+    -fx-border-color: #e4c065;
+    -fx-effect: dropshadow(three-pass-box, rgba(228, 192, 101, 0.3), 6, 0, 0, 0);
+}
+
+/* List View Styling - Saga scroll */
+.list-view {
+    -fx-background-color: #2c3347;
+    -fx-border-color: #4c5366;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-padding: 2px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 8, 0, 0, 2);
+}
+
+.list-cell {
+    -fx-background-color: #2c3347;
+    -fx-text-fill: #e8e8e8;
+    -fx-padding: 8px;
+    -fx-border-width: 0 0 1px 0;
+    -fx-border-color: #3c4357;
+}
+
+.list-cell:odd {
+    -fx-background-color: #293040;
+}
+
+.list-cell:selected {
+    -fx-background-color: #3d4b69;
+    -fx-text-fill: #e4c065;
+    -fx-border-width: 0 0 1px 3px;
+    -fx-border-color: #3c4357 #3c4357 #3c4357 #e4c065;
+}
+
+/* Label styling - Rune carver's mark */
+.label {
+    -fx-text-fill: #e8e8e8;
+    -fx-font-weight: normal;
+}
+
+.label.title {
+    -fx-font-family: "Cinzel", "Trajan Pro", serif;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e4c065;
+}
+
+/* Scroll bars - Mjolnir inspired */
+.scroll-bar {
+    -fx-background-color: #1a2133;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #4c5366;
+    -fx-background-radius: 3px;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #e4c065;
+}
+
+/* Canvas - World map styling */
+.canvas {
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 10, 0, 0, 5);
+    -fx-background-color: #2c3347;
+}
+
+/* Panel styling - Like wooden shields */
+.vbox, .hbox {
+    -fx-spacing: 10px;
+}
+
+/* Card styling for game elements */
+#artifactHand .pane, #structureHand .pane {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #3c4357, #2c3347);
+    -fx-border-color: #e4c065;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.5), 5, 0, 0, 2);
+}
+
+/* Card styling for game elements - include .card class */
+#artifactHand .pane, #structureHand .pane, .card {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #3c4357, #2c3347);
+    -fx-border-color: #e4c065;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.5), 5, 0, 0, 2);
+}
