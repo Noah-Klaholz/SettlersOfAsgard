@@ -11,6 +11,7 @@ public class Tile {
     private Statue statue;
     private Artifact artifact;
     private ActiveTrap trap;
+    private final String world;
 
     private Tile(TileBuilder builder) {
         this.x = builder.x;
@@ -22,6 +23,7 @@ public class Tile {
         this.statue = builder.statue;
         this.artifact = builder.artifact;
         this.trap = builder.trap;
+        this.world = builder.world;
     }
 
     public int getX() {
@@ -84,6 +86,10 @@ public class Tile {
         this.trap = trap;
     }
 
+    public String getWorld() {
+        return world;
+    }
+
     public static class TileBuilder {
         private int x;
         private int y;
@@ -94,6 +100,7 @@ public class Tile {
         private Statue statue;
         private Artifact artifact;
         private ActiveTrap trap;
+        private String world;
 
         public TileBuilder setX(int x) {
             this.x = x;
@@ -137,6 +144,11 @@ public class Tile {
 
         public TileBuilder setTrap(ActiveTrap trap) {
             this.trap = trap;
+            return this;
+        }
+
+        public TileBuilder setWorld(String world) {
+            this.world = world;
             return this;
         }
 
