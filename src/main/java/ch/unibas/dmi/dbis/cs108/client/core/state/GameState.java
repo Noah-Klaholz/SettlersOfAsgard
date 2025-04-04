@@ -42,7 +42,7 @@ public class GameState {
 
     //Methods that a Player uses
     public void buyTile(int x, int y) {
-        // Logic to buy a tile
+        // Greift aufs board zu
     }
     public void buyStatue(int x, int y) {
         // Logic to buy a statue
@@ -51,7 +51,7 @@ public class GameState {
         // Logic to buy a structure
     }
     public void placeStatue(int x, int y, String statueID) {
-        // Logic to place a statue
+        // needs to check if it is the right world -> implement all comparisons here (if statue.name = x and if tile.world = x then it works
     }
     public void placeStructure(int x, int y, String structureID) {
         // Logic to place a structure
