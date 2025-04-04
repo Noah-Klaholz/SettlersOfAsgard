@@ -1,9 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.AnchorPane?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml"
-            xmlns="http://javafx.com/javafx"
-            fx:controller="ch.unibas.dmi.dbis.cs108.client.ui.controllers.MainMenuController"
-            prefHeight="400.0" prefWidth="600.0">
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-</AnchorPane>
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ch.unibas.dmi.dbis.cs108.client.ui.controllers.MainMenuController"
+      alignment="CENTER" spacing="20.0" styleClass="main-menu"
+      prefHeight="600.0" prefWidth="800.0">
+
+    <padding>
+        <Insets top="30.0" right="30.0" bottom="30.0" left="30.0"/>
+    </padding>
+
+    <!-- Game Logo/Title -->
+    <ImageView fx:id="gameLogo" fitWidth="300.0" preserveRatio="true"/>
+
+    <Label text="Mystic Realms" styleClass="game-title">
+        <font>
+            <Font name="System Bold" size="36.0"/>
+        </font>
+    </Label>
+
+    <!-- Menu Buttons -->
+    <VBox spacing="15.0" alignment="CENTER" maxWidth="300.0">
+        <Button text="Play Game" onAction="#handlePlayGame"
+                styleClass="menu-button" maxWidth="Infinity"/>
+
+        <Button text="Join Game" onAction="#handleJoinGame"
+                styleClass="menu-button" maxWidth="Infinity"/>
+
+        <Button text="Settings" onAction="#handleSettings"
+                styleClass="menu-button" maxWidth="Infinity"/>
+
+        <Button text="Leaderboard" onAction="#handleLeaderboard"
+                styleClass="menu-button" maxWidth="Infinity"/>
+
+        <Button text="About" onAction="#handleAbout"
+                styleClass="menu-button" maxWidth="Infinity"/>
+
+        <Button text="Exit" onAction="#handleExit"
+                styleClass="menu-button" maxWidth="Infinity"/>
+    </VBox>
+
+    <Label fx:id="versionLabel" text="Version 1.0"
+           alignment="BOTTOM_RIGHT" translateY="30.0"/>
+
+    <stylesheets>
+        <String fx:value="/css/main-menu.css"/>
+    </stylesheets>
+</VBox>
