@@ -14,6 +14,7 @@ public class LobbyListEvent implements Event {
     public Instant getTimestamp() {
         return timestamp;
     }
+
     public String getLobbies() {
         return lobbies;
     }

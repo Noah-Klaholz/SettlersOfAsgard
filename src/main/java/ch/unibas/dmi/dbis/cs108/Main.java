@@ -1,6 +1,5 @@
 package ch.unibas.dmi.dbis.cs108;
 
-import ch.unibas.dmi.dbis.cs108.client.app.ClientMain;
 import ch.unibas.dmi.dbis.cs108.client.app.GameApplication;
 import ch.unibas.dmi.dbis.cs108.server.app.ServerMain;
 

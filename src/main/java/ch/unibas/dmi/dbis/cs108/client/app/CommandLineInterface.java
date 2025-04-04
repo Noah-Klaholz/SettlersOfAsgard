@@ -26,7 +26,7 @@ public class CommandLineInterface {
      * Constructor for CommandLineInterface
      *
      * @param networkController NetworkController
-     * @param localPlayer Player
+     * @param localPlayer       Player
      */
     public CommandLineInterface(NetworkController networkController, Player localPlayer) {
         this.networkController = networkController;

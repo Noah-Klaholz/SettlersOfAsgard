@@ -20,12 +20,12 @@ public class GameServer {
     private static final Logger logger = Logger.getLogger(GameServer.class.getName());
 
     private final ScheduledExecutorService pingScheduler = Executors.newScheduledThreadPool(1);
-    private boolean running;
     private final int port;
-    private ServerSocket serverSocket;
     private final ExecutorService executor;
     private final List<ClientHandler> clients;
     private final List<Lobby> lobbies;
+    private boolean running;
+    private ServerSocket serverSocket;
 
     public GameServer(int port) {
         logger.setFilter(new PingFilter());

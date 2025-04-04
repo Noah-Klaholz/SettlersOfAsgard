@@ -4,9 +4,9 @@ public class Tile {
 
     private final int x;
     private final int y;
+    private final int price;
     private boolean hasStructure;
     private String owner;
-    private final int price;
     private Structure structure;
     private Statue statue;
     private Artifact artifact;

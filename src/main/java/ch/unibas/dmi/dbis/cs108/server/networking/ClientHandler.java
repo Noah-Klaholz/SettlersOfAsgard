@@ -22,6 +22,7 @@ import java.util.logging.Logger;
  */
 public class ClientHandler implements Runnable, CommunicationAPI {
     private static final Logger logger = Logger.getLogger(ClientHandler.class.getName());
+    private final CommandHandler ch; // Reference to a CommandHandler
     protected GameServer server; // Reference to the GameServer
     protected Lobby currentLobby = null;
     protected Player localPlayer = null;
@@ -29,7 +30,6 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     private PrintWriter out;
     private BufferedReader in;
     private long lastPingTime = System.currentTimeMillis();
-    private final CommandHandler ch; // Reference to a CommandHandler
     private boolean running;
 
 

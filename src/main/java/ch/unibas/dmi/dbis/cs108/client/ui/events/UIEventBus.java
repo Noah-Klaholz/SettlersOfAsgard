@@ -9,7 +9,8 @@ public class UIEventBus {
     private static UIEventBus instance;
     private final Map<Class<?>, Set<EventListener<?>>> listeners = new HashMap<>();
 
-    private UIEventBus() {}
+    private UIEventBus() {
+    }
 
     public static UIEventBus getInstance() {
         if (instance == null) {
