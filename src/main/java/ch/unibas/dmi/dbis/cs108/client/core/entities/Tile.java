@@ -5,7 +5,7 @@ public class Tile {
     private final int x;
     private final int y;
     private boolean hasStructure;
-    private String owner;
+    private String owner; //ownerID
     private final int price;
     private Structure structure;
     private Statue statue;
