@@ -156,18 +156,4 @@ public class GameLogic implements GameLogicInterface {
 
     }
 
-    /**
-     * Handles a player's request to use a trap at the specified coordinates.
-     * This method activates the trap's effect, potentially affecting other players
-     * or game elements, and updates the game state accordingly.
-     *
-     * @param x The x-coordinate of the trap to use
-     * @param y The y-coordinate of the trap to use
-     * @param trapID The identifier of the trap to use
-     * @param playerID The unique identifier of the player using the trap
-     */
-    @Override
-    public void useTrap(int x, int y, String trapID, String playerID) {
-
-    }
 }
