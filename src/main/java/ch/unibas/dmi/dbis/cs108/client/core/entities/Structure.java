@@ -6,13 +6,14 @@ public class Structure {
     private final String name;
     private final String description;
     private final String useType;
-    private int price;
+    private final int price;
 
-    public Structure(int structureID, String name, String description, String useType) {
+    public Structure(int structureID, String name, String description, String useType, int price) {
         this.structureID = structureID;
         this.name = name;
         this.description = description;
         this.useType = useType;
+        this.price = price;
     }
 
     public int getStructureID() {
