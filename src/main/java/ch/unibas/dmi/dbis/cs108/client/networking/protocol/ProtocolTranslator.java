@@ -178,4 +178,55 @@ public class ProtocolTranslator {
     public String formatChangeName(String newName) {
         return "CHAN$" + newName;
     }
+
+    public String formatListLobbyPlayers() {
+        return "LSTP$LOBBY$";
+    }
+
+    public String formatListAllPlayers() {
+        return "LSTP$SERVER";
+    }
+
+    public String formatEndTurn() {
+        return "ENDT$";
+    }
+
+    public String formatBuyTile(int x, int y) {
+        return "BUYT$" + x + "$" + y;
+    }
+
+    public String placeStructure(int x, int y, String structureID) {
+        return "PLST$" + x + "$" + y + "$" + structureID;
+    }
+
+    public String formatUseStructure(int x, int y, String structureID, String useType) {
+        return "USSR$" + x + "$" + y + "$" + structureID + "$" + useType;
+    }
+
+    public String formatUpgradeStatue(int x, int y, String statueID) {
+        return "UPST$" + x + "$" + y + "$" + statueID;
+    }
+
+    public String formatUseStatue(int x, int y, String statueID, String useType) {
+        return "USTA$" + x + "$" + y + "$" + statueID + "$" + useType;
+    }
+
+    public String formatUsePlayerArtifact(int artifactId, String useType) {
+        return "USPA$" + artifactId + "$" + useType;
+    }
+
+    public String formatUseFieldArtifact(int artifactId, String useType) {
+        return "USFA$" + artifactId + "$" + useType;
+    }
+
+    // Temporäre Methode für terminal feedback zum GameState
+    public String formatGetGameStatus() {
+        return "GSTS$";
+    }
+
+    // Temporäre Methode für terminal feedback zu den Preisen der Karten
+    public String formatGetPrices() {
+        return "GPRC$";
+    }
+
 }
