@@ -16,8 +16,8 @@ public class Main {
      * Main method for the server and the client
      *
      * @param args Usage in terminal:
-     *             Server: java -jar xyz.jar server <listenport>
-     *             Client: java -jar xyz.jar client <serverip>:<serverport>
+     *             Server: java -jar xyz.jar server listenport
+     *             Client: java -jar xyz.jar client serverip:serverport [username]
      */
     public static void main(String[] args) {
         if (args.length < 2) {
