@@ -54,7 +54,7 @@ public class Game {
     public void useStatue(String statueID) {
         // Logic to use a statue
     }
-    public void useFieldArtifact(int x, int y, int artifactID) {
+    public void useTileArtifact(int x, int y, int artifactID) {
         // Logic to use a field artifact
     }
     public void usePlayerArtifact(int artifactID, String useType) {
