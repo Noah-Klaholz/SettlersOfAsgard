@@ -7,11 +7,16 @@ in dem es darum geht, durch geschicktes Kaufen von Feldern, den Bau und das Upgr
 sowie die Nutzung von Artefakten und Göttersegen möglichst viele Runen zu sammeln. 
 Der Spieler mit den meisten Runen nach 5 Spielrunden gewinnt das Spiel.
 
+## Dokumente
+
+Alle relevanten Dokumente sind im Ordner `docs` zu finden.
+Für die Wichtigsten Dokumente sind hier Links angegeben:
+
 ## Links
 
-Genauere Dokumentation der voraussichtlichen Spielregeln: [Spielregeln](docs/Spielbeschreibungen/GameDesign.pdf).
+Genauere Dokumentation der Spielregeln: [Spielregeln](docs/Spielbeschreibungen/GameDesign.pdf).
 
-Netzwerkprotokoll: [Netzwerkprotokoll](docs/Netzwerkprotokoll_v1.2.0.pdf).
+Netzwerkprotokoll: [Netzwerkprotokoll](docs/Networking/Netzwerkprotokoll.pdf).
 
 Github Kollaboratoren: [Kollaboratoren](docs/Contributors/CONTRIBUTORS.txt).
 
@@ -20,15 +25,20 @@ Eine Übersicht über den ständig aktualisierten Projektplan, Kalender und Aufg
 
 Das ständig aktualisierte Projekttagebuch findet sich hier:
 [Tagebuch](https://tungsten-carrot-2b4.notion.site/Projekttagebuch-1ad104ac2da58189ad61c4600e771cbd?pvs=4)
+
+Eine PDF Übersicht über den Projektverlauf finden Sie hier:
+- [Projektplan](docs/Projektplanung/ProjektPlan.pdf).
+- [Projekttagebuch](docs/Projektplanung/Projekttagebuch).
+
 ## Starten
-Via gradle die jar Files builden (sofern nicht bereits vorhanden):
+Via gradle das Projekt builden:
 ```shell
-./gradlew jar
+./gradlew build-cs108
 ```
-Im Terminal: 
+Im Terminal zuerst den Server, dann den Client starten: 
 ```shell
 Server: java -jar /build/libs/SettlersOfAsgard.jar server <listenport>
 Client: java -jar /build/libs/SettlersOfAsgard.jar client <server-ip> <server-port>
 ```
 Beachte: listenport und server-port müssen identisch sein.
-Die server-ip ist entweder die lokale IP-Adresse des Servers im Netzwerk oder "localhost".
+Die server-ip ist entweder die lokale IP-Adresse des Servers im Netzwerk oder "localhost", wenn beides auf der gleichen Maschine läuft.
