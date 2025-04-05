@@ -1,5 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.core.entities;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -7,8 +9,11 @@ import java.util.UUID;
  */
 public class Player {
     //private final String id;
-    private final UUID player_id;
+    private final UUID playerID;
     private String name;
+    private int runes;
+    private int energy;
+    private List<Tile> ownedTiles;
 
     /**
      * Constructor for Player class
@@ -18,8 +23,11 @@ public class Player {
      * @param name String
      */
     public Player(String name) {
-        this.player_id = UUID.randomUUID();
+        this.playerID = UUID.randomUUID();
         this.name = name;
+        runes = 20;
+        energy = 0;
+        ownedTiles = new ArrayList<>();
     }
 
 
@@ -29,9 +37,9 @@ public class Player {
      *
      * @return String
      */
-    /*public String getId() {
-        return id;
-    }*/
+    public UUID getId() {
+        return playerID;
+    }
 
     /**
      * Getter for name
@@ -57,34 +65,76 @@ public class Player {
      * @return player_id
      */
     public UUID getPlayer_id() {
-        return player_id;
+        return playerID;
     }
 
-    public void buyTile(int x, int y, String playerID){
-
+    /**
+     * Getter for runes
+     *
+     * @return int
+     */
+    public int getRunes() {
+        return runes;
     }
 
-    public void placeStructure(int x, int y, String structureID, String playerID){
-
+    /**
+     * Setter for runes
+     *
+     * @param runes int
+     */
+    public void setRunes(int runes) {
+        this.runes = runes;
     }
 
-    public void useStructure(int x, int y, String structureID, String useType, String playerID){
-
+    /**
+     * Getter for energy
+     *
+     * @return int
+     */
+    public int getEnergy() {
+        return energy;
     }
 
-    public void upgradeStatue(int x, int y, String statueID, String playerID){
-
+    /**
+     * Setter for energy
+     *
+     * @param energy int
+     */
+    public void setEnergy(int energy) {
+        this.energy = energy;
     }
 
-    public void useStatue(int x, int y, String statueID, String useType, String playerID){
-
+    public UUID getPlayerID() {
+        return playerID;
     }
 
-    public void useFieldArtifact(int x, int y, int artifactID, String useType){
-
+    public List<Tile> getOwnedTiles() {
+        return ownedTiles;
     }
 
-    public void usePlayerArtifact(int artifactID, String playerID, String useType){
-
+    public void setOwnedTiles(List<Tile> ownedTiles) {
+        this.ownedTiles = ownedTiles;
     }
+
+    public void addRunes(int amount) {
+        this.runes += amount;
+    }
+
+    public void addEnergy(int amount) {
+        this.energy += amount;
+    }
+
+    public void addOwnedTile(Tile tile) {
+        ownedTiles.add(tile);
+    }
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "name='" + name + '\'' +
+                ", runes=" + runes +
+                ", energy=" + energy +
+                '}';
+    }
+
 }
