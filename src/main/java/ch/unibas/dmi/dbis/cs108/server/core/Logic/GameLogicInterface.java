@@ -22,7 +22,7 @@ public interface GameLogicInterface {
     public void useStructure(int x, int y, String structureID, String useType, String playerID); // Uses a structure
     public void upgradeStatue(int x, int y, String statueID, String playerID); // Upgrades a statue
     public void useStatue(int x, int y, String statueID, String useType, String playerID); // Uses a statue
-    public void useTileArtifact(int x, int y, int artifactID, String useType); // Uses a field artifact
+    public void useFieldArtifact(int x, int y, int artifactID, String useType); // Uses a field artifact
     public void usePlayerArtifact(int artifactID, String playerID, String useType); // Uses a player artifact
 
 }

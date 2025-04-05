@@ -156,4 +156,12 @@ public class GameLogic implements GameLogicInterface {
 
     }
 
+    public void buyStatue(String statueID, String playerID) {
+        // Implementation for buying a statue
+    }
+
+    public void buyStructure(String structureID, String playerID) {
+        // Implementation for buying a structure
+    }
+
 }
