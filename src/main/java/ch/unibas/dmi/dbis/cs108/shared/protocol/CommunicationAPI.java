@@ -77,7 +77,6 @@ public interface CommunicationAPI {
             USESTATUE("USTA"),   // Player uses a statue at coordinates
             USEPLAYERARTIFACT("USPA"), // Player uses an artifact
             USEFIELDARTIFACT("USFA"), // Player uses a field artifact
-            USETRAP("USTR"),     // Player uses a trap at coordinates
 
             // Response codes
             OK("OK"),           // OK response

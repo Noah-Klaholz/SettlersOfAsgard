@@ -66,8 +66,8 @@ public class Command {
         return switch (command) {
             case "LIST", "STRT", "STDN", "SYNC", "ENDT", "GSTS", "GPRC" -> args.length == 0;
             case "RGST", "LEAV", "CHAN", "STAT", "PING", "EXIT", "LSTP", "USPA"  -> args.length == 1;
-            case "JOIN", "CHTG", "CHTL", "CREA", "BUYT", "PLST", "USSR", "UPST", "USTA" -> args.length == 2;
-            case "CHTP", "USTR" -> args.length == 3;
+            case "JOIN", "CHTG", "CHTL", "CREA", "BUYT", "UPST", "USTA" -> args.length == 2;
+            case "CHTP", "PLST", "USSR" -> args.length == 3;
             default -> {
                 logger.warning("Invalid Command arguments size: " + command + " " + args.length);
                 yield false;
