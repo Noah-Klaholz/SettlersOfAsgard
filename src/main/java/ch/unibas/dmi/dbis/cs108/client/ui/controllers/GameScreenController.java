@@ -9,9 +9,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -43,7 +41,7 @@ public class GameScreenController extends BaseController {
     @FXML
     private Pane artifact1, artifact2, artifact3;
     @FXML
-    private Pane structure1, structure2, structure3, structure4, structure5;
+    private Pane structure1, structure2, structure3, structure4, structure5, structure6, structure7, structure8;
 
     // Game state tracking
     private boolean isInitialized = false;
@@ -78,13 +76,58 @@ public class GameScreenController extends BaseController {
     /**
      * Set up chat components and event listeners.
      */
+// Add to the initializeChat method
     private void initializeChat() {
         chatListView.getItems().add("Welcome to Settlers of Asgard!");
         eventBus.subscribe(ChatMessageEvent.class, this::handleIncomingChatMessage);
 
-        // Focus the chat input field for immediate typing
-        Platform.runLater(() -> chatInputField.requestFocus());
+        // Enhanced cell factory for proper text wrapping
+        chatListView.setCellFactory(list -> new ListCell<String>() {
+            private final Label wrapLabel = new Label();
+
+            {
+                wrapLabel.setWrapText(true);
+                wrapLabel.setMaxWidth(chatListView.getWidth() - 20);
+            }
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    wrapLabel.setText(item);
+                    setGraphic(wrapLabel);
+                    // Force the cell to use all available width
+                    setPrefWidth(0);
+                }
+            }
+        });
+
+        // Ensure label width updates with the list view width
+        chatListView.widthProperty().addListener((obs, oldVal, newVal) -> {
+            chatListView.refresh();
+        });
     }
+
+    // Add this method to update the energy display
+//    private void updateEnergyDisplay(int current, int max) {
+//        // Update progress bar fill
+//        double ratio = (double) current / max;
+//        double width = 180 * ratio; // 180 is the width of the background
+//        energyBarFill.setWidth(width);
+//
+//        // Update label
+//        energyLabel.setText(current + "/" + max);
+//
+//        // Update orbs
+//        energyOrb1.setVisible(current >= 1);
+//        energyOrb2.setVisible(current >= 2);
+//        energyOrb3.setVisible(current >= 3);
+//        energyOrb4.setVisible(current >= 4);
+//    }
 
     /**
      * Set up the game canvas for rendering.
@@ -143,6 +186,9 @@ public class GameScreenController extends BaseController {
         setupCardPane(structure3, "Mead Hall");
         setupCardPane(structure4, "Runestone");
         setupCardPane(structure5, "Watchtower");
+        setupCardPane(structure6, "Barracks");
+        setupCardPane(structure7, "Temple");
+        setupCardPane(structure8, "Market");
     }
 
     /**
