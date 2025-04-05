@@ -26,4 +26,6 @@ public interface GameLogicInterface {
     public void usePlayerArtifact(int artifactID, String playerID, String useType); // Uses a player artifact
     public void useTrap(int x, int y, String trapID, String playerID); // Uses a trap
     public GameState getGameState(); // Should return all necessary information in a form that has a toString Method
+
+    void getGameState();
 }

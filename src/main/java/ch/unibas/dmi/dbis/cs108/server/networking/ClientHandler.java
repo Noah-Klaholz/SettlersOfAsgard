@@ -310,9 +310,6 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                 case ENDTURN:
                     ch.handleEndTurn();
                     break;
-                case STATS:
-                    ch.handleStats();
-                    break;
                 case SYNCHRONIZE:
                     ch.handleSynchronize();
                     break;
@@ -340,20 +337,11 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                 case USEPLAYERARTIFACT:
                     ch.handleUsePlayerArtifact(cmd);
                     break;
-                case USETRAP:
-                    ch.handleUseTrap(cmd);
+                case USEFIELDARTIFACT:
+                    ch.handleUseFieldArtifact(cmd);
                     break;
-                case BUYHEXFIELD:
-                    ch.handleBuyHexField(cmd);
-                    break;
-                case BUILDSTRUCTURE:
-                    ch.handleBuildStructure(cmd);
-                    break;
-                case UPGRADESTRUCTURE:
-                    ch.handleUpgradeStructure(cmd);
-                    break;
-                case USEARTIFACT:
-                    ch.handleUseArtifact(cmd);
+                case BUYSTATUE:
+                    ch.handleBuyStatue(cmd);
                     break;
                 default: // Error case
                     logger.warning("Switch-Unknown command: " + cmd.getCommand());

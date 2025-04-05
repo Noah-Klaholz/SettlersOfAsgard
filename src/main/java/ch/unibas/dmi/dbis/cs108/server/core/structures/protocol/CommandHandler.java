@@ -397,6 +397,30 @@ public class CommandHandler {
     }
 
     /**
+     * Handles buy statue request from client
+     * @param cmd the transmitted command
+     */
+    public void handleBuyStatue(Command cmd) {
+        try {
+            String[] args = cmd.getArgs();
+            if (args.length < 3) {
+                sendMessage("ERR$101$INVALID_ARGUMENTS$UPGRADE_STATUE");
+                return;
+            }
+            String playerName = args[0];
+            int x = Integer.parseInt(args[1]);
+            int y = Integer.parseInt(args[2]);
+            // TODO: Implement upgrade statue logic
+        } catch (NumberFormatException e) {
+            logger.severe("Failed to parse coordinates: " + e.getMessage());
+            sendMessage("ERR$101$INVALID_COORDINATES");
+        } catch (Exception e) {
+            logger.severe("Failed to handle upgrade statue request: " + e.getMessage());
+            sendMessage("ERR$106$UPGRADE_STATUE_FAILED");
+        }
+    }
+
+    /**
      * Handles upgrade statue request from client
      * @param cmd the transmitted command
      */
@@ -468,103 +492,25 @@ public class CommandHandler {
     }
 
     /**
-     * Handles use trap request from client
+     * Handles use player artifact request from client
      * @param cmd the transmitted command
      */
-    public void handleUseTrap(Command cmd) {
+    public void handleUseFieldArtifact(Command cmd) {
         try {
             String[] args = cmd.getArgs();
-            if (args.length < 4) {
-                sendMessage("ERR$101$INVALID_ARGUMENTS$USE_TRAP");
+            if (args.length < 2) {
+                sendMessage("ERR$101$INVALID_ARGUMENTS$USE_FIELD_ARTIFACT");
                 return;
             }
             String playerName = args[0];
-            int x = Integer.parseInt(args[1]);
-            int y = Integer.parseInt(args[2]);
-            String trapId = args[3];
-            // TODO: Implement use trap logic
+            int artifactId = Integer.parseInt(args[1]);
+            // TODO: Implement use player artifact logic
         } catch (NumberFormatException e) {
-            logger.severe("Failed to parse coordinates: " + e.getMessage());
-            sendMessage("ERR$101$INVALID_COORDINATES");
+            logger.severe("Failed to parse artifact ID: " + e.getMessage());
+            sendMessage("ERR$101$INVALID_ARTIFACT_ID");
         } catch (Exception e) {
-            logger.severe("Failed to handle use trap request: " + e.getMessage());
-            sendMessage("ERR$106$USE_TRAP_FAILED");
-        }
-    }
-
-    /**
-     * Handles buy hex field request from client
-     * @param cmd the transmitted command
-     */
-    public void handleBuyHexField(Command cmd) {
-        try {
-            String[] args = cmd.getArgs();
-            if (args.length < 1) {
-                sendMessage("ERR$101$INVALID_ARGUMENTS$BUY_HEX_FIELD");
-                return;
-            }
-            String playerName = args[0];
-            // TODO: Implement buy hex field logic
-        } catch (Exception e) {
-            logger.severe("Failed to handle buy hex field request: " + e.getMessage());
-            sendMessage("ERR$106$BUY_HEX_FIELD_FAILED");
-        }
-    }
-
-    /**
-     * Handles build structure request from client
-     * @param cmd the transmitted command
-     */
-    public void handleBuildStructure(Command cmd) {
-        try {
-            String[] args = cmd.getArgs();
-            if (args.length < 1) {
-                sendMessage("ERR$101$INVALID_ARGUMENTS$BUILD_STRUCTURE");
-                return;
-            }
-            String playerName = args[0];
-            // TODO: Implement build structure logic
-        } catch (Exception e) {
-            logger.severe("Failed to handle build structure request: " + e.getMessage());
-            sendMessage("ERR$106$BUILD_STRUCTURE_FAILED");
-        }
-    }
-
-    /**
-     * Handles upgrade structure request from client
-     * @param cmd the transmitted command
-     */
-    public void handleUpgradeStructure(Command cmd) {
-        try {
-            String[] args = cmd.getArgs();
-            if (args.length < 1) {
-                sendMessage("ERR$101$INVALID_ARGUMENTS$UPGRADE_STRUCTURE");
-                return;
-            }
-            String playerName = args[0];
-            // TODO: Implement upgrade structure logic
-        } catch (Exception e) {
-            logger.severe("Failed to handle upgrade structure request: " + e.getMessage());
-            sendMessage("ERR$106$UPGRADE_STRUCTURE_FAILED");
-        }
-    }
-
-    /**
-     * Handles use artifact request from client
-     * @param cmd the transmitted command
-     */
-    public void handleUseArtifact(Command cmd) {
-        try {
-            String[] args = cmd.getArgs();
-            if (args.length < 1) {
-                sendMessage("ERR$101$INVALID_ARGUMENTS$USE_ARTIFACT");
-                return;
-            }
-            String playerName = args[0];
-            // TODO: Implement use artifact logic
-        } catch (Exception e) {
-            logger.severe("Failed to handle use artifact request: " + e.getMessage());
-            sendMessage("ERR$106$USE_ARTIFACT_FAILED");
+            logger.severe("Failed to handle use player artifact request: " + e.getMessage());
+            sendMessage("ERR$106$USE_PLAYER_ARTIFACT_FAILED");
         }
     }
 }

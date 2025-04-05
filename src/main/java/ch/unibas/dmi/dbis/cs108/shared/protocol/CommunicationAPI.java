@@ -64,25 +64,20 @@ public interface CommunicationAPI {
             // Game flow commands
             STARTTURN("TURN"),   // Starts a player's turn
             ENDTURN("ENDT"),     // Ends a player's turn
-            STATS("STAT"),       // Request game state
             SYNCHRONIZE("SYNC"), // Request synchronization of the game
             GETGAMESTATUS("GSTS"), // Get detailed game status
             GETPRICES("GPRC"),   // Get in-game prices for actions/items
 
             // Game action commands
             BUYTILE("BUYT"),     // Player buys a tile at coordinates
+            BUYSTATUE("BYST"),   // Player buys a statue at coordinates
             PLACESTRUCTURE("PLST"), // Player places a structure at coordinates
             USESTRUCTURE("USSR"), // Player uses a structure at coordinates
             UPGRADESTATUE("UPST"), // Player upgrades a statue at coordinates
             USESTATUE("USTA"),   // Player uses a statue at coordinates
             USEPLAYERARTIFACT("USPA"), // Player uses an artifact
+            USEFIELDARTIFACT("USFA"), // Player uses a field artifact
             USETRAP("USTR"),     // Player uses a trap at coordinates
-
-            // Legacy game mechanics (kept for backward compatibility)
-            BUYHEXFIELD("BUYH"), // Player buys a hexfield
-            BUILDSTRUCTURE("BILD"), // Player builds a structure
-            UPGRADESTRUCTURE("UPGD"), // Player upgrades a structure
-            USEARTIFACT("ARTF"), // Player uses an artifact (legacy version)
 
             // Response codes
             OK("OK"),           // OK response
