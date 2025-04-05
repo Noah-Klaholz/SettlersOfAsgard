@@ -4,6 +4,7 @@ import ch.unibas.dmi.dbis.cs108.client.core.entities.ActiveTrap;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Artifact;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Statue;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Structure;
+import ch.unibas.dmi.dbis.cs108.server.core.State.GameState;
 
 /**
  * Interface for the GameLogic
@@ -27,5 +28,4 @@ public interface GameLogicInterface {
     public void useTrap(int x, int y, String trapID, String playerID); // Uses a trap
     public GameState getGameState(); // Should return all necessary information in a form that has a toString Method
 
-    void getGameState();
 }

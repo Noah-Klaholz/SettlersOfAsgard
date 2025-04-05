@@ -1,5 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.core.Logic;
 
+import ch.unibas.dmi.dbis.cs108.server.core.State.GameState;
+
 /**
  * Implementation of the GameLogicInterface that provides the core game logic functionality.
  * This class handles all game mechanics including game flow, player turns, and player actions
@@ -157,11 +159,24 @@ public class GameLogic implements GameLogicInterface {
     }
 
     /**
+     * Handles the activation of a trap at the specified coordinates.
+     *
+     * @param x
+     * @param y
+     * @param trapID
+     * @param playerID
+     */
+    @Override
+    public void useTrap(int x, int y, String trapID, String playerID) {
+
+    }
+
+    /**
      *
      */
     @Override
-    public void getGameState() {
-
+    public GameState getGameState() {
+        return null;
     }
 
     public void buyStatue(String statueID, String playerID) {
