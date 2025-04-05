@@ -255,6 +255,15 @@ public class NetworkController {
     public void useFieldArtifact(int x, int y, int artifactID, String useType) {
         String message = translator.formatUseFieldArtifact(x, y, artifactID, useType);
         networkClient.send(message);
+    }
 
+    public void getPrices() {
+        String message = translator.formatGetPrices();
+        networkClient.send(message);
+    }
+
+    public void getGameState() {
+        String message = translator.formatGetGameStatus();
+        networkClient.send(message);
     }
 }
