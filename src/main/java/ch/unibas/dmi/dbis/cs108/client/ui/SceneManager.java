@@ -1,91 +1,117 @@
 package ch.unibas.dmi.dbis.cs108.client.ui;
 
-import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
-import ch.unibas.dmi.dbis.cs108.client.networking.GameClient;
-import ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController;
-import ch.unibas.dmi.dbis.cs108.client.ui.controllers.LobbyScreenController;
-import ch.unibas.dmi.dbis.cs108.client.ui.controllers.LoginScreenController;
+import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
+import ch.unibas.dmi.dbis.cs108.client.ui.utils.ThemeManager;
+import javafx.animation.FadeTransition;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 public class SceneManager {
-    private static final Logger logger = Logger.getLogger(SceneManager.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(SceneManager.class.getName());
+    private static volatile SceneManager instance;
+    private final Map<SceneType, SceneHolder> sceneCache = new ConcurrentHashMap<>();
+    private final ResourceLoader resourceLoader;
+    private Stage primaryStage;
 
-    private final Stage primaryStage;
-    private GameClient gameClient;
-    private Player currentPlayer;
-
-    // Controllers
-    private GameScreenController gameController;
-    private LoginScreenController loginController;
-    private LobbyScreenController lobbyController;
-
-    public SceneManager(Stage primaryStage) {
-        this.primaryStage = primaryStage;
+    // Using double-checked locking for thread-safe lazy initialization.
+    private SceneManager(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
     }
 
-    public void showLoginScreen() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login_screen.fxml"));
-        Parent root = loader.load();
-
-        loginController = loader.getController();
-        loginController.setSceneManager(this);
-
-        setScene(root, "Login");
+    public static SceneManager getInstance() {
+        if (instance == null) {
+            synchronized (SceneManager.class) {
+                if (instance == null) {
+                    instance = new SceneManager(new ResourceLoader());
+                }
+            }
+        }
+        return instance;
     }
 
-    public void showLobbyScreen() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/lobby_screen.fxml"));
-        Parent root = loader.load();
-
-        lobbyController = loader.getController();
-        lobbyController.setSceneManager(this);
-        lobbyController.setGameClient(gameClient);
-
-        setScene(root, "Game Lobby");
+    public void setPrimaryStage(Stage stage) {
+        this.primaryStage = stage;
     }
 
-    public void showGameScreen() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/game_screen.fxml"));
-        Parent root = loader.load();
+    public void switchToScene(SceneType sceneType) {
+        SceneHolder holder = sceneCache.computeIfAbsent(sceneType, this::loadScene);
+        Parent root = holder.getScene().getRoot();
+        FadeTransition fadeTransition = new FadeTransition(Duration.millis(500), root);
+        fadeTransition.setFromValue(0.0);
+        fadeTransition.setToValue(1.0);
+        fadeTransition.play();
 
-        gameController = loader.getController();
-        gameController.setSceneManager(this);
-        gameController.setGameClient(gameClient);
+        primaryStage.setScene(holder.getScene());
+        LOGGER.info("Switched to scene: " + sceneType);
 
-        // Register the controller as a listener for game events
-        if (gameClient != null) {
-            gameClient.registerGameEventListener(gameController);
+        // Automatically register the scene for theme management.
+        ThemeManager.getInstance().registerScene(holder.getScene());
+    }
+
+    private SceneHolder loadScene(SceneType sceneType) {
+        URL fxmlUrl = getClass().getResource(sceneType.getPath());
+        if (fxmlUrl == null) {
+            throw new RuntimeException("FXML resource not found: " + sceneType.getPath());
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(fxmlUrl);
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            return new SceneHolder(scene, loader.getController());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load scene: " + sceneType.getPath(), e);
+        }
+    }
+
+    public <T> T getController(SceneType sceneType) {
+        SceneHolder holder = sceneCache.get(sceneType);
+        if (holder == null) {
+            switchToScene(sceneType);
+            holder = sceneCache.get(sceneType);
+        }
+        return (T) holder.getController();
+    }
+
+    public enum SceneType {
+        MAIN_MENU(ResourceLoader.MAIN_MENU_FXML),
+        LOBBY(ResourceLoader.LOBBY_SCREEN_FXML),
+        GAME(ResourceLoader.GAME_SCREEN_FXML);
+
+        private final String fxmlPath;
+
+        SceneType(String fxmlPath) {
+            this.fxmlPath = fxmlPath;
         }
 
-        setScene(root, "Arcane Conquest - Game");
+        public String getPath() {
+            return fxmlPath;
+        }
     }
 
-    private void setScene(Parent root, String title) {
-        Scene scene = new Scene(root);
-        primaryStage.setScene(scene);
-        primaryStage.setTitle(title);
-        primaryStage.centerOnScreen();
-    }
+    private static class SceneHolder {
+        private final Scene scene;
+        private final Object controller;
 
-    public GameClient getGameClient() {
-        return gameClient;
-    }
+        public SceneHolder(Scene scene, Object controller) {
+            this.scene = scene;
+            this.controller = controller;
+        }
 
-    public void setGameClient(GameClient client) {
-        this.gameClient = client;
-    }
+        public Scene getScene() {
+            return scene;
+        }
 
-    public Player getCurrentPlayer() {
-        return currentPlayer;
-    }
-
-    public void setCurrentPlayer(Player player) {
-        this.currentPlayer = player;
+        public Object getController() {
+            return controller;
+        }
     }
 }

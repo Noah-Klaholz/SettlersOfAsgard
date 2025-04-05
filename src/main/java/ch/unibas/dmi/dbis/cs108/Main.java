@@ -1,6 +1,6 @@
 package ch.unibas.dmi.dbis.cs108;
 
-import ch.unibas.dmi.dbis.cs108.client.app.ClientMain;
+import ch.unibas.dmi.dbis.cs108.client.app.GameApplication;
 import ch.unibas.dmi.dbis.cs108.server.app.ServerMain;
 
 import java.util.logging.Logger;
@@ -32,7 +32,7 @@ public class Main {
         if (mode.equalsIgnoreCase("server")) {
             ServerMain.main(args[1]);
         } else if (mode.equalsIgnoreCase("client")) {
-            ClientMain.main(args);
+            GameApplication.main(args);
         } else {
             logger.warning("Invalid mode. Expected: 'server' or 'client'.");
             System.exit(1);

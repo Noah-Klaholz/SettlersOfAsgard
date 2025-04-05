@@ -4,99 +4,72 @@
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane xmlns:fx="http://javafx.com/fxml/1"
-            xmlns="http://javafx.com/javafx/17"
-            fx:controller="ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController"
-            prefHeight="800.0" prefWidth="1200.0">
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController">
 
-    <!-- Left sidebar with resources and buttons -->
-    <left>
-        <VBox prefWidth="200.0" spacing="10.0" style="-fx-background-color: #e6e6e6;">
-            <padding>
-                <Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/>
-            </padding>
-
-            <!-- Resources section -->
-            <Label text="Resources" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
-            <VBox spacing="5.0" style="-fx-background-color: #f5f5f5; -fx-padding: 10px; -fx-background-radius: 5px;">
-                <HBox spacing="10.0">
-                    <Label text="Runes:"/>
-                    <Label fx:id="runesCount" text="0"/>
-                </HBox>
-                <HBox spacing="10.0">
-                    <Label text="Energy:"/>
-                    <Label fx:id="energyCount" text="0"/>
-                </HBox>
-            </VBox>
-
-            <Label text="Actions" style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-padding: 10 0 0 0;"/>
-            <Button text="Settings" maxWidth="Infinity"/>
-            <Button text="Leaderboard" maxWidth="Infinity"/>
-            <Button text="End Turn" maxWidth="Infinity"/>
-            <Button text="Game Info" maxWidth="Infinity"/>
-
-            <!-- Spacer to push elements to top -->
-            <VBox VBox.vgrow="ALWAYS"/>
-
-            <Button text="Leave Game" maxWidth="Infinity"/>
-        </VBox>
-    </left>
-
-    <!-- Right sidebar with chat -->
+    <!-- Right: Chat panel (moved from left) -->
     <right>
-        <VBox prefWidth="250.0" spacing="10.0" style="-fx-background-color: #e6e6e6;">
+        <VBox spacing="10" prefWidth="250" styleClass="panel">
             <padding>
-                <Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/>
+                <Insets top="10" right="10" bottom="10" left="10"/>
             </padding>
-
-            <Label text="Game Chat" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
-
-            <!-- Chat messages list -->
-            <ListView fx:id="chatMessages" VBox.vgrow="ALWAYS"/>
-
-            <!-- Chat input -->
-            <HBox spacing="5.0">
-                <TextField fx:id="chatInput" promptText="Type a message..." HBox.hgrow="ALWAYS"/>
-                <Button text="Send" onAction="#sendChatMessage"/>
+            <Label text="Chat" styleClass="label, title"/>
+            <ListView fx:id="chatListView" VBox.vgrow="ALWAYS"/>
+            <HBox spacing="5">
+                <TextField fx:id="chatInputField" promptText="Type a message..." HBox.hgrow="ALWAYS"
+                           onAction="#handleChatSend"/>
+                <Button text="Send" onAction="#handleChatSend"/>
             </HBox>
         </VBox>
     </right>
 
-    <!-- Center with game map -->
+    <!-- Center: Properly configured game canvas for sprite rendering -->
     <center>
-        <AnchorPane>
-            <ScrollPane AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                        AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="0.0">
-                <Canvas fx:id="gameCanvas" width="700.0" height="600.0"/>
-            </ScrollPane>
-
-            <!-- Bottom area for artifacts and structures -->
-            <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                  AnchorPane.rightAnchor="0.0" spacing="10.0">
-                <padding>
-                    <Insets top="5.0" right="10.0" bottom="5.0" left="10.0"/>
-                </padding>
-
-                <HBox spacing="20.0" alignment="CENTER">
-                    <!-- Artifacts section -->
-                    <VBox spacing="5.0">
-                        <Label text="Artifacts (Max 3)" style="-fx-font-weight: bold;"/>
-                        <FlowPane fx:id="artifactsContainer" hgap="10" vgap="10" prefHeight="80.0"
-                                  style="-fx-background-color: #f8f8f8; -fx-border-color: #cccccc; -fx-border-radius: 5px;">
-                            <!-- Artifact cards will be added here programmatically -->
-                        </FlowPane>
-                    </VBox>
-
-                    <!-- Structures section -->
-                    <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                        <Label text="Structures (Max 5)" style="-fx-font-weight: bold;"/>
-                        <FlowPane fx:id="structuresContainer" hgap="10" vgap="10" prefHeight="80.0"
-                                  style="-fx-background-color: #f8f8f8; -fx-border-color: #cccccc; -fx-border-radius: 5px;">
-                            <!-- Structure cards will be added here programmatically -->
-                        </FlowPane>
-                    </VBox>
-                </HBox>
-            </VBox>
-        </AnchorPane>
+        <StackPane>
+            <Canvas fx:id="gameCanvas" styleClass="canvas"/>
+        </StackPane>
     </center>
+
+    <!-- Left: Info bar (moved from right) -->
+    <left>
+        <VBox spacing="10" prefWidth="200" styleClass="panel">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label text="Game Actions" styleClass="label, title"/>
+            <Button text="Resource Overview" onAction="#handleResourceOverview" maxWidth="Infinity"/>
+            <Button text="Game Round" onAction="#handleGameRound" maxWidth="Infinity"/>
+            <Button text="Other Useful Action" onAction="#handleOtherAction" maxWidth="Infinity"/>
+            <VBox.margin>
+                <Insets top="10"/>
+            </VBox.margin>
+        </VBox>
+    </left>
+
+    <!-- Bottom: Card hand area with proper styling -->
+    <bottom>
+        <VBox spacing="10" styleClass="panel">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+
+            <!-- Artifact Cards -->
+            <HBox fx:id="artifactHand" spacing="10" alignment="CENTER_LEFT">
+                <Label text="Artifacts:" styleClass="label, title"/>
+                <Pane fx:id="artifact1" prefWidth="100" prefHeight="140" styleClass="card"/>
+                <Pane fx:id="artifact2" prefWidth="100" prefHeight="140" styleClass="card"/>
+                <Pane fx:id="artifact3" prefWidth="100" prefHeight="140" styleClass="card"/>
+            </HBox>
+
+            <!-- Structure Cards -->
+            <HBox fx:id="structureHand" spacing="10" alignment="CENTER_LEFT">
+                <Label text="Structures:" styleClass="label, title"/>
+                <Pane fx:id="structure1" prefWidth="100" prefHeight="140" styleClass="card"/>
+                <Pane fx:id="structure2" prefWidth="100" prefHeight="140" styleClass="card"/>
+                <Pane fx:id="structure3" prefWidth="100" prefHeight="140" styleClass="card"/>
+                <Pane fx:id="structure4" prefWidth="100" prefHeight="140" styleClass="card"/>
+                <Pane fx:id="structure5" prefWidth="100" prefHeight="140" styleClass="card"/>
+            </HBox>
+        </VBox>
+    </bottom>
 </BorderPane>

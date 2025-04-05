@@ -1,152 +1,353 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
-import ch.unibas.dmi.dbis.cs108.client.core.observer.GameEventListener;
-import ch.unibas.dmi.dbis.cs108.client.networking.GameClient;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
-import ch.unibas.dmi.dbis.cs108.client.ui.game.GameCanvas;
-import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.ChatMessageEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.SendChatEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
+import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Label;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.image.Image;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 
+import java.util.Objects;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class GameScreenController implements GameEventListener {
-    private static final Logger logger = Logger.getLogger(GameScreenController.class.getName());
+/**
+ * Controller for the game screen that handles UI interactions and game rendering.
+ */
+public class GameScreenController extends BaseController {
+    private static final Logger LOGGER = Logger.getLogger(GameScreenController.class.getName());
+    private Image mapImage;
 
+    // UI Components
+    @FXML
+    private ListView<String> chatListView;
+    @FXML
+    private TextField chatInputField;
     @FXML
     private Canvas gameCanvas;
     @FXML
-    private ListView<String> chatMessages;
+    private HBox artifactHand;
     @FXML
-    private TextField chatInput;
+    private HBox structureHand;
     @FXML
-    private Label runesCount;
+    private Pane artifact1, artifact2, artifact3;
     @FXML
-    private Label energyCount;
-    @FXML
-    private FlowPane artifactsContainer;
-    @FXML
-    private FlowPane structuresContainer;
+    private Pane structure1, structure2, structure3, structure4, structure5;
 
-    private GameCanvas canvas;
-    private SceneManager sceneManager;
-    private GameClient gameClient;
+    // Game state tracking
+    private boolean isInitialized = false;
+    private GraphicsContext gc;
 
-    @FXML
-    public void initialize() {
-        canvas = new GameCanvas(gameCanvas);
-        canvas.initializeMap();
-
-        // Set initial resource values
-        runesCount.setText("0");
-        energyCount.setText("0");
+    /**
+     * Constructor with required dependencies.
+     */
+    public GameScreenController() {
+        super(new ResourceLoader(), UIEventBus.getInstance(), SceneManager.getInstance());
     }
 
-    public void setSceneManager(SceneManager sceneManager) {
-        this.sceneManager = sceneManager;
-    }
-
-    public void setGameClient(GameClient gameClient) {
-        this.gameClient = gameClient;
-    }
-
+    /**
+     * Initializes the controller and UI components.
+     */
     @FXML
-    public void sendChatMessage() {
-        String message = chatInput.getText().trim();
-        if (!message.isEmpty()) {
-            // Send message to server using communication protocol
-            if (gameClient != null) {
-                gameClient.sendLobbyChat(message);
-                chatInput.clear();
-            }
+    private void initialize() {
+        try {
+            // Initialize UI elements
+            initializeChat();
+            initializeGameCanvas();
+            initializeCardHands();
+
+            isInitialized = true;
+            LOGGER.info("Game screen controller initialized successfully");
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error initializing game screen", e);
+            showError("Initialization Error", "Could not initialize game screen properly.");
         }
     }
 
-    @FXML
-    public void endTurn() {
-        //ToDo: Implement end turn logic
+    /**
+     * Set up chat components and event listeners.
+     */
+    private void initializeChat() {
+        chatListView.getItems().add("Welcome to Settlers of Asgard!");
+        eventBus.subscribe(ChatMessageEvent.class, this::handleIncomingChatMessage);
+
+        // Focus the chat input field for immediate typing
+        Platform.runLater(() -> chatInputField.requestFocus());
     }
 
-    @FXML
-    public void leaveGame() {
-        //ToDo: Implement leave game logic
+    /**
+     * Set up the game canvas for rendering.
+     */
+    private void initializeGameCanvas() {
+        if (gameCanvas == null) {
+            LOGGER.severe("Game canvas is null! Check FXML loading.");
+            return;
+        }
+
+        // Get the parent container of the canvas
+        StackPane canvasParent = (StackPane) gameCanvas.getParent();
+        if (canvasParent == null) {
+            LOGGER.severe("Canvas parent is null! Check FXML structure.");
+            return;
+        }
+
+        // Bind canvas size to parent container size
+        gameCanvas.widthProperty().bind(canvasParent.widthProperty());
+        gameCanvas.heightProperty().bind(canvasParent.heightProperty());
+
+        // Load map image
+        try {
+            mapImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(ResourceLoader.MAP_IMAGE)));
+            if (mapImage.isError()) {
+                LOGGER.log(Level.WARNING, "Error loading map image");
+                mapImage = null;
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Failed to load map image", e);
+        }
+
+        // Get graphics context for drawing
+        gc = gameCanvas.getGraphicsContext2D();
+
+        // Add listeners to redraw when canvas size changes
+        gameCanvas.widthProperty().addListener((obs, oldVal, newVal) -> drawGame());
+        gameCanvas.heightProperty().addListener((obs, oldVal, newVal) -> drawGame());
+
+        // Initial draw
+        drawGame();
     }
 
-    @Override
-    public void onMessageReceived(String serverMessage) {
-        // Ensure UI updates happen on the JavaFX thread
+    /**
+     * Initialize card hands with default styling.
+     */
+    private void initializeCardHands() {
+        // Set up artifact cards
+        setupCardPane(artifact1, "Mjölnir");
+        setupCardPane(artifact2, "Gungnir");
+        setupCardPane(artifact3, "Draupnir");
+
+        // Set up structure cards
+        setupCardPane(structure1, "Longhouse");
+        setupCardPane(structure2, "Forge");
+        setupCardPane(structure3, "Mead Hall");
+        setupCardPane(structure4, "Runestone");
+        setupCardPane(structure5, "Watchtower");
+    }
+
+    /**
+     * Configure a card pane with hover effects and tooltips.
+     */
+    private void setupCardPane(Pane cardPane, String cardName) {
+        cardPane.setUserData(cardName);
+        cardPane.setOnMouseEntered(e -> {
+            cardPane.setScaleX(1.05);
+            cardPane.setScaleY(1.05);
+            LOGGER.info("Mouse entered: " + cardName);
+        });
+        cardPane.setOnMouseExited(e -> {
+            cardPane.setScaleX(1.0);
+            cardPane.setScaleY(1.0);
+            LOGGER.info("Mouse exited: " + cardName);
+        });
+        cardPane.setOnMouseClicked(e -> {
+            handleCardSelection(cardPane);
+            LOGGER.info("Card clicked: " + cardName);
+        });
+    }
+
+    /**
+     * Handle when a card is selected.
+     */
+    private void handleCardSelection(Pane cardPane) {
+        String cardName = (String) cardPane.getUserData();
+        LOGGER.info("Selected card: " + cardName);
+        // Future implementation: Card selection logic
+    }
+
+    /**
+     * Draw/redraw the game map and elements on the canvas.
+     */
+    private void drawGame() {
+        if (gc == null) return;
+
+        double canvasWidth = gameCanvas.getWidth();
+        double canvasHeight = gameCanvas.getHeight();
+
+        // Clear the canvas
+        gc.clearRect(0, 0, canvasWidth, canvasHeight);
+
+        // Draw background
+        gc.setFill(Color.rgb(44, 51, 71));
+        gc.fillRect(0, 0, canvasWidth, canvasHeight);
+
+        // Draw map image if available
+        if (mapImage != null && !mapImage.isError()) {
+            // Calculate scale factor to fit the entire image within the canvas
+            double scaleX = canvasWidth / mapImage.getWidth();
+            double scaleY = canvasHeight / mapImage.getHeight();
+            double scale = Math.min(scaleX, scaleY); // Use min to fit entire image
+
+            // Calculate position to center the image
+            double x = (canvasWidth - mapImage.getWidth() * scale) / 2;
+            double y = (canvasHeight - mapImage.getHeight() * scale) / 2;
+
+            // Draw the image at calculated position and size
+            gc.drawImage(mapImage, x, y, mapImage.getWidth() * scale, mapImage.getHeight() * scale);
+        }
+
+        // Draw game grid on top of the map
+        drawGameGrid();
+
+        // Future: Draw game pieces, player positions, etc.
+    }
+
+    /**
+     * Draw the game board grid.
+     */
+    // File: src/main/java/ch/unibas/dmi/dbis/cs108/client/ui/controllers/GameScreenController.java
+    private void drawGameGrid() {
+        double width = gameCanvas.getWidth();
+        double height = gameCanvas.getHeight();
+
+        // Limit cell size to prevent excessive grid lines
+        double cellSize = Math.min(width, height) / 20;
+
+        // Hard cap on maximum grid lines to prevent memory issues
+        int maxLines = 50;
+
+        gc.setStroke(Color.rgb(76, 83, 102));
+        gc.setLineWidth(1);
+
+        // Draw vertical lines with safety limit
+        int vLines = Math.min(maxLines, (int) (width / cellSize) + 1);
+        for (int i = 0; i <= vLines; i++) {
+            double x = i * cellSize;
+            gc.strokeLine(x, 0, x, height);
+        }
+
+        // Draw horizontal lines with safety limit
+        int hLines = Math.min(maxLines, (int) (height / cellSize) + 1);
+        for (int i = 0; i <= hLines; i++) {
+            double y = i * cellSize;
+            gc.strokeLine(0, y, width, y);
+        }
+    }
+
+    /**
+     * Draw decorative elements at grid intersections.
+     */
+    private void drawGridDecorations(double cellSize) {
+        // Implementation for decorative elements at grid points
+        // This would be expanded in the actual game implementation
+    }
+
+    /**
+     * Handle incoming chat messages from the event bus.
+     */
+    private void handleIncomingChatMessage(ChatMessageEvent event) {
         Platform.runLater(() -> {
-            // Parse the server message and update UI accordingly
-            String[] parts = serverMessage.split("[:$]", 2);
-            if (parts.length >= 2) {
-                String command = parts[0];
-                String content = parts[1];
+            try {
+                String message = event.getMessage();
+                if (message == null || message.trim().isEmpty()) return;
 
-                try {
-                    CommunicationAPI.NetworkProtocol.Commands cmd =
-                            CommunicationAPI.NetworkProtocol.Commands.fromCommand(command);
+                chatListView.getItems().add(message);
 
-                    switch (cmd) {
-                        case CHATGLOBAL:
-                        case CHATLOBBY:
-                        case CHATPRIVATE:
-                            chatMessages.getItems().add(content);
-                            break;
-
-                        case RESOURCEBALANCE:
-                            updateResources(content);
-                            break;
-
-                        case SYNCHRONIZE:
-                            canvas.updateGameState(content);
-                            break;
-
-                        case BUYHEXFIELD:
-                        case BUILDSTRUCTURE:
-                        case UPGRADESTRUCTURE:
-                            // Force refresh of the game state
-                            requestGameSync();
-                            break;
-
-                        case ERROR:
-                            handleError(content);
-                            break;
-
-                        default:
-                            logger.info("Unhandled command: " + command + " with content: " + content);
-                    }
-                } catch (IllegalArgumentException e) {
-                    logger.warning("Unknown command received: " + command);
-                }
+                // Auto-scroll to bottom
+                chatListView.scrollTo(chatListView.getItems().size() - 1);
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Error handling chat message", e);
             }
         });
     }
 
-    private void requestGameSync() {
-        //ToDo: Implement game synchronization request
-    }
-
-    private void updateResources(String content) {
-        // Parse resource update from server and update UI
-        // Expected format: "runes,energy"
+    /**
+     * Handle sending a chat message.
+     */
+    @FXML
+    private void handleChatSend() {
         try {
-            String[] resources = content.split(",");
-            if (resources.length >= 2) {
-                runesCount.setText(resources[0]);
-                energyCount.setText(resources[1]);
+            String message = chatInputField.getText().trim();
+            if (!message.isEmpty()) {
+                // Only publish the event to send through the network
+                // Don't add to UI here - wait for server echo
+                eventBus.publish(new SendChatEvent(message, SendChatEvent.ChatType.GLOBAL));
+
+                // Add a visual indicator that message is being sent
+                // Optional: chatListView.getItems().add("Sending: " + message);
+
+                chatInputField.clear();
+                chatInputField.requestFocus();
             }
         } catch (Exception e) {
-            logger.warning("Failed to parse resource update: " + e.getMessage());
+            LOGGER.log(Level.WARNING, "Error sending chat message", e);
+            showError("Communication Error", "Failed to send chat message.");
         }
     }
 
-    private void handleError(String errorMessage) {
-        // Add error message to chat with distinctive style
-        chatMessages.getItems().add("[ERROR] " + errorMessage);
+    /**
+     * Handle resource overview button click.
+     */
+    @FXML
+    private void handleResourceOverview() {
+        LOGGER.info("Opening resource overview");
+        // Future implementation: Show resource dialog/panel
+    }
+
+    /**
+     * Handle game round button click.
+     */
+    @FXML
+    private void handleGameRound() {
+        LOGGER.info("Processing game round");
+        // Future implementation: Process game round
+    }
+
+    /**
+     * Handle other action button click.
+     */
+    @FXML
+    private void handleOtherAction() {
+        LOGGER.info("Other action triggered");
+        // Future implementation: Other game action
+    }
+
+    /**
+     * Clean up resources when controller is no longer needed.
+     */
+    public void cleanup() {
+        // Unsubscribe from events to prevent memory leaks
+        if (eventBus != null) {
+            eventBus.unsubscribe(ChatMessageEvent.class, this::handleIncomingChatMessage);
+        }
+
+        // Release resources
+        gc = null;
+        isInitialized = false;
+
+        LOGGER.info("Game screen controller cleaned up");
+    }
+
+    /**
+     * Display an error dialog.
+     */
+    private void showError(String title, String message) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(title);
+            alert.setHeaderText(null);
+            alert.setContentText(message);
+            alert.showAndWait();
+        });
     }
 }

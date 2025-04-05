@@ -23,11 +23,11 @@ public class GameClient implements CommunicationAPI {
     private final Logger logger = Logger.getLogger(GameClient.class.getName());
     private final String host;
     private final int port;
+    private final ScheduledExecutorService pingScheduler = Executors.newScheduledThreadPool(1);
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
     private long lastPingTime = System.currentTimeMillis();
-    private final ScheduledExecutorService pingScheduler = Executors.newScheduledThreadPool(1);
 
     /**
      * Contstructor Method for Gameclient

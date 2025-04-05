@@ -56,8 +56,8 @@ public class Shop {
             // Only process objects that have a "name" field.
             if (elem.getAsJsonObject().has("name")) {
                 StructureData data = gson.fromJson(elem, StructureData.class);
-                Structure structure = new Structure(data.id, data.name, data.description, data.useType);
-                buyableStructures.add(structure);
+                //Structure structure = new Structure(data.id, data.name, data.description, data.useType);
+                //buyableStructures.add(structure);
             }
         }
     }
