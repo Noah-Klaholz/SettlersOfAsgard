@@ -1,8 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.core.observer;
 
-/**
- * interface handling user inputs
- */
+import ch.unibas.dmi.dbis.cs108.client.core.events.GameEvent;
+
 public interface GameEventListener {
-    void onMessageReceived(String serverMessage);
+    void onEvent(GameEvent event);
 }
