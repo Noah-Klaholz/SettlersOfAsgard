@@ -156,6 +156,14 @@ public class GameLogic implements GameLogicInterface {
 
     }
 
+    /**
+     *
+     */
+    @Override
+    public void getGameState() {
+
+    }
+
     public void buyStatue(String statueID, String playerID) {
         // Implementation for buying a statue
     }
