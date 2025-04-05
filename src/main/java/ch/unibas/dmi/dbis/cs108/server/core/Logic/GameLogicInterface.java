@@ -16,11 +16,13 @@ public interface GameLogicInterface {
     public void startTurn(String playerID); // Starts the turn of a player
     public void endTurn(String playerID); // Ends the turn of a player
     public void buyTile(int x, int y, String playerID); // Buys a tile
+    public void buyStatue(String statueID, String playerID); // Buys a statue
+    public void buyStructure(String structureID, String playerID); // Buys a structure
     public void placeStructure(int x, int y, String structureID, String playerID); // Works as buy and place function for Structures
     public void useStructure(int x, int y, String structureID, String useType, String playerID); // Uses a structure
     public void upgradeStatue(int x, int y, String statueID, String playerID); // Upgrades a statue
     public void useStatue(int x, int y, String statueID, String useType, String playerID); // Uses a statue
-    public void useFieldArtifact(int x, int y, int artifactID, String useType); // Uses a field artifact
+    public void useTileArtifact(int x, int y, int artifactID, String useType); // Uses a field artifact
     public void usePlayerArtifact(int artifactID, String playerID, String useType); // Uses a player artifact
 
 }
