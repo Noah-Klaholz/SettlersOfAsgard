@@ -9,7 +9,7 @@ Der Spieler mit den meisten Runen nach 5 Spielrunden gewinnt das Spiel.
 
 ## Links
 
-Genauere Dokumentation der voraussichtlichen Spielregeln: [Spielregeln](docs/GameDesign.pdf).
+Genauere Dokumentation der voraussichtlichen Spielregeln: [Spielregeln](docs/Spielbeschreibungen/GameDesign.pdf).
 
 Netzwerkprotokoll: [Netzwerkprotokoll](docs/Netzwerkprotokoll_v1.2.0.pdf).
 
