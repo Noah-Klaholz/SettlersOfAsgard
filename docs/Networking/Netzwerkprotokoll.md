@@ -20,38 +20,44 @@ Dieser Befehl bedeutet, dass Spieler PL01 eine Struktur vom Typ "Castle" auf das
 ## 3. Befehle
 
 ### Spielverwaltung
-| Befehl | Richtung | Beschreibung | Parameter | Beispiel |
-|--------|----------|--------------|-----------|----------|
-| `RGST` | **C→S** | Spieler verbindet sich erstmals mit Server | `Spielername` | `RGST$ThorOdinson` |
-| `JOIN` | **C→S** | Spieler tritt Lobby bei | `Spielername$LobbyID` | `JOIN$ThorOdinson$SP01` |
-| `LEAV` | **C→S** | Spieler verlässt Lobby | `Spielername$LobbyID` | `LEAV$ThorOdinson$SP01` |
-| `LEAV` | **C→S** | Spieler verlässt Lobby | `Spielername$LobbyID` | `LEAV$ThorOdinson$SP01` |
-| `EXIT` | **C→S** | Spieler disconnected | `Spielername$LobbyID` | `EXIT$ThorOdinson$SP01` |
-| `CHAN` | **C→S** | Spieler möchte seinen Namen ändern | `Spielername` | `CHAN$LokiLaufeyson` |
-| `CHTG` | **C→S** | Nachricht senden (global) | `SpielerID$Nachricht` | `CHTG$PL01$HelloWorld!` |
-| `CHTP` | **C→S** | Nachricht senden (privat) | `SpielerID1$SpielerID2$Nachricht` | `CHTP$PL01$PL02$HelloWorld!` |
-| `LIST` | **C→S** | Liste der Lobbies | | `LIST$` |
-| `STRT` | **C→S** | Spiel starten | | `STRT$` |
-| `STDN` | **S→C** | Nachricht an Clients: Server wird beendet| | `STDN$` |  
-| `PING` | **C→S & S→C** | Verbindung prüfen | | `PING$` |
-| `STAT` | **C→S** | Spielstatus abrufen | `SpielID` | `STAT$SP01` |
-| `SYNC` | **C→S** | Synchronisation des Spielzustands anfordern | | `SYNC$` |
+| Befehl | Richtung      | Beschreibung                                                  | Parameter                            | Beispiel                       |
+|--------|---------------|---------------------------------------------------------------|--------------------------------------|--------------------------------|
+| `RGST` | **C→S**       | Spieler verbindet sich erstmals mit Server                    | `Spielername`                        | `RGST$ThorOdinson`             |
+| `CHAN` | **C→S**       | Spieler verändert seinen Namen                                | `neuerSpielername`                   | `CHAN$ThorOdinson`             |
+| `CREA` | **C→S**       | Neue Lobby erstellen                                          | `Spielername$Lobbyname`              | `CREA$ThorOdinson$Lobby1`      |
+| `JOIN` | **C→S**       | Spieler tritt Lobby bei                                       | `Spielername$Lobbyname`              | `CREA$Lobby1$ThorOdinson`      |
+| `LEAV` | **C→S**       | Spieler verlässt Lobby                                        | `Spielername$Lobbyname`              | `LEAV$ThorOdinson$Lobby1`      |
+| `EXIT` | **C→S**       | Spieler disconnected                                          | `Spielername$`                       | `EXIT$ThorOdinson$`            |
+| `CHAN` | **C→S**       | Spieler möchte seinen Namen ändern                            | `Spielername`                        | `CHAN$LokiLaufeyson`           |
+| `CHTG` | **C→S**       | Nachricht senden (global)                                     | `Spielername$Nachricht`              | `CHTG$ThorOdinson$HelloWorld!` |
+| `CHTL` | **C→S**       | Nachricht senden (lobby)                                      | `Spielername$Nachricht`              | `CHTL$ThorOdinson$HelloWorld!` |
+| `CHTP` | **C→S**       | Nachricht senden (privat)                                     | `Spielername$Spielername2$Nachricht` | `CHTP$PL01$PL02$HelloWorld!`   |
+| `LIST` | **C→S**       | Liste der Lobbies                                             |                                      | `LIST$`                        |
+| `LSTP` | **C→S**       | Liste der Spieler in der Lobby oder Serverweit                | `Ort (LOBBY oder SERVER)`            | `LSTP$LOBBY / LSTP$SERVER`     |
+| `STRT` | **C→S**       | Spiel starten                                                 |                                      | `STRT$`                        |
+| `STDN` | **S→C**       | Nachricht an Clients: Server wird beendet                     |                                      | `STDN$`                        |  
+| `PING` | **C→S & S→C** | Verbindung prüfen                                             |                                      | `PING$`                        |
+| `GSTS` | **C→S**       | Spielstatus abrufen   (temporär)                              |                                      | `GSTS$`                        |
+| `GPRC` | **C→S**       | Preise für verschiedene Kaufbare Elemente abfragen (temporär) |                                      | `GPRC$`                        |
+| `SYNC` | **C→S**       | Synchronisation des Spielzustands anfordern                   |                                      | `SYNC$`                        |
+| `OK`   | **S→C**       | Protokoll-Antwort bei erfolgreichen Befehlen                  | `[Arg1][$Arg2]...`                   | `OK$`                          |
 
 ### Spielmechanik
-| Befehl | Richtung | Beschreibung | Parameter | Beispiel |
-|--------|----------|--------------|-----------|----------|
-| `TURN` | **S→C** | Startet Zug | `SpielerID` | `TURN$PL01` |
-| `ENDT` | **S→C** | Beendet Zug | `SpielerID` | `ENDT$PL01` |
-| `BUYH` | **C→S** | Kauft ein Hexfeld | `SpielerID$X$Y` | `BUYH$PL01$0001$0002` |
-| `BILD` | **C→S** | Baut Struktur | `SpielerID$Struktur$X$Y` | `BILD$PL01$Castle$0001$0002` |
-| `UPGD` | **C→S** | Eine Struktur verbessern | `SpielerID$X$Y` | `UPGD$PL01$0001$0002` |
-| `TRAD` | **C→S** | Handeln | `Spieler1ID$Spieler2ID$RessourcenID1$RessourcenID2$Anzahl1$Anzahl2` | `TRAD$PL01$PL02$R001$R002$0005$0020` |
-| `BLNC` | **C→S** | Aktuelles Ressourcenkonto abrufen | `SpielerID` | `BLNC$PL01` |
-| `RITU` | **C→S** | Ritual starten | `SpielerID$RessourcenID$Anzahl` | `RITU$SP01$R001$0005` |
-| `BLES` | **C→S** | Segen erhalten | `SpielerID$GottID` | `BLES$PL01$G001` |
-| `CURS` | **C→S** | Fluch wirken | `Spieler1ID$Spieler2ID$GottID` | `CURS$PL01$PL02$G002` |
-| `ARTF` | **C→S** | Artefakt benutzen | `SpielerID$ArtefaktID` | `ARTF$PL01$AR01` |
-| `FIND` | **C→S** | Artefakt suchen | `SpielerID$X$Y` | `FIND$PL01$0001$0002` |
+| Befehl | Richtung | Beschreibung                                                     | Parameter                | Beispiel                   |
+|--------|----------|------------------------------------------------------------------|--------------------------|----------------------------|
+| `TURN` | **S→C**  | Startet Zug                                                      | `Spielername`            | `TURN$ThorOdinson`         |
+| `ENDT` | **C→S**  | Beendet Zug                                                      |                          | `ENDT$`                    |
+| `ENDT` | **S→C**  | Beendet Zug eines Spielers (bei Zeitüberschreitung) -> zukünftig | `Spielername`            | `ENDT$PL01`                |
+| `BUYT` | **C→S**  | Kauft ein Feld an Koordinaten x,y                                | `X$Y`                    | `BUYT$1$2`                 |
+| `BYSR` | **C→S**  | Kauft eine Struktur                                              | `StrukturID`             | `BYSR$RuneTable`           |
+| `PLST` | **C→S**  | Baut Struktur an Koordinaten x,y                                 | `X$Y$StrukturID`         | `PLST$1$2$RuneTable`       |
+| `USSR` | **C→S**  | Eine Struktur verwenden                                          | `X$Y$StrukturID$UseType` | `USSR$1$2$RuneTable$Runes` |
+| `BYST` | **C→S**  | Kaufen einer Statue                                              | `StatueID`               | `BYST$Freyr`               |
+| `UPST` | **C→S**  | Aufwerten einer Statue                                           | `X$Y$StatueID`           | `UPST$1$2$Freyr`           |
+| `USTA` | **C→S**  | Benutzen einer Statue                                            | `X$Y$StatueID$UseType`   | `USTA$1$2$Freyr$Runes"`    |
+| `USPA` | **C→S**  | Benutzen eines Spieler-Artefakts (auf Spieler anwenden)          | `ArtifactID$UseType`     | `USPA$1$Runes`             |
+| `USFA` | **C→S**  | Benutzen eines Feld-Artefakts (auf Feld anwenden)                | `ArtifactID$UseType`     | `USFA$2$Runes`             |
+| `ENDG` | **S→C**  | Beenden des Spiels                                               |                          | `ENDG$`                    |
 
 ## 4. Fehlerbehandlung
 Eine allgemeine Fehlernachricht hat folgendes Format:  
@@ -60,19 +66,20 @@ Beispiel:
 `ERROR$100$Unbekannter Befehl`
 
 ### Spezifische Liste der Fehlercodes
-| Fehlercode | Name | Beschreibung | Beispiel |
-|------------|------|--------------|----------|
-| 100 | Unbekannter Befehl | Tritt auf, wenn der empfangene Befehl nicht im Protokoll definiert ist. | `LEAV$ThorOdinson$SP01` |
-| 101 | Falsche Parameteranzahl | Tritt auf, wenn ein Befehl zu wenige oder zu viele Parameter enthält. | `JOIN$ThorOdinson$SP01$PL01` |
-| 102 | Ungültiger Parameter | Tritt auf, wenn ein Parameter nicht dem erwarteten Format entspricht. | `JOIN$12345$SP01` |
-| 103 | Ungültige Länge | Tritt auf, wenn ein Befehl oder Parameter die maximal erlaubte Länge überschreitet. | `JOIN$ThorOdinson123456783456$SP01;` |
-| 104 | Unzulässige Zeichen | Tritt auf, wenn unzulässige Zeichen (z. B. Semikolons) innerhalb eines Parameters gefunden werden. | `JOIN$Thor$Odinson$SP01` |
-| 105 | Unbekannte SpielerID | Tritt auf, wenn eine SpielerID (oder Spielername) nicht existiert oder ungültig ist. | `TURN$PL999` |
-| 106 | Nichtautorisierte Aktion | Tritt auf, wenn ein Spieler versucht, eine Aktion auszuführen, zu der er nicht berechtigt ist. | `STRT$PL02` |
-| 107 | Spiel-ID nicht gefunden | Tritt auf, wenn eine angegebene Spiel-ID nicht existiert oder ungültig ist. | `JOIN$ThorOdinson$SP999` |
+| Fehlercode | Name                     | Beschreibung                                                                                       | Beispiel                             |
+|------------|--------------------------|----------------------------------------------------------------------------------------------------|--------------------------------------|
+| 100        | Unbekannter Befehl       | Tritt auf, wenn der empfangene Befehl nicht im Protokoll definiert ist.                            | `LEAV$ThorOdinson$SP01`              |
+| 101        | Falsche Parameteranzahl  | Tritt auf, wenn ein Befehl zu wenige oder zu viele Parameter enthält.                              | `JOIN$ThorOdinson$SP01$PL01`         |
+| 102        | Ungültiger Parameter     | Tritt auf, wenn ein Parameter nicht dem erwarteten Format entspricht.                              | `JOIN$12345$SP01`                    |
+| 103        | Ungültige Länge          | Tritt auf, wenn ein Befehl oder Parameter die maximal erlaubte Länge überschreitet.                | `JOIN$ThorOdinson123456783456$SP01;` |
+| 104        | Unzulässige Zeichen      | Tritt auf, wenn unzulässige Zeichen (z. B. Semikolons) innerhalb eines Parameters gefunden werden. | `JOIN$Thor$Odinson$SP01`             |
+| 105        | Unbekannte SpielerID     | Tritt auf, wenn eine SpielerID (oder Spielername) nicht existiert oder ungültig ist.               | `TURN$PL999`                         |
+| 106        | Nichtautorisierte Aktion | Tritt auf, wenn ein Spieler versucht, eine Aktion auszuführen, zu der er nicht berechtigt ist.     | `STRT$PL02`                          |
+| 107        | Spiel-ID nicht gefunden  | Tritt auf, wenn eine angegebene Spiel-ID nicht existiert oder ungültig ist.                        | `JOIN$ThorOdinson$SP999`             |
 
 ### Protokoll-Antwort bei erfolgreichen Befehlen
 Wenn ein Befehl korrekt verarbeitet wurde, schickt der Server eine Bestätigung zurück, damit der Client weiß, dass alles erfolgreich war. Diese Nachricht hat folgendes Format:  
-`OK$<Befehl>`  
+`OK$<Befehl>$[Parameter1]$[Parameter2]$...`  
+Die Parameter sind optional und hängen vom Befehl ab.
 Beispiel:  
 `OK$JOIN`
