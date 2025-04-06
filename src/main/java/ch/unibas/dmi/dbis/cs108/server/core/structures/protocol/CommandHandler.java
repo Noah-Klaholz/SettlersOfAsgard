@@ -243,8 +243,8 @@ public class CommandHandler {
      */
     public boolean handlePrivateMessage(Command cmd) {
         String[] parts = cmd.getArgs();
-        String senderName = parts[0];
-        String receiverName = parts[1];
+        String senderName = parts[1];
+        String receiverName = parts[2];
         if (receiverName.equals(senderName)) {
             sendMessage("ERR$106$CANNOT_WHISPER_TO_SELF");
             return false;
@@ -253,8 +253,7 @@ public class CommandHandler {
         if (server.containsPlayerName(receiverName)) {
             server.getClients().forEach(client -> {
                 if (client.isRunning() && client.getPlayerName().equals(receiverName)) {
-                    client.sendMessage("<Whisper>" + senderName + ": " + message);
-                    sendMessage("OK$CHTP$");
+                    sendMessage("CHTP$" + senderName + "$" + message);
                 }
             });
             return true;
@@ -264,12 +263,16 @@ public class CommandHandler {
         return false;
     }
 
+    /**
+     * Handles the sending of a message to all players in the lobby.
+     * @param cmd the transmitted command
+     * @return true if the message was sent successfully, false otherwise
+     */
     public boolean handleLobbyMessage(Command cmd) {
         String senderName = cmd.getArgs()[0];
         String message = cmd.getArgs()[1];
         if (currentLobby != null) {
-            currentLobby.broadcastMessage(senderName + ": " + message);
-            sendMessage("OK$CHTL$");
+            currentLobby.broadcastMessage("CHTL$" + senderName + "$" + message);
             return true;
         } else {
             sendMessage("ERR$106$NOT_IN_LOBBY");
@@ -278,14 +281,8 @@ public class CommandHandler {
     }
 
     public boolean handleGlobalChatMessage(Command cmd) {
-        if (cmd.getCommand().equals("CHTL")) {
-            String command = cmd.toString().replace("CHTL", "CHTG").trim();
-            ch.sendGlobalChatMessage(new Command(command));
-            return true;
-        } else {
             ch.sendGlobalChatMessage(cmd);
             return true;
-        }
     }
 
     /**

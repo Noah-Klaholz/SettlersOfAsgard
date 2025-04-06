@@ -60,9 +60,9 @@ public class ProtocolTranslator {
     }
 
     private void processPrivateChatMessage(String message) {
-        String[] parts = message.split("\\$", 4);
-        if (parts.length >= 4) {
-            ChatMessageEvent event = new ChatMessageEvent(parts[1], parts[3], ChatMessageEvent.ChatType.PRIVATE);
+        String[] parts = message.split("\\$", 3);
+        if (parts.length >= 3) {
+            ChatMessageEvent event = new ChatMessageEvent(parts[1], parts[2], ChatMessageEvent.ChatType.PRIVATE);
             eventDispatcher.dispatchEvent(event);
         }
     }
