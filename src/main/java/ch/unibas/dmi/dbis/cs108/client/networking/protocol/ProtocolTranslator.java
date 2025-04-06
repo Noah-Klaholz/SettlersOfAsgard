@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.networking.protocol;
 
 import ch.unibas.dmi.dbis.cs108.client.networking.events.*;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.ReceiveCommandEvent;
+import ch.unibas.dmi.dbis.cs108.client.networking.events.ReceiveCommandEvent;
 
 import java.util.HashMap;
 import java.util.Map;

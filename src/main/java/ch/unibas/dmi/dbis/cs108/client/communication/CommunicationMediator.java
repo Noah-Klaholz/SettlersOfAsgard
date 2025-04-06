@@ -4,6 +4,7 @@ import ch.unibas.dmi.dbis.cs108.client.networking.NetworkController;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.ChatMessageEvent;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher.EventListener;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.ReceiveCommandEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.SendChatEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.SendCommandEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
@@ -138,6 +139,22 @@ public class CommunicationMediator {
                 // Transform the networking chat event into a UI chat event.
                 ch.unibas.dmi.dbis.cs108.client.ui.events.ChatMessageEvent uiEvent =
                         new ch.unibas.dmi.dbis.cs108.client.ui.events.ChatMessageEvent(
+                                networkEvent.getSender() + ": " + networkEvent.getContent()
+                        );
+                UIEventBus.getInstance().publish(uiEvent);
+            }
+
+            @Override
+            public Class<ChatMessageEvent> getEventType() {
+                return ChatMessageEvent.class;
+            }
+        });
+        EventDispatcher.getInstance().registerListener(ReceiveCommandEvent.class, new EventListener<ReceiveCommandEvent>() {
+            @Override
+            public void onEvent(ReceiveCommandEvent networkEvent) {
+                // Transform the networking chat event into a UI chat event.
+                ch.unibas.dmi.dbis.cs108.client.ui.events.ChatMessageEvent uiEvent =
+                        new ch.unibas.dmi.dbis.cs108.client.ui.events.ReceiveCommandEvent(
                                 networkEvent.getSender() + ": " + networkEvent.getContent()
                         );
                 UIEventBus.getInstance().publish(uiEvent);
