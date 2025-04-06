@@ -1,5 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.core.entities;
 
+import ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.Artefact;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -14,6 +16,7 @@ public class Player {
     private int runes;
     private int energy;
     private List<Tile> ownedTiles;
+    private List<Artefact> artifacts;
 
     /**
      * Constructor for Player class
@@ -28,6 +31,35 @@ public class Player {
         runes = 20;
         energy = 0;
         ownedTiles = new ArrayList<>();
+        artifacts = new ArrayList<>();
+    }
+
+    /**
+     * Setter for artifacts
+     *
+     * @param artifacts List<Artefact>
+     */
+    public void setArtifacts(List<Artefact> artifacts) {
+        this.artifacts = artifacts;
+    }
+
+    /**
+     * Getter for artifacts
+     *
+     * @return List<Artefact>
+     */
+    public List<Artefact> getArtifacts() {
+        return artifacts;
+    }
+
+    /**
+     * adds an artifact to the player
+     *
+     * @param artifact Artefact
+     */
+    //should be checked in gameLogic if possible
+    public void addArtifact(Artefact artifact) {
+        artifacts.add(artifact);
     }
 
 
@@ -104,30 +136,65 @@ public class Player {
         this.energy = energy;
     }
 
+    /**
+     * Getter for player id
+     *
+     * @return player_id
+     */
     public UUID getPlayerID() {
         return playerID;
     }
 
+    /**
+     * Getter for owned tiles
+     *
+     * @return List<Tile>
+     */
     public List<Tile> getOwnedTiles() {
         return ownedTiles;
     }
 
+    /**
+     * Setter for owned tiles
+     *
+     * @param ownedTiles List<Tile>
+     */
     public void setOwnedTiles(List<Tile> ownedTiles) {
         this.ownedTiles = ownedTiles;
     }
 
+    /**
+     * Adds runes to the player
+     *
+     * @param amount int
+     */
     public void addRunes(int amount) {
         this.runes += amount;
     }
 
+    /**
+     * Adds energy to the player
+     *
+     * @param amount int
+     */
     public void addEnergy(int amount) {
         this.energy += amount;
     }
 
+    /**
+     * adds a tile to the player
+     *
+     * @param tile Tile
+     */
     public void addOwnedTile(Tile tile) {
         ownedTiles.add(tile);
     }
 
+    /**
+     * toString method for Player class
+     *
+     * @return String including name, runes and energy
+     */
     @Override
     public String toString() {
         return "Player{" +
