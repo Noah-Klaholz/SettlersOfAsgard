@@ -487,13 +487,13 @@ public class CommandHandler {
     public void handleUsePlayerArtifact(Command cmd) {
         try {
             String[] args = cmd.getArgs();
-            if (args.length < 2) {
+            if (args.length != 2) {
                 sendMessage("ERR$101$INVALID_ARGUMENTS$USE_PLAYER_ARTIFACT");
                 return;
             }
-            String playerName = args[0];
-            int artifactId = Integer.parseInt(args[1]);
-            // TODO: Implement use player artifact logic
+            int artifactId = Integer.parseInt(args[0]);
+            String useType = args[1];
+            gameLogic.usePlayerArtifact(artifactId,playerName, useType);
         } catch (NumberFormatException e) {
             logger.severe("Failed to parse artifact ID: " + e.getMessage());
             sendMessage("ERR$101$INVALID_ARTIFACT_ID");
@@ -510,13 +510,15 @@ public class CommandHandler {
     public void handleUseFieldArtifact(Command cmd) {
         try {
             String[] args = cmd.getArgs();
-            if (args.length < 2) {
+            if (args.length != 4) {
                 sendMessage("ERR$101$INVALID_ARGUMENTS$USE_FIELD_ARTIFACT");
                 return;
             }
-            String playerName = args[0];
-            int artifactId = Integer.parseInt(args[1]);
-            // TODO: Implement use player artifact logic
+            int x = Integer.parseInt(args[0]);
+            int y = Integer.parseInt(args[1]);
+            int artifactId = Integer.parseInt(args[2]);
+            String useType = args[3];
+            gameLogic.useFieldArtifact(x,y,artifactId,useType);
         } catch (NumberFormatException e) {
             logger.severe("Failed to parse artifact ID: " + e.getMessage());
             sendMessage("ERR$101$INVALID_ARTIFACT_ID");

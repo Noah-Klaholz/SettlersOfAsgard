@@ -25,7 +25,6 @@ public interface GameLogicInterface {
     public boolean useStatue(int x, int y, String statueID, String useType, String playerID); // Uses a statue
     public boolean useFieldArtifact(int x, int y, int artifactID, String useType); // Uses a field artifact
     public boolean usePlayerArtifact(int artifactID, String playerID, String useType); // Uses a player artifact
-    public boolean useTrap(int x, int y, String trapID, String playerID); // Uses a trap
     public GameState getGameState(); // Should return all necessary information in a form that has a toString Method
     String getPrices(); // Should return the current prices for different Structures as a String
 }
