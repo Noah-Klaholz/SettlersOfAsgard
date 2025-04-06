@@ -1,6 +1,12 @@
 package ch.unibas.dmi.dbis.cs108.server.core.Logic;
 
 import ch.unibas.dmi.dbis.cs108.server.core.State.GameState;
+import ch.unibas.dmi.dbis.cs108.server.core.entities.Player;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Implementation of the GameLogicInterface that provides the core game logic functionality.
@@ -9,7 +15,11 @@ import ch.unibas.dmi.dbis.cs108.server.core.State.GameState;
  */
 public class GameLogic implements GameLogicInterface {
 
-    public GameLogic() {}
+    private GameState gameState;
+
+    public GameLogic(String[] players) {
+        startGame(players);
+    }
 
     /**
      * Initializes and starts a new game.
@@ -17,8 +27,9 @@ public class GameLogic implements GameLogicInterface {
      * game field configuration, and starting resources.
      */
     @Override
-    public void startGame() {
-
+    public void startGame(String[] players) {
+        gameState = new GameState();
+        gameState.setPlayers(players);
     }
 
     /**
@@ -28,7 +39,28 @@ public class GameLogic implements GameLogicInterface {
      */
     @Override
     public void endGame() {
+        ArrayList<Player> players = gameState.getPlayerList();
+        sortPlayersByScore(players);
+        //todo: later: give players with same scores the same place
+        String place1st = players.get(0).getName();
+        String place2nd = players.get(1).getName();
+        String place3rd = players.get(2).getName();
+        int i = 1;
+        for(Player player : players) {
+            System.out.println("#" + i + ": " + player.getName() + " has " + player.getRunes() + " runes.");
+            i++;
+        }
+        //todo: cleanup game resources
+    }
 
+    /**
+     * Sorts the players based on their scores (runes).
+     * This method sorts the players in descending order based on their runes.
+     *
+     * @param players List of players to be sorted
+     */
+    public void sortPlayersByScore(List<Player> players) {
+        Collections.sort(players, Comparator.comparingInt(Player::getRunes).reversed());
     }
 
     /**
@@ -38,8 +70,44 @@ public class GameLogic implements GameLogicInterface {
      *
      * @param playerID The unique identifier of the player whose turn is starting
      */
-    @Override
-    public void startTurn(String playerID) {
+    /**
+     * Advances to the next player's turn automatically.
+     * Handles all turn initialization and round progression.
+     */
+    public void nextTurn() {
+        // If first turn of game, initialize
+        if (gameState.getPlayerTurn() == null) {
+            initializeFirstTurn();
+            return;
+        }
+
+        int nextPosition = (gameState.getPlayerRound() + 1) % gameState.getPlayerList().size();
+        boolean newRound = nextPosition == 0;
+
+        if (newRound) {
+            gameState.setGameRound(gameState.getGameRound() + 1);
+
+            // Check for game end condition (after 5 rounds)
+            if (gameState.getGameRound() > 5) {
+                endGame();
+                return;
+            }
+        }
+
+        gameState.setPlayerRound(nextPosition);
+        Player nextPlayer = gameState.getPlayerList().get(nextPosition);
+        gameState.setPlayerTurn(nextPlayer.getName());
+
+    }
+
+    private void initializeFirstTurn() {
+        List<Player> players = gameState.getPlayerList();
+
+        gameState.setGameRound(1);
+        gameState.setPlayerRound(0);
+        Player firstPlayer = gameState.getPlayerList().get(0);
+        gameState.setPlayerTurn(firstPlayer.getName());
+        gameState.addRunes(1, firstPlayer.getName());
 
     }
 
@@ -48,11 +116,14 @@ public class GameLogic implements GameLogicInterface {
      * This method finalizes any pending actions, applies end-of-turn effects,
      * and transitions to the next player's turn.
      *
-     * @param playerID The unique identifier of the player whose turn is ending
      */
     @Override
-    public boolean endTurn(String playerID) {
-        return false;
+    public void endTurn() {
+        if (gameState.getPlayerTurn() == null) {
+            throw new IllegalStateException("No active turn to end");
+        }
+
+        nextTurn(); // Advance to next player
     }
 
     /**
@@ -65,8 +136,8 @@ public class GameLogic implements GameLogicInterface {
      * @param playerID The unique identifier of the player attempting to buy the tile
      */
     @Override
-    public boolean buyTile(int x, int y, String playerID) {
-        return false;
+    public void buyTile(int x, int y, String playerID) {
+
     }
 
     /**
@@ -80,8 +151,8 @@ public class GameLogic implements GameLogicInterface {
      * @param playerID The unique identifier of the player placing the structure
      */
     @Override
-    public boolean placeStructure(int x, int y, String structureID, String playerID) {
-        return false;
+    public void placeStructure(int x, int y, String structureID, String playerID) {
+
     }
 
     /**
@@ -96,8 +167,8 @@ public class GameLogic implements GameLogicInterface {
      * @param playerID The unique identifier of the player using the structure
      */
     @Override
-    public boolean useStructure(int x, int y, String structureID, String useType, String playerID) {
-        return false;
+    public void useStructure(int x, int y, String structureID, String useType, String playerID) {
+
     }
 
     /**
@@ -111,8 +182,8 @@ public class GameLogic implements GameLogicInterface {
      * @param playerID The unique identifier of the player upgrading the statue
      */
     @Override
-    public boolean upgradeStatue(int x, int y, String statueID, String playerID) {
-        return false;
+    public void upgradeStatue(int x, int y, String statueID, String playerID) {
+
     }
 
     /**
@@ -127,8 +198,8 @@ public class GameLogic implements GameLogicInterface {
      * @param playerID The unique identifier of the player using the statue
      */
     @Override
-    public boolean useStatue(int x, int y, String statueID, String useType, String playerID) {
-        return false;
+    public void useStatue(int x, int y, String statueID, String useType, String playerID) {
+
     }
 
     /**
@@ -141,8 +212,8 @@ public class GameLogic implements GameLogicInterface {
      * @param artifactID The identifier of the artifact to use
      */
     @Override
-    public boolean useFieldArtifact(int x, int y, int artifactID, String useType) {
-        return false;
+    public void useFieldArtifact(int x, int y, int artifactID, String useType) {
+
     }
 
     /**
@@ -154,36 +225,16 @@ public class GameLogic implements GameLogicInterface {
      * @param playerID The unique identifier of the player who will be affected
      */
     @Override
-    public boolean usePlayerArtifact(int artifactID, String playerID, String useType) {
-        return false;
+    public void usePlayerArtifact(int artifactID, String playerID, String useType) {
+
     }
 
-    /**
-     * Returns a GameState Object which represents the current state of the game and has a toString Method
-     * @return the GameState
-     */
-    @Override
-    public GameState getGameState() {
-        return null;
-    }
-
-    /**
-     * Returns the current prices for all different buyAble objects (Structures, Statues, etc.)
-     * @return the Prices as a String
-     */
-    @Override
-    public String getPrices() {
-        return "";
-    }
-
-    public boolean buyStatue(String statueID, String playerID) {
+    public void buyStatue(String statueID, String playerID) {
         // Implementation for buying a statue
-        return false;
     }
 
-    public boolean buyStructure(String structureID, String playerID) {
+    public void buyStructure(String structureID, String playerID) {
         // Implementation for buying a structure
-        return false;
     }
 
 }

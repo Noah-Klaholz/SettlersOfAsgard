@@ -17,9 +17,6 @@ public class Player {
     private int energy;
     private List<Tile> ownedTiles;
     private List<Artefact> artifacts;
-    private List<Structure> ownedStructures;
-    private Shop shop; //saves Structures and Statue
-    private Statue statue;
 
     /**
      * Constructor for Player class
@@ -35,81 +32,7 @@ public class Player {
         energy = 0;
         ownedTiles = new ArrayList<>();
         artifacts = new ArrayList<>();
-        shop = new Shop();
-        ownedStructures = new ArrayList<>();
-        statue = null; //no statue at the beginning
     }
-
-    /**
-     * Getter for statue
-     *
-     * @return Statue
-     */
-    public Statue getStatue() {
-        return statue;
-    }
-
-    /**
-     * Setter for statue
-     *
-     * @param statue Statue
-     */
-    public void setStatue(Statue statue) {
-        this.statue = statue;
-    }
-
-    /**
-     * Getter for owned structures
-     *
-     * @return List<Structure>
-     */
-    public List<Structure> getOwnedStructures() {
-        return ownedStructures;
-    }
-
-    /**
-     * Setter for owned structures
-     *
-     * @param ownedStructures List<Structure>
-     */
-    public void setOwnedStructures(List<Structure> ownedStructures) {
-        this.ownedStructures = ownedStructures;
-    }
-
-    /**
-     * adds a structure to the player
-     */
-    public void addOwnedStructure(Structure structure) {
-        ownedStructures.add(structure);
-    }
-
-    /**
-     * removes a structure from the player
-     *
-     * @param structure Structure
-     */
-    public void removeOwnedStructure(Structure structure) {
-        ownedStructures.remove(structure);
-    }
-
-    /**
-     * Getter for shop
-     *
-     * @return Shop
-     */
-    public Shop getShop() {
-        return shop;
-    }
-
-    /**
-     * Setter for shop
-     *
-     * @param shop Shop
-     */
-    public void setShop(Shop shop) {
-        this.shop = shop;
-    }
-
 
     /**
      * Setter for artifacts
