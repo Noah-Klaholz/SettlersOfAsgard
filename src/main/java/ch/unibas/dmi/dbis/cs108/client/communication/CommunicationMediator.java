@@ -29,8 +29,19 @@ public class CommunicationMediator {
     // Subscribes to UI events and forwards them to the network layer.
     private void registerUIListeners() {
         UIEventBus.getInstance().subscribe(SendChatEvent.class, event -> {
-            // Forward a global chat message from the UI to the networking controller.
-            networkController.sendGlobalChat(event.getMessage());
+            switch (event.getType()) {
+                case GLOBAL:
+                    networkController.sendGlobalChat(event.getMessage());
+                    break;
+                case LOBBY:
+                    networkController.sendLobbyChat(event.getMessage());
+                    break;
+                case PRIVATE:
+                    networkController.sendPrivateChat(event.getRecipient(),event.getMessage());
+                    break;
+                default:
+                    System.err.println("Unknown chat type: " + event.getType());
+            }
         });
 
         // Subscribe to Command events
@@ -79,6 +90,10 @@ public class CommunicationMediator {
                 case GLOBALCHAT:
                     networkController.sendGlobalChat(input.replace("/global ", "")); // Handled differently, because spaces can be included in messages
                     break;
+                case WHISPER:
+                    if (args.length > 1) {
+                        networkController.sendPrivateChat(args[0], input.replace("/whisper " + args[0] + " ", ""));
+                    }
                 case HELP:
                     // TODO handle help command -> Maybe generalize this in a method in network controller
                     break;

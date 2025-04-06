@@ -29,6 +29,7 @@ public class SendCommandEvent {
         LISTALLPLAYERS("/listallplayers"),
         LISTLOBBYPLAYERS("/listlobbyplayers"),
         GLOBALCHAT("/global"),
+        WHISPER("/whisper"),
         HELP("/help"),
         BUYTILE("/buytile"),
         PLACESTRUCTURE("/placestructure"),
