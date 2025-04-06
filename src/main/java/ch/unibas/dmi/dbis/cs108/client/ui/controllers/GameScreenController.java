@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
+import ch.unibas.dmi.dbis.cs108.client.ui.events.ReceiveCommandEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.ChatMessageEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.SendCommandEvent;
@@ -81,6 +82,7 @@ public class GameScreenController extends BaseController {
     private void initializeChat() {
         chatListView.getItems().add("Welcome to Settlers of Asgard!");
         eventBus.subscribe(ChatMessageEvent.class, this::handleIncomingChatMessage);
+        eventBus.subscribe(ReceiveCommandEvent.class, this::handleIncomingCommandMessage);
 
         // Enhanced cell factory for proper text wrapping
         chatListView.setCellFactory(list -> new ListCell<String>() {
@@ -314,6 +316,23 @@ public class GameScreenController extends BaseController {
                 chatListView.scrollTo(chatListView.getItems().size() - 1);
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Error handling chat message", e);
+            }
+        });
+    }
+
+    private void handleIncomingCommandMessage(ReceiveCommandEvent event) {
+        Platform.runLater(() -> {
+            try {
+                String message = event.getMessage();
+                if (message == null || message.trim().isEmpty()) return;
+
+                //TODO handle command messages differently -> parse and display accordingly (switch case)
+                chatListView.getItems().add(message);
+
+                // Auto-scroll to bottom
+                chatListView.scrollTo(chatListView.getItems().size() - 1);
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Error handling command message", e);
             }
         });
     }
