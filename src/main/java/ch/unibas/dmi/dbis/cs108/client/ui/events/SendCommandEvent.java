@@ -26,6 +26,8 @@ public class SendCommandEvent {
         CREATELOBBY("/create"),
         STARTGAME("/start"),
         LISTLOBBIES("/listlobbies"),
+        LISTALLPLAYERS("/listallplayers"),
+        LISTLOBBYPLAYERS("/listlobbyplayers"),
         GLOBALCHAT("/global"),
         HELP("/help"),
         BUYTILE("/buytile"),

@@ -176,6 +176,10 @@ public class CommandLineInterface {
                 networkController.startGame();
             } else if (input.startsWith("/listlobbies")) {
                 networkController.listLobbies();
+            } else if (input.startsWith("/listallplayers")) {
+                networkController.listAllPlayers();
+            } else if (input.startsWith("/listlobbyplayers")) {
+                networkController.listLobbyPlayers();
             } else if (input.startsWith("@")) {
                 String[] parts = input.substring(1).split(" ", 2);
                 if (parts.length == 2) {

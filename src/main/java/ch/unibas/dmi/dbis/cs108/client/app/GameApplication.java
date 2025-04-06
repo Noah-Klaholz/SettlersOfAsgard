@@ -94,6 +94,7 @@ public class GameApplication extends Application {
         // Subscribe to Command events
         uiEventBus.subscribe(SendCommandEvent.class, event -> {
             String input = event.getMessage();
+            System.out.println(input);
             String[] args = input.replace(event.getType().getCommand(), "").trim().split(" ");
             switch (event.getType()) {
                 case EXIT:
@@ -126,6 +127,12 @@ public class GameApplication extends Application {
                     break;
                 case LISTLOBBIES:
                     networkController.listLobbies();
+                    break;
+                case LISTALLPLAYERS:
+                    networkController.listAllPlayers();
+                    break;
+                case LISTLOBBYPLAYERS:
+                    networkController.listLobbyPlayers();
                     break;
                 case GLOBALCHAT:
                     networkController.sendGlobalChat(input.replace("/global ", "")); // Handled differently, because spaces can be included in messages
