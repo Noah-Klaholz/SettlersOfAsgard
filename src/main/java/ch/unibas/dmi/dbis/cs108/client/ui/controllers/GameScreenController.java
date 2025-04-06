@@ -2,6 +2,7 @@ package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.ChatMessageEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.SendCommandEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.SendChatEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
@@ -321,13 +322,18 @@ public class GameScreenController extends BaseController {
      * Handle sending a chat message.
      */
     @FXML
-    private void handleChatSend() {
+    private void handleMessageSend() {
         try {
             String message = chatInputField.getText().trim();
             if (!message.isEmpty()) {
                 // Only publish the event to send through the network
                 // Don't add to UI here - wait for server echo
-                eventBus.publish(new SendChatEvent(message, SendChatEvent.ChatType.GLOBAL));
+                if (message.startsWith("/")) {
+                    eventBus.publish(new SendCommandEvent(message));
+                } else {
+                    eventBus.publish(new SendChatEvent(message, SendChatEvent.ChatType.GLOBAL));
+                }
+
 
                 // Add a visual indicator that message is being sent
                 // Optional: chatListView.getItems().add("Sending: " + message);

@@ -19,8 +19,8 @@
             <ListView fx:id="chatListView" VBox.vgrow="ALWAYS" styleClass="chat-list"/>
             <HBox spacing="5">
                 <TextField fx:id="chatInputField" promptText="Type a message..." HBox.hgrow="ALWAYS"
-                           onAction="#handleChatSend"/>
-                <Button text="Send" onAction="#handleChatSend"/>
+                           onAction="#handleMessageSend"/>
+                <Button text="Send" onAction="#handleMessageSend"/>
             </HBox>
         </VBox>
     </right>
