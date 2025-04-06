@@ -2,6 +2,7 @@ package ch.unibas.dmi.dbis.cs108.server.core.structures.protocol;
 
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic;
+import ch.unibas.dmi.dbis.cs108.server.core.State.GameState;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
@@ -310,7 +311,8 @@ public class CommandHandler {
      */
     public void handleGetGameStatus() {
         try {
-            // TODO: Implement game status retrieval logic
+            GameState gs = gameLogic.getGameState();
+            sendMessage("OK$GSTS$" + gs.toString());
         } catch (Exception e) {
             logger.severe("Failed to handle game status request: " + e.getMessage());
             sendMessage("ERR$106$GAME_STATUS_REQUEST_FAILED");
@@ -321,7 +323,12 @@ public class CommandHandler {
      * Handles request for price information
      */
     public void handleGetPrices() {
-        //TODO: Implement price retrieval logic
+        try {
+            sendMessage("OK$GPRC$" + gameLogic.getPrices());
+        } catch (Exception e) {
+            logger.severe("Failed to handle game status request: " + e.getMessage());
+            sendMessage("ERR$106$GAME_STATUS_REQUEST_FAILED");
+        }
     }
 
     /**
