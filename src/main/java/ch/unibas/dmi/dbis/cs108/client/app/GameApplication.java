@@ -94,7 +94,7 @@ public class GameApplication extends Application {
         // Subscribe to Command events
         uiEventBus.subscribe(SendCommandEvent.class, event -> {
             String input = event.getMessage();
-            System.out.println(input);
+            System.out.println("Command Event registered: " + input);
             String[] args = input.replace(event.getType().getCommand(), "").trim().split(" ");
             switch (event.getType()) {
                 case EXIT:

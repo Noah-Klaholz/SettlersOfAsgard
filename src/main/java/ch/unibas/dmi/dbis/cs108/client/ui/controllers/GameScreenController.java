@@ -326,9 +326,11 @@ public class GameScreenController extends BaseController {
         try {
             String message = chatInputField.getText().trim();
             if (!message.isEmpty()) {
+                System.out.println(message);
                 // Only publish the event to send through the network
                 // Don't add to UI here - wait for server echo
                 if (message.startsWith("/")) {
+                    System.out.println("Command: " + message);
                     eventBus.publish(new SendCommandEvent(message.toLowerCase()));
                 } else {
                     eventBus.publish(new SendChatEvent(message, SendChatEvent.ChatType.GLOBAL));
