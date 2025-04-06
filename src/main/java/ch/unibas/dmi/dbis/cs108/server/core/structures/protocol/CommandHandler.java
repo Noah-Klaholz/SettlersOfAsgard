@@ -19,6 +19,7 @@ public class CommandHandler {
     private GameLogic gameLogic;
     private Lobby currentLobby;
     private Player localPlayer;
+    private String playerName;
 
     /**
      * Constructor for the ClientHandler class.
@@ -26,6 +27,7 @@ public class CommandHandler {
     public CommandHandler(ClientHandler clientHandler) {
         this.ch = clientHandler;
         this.localPlayer = ch.getPlayer();
+        playerName = localPlayer.getName();
         this.currentLobby = ch.getCurrentLobby();
         this.server = ch.getServer();
     }
@@ -41,11 +43,13 @@ public class CommandHandler {
 
     private void setLocalPlayerName(String playerName) {
         this.localPlayer.setName(playerName);
+        this.playerName = playerName;
         ch.getPlayer().setName(playerName);
     }
 
     private void setLocalPlayer(Player player) {
         this.localPlayer = player;
+        this.playerName = player.getName();
         ch.setPlayer(player);
     }
 
@@ -342,7 +346,6 @@ public class CommandHandler {
                 sendMessage("ERR$101$INVALID_ARGUMENTS$BUY_TILE");
                 return;
             }
-            String playerName = localPlayer.getName();
             int x = Integer.parseInt(args[0]);
             int y = Integer.parseInt(args[1]);
             if(gameLogic.buyTile(x, y, playerName)) {
@@ -368,7 +371,6 @@ public class CommandHandler {
                 sendMessage("ERR$101$INVALID_ARGUMENTS$PLACE_STRUCTURE");
                 return;
             }
-            String playerName = localPlayer.getName();
             int x = Integer.parseInt(args[0]);
             int y = Integer.parseInt(args[1]);
             String structureId = args[2];
@@ -393,7 +395,6 @@ public class CommandHandler {
                 sendMessage("ERR$101$INVALID_ARGUMENTS$USE_STRUCTURE");
                 return;
             }
-            String playerName = localPlayer.getName();
             int x = Integer.parseInt(args[0]);
             int y = Integer.parseInt(args[1]);
             String structureId = args[2];
@@ -415,20 +416,19 @@ public class CommandHandler {
     public void handleBuyStatue(Command cmd) {
         try {
             String[] args = cmd.getArgs();
-            if (args.length < 3) {
-                sendMessage("ERR$101$INVALID_ARGUMENTS$UPGRADE_STATUE");
+            if (args.length != 1) {
+                sendMessage("ERR$101$INVALID_ARGUMENTS$BUY_STATUE");
                 return;
             }
-            String playerName = args[0];
-            int x = Integer.parseInt(args[1]);
-            int y = Integer.parseInt(args[2]);
-            // TODO: Implement upgrade statue logic
+            String statueId = args[0];
+            String playerName = localPlayer.getName();
+            gameLogic.buyStatue(statueId, playerName);
         } catch (NumberFormatException e) {
             logger.severe("Failed to parse coordinates: " + e.getMessage());
             sendMessage("ERR$101$INVALID_COORDINATES");
         } catch (Exception e) {
             logger.severe("Failed to handle upgrade statue request: " + e.getMessage());
-            sendMessage("ERR$106$UPGRADE_STATUE_FAILED");
+            sendMessage("ERR$106$BUY_STATUE_FAILED");
         }
     }
 
@@ -439,14 +439,14 @@ public class CommandHandler {
     public void handleUpgradeStatue(Command cmd) {
         try {
             String[] args = cmd.getArgs();
-            if (args.length < 3) {
+            if (args.length != 3) {
                 sendMessage("ERR$101$INVALID_ARGUMENTS$UPGRADE_STATUE");
                 return;
             }
-            String playerName = args[0];
-            int x = Integer.parseInt(args[1]);
-            int y = Integer.parseInt(args[2]);
-            // TODO: Implement upgrade statue logic
+            int x = Integer.parseInt(args[0]);
+            int y = Integer.parseInt(args[1]);
+            String statueId = args[2];
+            gameLogic.upgradeStatue(x,y,statueId, playerName);
         } catch (NumberFormatException e) {
             logger.severe("Failed to parse coordinates: " + e.getMessage());
             sendMessage("ERR$101$INVALID_COORDINATES");
