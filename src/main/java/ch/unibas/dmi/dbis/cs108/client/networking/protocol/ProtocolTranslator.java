@@ -120,11 +120,8 @@ public class ProtocolTranslator {
             // Ping response is handled in the NetworkController.
             return;
         } else if (message.startsWith("OK$CHAN$")) {
-            String rawResponse = message.substring("OK$CHAN$".length()).trim();
-            System.out.println("Raw name change response: '" + rawResponse + "'");
-
             // Extract just the new name - adjust parsing based on server format
-            String newName = rawResponse;
+            String newName = message.substring("OK$CHAN$".length()).trim();;
 
             // Dispatch the event with the correct name
             eventDispatcher.dispatchEvent(new NameChangeResponseEvent(true, newName, "Name changed successfully"));

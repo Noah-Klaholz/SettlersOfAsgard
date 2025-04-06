@@ -199,6 +199,7 @@ public class CommandHandler {
                 }
                 logger.info("Duplicate player registered: " + playerName);
                 setLocalPlayer(new Player(uniqueName));
+                sendMessage("OK$RGST$" + playerName);
                 sendMessage("ERR$106$PLAYER_ALREADY_EXISTS$" + uniqueName);
             }
         }
@@ -228,6 +229,8 @@ public class CommandHandler {
 
                 setLocalPlayerName(uniqueName);
                 sendMessage("ERR$106$PLAYER_ALREADY_EXISTS$" + uniqueName);
+                server.broadcast("OK$CHAN$" + localPlayer.getName() + "$" + uniqueName);
+
             }
         }
         return false;
