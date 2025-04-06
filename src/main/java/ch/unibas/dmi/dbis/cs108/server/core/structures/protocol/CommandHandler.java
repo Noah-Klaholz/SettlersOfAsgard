@@ -421,7 +421,6 @@ public class CommandHandler {
                 return;
             }
             String statueId = args[0];
-            String playerName = localPlayer.getName();
             gameLogic.buyStatue(statueId, playerName);
         } catch (NumberFormatException e) {
             logger.severe("Failed to parse coordinates: " + e.getMessage());
@@ -463,14 +462,15 @@ public class CommandHandler {
     public void handleUseStatue(Command cmd) {
         try {
             String[] args = cmd.getArgs();
-            if (args.length < 3) {
+            if (args.length != 4) {
                 sendMessage("ERR$101$INVALID_ARGUMENTS$USE_STATUE");
                 return;
             }
-            String playerName = args[0];
-            int x = Integer.parseInt(args[1]);
-            int y = Integer.parseInt(args[2]);
-            // TODO: Implement use statue logic
+            int x = Integer.parseInt(args[0]);
+            int y = Integer.parseInt(args[1]);
+            String statueId = args[2];
+            String useType = args[3];
+            gameLogic.useStatue(x,y,statueId, useType, playerName);
         } catch (NumberFormatException e) {
             logger.severe("Failed to parse coordinates: " + e.getMessage());
             sendMessage("ERR$101$INVALID_COORDINATES");
