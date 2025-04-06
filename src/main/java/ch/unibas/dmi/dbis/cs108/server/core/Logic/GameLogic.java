@@ -65,7 +65,7 @@ public class GameLogic implements GameLogicInterface {
      * @param playerID The unique identifier of the player attempting to buy the tile
      */
     @Override
-    public void buyTile(int x, int y, String playerID) {
+    public boolean buyTile(int x, int y, String playerID) {
 
     }
 

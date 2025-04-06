@@ -338,14 +338,16 @@ public class CommandHandler {
     public void handleBuyTile(Command cmd) {
         try {
             String[] args = cmd.getArgs();
-            if (args.length < 3) {
+            if (args.length != 2) {
                 sendMessage("ERR$101$INVALID_ARGUMENTS$BUY_TILE");
                 return;
             }
-            String playerName = args[0];
-            int x = Integer.parseInt(args[1]);
-            int y = Integer.parseInt(args[2]);
-            // TODO: Implement buy tile logic
+            String playerName = localPlayer.getName();
+            int x = Integer.parseInt(args[0]);
+            int y = Integer.parseInt(args[1]);
+            if(gameLogic.buyTile(x, y, playerName)) {
+                sendMessage("OK$BUYT$" + x + "$" + y);
+            }
         } catch (NumberFormatException e) {
             logger.severe("Failed to parse coordinates: " + e.getMessage());
             sendMessage("ERR$101$INVALID_COORDINATES");
@@ -362,14 +364,15 @@ public class CommandHandler {
     public void handlePlaceStructure(Command cmd) {
         try {
             String[] args = cmd.getArgs();
-            if (args.length < 3) {
+            if (args.length != 3) {
                 sendMessage("ERR$101$INVALID_ARGUMENTS$PLACE_STRUCTURE");
                 return;
             }
-            String playerName = args[0];
-            int x = Integer.parseInt(args[1]);
-            int y = Integer.parseInt(args[2]);
-            // TODO: Implement place structure logic
+            String playerName = localPlayer.getName();
+            int x = Integer.parseInt(args[0]);
+            int y = Integer.parseInt(args[1]);
+            String structureId = args[2];
+            gameLogic.placeStructure(x,y,structureId, playerName);
         } catch (NumberFormatException e) {
             logger.severe("Failed to parse coordinates: " + e.getMessage());
             sendMessage("ERR$101$INVALID_COORDINATES");
