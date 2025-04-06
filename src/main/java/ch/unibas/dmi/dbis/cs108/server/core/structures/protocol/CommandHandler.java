@@ -97,6 +97,7 @@ public class CommandHandler {
         int maxPlayers = 4; //currently, maxPlayers is set to 4
         Lobby lobby = server.createLobby(lobbyId, maxPlayers);
         if (lobby != null && lobby.addPlayer(ch)) {
+            logger.info("Returned true");
             joinLobby(lobby);
             return true;
         } else {

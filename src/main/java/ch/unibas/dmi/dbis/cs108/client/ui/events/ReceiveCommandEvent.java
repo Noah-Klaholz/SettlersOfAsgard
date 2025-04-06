@@ -13,7 +13,7 @@ public class ReceiveCommandEvent {
     // Commands have OK added in front of them, but this is removed upon event creation
     public ReceiveCommandEvent(String message) {
         this.message = message.replaceAll("OK\\$", "").trim().toLowerCase();
-        this.commandType = Commands.fromCommand(message.split("\\$")[0]);
+        this.commandType = Commands.fromCommand(message.split("\\$")[0].toUpperCase());
     }
 
     public String getMessage() {

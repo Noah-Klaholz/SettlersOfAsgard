@@ -324,6 +324,7 @@ public class GameScreenController extends BaseController {
         Platform.runLater(() -> {
             try {
                 String message = event.getMessage();
+                System.out.println("Received from server " + message);
                 if (message == null || message.trim().isEmpty()) return;
 
                 //TODO handle command messages differently -> parse and display accordingly (switch case)
