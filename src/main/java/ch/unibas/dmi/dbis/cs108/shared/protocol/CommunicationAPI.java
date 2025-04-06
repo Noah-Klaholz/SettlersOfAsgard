@@ -38,40 +38,50 @@ public interface CommunicationAPI {
          * Enum for network protocol constants (Command names)
          */
         public enum Commands {
-            // administrative commands
-            TEST("TEST"), // Test command
-            SHUTDOWN("STDN"), // Shutdown command broadcast by server to disconnect all clients
-            JOIN("JOIN"), // Player joins a game
-            EXIT("EXIT"), // Player exits a game
-            CHATGLOBAL("CHTG"), // Send a message to all players
-            CHATLOBBY("CHTL"), // Send a message to all players in the lobby
+            // Test and system commands
+            TEST("TEST"),        // Test command
+            SHUTDOWN("STDN"),    // Shutdown command broadcast by server to disconnect all clients
+            PING("PING"),        // Ping command to check connection
+
+            // Player management commands
+            REGISTER("RGST"),    // Register a new player
+            CHANGENAME("CHAN"),  // Player changes their nickname
+            EXIT("EXIT"),        // Player exits the game/disconnects
+
+            // Lobby management commands
+            CREATELOBBY("CREA"), // Creates a new lobby
+            JOIN("JOIN"),        // Player joins a game/lobby
+            LEAVE("LEAV"),       // Leave current lobby
+            LISTLOBBIES("LIST"), // List all current lobbies
+            LISTPLAYERS("LSTP"), // List all players in lobby/server (arg: LOBBY/SERVER)
+            START("STRT"),       // Start the game
+
+            // Chat commands
+            CHATGLOBAL("CHTG"),  // Send a message to all players on server
+            CHATLOBBY("CHTL"),   // Send a message to all players in the lobby
             CHATPRIVATE("CHTP"), // Send a whisper message to only one player
-            CREATELOBBY("CREA"), // Creates a new Lobby
-            LISTLOBBIES("LIST"), // List all current Lobbies
-            LISTPLAYERS("LSTP"), // List all players in the lobby/server depending on argument (LOBBY/SERVER)
-            START("STRT"), // Start the game
-            STATS("STAT"), // Request game state
+
+            // Game flow commands
+            STARTTURN("TURN"),   // Starts a player's turn
+            ENDTURN("ENDT"),     // Ends a player's turn
             SYNCHRONIZE("SYNC"), // Request synchronization of the game
-            CHANGENAME("CHAN"), // Players changes his nickname
-            REGISTER("RGST"), // Register a new player
-            LEAVE("LEAV"), // Leave current lobby
-            // game mechanics
-            STARTTURN("TURN"), // starts turn
-            ENDTURN("ENDT"), // ends turn
-            BUYHEXFIELD("BUYH"), // player buys a hexfield
-            BUILDSTRUCTURE("BILD"), // player builds a structure
-            UPGRADESTRUCTURE("UPGD"), // player upgrades a structure
-            TRADERESOURCES("TRAD"), // player offers a trade of resources to another player
-            RESOURCEBALANCE("BLNC"), // request the current resource balance of a player
-            STARTRITUAL("RITU"), // player starts a ritual
-            BLESSING("BLES"), // player gets blessed
-            CURSE("CURS"), // player gets cursed
-            USEARTIFACT("ARTF"), // player uses an artifact
-            FINDARTIFACT("FIND"), // player finds an artifact
-            // exception handling
-            OK("OK"), // OK response
-            ERROR("ERR"), // Error response
-            PING("PING"); // Ping command
+            GETGAMESTATUS("GSTS"), // Get detailed game status
+            GETPRICES("GPRC"),   // Get in-game prices for actions/items
+
+            // Game action commands
+            BUYTILE("BUYT"),     // Player buys a tile at coordinates
+            BUYSTATUE("BYST"),   // Player buys a statue at coordinates
+            BUYSTRUCTURE("BUST"), // Player buys a Structure with structure ID
+            PLACESTRUCTURE("PLST"), // Player places a structure at coordinates
+            USESTRUCTURE("USSR"), // Player uses a structure at coordinates
+            UPGRADESTATUE("UPST"), // Player upgrades a statue at coordinates
+            USESTATUE("USTA"),   // Player uses a statue at coordinates
+            USEPLAYERARTIFACT("USPA"), // Player uses an artifact
+            USEFIELDARTIFACT("USFA"), // Player uses a field artifact
+
+            // Response codes
+            OK("OK"),           // OK response
+            ERROR("ERR");       // Error response
 
             private final String command;
 

@@ -241,13 +241,12 @@ public class GameServer {
 
     public String listPlayers() {
         if (clients.isEmpty()) {
-            return "Players: No available players";
+            return "No available players";
         }
 
-        String playerList = clients.stream()
+        return clients.stream()
                 .map(ClientHandler::getPlayerName)
                 .collect(Collectors.joining(", "));
 
-        return "Players: " + playerList;
     }
 }

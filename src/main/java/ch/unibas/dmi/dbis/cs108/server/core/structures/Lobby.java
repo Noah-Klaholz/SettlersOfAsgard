@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.server.core.structures;
 
+import ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 
 import java.util.List;
@@ -37,6 +38,8 @@ public class Lobby {
      */
     private LobbyStatus status;
 
+    private GameLogic gameLogic;
+
     /**
      * Constructs a new Lobby.
      *
@@ -68,6 +71,18 @@ public class Lobby {
         return players;
     }
 
+    /**
+     * Gets the current gameLogic
+     * Returns null if game is not yet started
+     * @return
+     */
+    public GameLogic getGameLogic() {
+        if(status != LobbyStatus.IN_GAME) {
+            logger.warning("Not yet in game, cannot return gameLogic from current Lobby.");
+            return null;
+        }
+        return this.gameLogic;
+    }
     /**
      * Adds a player to the lobby if two requirements are met:
      * 1. There are at most maxPlayers-1 players already in the lobby.
@@ -173,12 +188,16 @@ public class Lobby {
         logger.info("Game started in lobby " + id);
 
         // Notify all players that the game has started
+        broadcastMessage("Game started in lobby " + id);
         for (ClientHandler player : players) {
-            player.sendMessage("GAME_STARTED:");
+            player.startGame();
         }
 
         // Additional game initialization logic can go here
+        this.gameLogic = new GameLogic();
+
         // start game here
+        gameLogic.startGame();
 
         return true;
     }
@@ -208,14 +227,12 @@ public class Lobby {
 
     public String listPlayers() {
         if (players.isEmpty()) {
-            return "Players: No available players";
+            return "No available players";
         }
 
-        String playerList = players.stream()
+        return players.stream()
                 .map(ClientHandler::getPlayerName)
                 .collect(Collectors.joining(", "));
-
-        return "Players: " + playerList;
     }
 
     public enum LobbyStatus {

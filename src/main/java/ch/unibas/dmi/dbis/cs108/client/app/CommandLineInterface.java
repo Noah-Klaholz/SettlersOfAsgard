@@ -48,7 +48,9 @@ public class CommandLineInterface {
             logger.info("Connected. Type /help to view available commands");
 
             // Process user input
-            processInput();
+            while (running.get()) {
+                processInput(scanner.nextLine().trim().toLowerCase());
+            }
 
             receiverThread.join(1000);
         } catch (Exception e) {
@@ -152,14 +154,10 @@ public class CommandLineInterface {
     /**
      * Process user input
      */
-    private void processInput() {
-        while (running.get()) {
-            String input = scanner.nextLine().trim().toLowerCase();
+    private void processInput(String input) {
             input = input.replaceAll("[$]", "").trim();
-
             if (input.equals("/exit")) {
                 running.set(false);
-                break;
             } else if (input.startsWith("/changename ")) {
                 String newName = input.replace("/changename ", "").trim();
                 networkController.changeName(newName);
@@ -178,6 +176,10 @@ public class CommandLineInterface {
                 networkController.startGame();
             } else if (input.startsWith("/listlobbies")) {
                 networkController.listLobbies();
+            } else if (input.startsWith("/listallplayers")) {
+                networkController.listAllPlayers();
+            } else if (input.startsWith("/listlobbyplayers")) {
+                networkController.listLobbyPlayers();
             } else if (input.startsWith("@")) {
                 String[] parts = input.substring(1).split(" ", 2);
                 if (parts.length == 2) {
@@ -192,10 +194,64 @@ public class CommandLineInterface {
                 logger.info("Available commands: /changeName <name>, /ping, /exit, /join <lobbyId>, /leave, /create <lobbyName>, " +
                         "/start, /listLobbies, /help. Use @<playerName> <message> to whisper and /global <message> for global chat. " +
                         "Typing any non-command sends a lobby chat message if you're in a lobby, or global chat if not.");
+            } else if (input.startsWith("/end ")) {
+                networkController.endTurn();
+            } else if (input.startsWith("/buytile")) {
+                String[] coords = input.replace("/buytile ", "").trim().split(" ");
+                if (coords.length == 2) {
+                    networkController.buyTile(Integer.parseInt(coords[0]), Integer.parseInt(coords[1]));
+                } else {
+                    messageQueue.add("Usage: /buytile <x> <y>");
+                }
+            } else if (input.startsWith("/placestructure")) {
+                String[] args = input.replace("/placestructure ", "").trim().split(" ");
+                if (args.length == 3) {
+                    networkController.placeStructure(Integer.parseInt(args[0]), Integer.parseInt(args[1]), args[2]);
+                } else {
+                    messageQueue.add("Usage: /placestructure <x> <y> <structureId>");
+                }
+            } else if (input.startsWith("/usestructure")) {
+                String[] args = input.replace("/usestructure ", "").trim().split(" ");
+                if (args.length == 3) {
+                    networkController.placeStructure(Integer.parseInt(args[0]), Integer.parseInt(args[1]), args[2]);
+                } else {
+                    messageQueue.add("Usage: /usestructure <x> <y> <structureId>");
+                }
+            } else if (input.startsWith("/upgradestatue")) {
+                String[] args = input.replace("/upgradestatue ", "").trim().split(" ");
+                if (args.length == 3) {
+                    networkController.upgradeStatue(Integer.parseInt(args[0]), Integer.parseInt(args[1]), args[2]);
+                } else {
+                    messageQueue.add("Usage: /upgradestatue <x> <y> <statueId>");
+                }
+            } else if (input.startsWith("/usestatue")) {
+                String[] args = input.replace("/usestatue ", "").trim().split(" ");
+                if (args.length == 4) {
+                    networkController.useStatue(Integer.parseInt(args[0]), Integer.parseInt(args[1]), args[2], args[3]);
+                } else {
+                    messageQueue.add("Usage: /usestatue <x> <y> <statueId> <useType>");
+                }
+            } else if (input.startsWith("/usefieldartifact")) {
+                String[] args = input.replace("/usefieldartifact ", "").trim().split(" ");
+                if (args.length == 4) {
+                    networkController.useStatue(Integer.parseInt(args[0]), Integer.parseInt(args[1]), args[2], args[3]);
+                } else {
+                    messageQueue.add("Usage: /usefieldartifact <x> <y> <artifactId> <useType>");
+                }
+            } else if (input.startsWith("/useplayerartifact")) {
+                String[] args = input.replace("/useplayerartifact ", "").trim().split(" ");
+                if (args.length == 4) {
+                    networkController.useStatue(Integer.parseInt(args[0]), Integer.parseInt(args[1]), args[2], args[3]);
+                } else {
+                    messageQueue.add("Usage: /useplayerartifact <x> <y> <artifactId> <useType>");
+                }
+            } else if (input.startsWith("/status")) { // Should return the current gameState (turn, round, available runes, etc.)
+                networkController.getGameState();
+            } else if (input.startsWith("/prices")) { // Should return prices for available actions
+                networkController.getPrices();
             } else {
                 networkController.sendLobbyChat(input);
             }
-        }
     }
 
     /**

@@ -1,0 +1,29 @@
+package ch.unibas.dmi.dbis.cs108.client.core.events;
+
+import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
+import ch.unibas.dmi.dbis.cs108.client.core.entities.Tile;
+import ch.unibas.dmi.dbis.cs108.client.core.entities.Statue;
+
+public class StatuePurchasedEvent implements GameEvent {
+    private final Player player;
+    private final Tile tile;
+    private final Statue statue;
+
+    public StatuePurchasedEvent(Player player, Tile tile, Statue statue) {
+        this.player = player;
+        this.tile = tile;
+        this.statue = statue;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public Tile getTile() {
+        return tile;
+    }
+
+    public Statue getStatue() {
+        return statue;
+    }
+}

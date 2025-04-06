@@ -201,4 +201,69 @@ public class NetworkController {
                     return null;
                 });
     }
+
+    public void listLobbyPlayers() {
+        String message = translator.formatListLobbyPlayers();
+        networkClient.send(message);
+    }
+
+    public void listAllPlayers() {
+        String message = translator.formatListAllPlayers();
+        networkClient.send(message);
+    }
+
+    public void endTurn() {
+        String message = translator.formatEndTurn();
+        networkClient.send(message);
+    }
+
+    public void buyTile(int x, int y) {
+        String message = translator.formatBuyTile(x, y);
+        networkClient.send(message);
+    }
+
+    public void buyStatue(String statueID) {
+        String message = translator.formatBuyStatue(statueID);
+        networkClient.send(message);
+    }
+
+    public void upgradeStatue(int x, int y, String statueID) {
+        String message = translator.formatUpgradeStatue(x, y, statueID);
+        networkClient.send(message);
+    }
+
+    public void useStatue(int x, int y, String statueID, String useType) {
+        String message = translator.formatUseStatue(x, y, statueID, useType);
+        networkClient.send(message);
+    }
+
+    public void placeStructure(int x, int y, String structureID) {
+        String message = translator.formatPlaceStructure(x, y, structureID);
+        networkClient.send(message);
+    }
+
+    public void useStructure(int x, int y, String structureID, String useType) {
+        String message = translator.formatUseStructure(x, y, structureID, useType);
+        networkClient.send(message);
+    }
+
+    public void usePlayerArtifact(int artifactID, String useType) {
+        String message = translator.formatUsePlayerArtifact(artifactID, useType);
+        networkClient.send(message);
+    }
+
+    public void useFieldArtifact(int x, int y, int artifactID, String useType) {
+        String message = translator.formatUseFieldArtifact(x, y, artifactID, useType);
+        networkClient.send(message);
+    }
+
+    public void getPrices() {
+        String message = translator.formatGetPrices();
+        networkClient.send(message);
+    }
+
+    public void getGameState() {
+        String message = translator.formatGetGameStatus();
+        networkClient.send(message);
+    }
 }

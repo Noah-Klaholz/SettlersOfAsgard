@@ -60,9 +60,9 @@ public class ProtocolTranslator {
     }
 
     private void processPrivateChatMessage(String message) {
-        String[] parts = message.split("\\$", 4);
-        if (parts.length >= 4) {
-            ChatMessageEvent event = new ChatMessageEvent(parts[1], parts[3], ChatMessageEvent.ChatType.PRIVATE);
+        String[] parts = message.split("\\$", 3);
+        if (parts.length >= 3) {
+            ChatMessageEvent event = new ChatMessageEvent(parts[1], parts[2], ChatMessageEvent.ChatType.PRIVATE);
             eventDispatcher.dispatchEvent(event);
         }
     }
@@ -100,8 +100,14 @@ public class ProtocolTranslator {
             errorCode = "UNKNOWN";
             errorMessage = errorPart;
         }
-        ErrorEvent event = new ErrorEvent(errorCode, errorMessage, ErrorEvent.ErrorSeverity.ERROR);
-        eventDispatcher.dispatchEvent(event);
+
+        // Add name change error handling
+        if (errorCode.equals("CHAN")) {
+            eventDispatcher.dispatchEvent(new NameChangeResponseEvent(false, null, errorMessage));
+        } else {
+            ErrorEvent event = new ErrorEvent(errorCode, errorMessage, ErrorEvent.ErrorSeverity.ERROR);
+            eventDispatcher.dispatchEvent(event);
+        }
     }
 
     private void processLobbyListMessage(String message) {
@@ -113,10 +119,19 @@ public class ProtocolTranslator {
         if (message.startsWith("OK$PING$")) {
             // Ping response is handled in the NetworkController.
             return;
-        }
-        if (message.startsWith("OK$CHAN$")) {
-            String newName = message.substring("OK$CHAN$".length()).trim();
-            eventDispatcher.dispatchEvent(new NameChangedEvent(newName));
+        } else if (message.startsWith("OK$CHAN$")) {
+            // Extract just the new name - adjust parsing based on server format
+            String[] args = message.replace("OK$CHAN$", "").trim().split("\\$");
+            String newName = args[1].trim();
+            // Dispatch the event with the correct name
+            eventDispatcher.dispatchEvent(new NameChangeResponseEvent(true, newName, "Name changed successfully"));
+            eventDispatcher.dispatchEvent(new ReceiveCommandEvent(message));
+        } else if (message.startsWith("OK$RGST$")) {
+            String[] args = message.replace("OK$RGST$", "").trim().split("\\$");
+            String newName = args[0].trim();
+            eventDispatcher.dispatchEvent(new NameChangeResponseEvent(true, newName, "Name changed successfully"));
+        } else if(message.startsWith("OK$")) {
+            eventDispatcher.dispatchEvent(new ReceiveCommandEvent(message));
         }
     }
 
@@ -178,4 +193,59 @@ public class ProtocolTranslator {
     public String formatChangeName(String newName) {
         return "CHAN$" + newName;
     }
+
+    public String formatListLobbyPlayers() {
+        return "LSTP$LOBBY$";
+    }
+
+    public String formatListAllPlayers() {
+        return "LSTP$SERVER";
+    }
+
+    public String formatEndTurn() {
+        return "ENDT$";
+    }
+
+    public String formatBuyTile(int x, int y) {
+        return "BUYT$" + x + "$" + y;
+    }
+
+    public String formatPlaceStructure(int x, int y, String structureID) {
+        return "PLST$" + x + "$" + y + "$" + structureID;
+    }
+
+    public String formatUseStructure(int x, int y, String structureID, String useType) {
+        return "USSR$" + x + "$" + y + "$" + structureID + "$" + useType;
+    }
+
+    public String formatBuyStatue(String statueID) {
+        return "BYST$" + statueID;
+    }
+
+    public String formatUpgradeStatue(int x, int y, String statueID) {
+        return "UPST$" + x + "$" + y + "$" + statueID;
+    }
+
+    public String formatUseStatue(int x, int y, String statueID, String useType) {
+        return "USTA$" + x + "$" + y + "$" + statueID + "$" + useType;
+    }
+
+    public String formatUsePlayerArtifact(int artifactId, String useType) {
+        return "USPA$" + artifactId + "$" + useType;
+    }
+
+    public String formatUseFieldArtifact(int x, int y, int artifactId, String useType) {
+        return "USFA$" + artifactId + "$" + useType;
+    }
+
+    // Temporäre Methode für terminal feedback zum GameState
+    public String formatGetGameStatus() {
+        return "GSTS$";
+    }
+
+    // Temporäre Methode für terminal feedback zu den Preisen der Karten
+    public String formatGetPrices() {
+        return "GPRC$";
+    }
+
 }

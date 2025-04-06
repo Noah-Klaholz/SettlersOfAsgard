@@ -1,9 +1,9 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
+import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol.*;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.ReceiveCommandEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.ChatMessageEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.SendChatEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -16,6 +16,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -65,6 +66,9 @@ public class GameScreenController extends BaseController {
             initializeGameCanvas();
             initializeCardHands();
 
+            // Subscribe to the NameChangeResponseEvent
+            eventBus.subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeResponseEvent.class, this::handleNameChangeResponse);
+
             isInitialized = true;
             LOGGER.info("Game screen controller initialized successfully");
         } catch (Exception e) {
@@ -80,6 +84,7 @@ public class GameScreenController extends BaseController {
     private void initializeChat() {
         chatListView.getItems().add("Welcome to Settlers of Asgard!");
         eventBus.subscribe(ChatMessageEvent.class, this::handleIncomingChatMessage);
+        eventBus.subscribe(ReceiveCommandEvent.class, this::handleIncomingCommandMessage);
 
         // Enhanced cell factory for proper text wrapping
         chatListView.setCellFactory(list -> new ListCell<String>() {
@@ -307,7 +312,9 @@ public class GameScreenController extends BaseController {
                 String message = event.getMessage();
                 if (message == null || message.trim().isEmpty()) return;
 
-                chatListView.getItems().add(message);
+                String chat = "[" + event.getType() + "] " + message;
+
+                chatListView.getItems().add(chat);
 
                 // Auto-scroll to bottom
                 chatListView.scrollTo(chatListView.getItems().size() - 1);
@@ -317,17 +324,98 @@ public class GameScreenController extends BaseController {
         });
     }
 
+    private void handleIncomingCommandMessage(ReceiveCommandEvent event) {
+        Platform.runLater(() -> {
+            try {
+                String message = event.getMessage();
+                System.out.println("Received from server " + message);
+                if (message == null || message.trim().isEmpty()) return;
+
+                Commands type = event.getType();
+                String[] args = message.replaceAll("OK\\$", "").trim().split("\\$");
+                System.out.println(Arrays.toString(args));
+
+                switch (type) {
+                    case LISTPLAYERS:
+                        if(args.length > 1) {
+                            if (args[1].equals("LOBBY")) {
+                                message = "Players in lobby: " + args[2];
+                            } else if (args[1].equals("SERVER")) {
+                                message = "Players in server: " + args[2];
+                            }
+                            chatListView.getItems().add(message);
+                        }
+                        break;
+                    case LISTLOBBIES:
+                        if (args.length > 1) {
+                            message = "Lobbies: \n" + args[1];
+                            chatListView.getItems().add(message);
+                        }
+                        break;
+                    case CREATELOBBY:
+                        message = "Created lobby: " + args[2];
+                        chatListView.getItems().add(message);
+                    case JOIN:
+                        if (args.length > 1) {
+                            message = "You joined lobby: " + args[1];
+                            chatListView.getItems().add(message);
+                        }
+                        break;
+                    case LEAVE:
+                        if (args.length > 1) {
+                            message = "You left lobby: " + args[1];
+                            chatListView.getItems().add(message);
+                        }
+                        break;
+                    case START:
+                        chatListView.getItems().add("Game started!");
+                        break;
+                    case CHANGENAME:
+                        if (args.length > 1) {
+                            message = args[1] + " changed their name to: " + args[2];
+                            chatListView.getItems().add(message);
+                        }
+                        break;
+                    case GETGAMESTATUS:
+                        if (args.length > 1) {
+                            chatListView.getItems().add("Game status: " + args[2]);
+                        }
+                        break;
+                    case GETPRICES:
+                        if (args.length > 1) {
+                            chatListView.getItems().add("Prices: " + args[2]);
+                        }
+                        break;
+                    default:
+                        chatListView.getItems().add(message);
+                        LOGGER.warning("GameScreen Controller: Unknown command type: " + type);
+                }
+
+                // Auto-scroll to bottom
+                chatListView.scrollTo(chatListView.getItems().size() - 1);
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Error handling command message", e);
+            }
+        });
+    }
+
     /**
      * Handle sending a chat message.
      */
     @FXML
-    private void handleChatSend() {
+    private void handleMessageSend() {
         try {
             String message = chatInputField.getText().trim();
             if (!message.isEmpty()) {
+                System.out.println(message);
                 // Only publish the event to send through the network
                 // Don't add to UI here - wait for server echo
-                eventBus.publish(new SendChatEvent(message, SendChatEvent.ChatType.GLOBAL));
+                if (message.startsWith("/")) {
+                    System.out.println("Command: " + message);
+                    eventBus.publish(new SendCommandEvent(message.toLowerCase()));
+                } else {
+                    eventBus.publish(new SendChatEvent(message, SendChatEvent.ChatType.GLOBAL));
+                }
 
                 // Add a visual indicator that message is being sent
                 // Optional: chatListView.getItems().add("Sending: " + message);
@@ -368,6 +456,23 @@ public class GameScreenController extends BaseController {
         // Future implementation: Other game action
     }
 
+    private void handleNameChangeResponse(ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeResponseEvent event) {
+        Platform.runLater(() -> {
+            try {
+                if (event.isSuccess()) {
+                    chatListView.getItems().add("Name successfully changed to: " + event.getNewName());
+                } else {
+                    chatListView.getItems().add("Failed to change name: " + event.getMessage());
+                }
+
+                // Auto-scroll chat to bottom
+                chatListView.scrollTo(chatListView.getItems().size() - 1);
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Error handling name change response", e);
+            }
+        });
+    }
+
     /**
      * Clean up resources when controller is no longer needed.
      */
@@ -375,6 +480,8 @@ public class GameScreenController extends BaseController {
         // Unsubscribe from events to prevent memory leaks
         if (eventBus != null) {
             eventBus.unsubscribe(ChatMessageEvent.class, this::handleIncomingChatMessage);
+            eventBus.unsubscribe(ReceiveCommandEvent.class, this::handleIncomingCommandMessage);
+            eventBus.unsubscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeResponseEvent.class, this::handleNameChangeResponse);
         }
 
         // Release resources
