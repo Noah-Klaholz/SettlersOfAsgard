@@ -17,9 +17,8 @@ public class GameLogic implements GameLogicInterface {
 
     private GameState gameState;
 
-    public GameLogic() {
-        // Initialize game state
-        this.gameState = new GameState();
+    public GameLogic(String[] players) {
+        startGame(players);
     }
 
     /**
@@ -29,7 +28,6 @@ public class GameLogic implements GameLogicInterface {
      */
     @Override
     public void startGame(String[] players) {
-        gameState.setPlayers(players);
         gameState = new GameState();
         gameState.setPlayers(players);
     }
@@ -72,8 +70,44 @@ public class GameLogic implements GameLogicInterface {
      *
      * @param playerID The unique identifier of the player whose turn is starting
      */
-    @Override
-    public void startTurn(String playerID) {
+    /**
+     * Advances to the next player's turn automatically.
+     * Handles all turn initialization and round progression.
+     */
+    public void nextTurn() {
+        // If first turn of game, initialize
+        if (gameState.getPlayerTurn() == null) {
+            initializeFirstTurn();
+            return;
+        }
+
+        int nextPosition = (gameState.getPlayerRound() + 1) % gameState.getPlayerList().size();
+        boolean newRound = nextPosition == 0;
+
+        if (newRound) {
+            gameState.setGameRound(gameState.getGameRound() + 1);
+
+            // Check for game end condition (after 5 rounds)
+            if (gameState.getGameRound() > 5) {
+                endGame();
+                return;
+            }
+        }
+
+        gameState.setPlayerRound(nextPosition);
+        Player nextPlayer = gameState.getPlayerList().get(nextPosition);
+        gameState.setPlayerTurn(nextPlayer.getName());
+
+    }
+
+    private void initializeFirstTurn() {
+        List<Player> players = gameState.getPlayerList();
+
+        gameState.setGameRound(1);
+        gameState.setPlayerRound(0);
+        Player firstPlayer = gameState.getPlayerList().get(0);
+        gameState.setPlayerTurn(firstPlayer.getName());
+        gameState.addRunes(1, firstPlayer.getName());
 
     }
 
@@ -82,11 +116,14 @@ public class GameLogic implements GameLogicInterface {
      * This method finalizes any pending actions, applies end-of-turn effects,
      * and transitions to the next player's turn.
      *
-     * @param playerID The unique identifier of the player whose turn is ending
      */
     @Override
-    public void endTurn(String playerID) {
+    public void endTurn() {
+        if (gameState.getPlayerTurn() == null) {
+            throw new IllegalStateException("No active turn to end");
+        }
 
+        nextTurn(); // Advance to next player
     }
 
     /**

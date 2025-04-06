@@ -12,8 +12,8 @@ import java.util.List;
 public interface GameLogicInterface {
     public void startGame(String[] players); // Starts the game
     public void endGame(); // Ends the game
-    public void startTurn(String playerID); // Starts the turn of a player
-    public void endTurn(String playerID); // Ends the turn of a player
+    public void nextTurn(); // Starts the next turn
+    public void endTurn(); // Ends the turn of a player
     public void buyTile(int x, int y, String playerID); // Buys a tile
     public void buyStatue(String statueID, String playerID); // Buys a statue
     public void buyStructure(String structureID, String playerID); // Buys a structure

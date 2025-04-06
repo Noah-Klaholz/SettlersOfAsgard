@@ -66,6 +66,22 @@ public class GameState {
     }
 
     /**
+     * Gets the current player round.
+     *
+     * @return The current player round as an int (0 means no player set)
+     */
+    public int getPlayerRound() {
+        return playerRound;
+    }
+
+    /**
+     * Sets the current playerRound
+     *
+     * @param playerRound the player to set
+     */
+    public void setPlayerRound(int playerRound) {}
+
+    /**
      * Gets the current game round.
      *
      * @return The current game round as an int (0 means no round set)
