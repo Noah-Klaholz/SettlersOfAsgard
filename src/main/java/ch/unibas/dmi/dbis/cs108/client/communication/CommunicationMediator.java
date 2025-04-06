@@ -147,7 +147,7 @@ public class CommunicationMediator {
                 // Transform the networking chat event into a UI chat event.
                 ch.unibas.dmi.dbis.cs108.client.ui.events.ChatMessageEvent uiEvent =
                         new ch.unibas.dmi.dbis.cs108.client.ui.events.ChatMessageEvent(
-                                networkEvent.getSender() + ": " + networkEvent.getContent()
+                                networkEvent.getSender() + ": " + networkEvent.getContent(), networkEvent.getType()
                         );
                 UIEventBus.getInstance().publish(uiEvent);
             }

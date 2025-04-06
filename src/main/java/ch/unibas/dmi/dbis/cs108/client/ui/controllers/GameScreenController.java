@@ -312,7 +312,9 @@ public class GameScreenController extends BaseController {
                 String message = event.getMessage();
                 if (message == null || message.trim().isEmpty()) return;
 
-                chatListView.getItems().add(message);
+                String chat = "[" + event.getType() + "] " + message;
+
+                chatListView.getItems().add(chat);
 
                 // Auto-scroll to bottom
                 chatListView.scrollTo(chatListView.getItems().size() - 1);
