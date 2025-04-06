@@ -184,7 +184,7 @@ public class CommandHandler {
      * @param cmd the transmitted command
      */
     public boolean handleRegister(Command cmd) {
-        String playerName = cmd.getArgs()[0];
+        String playerName = cmd.getArgs()[0].toLowerCase();
         synchronized (server) {
             if (!server.containsPlayerName(playerName)) {
                 logger.info("player registered: " + playerName);
@@ -199,7 +199,7 @@ public class CommandHandler {
                 }
                 logger.info("Duplicate player registered: " + playerName);
                 setLocalPlayer(new Player(uniqueName));
-                sendMessage("OK$RGST$" + playerName);
+                sendMessage("OK$RGST$" + uniqueName);
                 sendMessage("ERR$106$PLAYER_ALREADY_EXISTS$" + uniqueName);
             }
         }
@@ -212,7 +212,7 @@ public class CommandHandler {
      * @param cmd the transmitted command
      */
     public boolean handleChangeName(Command cmd) {
-        String newPlayerName = cmd.getArgs()[0];
+        String newPlayerName = cmd.getArgs()[0].toLowerCase();
 
         synchronized (server) {
             if (!server.containsPlayerName(newPlayerName)) {
@@ -243,8 +243,8 @@ public class CommandHandler {
      */
     public boolean handlePrivateMessage(Command cmd) {
         String[] parts = cmd.getArgs();
-        String senderName = parts[1];
-        String receiverName = parts[2];
+        String senderName = parts[0];
+        String receiverName = parts[1];
         if (receiverName.equals(senderName)) {
             sendMessage("ERR$106$CANNOT_WHISPER_TO_SELF");
             return false;
@@ -252,7 +252,7 @@ public class CommandHandler {
         String message = parts[2];
         if (server.containsPlayerName(receiverName)) {
             server.getClients().forEach(client -> {
-                if (client.isRunning() && client.getPlayerName().equals(receiverName)) {
+                if (client.isRunning() && (client.getPlayerName().equals(receiverName)) || client.getPlayerName().equals(senderName)) {
                     sendMessage("CHTP$" + senderName + "$" + message);
                 }
             });

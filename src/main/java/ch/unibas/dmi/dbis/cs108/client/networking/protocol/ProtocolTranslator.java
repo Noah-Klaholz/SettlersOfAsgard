@@ -121,12 +121,16 @@ public class ProtocolTranslator {
             return;
         } else if (message.startsWith("OK$CHAN$")) {
             // Extract just the new name - adjust parsing based on server format
-            String newName = message.substring("OK$CHAN$".length()).trim();;
-
+            String[] args = message.replace("OK$CHAN$", "").trim().split("\\$");
+            String newName = args[1].trim();
             // Dispatch the event with the correct name
             eventDispatcher.dispatchEvent(new NameChangeResponseEvent(true, newName, "Name changed successfully"));
             eventDispatcher.dispatchEvent(new ReceiveCommandEvent(message));
-       } else if(message.startsWith("OK$")) {
+        } else if (message.startsWith("OK$RGST$")) {
+            String[] args = message.replace("OK$RGST$", "").trim().split("\\$");
+            String newName = args[0].trim();
+            eventDispatcher.dispatchEvent(new NameChangeResponseEvent(true, newName, "Name changed successfully"));
+        } else if(message.startsWith("OK$")) {
             eventDispatcher.dispatchEvent(new ReceiveCommandEvent(message));
         }
     }
