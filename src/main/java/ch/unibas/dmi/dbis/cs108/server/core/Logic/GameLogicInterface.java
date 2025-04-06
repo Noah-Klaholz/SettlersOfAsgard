@@ -1,10 +1,5 @@
 package ch.unibas.dmi.dbis.cs108.server.core.Logic;
 
-import ch.unibas.dmi.dbis.cs108.client.core.entities.ActiveTrap;
-import ch.unibas.dmi.dbis.cs108.client.core.entities.Artifact;
-import ch.unibas.dmi.dbis.cs108.client.core.entities.Statue;
-import ch.unibas.dmi.dbis.cs108.client.core.entities.Structure;
-
 /**
  * Interface for the GameLogic
  * Contains all the methods that are needed to implement the game logic

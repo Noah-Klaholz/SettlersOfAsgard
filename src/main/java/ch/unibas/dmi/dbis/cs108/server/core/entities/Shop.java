@@ -14,7 +14,7 @@ import java.util.List;
 public class Shop {
     private ArrayList<Structure> buyableStructures;
     private ArrayList<Statue> buyableStatues;
-    private boolean statueInUse; //blocks the list of statues so no new one can be build while one is in possession
+    private boolean statueInUse; //todo: blocks the list of statues so no new one can be build while one is in possession
 
     // Helper class for structure JSON data
     private static class StructureData {

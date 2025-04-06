@@ -1,6 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.server.core.entities;
 
-import ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.Artefact;
+import ch.unibas.dmi.dbis.cs108.server.core.entities.Artefact;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +60,15 @@ public class Player {
     //should be checked in gameLogic if possible
     public void addArtifact(Artefact artifact) {
         artifacts.add(artifact);
+    }
+
+    /**
+     * removes an artifact from the player
+     *
+     * @param artifact Artefact
+     */
+    public void removeArtifact(Artefact artifact) {
+        artifacts.remove(artifact);
     }
 
 

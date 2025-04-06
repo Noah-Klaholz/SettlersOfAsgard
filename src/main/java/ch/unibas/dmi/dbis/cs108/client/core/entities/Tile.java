@@ -9,7 +9,7 @@ public class Tile {
     private final int price;
     private Structure structure;
     private Statue statue;
-    private Artifact artifact;
+    private Artefact artefact;
     private ActiveTrap trap;
     private final String world;
     private boolean purchased;
@@ -25,7 +25,7 @@ public class Tile {
         this.price = builder.price;
         this.structure = builder.structure;
         this.statue = builder.statue;
-        this.artifact = builder.artifact;
+        this.artefact = builder.artefact;
         this.trap = builder.trap;
         this.world = builder.world;
         this.purchased = builder.purchased;
@@ -78,12 +78,12 @@ public class Tile {
         this.statue = statue;
     }
 
-    public Artifact getArtifact() {
-        return artifact;
+    public Artefact getArtifact() {
+        return artefact;
     }
 
-    public void setArtifact(Artifact artifact) {
-        this.artifact = artifact;
+    public void setArtifact(Artefact artefact) {
+        this.artefact = artefact;
     }
 
     public ActiveTrap getTrap() {
@@ -147,7 +147,7 @@ public class Tile {
         private int price;
         private Structure structure;
         private Statue statue;
-        private Artifact artifact;
+        private Artefact artefact;
         private ActiveTrap trap;
         private String world;
 
@@ -186,8 +186,8 @@ public class Tile {
             return this;
         }
 
-        public TileBuilder setArtifact(Artifact artifact) {
-            this.artifact = artifact;
+        public TileBuilder setArtifact(Artefact artefact) {
+            this.artefact = artefact;
             return this;
         }
 
