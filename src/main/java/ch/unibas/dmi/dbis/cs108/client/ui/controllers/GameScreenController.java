@@ -329,11 +329,10 @@ public class GameScreenController extends BaseController {
                 // Only publish the event to send through the network
                 // Don't add to UI here - wait for server echo
                 if (message.startsWith("/")) {
-                    eventBus.publish(new SendCommandEvent(message));
+                    eventBus.publish(new SendCommandEvent(message.toLowerCase()));
                 } else {
                     eventBus.publish(new SendChatEvent(message, SendChatEvent.ChatType.GLOBAL));
                 }
-
 
                 // Add a visual indicator that message is being sent
                 // Optional: chatListView.getItems().add("Sending: " + message);

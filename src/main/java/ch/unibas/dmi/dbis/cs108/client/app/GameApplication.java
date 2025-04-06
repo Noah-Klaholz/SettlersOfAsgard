@@ -7,6 +7,7 @@ import ch.unibas.dmi.dbis.cs108.client.networking.NetworkController;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.SendChatEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.SendCommandEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -75,6 +76,7 @@ public class GameApplication extends Application {
     }
 
     private void setupUIEventHandlers() {
+        // Subscribe to Chat events
         uiEventBus.subscribe(SendChatEvent.class, event -> {
             switch (event.getType()) {
                 case GLOBAL:
@@ -86,6 +88,20 @@ public class GameApplication extends Application {
                 case PRIVATE:
                     networkController.sendPrivateChat(event.getRecipient(), event.getMessage());
                     break;
+            }
+        });
+
+        // Subscribe to Command events
+        uiEventBus.subscribe(SendCommandEvent.class, event -> {
+            switch (event.getType()) {
+                case CHANGENAME:
+                    networkController.changeName(event.getMessage());
+                    break;
+                case LEAVELOBBY:
+                    networkController.leaveLobby();
+                    break;
+                default:
+                    System.err.println("Unknown command type: " + event.getType());
             }
         });
     }

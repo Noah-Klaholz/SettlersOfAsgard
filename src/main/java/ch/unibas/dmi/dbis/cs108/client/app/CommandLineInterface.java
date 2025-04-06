@@ -48,7 +48,9 @@ public class CommandLineInterface {
             logger.info("Connected. Type /help to view available commands");
 
             // Process user input
-            processInput();
+            while (running.get()) {
+                processInput(scanner.nextLine().trim().toLowerCase());
+            }
 
             receiverThread.join(1000);
         } catch (Exception e) {
@@ -152,14 +154,10 @@ public class CommandLineInterface {
     /**
      * Process user input
      */
-    private void processInput() {
-        while (running.get()) {
-            String input = scanner.nextLine().trim().toLowerCase();
+    private void processInput(String input) {
             input = input.replaceAll("[$]", "").trim();
-
             if (input.equals("/exit")) {
                 running.set(false);
-                break;
             } else if (input.startsWith("/changename ")) {
                 String newName = input.replace("/changename ", "").trim();
                 networkController.changeName(newName);
@@ -250,7 +248,6 @@ public class CommandLineInterface {
             } else {
                 networkController.sendLobbyChat(input);
             }
-        }
     }
 
     /**
