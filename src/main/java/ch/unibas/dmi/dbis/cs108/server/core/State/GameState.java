@@ -121,6 +121,11 @@ public class GameState {
         return playersString;
     }
 
+    /**
+     * Gets the list of players in the game.
+     *
+     * @return An ArrayList of Player objects
+     */
     public ArrayList<Player> getPlayerList() {
         return players;
     }
@@ -408,5 +413,14 @@ public class GameState {
             return;
         }
         board.setTileByCoordinates(x, y, tile);
+    }
+
+    /**
+     * Gets the board object representing the game field.
+     *
+     * @return The board object
+     */
+    public Board getBoard() {
+        return board;
     }
 }
