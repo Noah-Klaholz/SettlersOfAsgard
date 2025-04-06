@@ -46,7 +46,7 @@ public class GameLogic implements GameLogicInterface {
         String place2nd = players.get(1).getName();
         String place3rd = players.get(2).getName();
         int i = 1;
-        for(Player player : players) {
+        for (Player player : players) {
             System.out.println("#" + i + ": " + player.getName() + " has " + player.getRunes() + " runes.");
             i++;
         }
@@ -115,7 +115,6 @@ public class GameLogic implements GameLogicInterface {
      * Concludes a player's turn.
      * This method finalizes any pending actions, applies end-of-turn effects,
      * and transitions to the next player's turn.
-     *
      */
     @Override
     public void endTurn() {
@@ -131,25 +130,25 @@ public class GameLogic implements GameLogicInterface {
      * Validates the purchase against game rules and updates the game state
      * if the purchase is successful.
      *
-     * @param x The x-coordinate of the tile to purchase
-     * @param y The y-coordinate of the tile to purchase
+     * @param x          The x-coordinate of the tile to purchase
+     * @param y          The y-coordinate of the tile to purchase
      * @param playerName The unique identifier of the player attempting to buy the tile
-     *         //todo: this can be changed later to ID
+     *                   //todo: this can be changed later to ID
      */
     @Override
     public boolean buyTile(int x, int y, String playerName) {
         //todo: later implement check: can only purchase max. 3 tiles per turn
-        if(gameState.getBoard().getTileByCoordinates(x, y) == null) {
+        if (gameState.getBoard().getTileByCoordinates(x, y) == null) {
             System.out.println("Tile not found");
             return false;
         }
-        if(gameState.getBoard().getTileByCoordinates(x, y).isPurchased()) {
+        if (gameState.getBoard().getTileByCoordinates(x, y).isPurchased()) {
             System.out.println("Tile already purchased");
             return false;
         }
-        for(Player player : gameState.getPlayerList()) {
-            if(player.getName().equals(playerName)) {
-                if(player.getRunes() >= gameState.getBoard().getTileByCoordinates(x, y).getPrice()) {
+        for (Player player : gameState.getPlayerList()) {
+            if (player.getName().equals(playerName)) {
+                if (player.getRunes() >= gameState.getBoard().getTileByCoordinates(x, y).getPrice()) {
                     player.removeRunes(gameState.getBoard().getTileByCoordinates(x, y).getPrice());
                     gameState.getBoard().getTileByCoordinates(x, y).setPurchased(true);
                     player.addOwnedTile(gameState.getBoard().getTileByCoordinates(x, y));
@@ -170,25 +169,25 @@ public class GameLogic implements GameLogicInterface {
      * This method verifies the placement is valid according to game rules,
      * deducts the required resources, and updates the game state with the new structure.
      *
-     * @param x The x-coordinate where the structure will be placed
-     * @param y The y-coordinate where the structure will be placed
+     * @param x           The x-coordinate where the structure will be placed
+     * @param y           The y-coordinate where the structure will be placed
      * @param structureID The identifier of the structure to place
-     * @param playerName The unique identifier of the player placing the structure
+     * @param playerName  The unique identifier of the player placing the structure
      */
     @Override
     public boolean placeStructure(int x, int y, int structureID, String playerName) {
-        for(Player player : gameState.getPlayerList()) {
-            if(player.getName().equals(playerName)) {
-                for(Structure structure : player.getOwnedStructures()){
-                    if(structure.getStructureID() == structureID) {
-                        if(gameState.getBoard().getTileByCoordinates(x, y) == null) {
+        for (Player player : gameState.getPlayerList()) {
+            if (player.getName().equals(playerName)) {
+                for (Structure structure : player.getOwnedStructures()) {
+                    if (structure.getStructureID() == structureID) {
+                        if (gameState.getBoard().getTileByCoordinates(x, y) == null) {
                             System.out.println("Tile not found");
                             return false;
                         }
-                        for(Tile tile : player.getOwnedTiles()) {
-                            if(tile.getTileID() == gameState.getBoard().getTileByCoordinates(x, y).getTileID()) {
+                        for (Tile tile : player.getOwnedTiles()) {
+                            if (tile.getTileID() == gameState.getBoard().getTileByCoordinates(x, y).getTileID()) {
                                 //tile and structure are owned by player
-                                if(tile.getHasStructure() == false){
+                                if (tile.getHasStructure() == false) {
                                     //tile hat noch keine Structure
                                     player.removeOwnedStructure(structure);
                                     tile.setHasStructure(true);
@@ -212,18 +211,18 @@ public class GameLogic implements GameLogicInterface {
      * This method validates the action, applies the structure's effects based on the use type,
      * and updates the game state accordingly.
      *
-     * @param x The x-coordinate of the structure to use
-     * @param y The y-coordinate of the structure to use
+     * @param x           The x-coordinate of the structure to use
+     * @param y           The y-coordinate of the structure to use
      * @param structureID The identifier of the structure to use
-     * @param useType The specific way the structure should be used
-     * @param playerName The unique identifier of the player using the structure
+     * @param useType     The specific way the structure should be used
+     * @param playerName  The unique identifier of the player using the structure
      */
     @Override
     public boolean useStructure(int x, int y, int structureID, String useType, String playerName) {
-        for(Player player : gameState.getPlayerList()) {
-            if(player.getName().equals(playerName)) {
-                for(Structure structure : player.getOwnedStructures()){
-                    if(structure.getStructureID() == structureID) {
+        for (Player player : gameState.getPlayerList()) {
+            if (player.getName().equals(playerName)) {
+                for (Structure structure : player.getOwnedStructures()) {
+                    if (structure.getStructureID() == structureID) {
                         //player owns the structure
                         //todo: later implement 1 time use per turn
                         //todo: later implement structure use
@@ -240,18 +239,18 @@ public class GameLogic implements GameLogicInterface {
      * This method verifies the upgrade is valid, deducts the required resources,
      * and enhances the statue's capabilities.
      *
-     * @param x The x-coordinate of the statue to upgrade
-     * @param y The y-coordinate of the statue to upgrade
-     * @param statueID The identifier of the statue to upgrade
+     * @param x          The x-coordinate of the statue to upgrade
+     * @param y          The y-coordinate of the statue to upgrade
+     * @param statueID   The identifier of the statue to upgrade
      * @param playerName The unique identifier of the player upgrading the statue
      */
     @Override
     public boolean upgradeStatue(int x, int y, String statueID, String playerName) {
-        for(Player player : gameState.getPlayerList()) {
-            if(player.getName().equals(playerName)) {
-                if(player.getStatue().getName().equals(statueID)) {
+        for (Player player : gameState.getPlayerList()) {
+            if (player.getName().equals(playerName)) {
+                if (player.getStatue().getName().equals(statueID)) {
                     //player owns the statue
-                    if(player.getRunes() >= player.getStatue().getUpgradePrice()) {
+                    if (player.getRunes() >= player.getStatue().getUpgradePrice()) {
                         player.removeRunes(player.getStatue().getUpgradePrice());
                         player.getStatue().upgrade();
                         //todo: later check if it does actually upgrade (it gives a boolean back)
@@ -276,17 +275,17 @@ public class GameLogic implements GameLogicInterface {
      * This method validates the action, applies the statue's effects based on the use type,
      * and updates the game state accordingly.
      *
-     * @param x The x-coordinate of the statue to use
-     * @param y The y-coordinate of the statue to use
+     * @param x        The x-coordinate of the statue to use
+     * @param y        The y-coordinate of the statue to use
      * @param statueID The identifier of the statue to use
-     * @param useType The specific way the statue should be used
+     * @param useType  The specific way the statue should be used
      * @param playerID The unique identifier of the player using the statue
      */
     @Override
     public void useStatue(int x, int y, int statueID, String useType, String playerName) {
-        for(Player player : gameState.getPlayerList()) {
-            if(player.getName().equals(playerName)) {
-                if(player.getStatue().getStatueID() == statueID) {
+        for (Player player : gameState.getPlayerList()) {
+            if (player.getName().equals(playerName)) {
+                if (player.getStatue().getStatueID() == statueID) {
                     player.getStatue().use();
                 }
             }
@@ -298,19 +297,19 @@ public class GameLogic implements GameLogicInterface {
      * This method applies the artifact's effects to the specified location
      * and updates the game state accordingly.
      *
-     * @param x The x-coordinate where the field artifact will be used
-     * @param y The y-coordinate where the field artifact will be used
+     * @param x          The x-coordinate where the field artifact will be used
+     * @param y          The y-coordinate where the field artifact will be used
      * @param artifactID The identifier of the artifact to use
      */
     @Override
     public void useFieldArtifact(int x, int y, int artifactID, String useType, String playerName) {
 
-        for(Player player : gameState.getPlayerList()) {
-            if(player.getName().equals(playerName)) {
-                for(Artefact artefact : player.getArtifacts()){
-                    if(artefact.getArtifactID() == artifactID) {
+        for (Player player : gameState.getPlayerList()) {
+            if (player.getName().equals(playerName)) {
+                for (Artefact artefact : player.getArtifacts()) {
+                    if (artefact.getArtifactID() == artifactID) {
                         //player owns the artifact
-                        if(gameState.getBoard().getTileByCoordinates(x, y) == null) {
+                        if (gameState.getBoard().getTileByCoordinates(x, y) == null) {
                             System.out.println("Tile not found");
                             return;
                         }
@@ -327,17 +326,17 @@ public class GameLogic implements GameLogicInterface {
      * and updates the game state accordingly.
      *
      * @param artifactID The identifier of the artifact to use
-     * @param playerID The unique identifier of the player who will be affected
+     * @param playerID   The unique identifier of the player who will be affected
      */
     @Override
     public void usePlayerArtifact(int artifactID, String playerName, String useType, String playerAimedAt) {
-        for(Player player : gameState.getPlayerList()) {
-            if(player.getName().equals(playerName)) {
-                for(Artefact artefact : player.getArtifacts()){
-                    if(artefact.getArtifactID() == artifactID) {
+        for (Player player : gameState.getPlayerList()) {
+            if (player.getName().equals(playerName)) {
+                for (Artefact artefact : player.getArtifacts()) {
+                    if (artefact.getArtifactID() == artifactID) {
                         //player owns the artifact
-                        for(Player otherPlayer : gameState.getPlayerList()) {
-                            if(otherPlayer.getName().equals(playerName)) {
+                        for (Player otherPlayer : gameState.getPlayerList()) {
+                            if (otherPlayer.getName().equals(playerName)) {
                                 //todo: later implement use of player artifact
                             }
                         }
@@ -347,12 +346,104 @@ public class GameLogic implements GameLogicInterface {
         }
     }
 
-    public void buyStatue(String statueID, String playerID) {
-        // Implementation for buying a statue
+    @Override
+    public void buyStatue(String statueID, String playerName) {
+        Player targetPlayer = null;
+        for (Player player : gameState.getPlayerList()) {
+            if (player.getName().equals(playerName)) {
+                targetPlayer = player;
+                break;
+            }
+        }
+
+        if (targetPlayer == null) {
+            System.out.println("Player not found.");
+            return;
+        }
+
+        if (targetPlayer.getStatue() != null) {
+            System.out.println("Player already owns a statue.");
+            return;
+        }
+
+        try {
+            int id = Integer.parseInt(statueID);
+            Shop shop = targetPlayer.getShop();
+            Statue targetStatue = null;
+
+            for (Statue statue : shop.getBuyableStatues()) {
+                if (statue.getStatueID() == id) {
+                    targetStatue = statue;
+                    break;
+                }
+            }
+
+            if (targetStatue == null) {
+                System.out.println("Statue not found in shop.");
+                return;
+            }
+
+            int cost = targetStatue.getPrice();
+            if (targetPlayer.getRunes() >= cost) {
+                targetPlayer.removeRunes(cost);
+                targetPlayer.setStatue(targetStatue);
+                shop.blockStatue();
+                System.out.println("Statue purchased successfully.");
+            } else {
+                System.out.println("Insufficient runes to buy statue.");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid statue ID provided.");
+        }
     }
 
-    public void buyStructure(String structureID, String playerID) {
-        // Implementation for buying a structure
+    public void buyStructure(String structureID, String playerName) {
+        Player player = null;
+        for (Player p : gameState.getPlayerList()) {
+            if (p.getName().equals(playerName)) {
+                player = p;
+                break;
+            }
+        }
+
+        if (player == null) {
+            System.out.println("Player not found.");
+            return;
+        }
+
+        int id;
+        try {
+            id = Integer.parseInt(structureID);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid structure ID provided.");
+            return;
+        }
+
+        Shop shop = player.getShop();
+        Structure targetStructure = null;
+
+        for (Structure structure : shop.getBuyableStructures()) {
+            if (structure.getStructureID() == id) {
+                targetStructure = structure;
+                break;
+            }
+        }
+
+        if (targetStructure == null) {
+            System.out.println("Structure not found in shop.");
+            return;
+        }
+
+        // Check if player has enough runes
+        int price = targetStructure.getPrice();
+        if (player.getRunes() >= price) {
+            player.removeRunes(price);
+            player.addOwnedStructure(targetStructure);
+            shop.removeStructure(targetStructure);
+            System.out.println("Structure purchased successfully.");
+        } else {
+            System.out.println("Insufficient runes to buy structure.");
+        }
     }
 
 }

@@ -31,4 +31,8 @@ public class Structure {
     public String getUseType() {
         return useType;
     }
+
+    public int getPrice() {
+        return price;
+    }
 }
