@@ -128,6 +128,15 @@ public class Player {
     }
 
     /**
+     * Removes runes from the player
+     *
+     * @param runes int
+     */
+    public void removeRunes(int runes) {
+        this.runes -= runes;
+    }
+
+    /**
      * Getter for energy
      *
      * @return int

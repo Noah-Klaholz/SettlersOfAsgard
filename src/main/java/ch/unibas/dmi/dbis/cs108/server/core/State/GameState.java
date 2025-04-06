@@ -1,7 +1,9 @@
 package ch.unibas.dmi.dbis.cs108.server.core.State;
 
 import ch.unibas.dmi.dbis.cs108.server.core.entities.Artefact;
+import ch.unibas.dmi.dbis.cs108.server.core.entities.Board;
 import ch.unibas.dmi.dbis.cs108.server.core.entities.Player;
+import ch.unibas.dmi.dbis.cs108.server.core.entities.Tile;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -23,6 +25,15 @@ public class GameState {
     private int gameRound;
     private UUID activePlayerID;
     private ArrayList<Player> players;
+    private Board board;
+
+    public GameState() {
+        this.playerRound = 0;
+        this.gameRound = 0;
+        this.activePlayerID = null;
+        this.players = new ArrayList<>();
+        this.board = new Board();
+    }
 
     /**
      * Gets the name of the player whose turn it currently is.
@@ -200,7 +211,13 @@ public class GameState {
      * @return The number of runes the player has
      */
     public int getRunes(String player) {
-        return 0;
+        for (Player p : players) {
+            if (p.getName().equals(player)) {
+                return p.getRunes();
+            }
+        }
+        System.out.println("no player found");
+        return -1;
     }
 
     /**
@@ -210,6 +227,11 @@ public class GameState {
      * @param player The name of the player
      */
     public void setRunes(int runes, String player) {
+        for (Player p : players) {
+            if (p.getName().equals(player)) {
+                p.setRunes(runes);
+            }
+        }
     }
 
     /**
@@ -219,6 +241,11 @@ public class GameState {
      * @param player The name of the player
      */
     public void addRunes(int runes, String player) {
+        for (Player p : players) {
+            if (p.getName().equals(player)) {
+                p.addRunes(runes);
+            }
+        }
     }
 
     /**
@@ -227,7 +254,12 @@ public class GameState {
      * @param runes  The number of runes to remove
      * @param player The name of the player
      */
-    public void removeRunes(String[] runes, String player) {
+    public void removeRunes(int runes, String player) {
+        for (Player p : players) {
+            if (p.getName().equals(player)) {
+                p.removeRunes(runes);
+            }
+        }
     }
 
     /**
@@ -235,8 +267,16 @@ public class GameState {
      *
      * @return A two-dimensional array representing the game field, or null if not set
      */
-    public int[][] getGameField() {
-        return null;
+    public Tile[][] getGameField() {
+        if(board == null) {
+            System.out.println("no board found");
+            return null;
+        }
+        if(board.getTiles() == null) {
+            System.out.println("no game field found");
+            return null;
+        }
+        return board.getTiles();
     }
 
     /**
@@ -244,9 +284,25 @@ public class GameState {
      *
      * @param gameField A two-dimensional array representing the game field
      */
-    public void setGameField(int[][] gameField) {
+    //since set game field is so far 7x8, it is implemented that way here
+    // for future updates, another method shall be written (for example initBoard) that uses board.initBoard(x,y)
+    public void setGameField(Tile[][] gameField) {
+        if (gameField == null) {
+            System.out.println("game field is null");
+            return;
+        }
+        if(board == null) {
+            System.out.println("board is null");
+            return;
+        }
+        if (gameField.length != board.getTiles().length) {
+            System.out.println("game field is not 7x8");
+            return;
+        }
+        board.setTiles(gameField);
     }
 
+    //todo: continue from here :)
     /**
      * Gets the value at a specific position on the game field.
      *
