@@ -1,11 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
-import ch.unibas.dmi.dbis.cs108.client.ui.events.ReceiveCommandEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.ChatMessageEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.SendCommandEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.SendChatEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -66,6 +62,9 @@ public class GameScreenController extends BaseController {
             initializeChat();
             initializeGameCanvas();
             initializeCardHands();
+
+            // Subscribe to the NameChangeResponseEvent
+            eventBus.subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeResponseEvent.class, this::handleNameChangeResponse);
 
             isInitialized = true;
             LOGGER.info("Game screen controller initialized successfully");
@@ -395,6 +394,23 @@ public class GameScreenController extends BaseController {
         // Future implementation: Other game action
     }
 
+    private void handleNameChangeResponse(ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeResponseEvent event) {
+        Platform.runLater(() -> {
+            try {
+                if (event.isSuccess()) {
+                    chatListView.getItems().add("Name successfully changed to: " + event.getNewName());
+                } else {
+                    chatListView.getItems().add("Failed to change name: " + event.getMessage());
+                }
+
+                // Auto-scroll chat to bottom
+                chatListView.scrollTo(chatListView.getItems().size() - 1);
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Error handling name change response", e);
+            }
+        });
+    }
+
     /**
      * Clean up resources when controller is no longer needed.
      */
@@ -402,6 +418,8 @@ public class GameScreenController extends BaseController {
         // Unsubscribe from events to prevent memory leaks
         if (eventBus != null) {
             eventBus.unsubscribe(ChatMessageEvent.class, this::handleIncomingChatMessage);
+            eventBus.unsubscribe(ReceiveCommandEvent.class, this::handleIncomingCommandMessage);
+            eventBus.unsubscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeResponseEvent.class, this::handleNameChangeResponse);
         }
 
         // Release resources

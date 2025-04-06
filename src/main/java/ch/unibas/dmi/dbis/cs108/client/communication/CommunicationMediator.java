@@ -1,9 +1,11 @@
 package ch.unibas.dmi.dbis.cs108.client.communication;
 
+import ch.unibas.dmi.dbis.cs108.client.core.Game;
 import ch.unibas.dmi.dbis.cs108.client.networking.NetworkController;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.ChatMessageEvent;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher.EventListener;
+import ch.unibas.dmi.dbis.cs108.client.networking.events.NameChangeResponseEvent;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.ReceiveCommandEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.SendChatEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.SendCommandEvent;
@@ -11,11 +13,17 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 
 public class CommunicationMediator {
     private final NetworkController networkController;
+    private final Game game;
 
-    public CommunicationMediator(NetworkController networkController) {
+    public CommunicationMediator(NetworkController networkController, Game game) {
         this.networkController = networkController;
+        this.game = game;
         registerUIListeners();
         registerNetworkListeners();
+    }
+
+    private void registerCoreListeners() {
+        // ToDo: Register core listeners if needed.
     }
 
     // Subscribes to UI events and forwards them to the network layer.
@@ -34,14 +42,14 @@ public class CommunicationMediator {
                 case EXIT:
                     // TODO handle exit command
                 case CHANGENAME:
-                    if(args.length == 1) {
+                    if (args.length == 1) {
                         networkController.changeName(args[0]);
                     } else {
                         //TODO handle invalid name
                     }
                     break;
                 case JOINLOBBY:
-                    if(args.length == 1) {
+                    if (args.length == 1) {
                         networkController.joinLobby(args[0]);
                     } else {
                         //TODO handle invalid name
@@ -51,7 +59,7 @@ public class CommunicationMediator {
                     networkController.leaveLobby();
                     break;
                 case CREATELOBBY:
-                    if(args.length == 1) {
+                    if (args.length == 1) {
                         networkController.createLobby(args[0]);
                     } else {
                         //TODO handle invalid name
@@ -96,7 +104,7 @@ public class CommunicationMediator {
                     }
                     break;
                 case UPGRADESTATUE:
-                    if(args.length == 3) {
+                    if (args.length == 3) {
                         networkController.upgradeStatue(Integer.parseInt(args[0]), Integer.parseInt(args[1]), args[2]);
                     } else {
                         //TODO handle invalid arguments
@@ -166,5 +174,40 @@ public class CommunicationMediator {
                 return ReceiveCommandEvent.class;
             }
         });
+
+        EventDispatcher.getInstance().registerListener(NameChangeResponseEvent.class, new EventListener<NameChangeResponseEvent>() {
+            @Override
+            public void onEvent(NameChangeResponseEvent event) {
+                if (event.isSuccess()) {
+                    // Update game core with new name
+                    game.updatePlayerName(event.getNewName());
+
+                    // Create a UI event to inform UI components
+                    UIEventBus.getInstance().publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeResponseEvent(
+                            true,
+                            event.getNewName(),
+                            event.getMessage()
+                    ));
+                } else {
+                    // Just inform UI of the failure
+                    UIEventBus.getInstance().publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeResponseEvent(
+                            false,
+                            null,
+                            event.getMessage()
+                    ));
+                }
+            }
+
+            @Override
+            public Class<NameChangeResponseEvent> getEventType() {
+                return NameChangeResponseEvent.class;
+            }
+        });
     }
+
+    // ToDo: Implement this method to update the game state and UI based on network events.
+//    private void updateGameFromNetworkEvent(GameStateUpdateEvent event) {
+//        // Logic to update the game based on network events
+//        // For example: update resources, board state, etc.
+//    }
 }

@@ -1,7 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.networking.protocol;
 
 import ch.unibas.dmi.dbis.cs108.client.networking.events.*;
-import ch.unibas.dmi.dbis.cs108.client.networking.events.ReceiveCommandEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -101,8 +100,14 @@ public class ProtocolTranslator {
             errorCode = "UNKNOWN";
             errorMessage = errorPart;
         }
-        ErrorEvent event = new ErrorEvent(errorCode, errorMessage, ErrorEvent.ErrorSeverity.ERROR);
-        eventDispatcher.dispatchEvent(event);
+
+        // Add name change error handling
+        if (errorCode.equals("CHAN")) {
+            eventDispatcher.dispatchEvent(new NameChangeResponseEvent(false, null, errorMessage));
+        } else {
+            ErrorEvent event = new ErrorEvent(errorCode, errorMessage, ErrorEvent.ErrorSeverity.ERROR);
+            eventDispatcher.dispatchEvent(event);
+        }
     }
 
     private void processLobbyListMessage(String message) {
@@ -114,10 +119,16 @@ public class ProtocolTranslator {
         if (message.startsWith("OK$PING$")) {
             // Ping response is handled in the NetworkController.
             return;
-        }else if (message.startsWith("OK$CHAN$")) {
-            String newName = message.substring("OK$CHAN$".length()).trim();
-            eventDispatcher.dispatchEvent(new NameChangedEvent(newName));
-        } else if(message.startsWith("OK$")) {
+        } else if (message.startsWith("OK$CHAN$")) {
+            String rawResponse = message.substring("OK$CHAN$".length()).trim();
+            System.out.println("Raw name change response: '" + rawResponse + "'");
+
+            // Extract just the new name - adjust parsing based on server format
+            String newName = rawResponse;
+
+            // Dispatch the event with the correct name
+            eventDispatcher.dispatchEvent(new NameChangeResponseEvent(true, newName, "Name changed successfully"));
+        } else if (message.startsWith("OK$")) {
             eventDispatcher.dispatchEvent(new ReceiveCommandEvent(message));
         }
     }

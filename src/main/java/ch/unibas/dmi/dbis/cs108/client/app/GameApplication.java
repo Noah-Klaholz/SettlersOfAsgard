@@ -2,7 +2,9 @@
 package ch.unibas.dmi.dbis.cs108.client.app;
 
 import ch.unibas.dmi.dbis.cs108.client.communication.CommunicationMediator;
+import ch.unibas.dmi.dbis.cs108.client.core.Game;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
+import ch.unibas.dmi.dbis.cs108.client.core.entities.Shop;
 import ch.unibas.dmi.dbis.cs108.client.networking.NetworkController;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
@@ -33,7 +35,10 @@ public class GameApplication extends Application {
         if (params.size() >= 3) {
             username = params.get(2);
         }
+
         localPlayer = new Player(username);
+        Shop shop = new Shop();
+        Game game = new Game(localPlayer, shop);
 
         // Extract server ip and port from the second argument.
         if (params.size() >= 2) {
@@ -58,8 +63,8 @@ public class GameApplication extends Application {
         networkEventDispatcher = EventDispatcher.getInstance();
 
         // Initialize CommunicationMediator to wire UI and network messages.
-        new CommunicationMediator(networkController);
-//      REMOVED: setupUIEventHandlers();
+        new CommunicationMediator(networkController, game);
+        //      REMOVED: setupUIEventHandlers();
 
         // Initialize and display the main menu scene.
         SceneManager sceneManager = SceneManager.getInstance();
