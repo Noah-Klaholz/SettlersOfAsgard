@@ -239,7 +239,8 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         }
         Command cmd = new Command(received);
         if (cmd.isValid()) {
-            boolean answer = false; // Assume command does not have to be answered
+            boolean answer = true; // Assume command has to be answered
+            boolean worked = true; // Assume command was processed successfully
             logger.info("Server processing " + cmd);
 
             NetworkProtocol.Commands command;
@@ -253,102 +254,124 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             switch (command) {
                 case CHATLOBBY:
                     if (getCurrentLobby() != null) {
-                        ch.handleLobbyMessage(cmd);
+                        worked = ch.handleLobbyMessage(cmd);
                     } else {
-                        ch.handleGlobalChatMessage(cmd);
+                        worked = ch.handleGlobalChatMessage(cmd);
                     }
+                    answer = false;
                     break;
                 case CHATPRIVATE:
-                    ch.handlePrivateMessage(cmd);
+                    answer = false;
+                    worked = ch.handlePrivateMessage(cmd);
                     break;
                 case CHATGLOBAL:
-                    sendGlobalChatMessage(cmd);
+                    answer = false;
+                    worked = ch.handleGlobalChatMessage(cmd);
                     break;
                 case PING:
-                    answer = true;
                     break;
                 case TEST:
+                    answer = false;
                     logger.info("TEST");
                     break;
                 case OK:
+                    answer = false;
                     break;
                 case ERROR:
+                    answer = false;
                     logger.info("Client sent an error command.");
                     break;
                 case CREATELOBBY:
-                    ch.handleCreateLobby(cmd);
+                    worked = ch.handleCreateLobby(cmd);
                     break;
                 case JOIN:
-                    ch.handleJoinLobby(cmd);
+                    worked = ch.handleJoinLobby(cmd);
                     break;
                 case LEAVE:
-                    ch.handleLeaveLobby();
+                    answer = false;
+                    worked = ch.handleLeaveLobby();
                     break;
                 case START:
-                    ch.handleStartGame();
+                    worked = ch.handleStartGame();
                     break;
                 case CHANGENAME:
-                    ch.handleChangeName(cmd);
+                    answer = false;
+                    worked = ch.handleChangeName(cmd);
                     break;
                 case REGISTER:
-                    ch.handleRegister(cmd);
+                    answer = false;
+                    worked = ch.handleRegister(cmd);
                     break;
                 case LISTLOBBIES:
-                    ch.handleListLobbies();
+                    answer = false;
+                    worked = ch.handleListLobbies();
                     break;
                 case LISTPLAYERS:
-                    ch.handleListPlayers(cmd);
+                    answer = false;
+                    worked = ch.handleListPlayers(cmd);
                     break;
                 case EXIT:
                     logger.info("Client sent an exit command.");
-                    ch.handleLeaveLobby();
+                    worked = ch.handleLeaveLobby();
                     server.removeClient(this);
                     break;
                 case STARTTURN:
-                    ch.handleStartTurn();
+                    answer = false;
+                    worked = ch.handleStartTurn();
                     break;
                 case ENDTURN:
-                    ch.handleEndTurn();
+                    answer = false;
+                    worked = ch.handleEndTurn();
                     break;
                 case SYNCHRONIZE:
-                    ch.handleSynchronize();
+                    worked = ch.handleSynchronize();
                     break;
                 case GETGAMESTATUS:
-                    ch.handleGetGameStatus();
+                    answer = false;
+                    worked = ch.handleGetGameStatus();
                     break;
                 case GETPRICES:
-                    ch.handleGetPrices();
+                    answer = false;
+                    worked = ch.handleGetPrices();
                     break;
                 case BUYTILE:
-                    ch.handleBuyTile(cmd);
+                    worked = ch.handleBuyTile(cmd);
                     break;
                 case BUYSTRUCTURE:
-                    ch.handleBuyStructure(cmd);
+                    answer = false;
+                    worked = ch.handleBuyStructure(cmd);
+                    break;
                 case PLACESTRUCTURE:
-                    ch.handlePlaceStructure(cmd);
+                    answer = false;
+                    worked = ch.handlePlaceStructure(cmd);
                     break;
                 case USESTRUCTURE:
-                    ch.handleUseStructure(cmd);
+                    worked = ch.handleUseStructure(cmd);
                     break;
                 case UPGRADESTATUE:
-                    ch.handleUpgradeStatue(cmd);
+                    answer = false;
+                    worked = ch.handleUpgradeStatue(cmd);
                     break;
                 case USESTATUE:
-                    ch.handleUseStatue(cmd);
+                    answer = false;
+                    worked = ch.handleUseStatue(cmd);
                     break;
                 case USEPLAYERARTIFACT:
-                    ch.handleUsePlayerArtifact(cmd);
+                    answer = false;
+                    worked = ch.handleUsePlayerArtifact(cmd);
                     break;
                 case USEFIELDARTIFACT:
-                    ch.handleUseFieldArtifact(cmd);
+                    answer = false;
+                    worked = ch.handleUseFieldArtifact(cmd);
                     break;
                 case BUYSTATUE:
-                    ch.handleBuyStatue(cmd);
+                    answer = false;
+                    worked = ch.handleBuyStatue(cmd);
                     break;
                 default: // Error case
                     logger.warning("Switch-Unknown command: " + cmd.getCommand());
             }
-            if (answer) {
+            if (answer && worked) {
                 sendMessage("OK$" + cmd); // Echo the command back to the client with an OK response
             }
         } else {

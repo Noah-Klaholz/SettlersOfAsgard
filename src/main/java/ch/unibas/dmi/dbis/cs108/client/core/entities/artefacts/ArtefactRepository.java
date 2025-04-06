@@ -8,9 +8,9 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.List;
 
-public class ArefactRepository {
+public class ArtefactRepository {
     public static List<ArtefactData> loadArtefacts() {
-        InputStream inputStream = ArefactRepository.class.getResourceAsStream("/json/artifacts.json");
+        InputStream inputStream = ArtefactRepository.class.getResourceAsStream("/json/artifacts.json");
         if (inputStream == null) {
             throw new RuntimeException("Artifacts JSON file not found");
         }
