@@ -97,7 +97,6 @@ public class CommandHandler {
         int maxPlayers = 4; //currently, maxPlayers is set to 4
         Lobby lobby = server.createLobby(lobbyId, maxPlayers);
         if (lobby != null && lobby.addPlayer(ch)) {
-            logger.info("Returned true");
             joinLobby(lobby);
             return true;
         } else {
@@ -138,6 +137,7 @@ public class CommandHandler {
         Lobby lobby = server.getLobby(lobbyId);
         if (lobby != null && lobby.addPlayer(ch)) {
             joinLobby(lobby);
+            sendMessage("OK$JOIN$"+ lobbyId);
             return true;
         } else {
             sendMessage("ERR$106$JOIN_LOBBY_FAILED");

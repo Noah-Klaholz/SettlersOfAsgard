@@ -345,28 +345,44 @@ public class GameScreenController extends BaseController {
                         }
                         break;
                     case LISTLOBBIES:
-                        // Handle lobby list command
+                        if (args.length > 1) {
+                            message = "Lobbies: \n" + args[1];
+                            chatListView.getItems().add(message);
+                        }
                         break;
+                    case CREATELOBBY:
+                        message = "Created lobby: " + args[2];
+                        chatListView.getItems().add(message);
                     case JOIN:
-                        // Handle join lobby command
+                        if (args.length > 1) {
+                            message = "You joined lobby: " + args[1];
+                            chatListView.getItems().add(message);
+                        }
                         break;
                     case LEAVE:
-                        // Handle leave lobby command
+                        if (args.length > 1) {
+                            message = "You left lobby: " + args[1];
+                            chatListView.getItems().add(message);
+                        }
                         break;
                     case START:
-                        // Handle game start command
+                        chatListView.getItems().add("Game started!");
                         break;
                     case CHANGENAME:
-                        if(args.length > 1) {
+                        if (args.length > 1) {
                             message = args[1] + " changed their name to: " + args[2];
                             chatListView.getItems().add(message);
                         }
                         break;
                     case GETGAMESTATUS:
-                        // Handle game status command
+                        if (args.length > 1) {
+                            chatListView.getItems().add("Game status: " + args[2]);
+                        }
                         break;
                     case GETPRICES:
-                        // Handle get prices command
+                        if (args.length > 1) {
+                            chatListView.getItems().add("Prices: " + args[2]);
+                        }
                         break;
                     default:
                         chatListView.getItems().add(message);

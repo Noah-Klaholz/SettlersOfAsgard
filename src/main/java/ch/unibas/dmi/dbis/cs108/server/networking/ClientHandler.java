@@ -285,6 +285,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                     worked = ch.handleCreateLobby(cmd);
                     break;
                 case JOIN:
+                    answer = false;
                     worked = ch.handleJoinLobby(cmd);
                     break;
                 case LEAVE:
