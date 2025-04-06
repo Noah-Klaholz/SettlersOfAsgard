@@ -1,12 +1,16 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.events;
 
+import ch.unibas.dmi.dbis.cs108.client.networking.events.Event;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol.*;
+
+import java.time.Instant;
 
 /**
  * Event representing a command received from the server.
  * Uses the shared CommunicationAPI to define the command types.
  */
-public class ReceiveCommandEvent {
+public class ReceiveCommandEvent implements Event {
+    private final Instant timestamp = Instant.now();
     private final String message;
     private final Commands commandType;
 
@@ -24,4 +28,11 @@ public class ReceiveCommandEvent {
         return commandType;
     }
 
+    /**
+     * @return
+     */
+    @Override
+    public Instant getTimestamp() {
+        return null;
+    }
 }

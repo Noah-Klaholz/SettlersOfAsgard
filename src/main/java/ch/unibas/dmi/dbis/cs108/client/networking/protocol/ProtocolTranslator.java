@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.networking.protocol;
 
 import ch.unibas.dmi.dbis.cs108.client.networking.events.*;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.ReceiveCommandEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -113,10 +114,11 @@ public class ProtocolTranslator {
         if (message.startsWith("OK$PING$")) {
             // Ping response is handled in the NetworkController.
             return;
-        }
-        if (message.startsWith("OK$CHAN$")) {
+        }else if (message.startsWith("OK$CHAN$")) {
             String newName = message.substring("OK$CHAN$".length()).trim();
             eventDispatcher.dispatchEvent(new NameChangedEvent(newName));
+        } else if(message.startsWith("OK$")) {
+            eventDispatcher.dispatchEvent(new ReceiveCommandEvent(message));
         }
     }
 
