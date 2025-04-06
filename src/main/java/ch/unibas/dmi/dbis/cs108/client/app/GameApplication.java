@@ -93,12 +93,96 @@ public class GameApplication extends Application {
 
         // Subscribe to Command events
         uiEventBus.subscribe(SendCommandEvent.class, event -> {
+            String input = event.getMessage();
+            String[] args = input.replace(event.getType().getCommand(), "").trim().split(" ");
             switch (event.getType()) {
+                case EXIT:
+                    // TODO handle exit command
                 case CHANGENAME:
-                    networkController.changeName(event.getMessage());
+                    if(args.length == 1) {
+                        networkController.changeName(args[0]);
+                    } else {
+                        //TODO handle invalid name
+                    }
+                    break;
+                case JOINLOBBY:
+                    if(args.length == 1) {
+                        networkController.joinLobby(args[0]);
+                    } else {
+                        //TODO handle invalid name
+                    }
                     break;
                 case LEAVELOBBY:
                     networkController.leaveLobby();
+                    break;
+                case CREATELOBBY:
+                    if(args.length == 1) {
+                        networkController.createLobby(args[0]);
+                    } else {
+                        //TODO handle invalid name
+                    }
+                case STARTGAME:
+                    networkController.startGame();
+                    break;
+                case LISTLOBBIES:
+                    networkController.listLobbies();
+                    break;
+                case GLOBALCHAT:
+                    networkController.sendGlobalChat(input.replace("/global ", "")); // Handled differently, because spaces can be included in messages
+                    break;
+                case HELP:
+                    // TODO handle help command -> Maybe generalize this in a method in network controller
+                    break;
+                case BUYTILE:
+                    if (args.length == 2) {
+                        networkController.buyTile(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
+                    } else {
+                        //TODO handle invalid coordinates
+                    }
+                    break;
+                case PLACESTRUCTURE:
+                    if (args.length == 3) {
+                        networkController.placeStructure(Integer.parseInt(args[0]), Integer.parseInt(args[1]), args[2]);
+                    } else {
+                        //TODO handle invalid arguments
+                    }
+                    break;
+                case USESTRUCTURE:
+                    if (args.length == 4) {
+                        networkController.useStructure(Integer.parseInt(args[0]), Integer.parseInt(args[1]), args[2], args[3]);
+                    } else {
+                        //TODO handle invalid arguments
+                    }
+                    break;
+                case UPGRADESTATUE:
+                    if(args.length == 3) {
+                        networkController.upgradeStatue(Integer.parseInt(args[0]), Integer.parseInt(args[1]), args[2]);
+                    } else {
+                        //TODO handle invalid arguments
+                    }
+                case USESTATUE:
+                    if (args.length == 4) {
+                        networkController.useStatue(Integer.parseInt(args[0]), Integer.parseInt(args[1]), args[2], args[3]);
+                    } else {
+                        //TODO handle invalid arguments
+                    }
+                case USEFIELDARTIFACT:
+                    if (args.length == 4) {
+                        networkController.useFieldArtifact(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]), args[3]);
+                    } else {
+                        //TODO handle invalid arguments
+                    }
+                case USEPLAYERARTIFACT:
+                    if (args.length == 4) {
+                        networkController.usePlayerArtifact(Integer.parseInt(args[0]), args[1]);
+                    } else {
+                        //TODO handle invalid arguments
+                    }
+                case STATUS:
+                    networkController.getGameState();
+                    break;
+                case PRICES:
+                    networkController.getPrices();
                     break;
                 default:
                     System.err.println("Unknown command type: " + event.getType());

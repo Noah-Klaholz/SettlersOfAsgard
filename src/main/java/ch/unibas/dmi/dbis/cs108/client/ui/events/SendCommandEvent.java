@@ -1,7 +1,5 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.events;
 
-import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol.Commands;
-
 public class SendCommandEvent {
     private final String message;
     private final CommandType commandType;
@@ -33,7 +31,7 @@ public class SendCommandEvent {
         BUYTILE("/buytile"),
         PLACESTRUCTURE("/placestructure"),
         USESTRUCTURE("/usestructure"),
-        UPGRDESTATUE("/upgradestructure"),
+        UPGRADESTATUE("/upgradestructure"),
         USESTATUE("/usestatue"),
         USEFIELDARTIFACT("/usefieldartifact"),
         USEPLAYERARTIFACT("/useplayerartifact"),
@@ -44,6 +42,10 @@ public class SendCommandEvent {
 
         CommandType(String command) {
             this.command = command;
+        }
+
+        public String getCommand() {
+            return command;
         }
 
         public static CommandType fromCommand(String command) {
