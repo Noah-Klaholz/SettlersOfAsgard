@@ -389,14 +389,16 @@ public class CommandHandler {
     public void handleUseStructure(Command cmd) {
         try {
             String[] args = cmd.getArgs();
-            if (args.length < 3) {
+            if (args.length != 4) {
                 sendMessage("ERR$101$INVALID_ARGUMENTS$USE_STRUCTURE");
                 return;
             }
-            String playerName = args[0];
-            int x = Integer.parseInt(args[1]);
-            int y = Integer.parseInt(args[2]);
-            // TODO: Implement use structure logic
+            String playerName = localPlayer.getName();
+            int x = Integer.parseInt(args[0]);
+            int y = Integer.parseInt(args[1]);
+            String structureId = args[2];
+            String useType = args[3];
+            gameLogic.useStructure(x,y,structureId, useType, playerName);
         } catch (NumberFormatException e) {
             logger.severe("Failed to parse coordinates: " + e.getMessage());
             sendMessage("ERR$101$INVALID_COORDINATES");
