@@ -68,14 +68,14 @@ public class CommandHandler {
             if (arg[0].equals("LOBBY")) {
                 if (currentLobby != null) {
                     list = currentLobby.listPlayers();
-                    sendMessage("OK$LSTP$LOBBY"+ list);
+                    sendMessage("OK$LSTP$LOBBY$"+ list);
                     return true;
                 } else {
                     sendMessage("ERR$106$NOT_IN_LOBBY");
                 }
             } else if (arg[0].equals("SERVER")) {
                 list = server.listPlayers();
-                sendMessage("OK$LSTP$SERVER"+ list);
+                sendMessage("OK$LSTP$SERVER$"+ list);
             } else {
                 sendMessage("ERR$101$INVALID_ARGUMENTS");
             }

@@ -1,5 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
+import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol.*;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.ReceiveCommandEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
@@ -14,6 +16,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -326,8 +329,46 @@ public class GameScreenController extends BaseController {
                 System.out.println("Received from server " + message);
                 if (message == null || message.trim().isEmpty()) return;
 
-                //TODO handle command messages differently -> parse and display accordingly (switch case)
-                chatListView.getItems().add(message);
+                Commands type = event.getType();
+                String[] args = message.replaceAll("OK\\$", "").trim().split("\\$");
+                System.out.println(Arrays.toString(args));
+
+                switch (type) {
+                    case LISTPLAYERS:
+                        if(args.length > 1) {
+                            if (args[1].equals("LOBBY")) {
+                                message = "Players in lobby: " + args[2];
+                            } else if (args[1].equals("SERVER")) {
+                                message = "Players in server: " + args[2];
+                            }
+                            chatListView.getItems().add(message);
+                        }
+                        break;
+                    case LISTLOBBIES:
+                        // Handle lobby list command
+                        break;
+                    case JOIN:
+                        // Handle join lobby command
+                        break;
+                    case LEAVE:
+                        // Handle leave lobby command
+                        break;
+                    case START:
+                        // Handle game start command
+                        break;
+                    case CHANGENAME:
+                        // Handle change name command
+                        break;
+                    case GETGAMESTATUS:
+                        // Handle game status command
+                        break;
+                    case GETPRICES:
+                        // Handle get prices command
+                        break;
+                    default:
+                        chatListView.getItems().add(message);
+                        LOGGER.warning("GameScreen Controller: Unknown command type: " + type);
+                }
 
                 // Auto-scroll to bottom
                 chatListView.scrollTo(chatListView.getItems().size() - 1);

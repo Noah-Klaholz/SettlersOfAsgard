@@ -227,14 +227,12 @@ public class Lobby {
 
     public String listPlayers() {
         if (players.isEmpty()) {
-            return "Players: No available players";
+            return "No available players";
         }
 
-        String playerList = players.stream()
+        return players.stream()
                 .map(ClientHandler::getPlayerName)
                 .collect(Collectors.joining(", "));
-
-        return "Players: " + playerList;
     }
 
     public enum LobbyStatus {
