@@ -128,7 +128,8 @@ public class ProtocolTranslator {
 
             // Dispatch the event with the correct name
             eventDispatcher.dispatchEvent(new NameChangeResponseEvent(true, newName, "Name changed successfully"));
-        } else if (message.startsWith("OK$")) {
+            eventDispatcher.dispatchEvent(new ReceiveCommandEvent(message));
+       } else if(message.startsWith("OK$")) {
             eventDispatcher.dispatchEvent(new ReceiveCommandEvent(message));
         }
     }

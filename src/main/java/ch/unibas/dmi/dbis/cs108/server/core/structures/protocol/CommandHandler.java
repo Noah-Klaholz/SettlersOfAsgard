@@ -215,7 +215,7 @@ public class CommandHandler {
 
         synchronized (server) {
             if (!server.containsPlayerName(newPlayerName)) {
-                server.broadcast("OK$CHAN$" + localPlayer.getName() + newPlayerName);
+                server.broadcast("OK$CHAN$" + localPlayer.getName() + "$" + newPlayerName);
                 setLocalPlayerName(newPlayerName);
                 return true;
             } else {

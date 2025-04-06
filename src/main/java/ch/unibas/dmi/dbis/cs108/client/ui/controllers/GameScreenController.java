@@ -357,7 +357,10 @@ public class GameScreenController extends BaseController {
                         // Handle game start command
                         break;
                     case CHANGENAME:
-                        // Handle change name command
+                        if(args.length > 1) {
+                            message = args[1] + " changed their name to: " + args[2];
+                            chatListView.getItems().add(message);
+                        }
                         break;
                     case GETGAMESTATUS:
                         // Handle game status command
