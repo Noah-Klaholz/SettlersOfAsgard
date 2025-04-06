@@ -361,6 +361,28 @@ public class CommandHandler {
     }
 
     /**
+     * Handles buy structure request from client
+     * @param cmd the transmitted command
+     */
+    public void handleBuyStructure(Command cmd) {
+        try {
+            String[] args = cmd.getArgs();
+            if (args.length != 1) {
+                sendMessage("ERR$101$INVALID_ARGUMENTS$PLACE_STRUCTURE");
+                return;
+            }
+            String structureId = args[0];
+            gameLogic.buyStructure(structureId, playerName);
+        } catch (NumberFormatException e) {
+            logger.severe("Failed to parse coordinates: " + e.getMessage());
+            sendMessage("ERR$101$INVALID_COORDINATES");
+        } catch (Exception e) {
+            logger.severe("Failed to handle place structure request: " + e.getMessage());
+            sendMessage("ERR$106$PLACE_STRUCTURE_FAILED");
+        }
+    }
+
+    /**
      * Handles place structure request from client
      * @param cmd the transmitted command
      */

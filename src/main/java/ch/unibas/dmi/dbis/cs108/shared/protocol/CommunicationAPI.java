@@ -71,6 +71,7 @@ public interface CommunicationAPI {
             // Game action commands
             BUYTILE("BUYT"),     // Player buys a tile at coordinates
             BUYSTATUE("BYST"),   // Player buys a statue at coordinates
+            BUYSTRUCTURE("BUST"), // Player buys a Structure with structure ID
             PLACESTRUCTURE("PLST"), // Player places a structure at coordinates
             USESTRUCTURE("USSR"), // Player uses a structure at coordinates
             UPGRADESTATUE("UPST"), // Player upgrades a statue at coordinates

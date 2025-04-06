@@ -322,6 +322,8 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                 case BUYTILE:
                     ch.handleBuyTile(cmd);
                     break;
+                case BUYSTRUCTURE:
+                    ch.handleBuyStructure(cmd);
                 case PLACESTRUCTURE:
                     ch.handlePlaceStructure(cmd);
                     break;
