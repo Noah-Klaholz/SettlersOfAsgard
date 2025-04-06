@@ -26,6 +26,30 @@ public class Board {
         this.tiles = tiles;
     }
 
+    public Tile getTileByCoordinates(int x, int y) {
+        if (x < 0 || x >= tiles.length || y < 0 || y >= tiles[0].length) {
+            System.out.println("Coordinates out of bounds");
+            return null; // Out of bounds
+        }
+        return tiles[x][y];
+    }
+
+    public void setTileByCoordinates(int x, int y, Tile tile) {
+        if (x < 0 || x >= tiles.length || y < 0 || y >= tiles[0].length) {
+            System.out.println("Coordinates out of bounds");
+            return; // Out of bounds
+        }
+        tiles[x][y] = tile;
+    }
+
+    public void setTile(int x, int y, Tile tile) {
+        if (x < 0 || x >= tiles.length || y < 0 || y >= tiles[0].length) {
+            System.out.println("Coordinates out of bounds");
+            return; // Out of bounds
+        }
+        tiles[x][y] = tile;
+    }
+
     public Tile getTile(int id) {
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[i].length; j++) {

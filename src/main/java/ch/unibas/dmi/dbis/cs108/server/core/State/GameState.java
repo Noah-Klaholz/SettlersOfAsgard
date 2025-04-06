@@ -28,10 +28,10 @@ public class GameState {
     private Board board;
 
     public GameState() {
-        this.playerRound = 0;
-        this.gameRound = 0;
+        this.playerRound = 0; //0-Anzahl Spieler
+        this.gameRound = 0; //1-5
         this.activePlayerID = null;
-        this.players = new ArrayList<>();
+        this.players = new ArrayList<>(); //determines order
         this.board = new Board();
     }
 
@@ -302,25 +302,91 @@ public class GameState {
         board.setTiles(gameField);
     }
 
-    //todo: continue from here :)
     /**
-     * Gets the value at a specific position on the game field.
+     * Gets the Rune value at a specific position on the game field.
      *
      * @param x The x-coordinate on the game field
      * @param y The y-coordinate on the game field
-     * @return The value at the specified position
+     * @return The Rune value at the specified position
      */
-    public int getGameField(int x, int y) {
-        return 0;
+    public int getGameFieldValue(int x, int y) {
+        if (board == null) {
+            System.out.println("no board found");
+            return -1;
+        }
+        if (board.getTiles() == null) {
+            System.out.println("no game field found");
+            return -1;
+        }
+        if (x < 0 || x >= board.getTiles().length || y < 0 || y >= board.getTiles()[0].length) {
+            System.out.println("invalid coordinates");
+            return -1;
+        }
+        return board.getTileByCoordinates(x, y).getResourceValue();
     }
 
     /**
-     * Sets the value at a specific position on the game field.
+     * Sets the Rune value at a specific position on the game field.
      *
      * @param x     The x-coordinate on the game field
      * @param y     The y-coordinate on the game field
      * @param value The value to set at the specified position
      */
-    public void setGameField(int x, int y, int value) {
+    public void setGameFieldValue(int x, int y, int value) {
+        if (board == null) {
+            System.out.println("no board found");
+            return;
+        }
+        if (board.getTiles() == null) {
+            System.out.println("no game field found");
+            return;
+        }
+        if (x < 0 || x >= board.getTiles().length || y < 0 || y >= board.getTiles()[0].length) {
+            System.out.println("invalid coordinates");
+            return;
+        }
+        board.getTileByCoordinates(x, y).setResourceValue(value);
+    }
+
+    /**
+     * Gets a specific tile on the game field.
+     *
+     * @param x The x-coordinate on the game field
+     * @param y The y-coordinate on the game field
+     * @return The tile at the specified position, or null if not found
+     */
+    public Tile getTile(int x, int y) {
+        if (board == null) {
+            System.out.println("no board found");
+            return null;
+        }
+        if (board.getTiles() == null) {
+            System.out.println("no game tiles found");
+            return null;
+        }
+        return board.getTileByCoordinates(x, y);
+    }
+
+    /**
+     * Sets a specific tile on the game field.
+     *
+     * @param x   The x-coordinate on the game field
+     * @param y   The y-coordinate on the game field
+     * @param tile The tile to set at the specified position
+     */
+    public void setTile(int x, int y, Tile tile) {
+        if (board == null) {
+            System.out.println("no board found");
+            return;
+        }
+        if (board.getTiles() == null) {
+            System.out.println("no game tiles found");
+            return;
+        }
+        if (x < 0 || x >= board.getTiles().length || y < 0 || y >= board.getTiles()[0].length) {
+            System.out.println("invalid coordinates");
+            return;
+        }
+        board.setTileByCoordinates(x, y, tile);
     }
 }
