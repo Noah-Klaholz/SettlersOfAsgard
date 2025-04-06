@@ -27,7 +27,6 @@ public class CommandHandler {
     public CommandHandler(ClientHandler clientHandler) {
         this.ch = clientHandler;
         this.localPlayer = ch.getPlayer();
-        playerName = localPlayer.getName();
         this.currentLobby = ch.getCurrentLobby();
         this.server = ch.getServer();
     }
