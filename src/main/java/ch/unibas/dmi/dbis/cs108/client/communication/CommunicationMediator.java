@@ -195,7 +195,7 @@ public class CommunicationMediator {
             public void onEvent(NameChangeResponseEvent event) {
                 if (event.isSuccess()) {
                     // Update game core with new name
-                    game.updatePlayerName(event.getNewName());
+                     game.updatePlayerName(event.getNewName());
 
                     // Create a UI event to inform UI components
                     UIEventBus.getInstance().publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeResponseEvent(

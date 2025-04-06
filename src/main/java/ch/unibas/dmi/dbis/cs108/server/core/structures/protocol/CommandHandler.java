@@ -253,7 +253,7 @@ public class CommandHandler {
         if (server.containsPlayerName(receiverName)) {
             server.getClients().forEach(client -> {
                 if (client.isRunning() && (client.getPlayerName().equals(receiverName)) || client.getPlayerName().equals(senderName)) {
-                    sendMessage("CHTP$" + senderName + "$" + message);
+                    client.sendMessage("CHTP$" + senderName + "$" + message);
                 }
             });
             return true;
@@ -281,8 +281,9 @@ public class CommandHandler {
     }
 
     public boolean handleGlobalChatMessage(Command cmd) {
-            ch.sendGlobalChatMessage(cmd);
-            return true;
+
+        ch.sendGlobalChatMessage(cmd);
+        return true;
     }
 
     /**

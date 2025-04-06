@@ -353,7 +353,7 @@ public class GameScreenController extends BaseController {
                         }
                         break;
                     case CREATELOBBY:
-                        message = "Created lobby: " + args[2];
+                        message = "Created lobby: " + args[3];
                         chatListView.getItems().add(message);
                     case JOIN:
                         if (args.length > 1) {
@@ -414,7 +414,7 @@ public class GameScreenController extends BaseController {
                     System.out.println("Command: " + message);
                     eventBus.publish(new SendCommandEvent(message.toLowerCase()));
                 } else {
-                    eventBus.publish(new SendChatEvent(message, SendChatEvent.ChatType.GLOBAL));
+                    eventBus.publish(new SendChatEvent(message, SendChatEvent.ChatType.LOBBY));
                 }
 
                 // Add a visual indicator that message is being sent
@@ -459,9 +459,7 @@ public class GameScreenController extends BaseController {
     private void handleNameChangeResponse(ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeResponseEvent event) {
         Platform.runLater(() -> {
             try {
-                if (event.isSuccess()) {
-                    chatListView.getItems().add("Name successfully changed to: " + event.getNewName());
-                } else {
+                if (!event.isSuccess()) {
                     chatListView.getItems().add("Failed to change name: " + event.getMessage());
                 }
 
