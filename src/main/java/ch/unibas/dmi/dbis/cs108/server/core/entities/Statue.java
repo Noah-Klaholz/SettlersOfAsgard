@@ -61,4 +61,10 @@ public class Statue {
         }
         return false;
     }
+
+    public void use() {
+        //todo: later implement: these are all different per statue
+    }
+
+    //todo: later implement: instead of use -> useDeal and useBlessing mit lvl check
 }

@@ -20,8 +20,8 @@ public interface GameLogicInterface {
     public boolean placeStructure(int x, int y, int structureID, String playerID); // Works as buy and place function for Structures
     public boolean useStructure(int x, int y, int structureID, String useType, String playerName); // Uses a structure
     public boolean upgradeStatue(int x, int y, String statueID, String playerName); // Upgrades a statue
-    public void useStatue(int x, int y, String statueID, String useType, String playerName); // Uses a statue
-    public void useFieldArtifact(int x, int y, int artifactID, String useType); // Uses a field artifact
-    public void usePlayerArtifact(int artifactID, String playerName, String useType); // Uses a player artifact
+    public void useStatue(int x, int y, int statueID, String useType, String playerName); // Uses a statue
+    public void useFieldArtifact(int x, int y, int artifactID, String useType, String playerName); // Uses a field artifact
+    public void usePlayerArtifact(int artifactID, String playerName, String useType, String playerAimedAt); // Uses a player artifact
 
 }

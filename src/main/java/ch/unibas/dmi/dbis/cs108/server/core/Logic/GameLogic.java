@@ -1,10 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.core.Logic;
 
 import ch.unibas.dmi.dbis.cs108.server.core.State.GameState;
-import ch.unibas.dmi.dbis.cs108.server.core.entities.Player;
-import ch.unibas.dmi.dbis.cs108.server.core.entities.Structure;
-import ch.unibas.dmi.dbis.cs108.server.core.entities.Tile;
-import ch.unibas.dmi.dbis.cs108.server.core.entities.Statue;
+import ch.unibas.dmi.dbis.cs108.server.core.entities.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -249,8 +246,14 @@ public class GameLogic implements GameLogicInterface {
      * @param playerID The unique identifier of the player using the statue
      */
     @Override
-    public void useStatue(int x, int y, String statueID, String useType, String playerID) {
-
+    public void useStatue(int x, int y, int statueID, String useType, String playerName) {
+        for(Player player : gameState.getPlayerList()) {
+            if(player.getName().equals(playerName)) {
+                if(player.getStatue().getStatueID() == statueID) {
+                    player.getStatue().use();
+                }
+            }
+        }
     }
 
     /**
@@ -263,8 +266,22 @@ public class GameLogic implements GameLogicInterface {
      * @param artifactID The identifier of the artifact to use
      */
     @Override
-    public void useFieldArtifact(int x, int y, int artifactID, String useType) {
+    public void useFieldArtifact(int x, int y, int artifactID, String useType, String playerName) {
 
+        for(Player player : gameState.getPlayerList()) {
+            if(player.getName().equals(playerName)) {
+                for(Artefact artefact : player.getArtifacts()){
+                    if(artefact.getArtifactID() == artifactID) {
+                        //player owns the artifact
+                        if(gameState.getBoard().getTileByCoordinates(x, y) == null) {
+                            System.out.println("Tile not found");
+                            return;
+                        }
+                        //todo: later implement use of field artifact
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -276,8 +293,21 @@ public class GameLogic implements GameLogicInterface {
      * @param playerID The unique identifier of the player who will be affected
      */
     @Override
-    public void usePlayerArtifact(int artifactID, String playerID, String useType) {
-
+    public void usePlayerArtifact(int artifactID, String playerName, String useType, String playerAimedAt) {
+        for(Player player : gameState.getPlayerList()) {
+            if(player.getName().equals(playerName)) {
+                for(Artefact artefact : player.getArtifacts()){
+                    if(artefact.getArtifactID() == artifactID) {
+                        //player owns the artifact
+                        for(Player otherPlayer : gameState.getPlayerList()) {
+                            if(otherPlayer.getName().equals(playerName)) {
+                                //todo: later implement use of player artifact
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public void buyStatue(String statueID, String playerID) {
