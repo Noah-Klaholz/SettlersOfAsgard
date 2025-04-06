@@ -16,4 +16,28 @@ public abstract class Structure {
         this.useType = data.getUseType();
         this.price = data.getCost();
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getUsage() {
+        return usage;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getUseType() {
+        return useType;
+    }
+
+    public int getPrice() {
+        return price;
+    }
 }
