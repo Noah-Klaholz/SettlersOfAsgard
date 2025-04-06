@@ -28,7 +28,7 @@ public class Player {
     public Player(String name) {
         this.playerID = UUID.randomUUID();
         this.name = name;
-        runes = 20;
+        runes = 20; //Startrunen
         energy = 0;
         ownedTiles = new ArrayList<>();
         artifacts = new ArrayList<>();

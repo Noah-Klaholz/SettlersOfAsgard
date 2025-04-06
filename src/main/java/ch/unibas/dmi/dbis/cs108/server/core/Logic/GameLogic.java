@@ -1,5 +1,13 @@
 package ch.unibas.dmi.dbis.cs108.server.core.Logic;
 
+import ch.unibas.dmi.dbis.cs108.server.core.State.GameState;
+import ch.unibas.dmi.dbis.cs108.server.core.entities.Player;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 /**
  * Implementation of the GameLogicInterface that provides the core game logic functionality.
  * This class handles all game mechanics including game flow, player turns, and player actions
@@ -7,7 +15,12 @@ package ch.unibas.dmi.dbis.cs108.server.core.Logic;
  */
 public class GameLogic implements GameLogicInterface {
 
-    public GameLogic() {}
+    private GameState gameState;
+
+    public GameLogic() {
+        // Initialize game state
+        this.gameState = new GameState();
+    }
 
     /**
      * Initializes and starts a new game.
@@ -15,8 +28,10 @@ public class GameLogic implements GameLogicInterface {
      * game field configuration, and starting resources.
      */
     @Override
-    public void startGame() {
-
+    public void startGame(String[] players) {
+        gameState.setPlayers(players);
+        gameState = new GameState();
+        gameState.setPlayers(players);
     }
 
     /**
@@ -26,7 +41,28 @@ public class GameLogic implements GameLogicInterface {
      */
     @Override
     public void endGame() {
+        ArrayList<Player> players = gameState.getPlayerList();
+        sortPlayersByScore(players);
+        //todo: later: give players with same scores the same place
+        String place1st = players.get(0).getName();
+        String place2nd = players.get(1).getName();
+        String place3rd = players.get(2).getName();
+        int i = 1;
+        for(Player player : players) {
+            System.out.println("#" + i + ": " + player.getName() + " has " + player.getRunes() + " runes.");
+            i++;
+        }
+        //todo: cleanup game resources
+    }
 
+    /**
+     * Sorts the players based on their scores (runes).
+     * This method sorts the players in descending order based on their runes.
+     *
+     * @param players List of players to be sorted
+     */
+    public void sortPlayersByScore(List<Player> players) {
+        Collections.sort(players, Comparator.comparingInt(Player::getRunes).reversed());
     }
 
     /**

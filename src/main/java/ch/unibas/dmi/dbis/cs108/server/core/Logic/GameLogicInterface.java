@@ -1,12 +1,16 @@
 package ch.unibas.dmi.dbis.cs108.server.core.Logic;
 
+import ch.unibas.dmi.dbis.cs108.server.core.entities.Player;
+
+import java.util.List;
+
 /**
  * Interface for the GameLogic
  * Contains all the methods that are needed to implement the game logic
  * The GameLogic class implements this interface
  */
 public interface GameLogicInterface {
-    public void startGame(); // Starts the game
+    public void startGame(String[] players); // Starts the game
     public void endGame(); // Ends the game
     public void startTurn(String playerID); // Starts the turn of a player
     public void endTurn(String playerID); // Ends the turn of a player

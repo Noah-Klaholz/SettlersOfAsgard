@@ -105,6 +105,10 @@ public class GameState {
         return playersString;
     }
 
+    public ArrayList<Player> getPlayerList() {
+        return players;
+    }
+
     /**
      * Sets the list of players in the game.
      *

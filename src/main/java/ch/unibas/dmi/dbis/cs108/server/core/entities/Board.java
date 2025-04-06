@@ -10,7 +10,7 @@ public class Board {
      * Constructor for Board class
      * Initializes the board with a 2D array of tiles.
      * The size of the board is currently set to 7 rows and 8 columns.
-     * This can be changed later if needed or chnaged in initBoard method.
+     * This can be changed later if needed or changed in initBoard method.
      */
     public Board() {
         tiles = new Tile[7][8]; // 7 rows and 8 columns
