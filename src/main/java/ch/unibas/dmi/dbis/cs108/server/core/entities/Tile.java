@@ -1,5 +1,8 @@
 package ch.unibas.dmi.dbis.cs108.server.core.entities;
 
+import ch.unibas.dmi.dbis.cs108.client.core.entities.ActiveTrap;
+import ch.unibas.dmi.dbis.cs108.server.core.entities.*;
+
 public class Tile {
 
     private final int x;

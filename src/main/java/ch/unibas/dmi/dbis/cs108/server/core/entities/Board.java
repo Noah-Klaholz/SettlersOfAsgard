@@ -3,10 +3,15 @@ package ch.unibas.dmi.dbis.cs108.server.core.entities;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class representing a game board.
+ * The board is represented as a 2D array of tiles.
+ * Each tile can contain various entities such as players, artefacts, etc.
+ */
 public class Board {
     private Tile[][] tiles;
 
-    /*
+    /**
      * Constructor for Board class
      * Initializes the board with a 2D array of tiles.
      * The size of the board is currently set to 7 rows and 8 columns.
@@ -17,8 +22,13 @@ public class Board {
         initBoard(7, 8);
     }
 
-    // Initialize board with a specified number of tiles
-    // usable for potential other maps with other sizes.
+    /**
+     * Initialize board with a specified number of tiles
+     * usable for potential other maps with other sizes.
+     *
+     * @param x The number of rows in the board.
+     * @param y The number of columns in the board.
+     */
     public void initBoard(int x, int y) {
         //tiles = new Tile[x][y];
         for (int i=0; i<x; i++){
@@ -30,10 +40,22 @@ public class Board {
         }
     }
 
+    /**
+     * Adds a tile to the board.
+     *
+     * @param tiles The 2D array of tiles to be added.
+     */
     public void setTiles(Tile[][] tiles) {
         this.tiles = tiles;
     }
 
+    /**
+     * Gets a tile from the board by its coordinates.
+     *
+     * @param x The x-coordinate of the tile.
+     * @param y The y-coordinate of the tile.
+     * @return The tile at the specified coordinates, or null if out of bounds.
+     */
     public Tile getTileByCoordinates(int x, int y) {
         if (x < 0 || x >= tiles.length || y < 0 || y >= tiles[0].length) {
             System.out.println("Coordinates out of bounds");
@@ -42,6 +64,13 @@ public class Board {
         return tiles[x][y];
     }
 
+    /**
+     * Sets a tile at the specified coordinates.
+     *
+     * @param x    The x-coordinate of the tile.
+     * @param y    The y-coordinate of the tile.
+     * @param tile The tile to be set at the specified coordinates.
+     */
     public void setTileByCoordinates(int x, int y, Tile tile) {
         if (x < 0 || x >= tiles.length || y < 0 || y >= tiles[0].length) {
             System.out.println("Coordinates out of bounds");
@@ -50,6 +79,13 @@ public class Board {
         tiles[x][y] = tile;
     }
 
+    /**
+     * Sets a tile at the specified coordinates.
+     *
+     * @param x    The x-coordinate of the tile.
+     * @param y    The y-coordinate of the tile.
+     * @param tile The tile to be set at the specified coordinates.
+     */
     public void setTile(int x, int y, Tile tile) {
         if (x < 0 || x >= tiles.length || y < 0 || y >= tiles[0].length) {
             System.out.println("Coordinates out of bounds");
@@ -58,6 +94,12 @@ public class Board {
         tiles[x][y] = tile;
     }
 
+    /**
+     * Gets a tile from the board by its ID.
+     *
+     * @param id The ID of the tile.
+     * @return The tile with the specified ID, or null if not found.
+     */
     public Tile getTile(int id) {
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[i].length; j++) {
@@ -69,7 +111,7 @@ public class Board {
         return null;
     }
 
-    /*
+    /**
     * Getter for all tiles
     *
     * @return Tile[][]
@@ -78,6 +120,11 @@ public class Board {
         return tiles;
     }
 
+    /**
+     * Gets all tiles on the board.
+     *
+     * @return A list of all tiles on the board.
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

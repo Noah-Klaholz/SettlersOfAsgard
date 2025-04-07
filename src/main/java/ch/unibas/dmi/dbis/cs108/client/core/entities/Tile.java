@@ -10,7 +10,7 @@ public class Tile {
     private Structure structure;
     private Statue statue;
     private Artefact artefact;
-    private ActiveTrap trap;
+    private ClientActiveTrap trap;
     private final String world;
     private boolean purchased;
     private int resourceValue; //Runes: bei spezifischen sind es energy: dort vermerkt
@@ -86,11 +86,11 @@ public class Tile {
         this.artefact = artefact;
     }
 
-    public ActiveTrap getTrap() {
+    public ClientActiveTrap getTrap() {
         return trap;
     }
 
-    public void setTrap(ActiveTrap trap) {
+    public void setTrap(ClientActiveTrap trap) {
         this.trap = trap;
     }
 
@@ -148,7 +148,7 @@ public class Tile {
         private Structure structure;
         private Statue statue;
         private Artefact artefact;
-        private ActiveTrap trap;
+        private ClientActiveTrap trap;
         private String world;
 
         public TileBuilder setX(int x) {
@@ -191,7 +191,7 @@ public class Tile {
             return this;
         }
 
-        public TileBuilder setTrap(ActiveTrap trap) {
+        public TileBuilder setTrap(ClientActiveTrap trap) {
             this.trap = trap;
             return this;
         }

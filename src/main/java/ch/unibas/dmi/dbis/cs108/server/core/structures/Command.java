@@ -60,7 +60,7 @@ public class Command {
     /**
      * Checks whether the command has the correct number of arguments appended
      *
-     * @return
+     * @return true if the command has the correct number of arguments, false otherwise
      */
     public boolean checkArgumentsSize() {
         return switch (command) {

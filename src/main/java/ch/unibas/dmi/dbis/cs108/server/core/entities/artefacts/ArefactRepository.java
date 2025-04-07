@@ -8,7 +8,17 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.List;
 
+/**
+ * Repository class for loading artefacts from a JSON file.
+ * This class is responsible for reading the artefacts data from a JSON file
+ */
 public class ArefactRepository {
+
+    /**
+     * Loads artefacts from a JSON file.
+     *
+     * @return A list of ArtefactData objects representing the artefacts.
+     */
     public static List<ArtefactData> loadArtefacts() {
         InputStream inputStream = ArefactRepository.class.getResourceAsStream("/json/artifacts.json");
         if (inputStream == null) {

@@ -17,6 +17,8 @@ public interface CommunicationAPI {
 
     /**
      * Receives a message from the server
+     *
+     * @param received the message received
      */
     void processMessage(String received);
 
@@ -37,51 +39,147 @@ public interface CommunicationAPI {
         /**
          * Enum for network protocol constants (Command names)
          */
+        /**
+         * Enum for network protocol constants (Command names)
+         */
         public enum Commands {
             // Test and system commands
-            TEST("TEST"),        // Test command
-            SHUTDOWN("STDN"),    // Shutdown command broadcast by server to disconnect all clients
-            PING("PING"),        // Ping command to check connection
+            /**
+             * Test command
+             */
+            TEST("TEST"),
+            /**
+             * Shutdown command broadcast by server to disconnect all clients
+             */
+            SHUTDOWN("STDN"),
+            /**
+             * Ping command to check connection
+             */
+            PING("PING"),
 
             // Player management commands
-            REGISTER("RGST"),    // Register a new player
-            CHANGENAME("CHAN"),  // Player changes their nickname
-            EXIT("EXIT"),        // Player exits the game/disconnects
+            /**
+             * Register a new player
+             */
+            REGISTER("RGST"),
+            /**
+             * Player changes their nickname
+             */
+            CHANGENAME("CHAN"),
+            /**
+             * Player exits the game/disconnects
+             */
+            EXIT("EXIT"),
 
             // Lobby management commands
-            CREATELOBBY("CREA"), // Creates a new lobby
-            JOIN("JOIN"),        // Player joins a game/lobby
-            LEAVE("LEAV"),       // Leave current lobby
-            LISTLOBBIES("LIST"), // List all current lobbies
-            LISTPLAYERS("LSTP"), // List all players in lobby/server (arg: LOBBY/SERVER)
-            START("STRT"),       // Start the game
+            /**
+             * Creates a new lobby
+             */
+            CREATELOBBY("CREA"),
+            /**
+             * Player joins a game/lobby
+             */
+            JOIN("JOIN"),
+            /**
+             * Leave current lobby
+             */
+            LEAVE("LEAV"),
+            /**
+             * List all current lobbies
+             */
+            LISTLOBBIES("LIST"),
+            /**
+             * List all players in lobby/server (arg: LOBBY/SERVER)
+             */
+            LISTPLAYERS("LSTP"),
+            /**
+             * Start the game
+             */
+            START("STRT"),
 
             // Chat commands
-            CHATGLOBAL("CHTG"),  // Send a message to all players on server
-            CHATLOBBY("CHTL"),   // Send a message to all players in the lobby
-            CHATPRIVATE("CHTP"), // Send a whisper message to only one player
+            /**
+             * Send a message to all players on server
+             */
+            CHATGLOBAL("CHTG"),
+            /**
+             * Send a message to all players in the lobby
+             */
+            CHATLOBBY("CHTL"),
+            /**
+             * Send a whisper message to only one player
+             */
+            CHATPRIVATE("CHTP"),
 
             // Game flow commands
-            STARTTURN("TURN"),   // Starts a player's turn
-            ENDTURN("ENDT"),     // Ends a player's turn
-            SYNCHRONIZE("SYNC"), // Request synchronization of the game
-            GETGAMESTATUS("GSTS"), // Get detailed game status
-            GETPRICES("GPRC"),   // Get in-game prices for actions/items
+            /**
+             * Starts a player's turn
+             */
+            STARTTURN("TURN"),
+            /**
+             * Ends a player's turn
+             */
+            ENDTURN("ENDT"),
+            /**
+             * Request synchronization of the game
+             */
+            SYNCHRONIZE("SYNC"),
+            /**
+             * Get detailed game status
+             */
+            GETGAMESTATUS("GSTS"),
+            /**
+             * Get in-game prices for actions/items
+             */
+            GETPRICES("GPRC"),
 
             // Game action commands
-            BUYTILE("BUYT"),     // Player buys a tile at coordinates
-            BUYSTATUE("BYST"),   // Player buys a statue at coordinates
-            BUYSTRUCTURE("BUST"), // Player buys a Structure with structure ID
-            PLACESTRUCTURE("PLST"), // Player places a structure at coordinates
-            USESTRUCTURE("USSR"), // Player uses a structure at coordinates
-            UPGRADESTATUE("UPST"), // Player upgrades a statue at coordinates
-            USESTATUE("USTA"),   // Player uses a statue at coordinates
-            USEPLAYERARTIFACT("USPA"), // Player uses an artifact
-            USEFIELDARTIFACT("USFA"), // Player uses a field artifact
+            /**
+             * Player buys a tile at coordinates
+             */
+            BUYTILE("BUYT"),
+            /**
+             * Player buys a statue at coordinates
+             */
+            BUYSTATUE("BYST"),
+            /**
+             * Player buys a Structure with structure ID
+             */
+            BUYSTRUCTURE("BUST"),
+            /**
+             * Player places a structure at coordinates
+             */
+            PLACESTRUCTURE("PLST"),
+            /**
+             * Player uses a structure at coordinates
+             */
+            USESTRUCTURE("USSR"),
+            /**
+             * Player upgrades a statue at coordinates
+             */
+            UPGRADESTATUE("UPST"),
+            /**
+             * Player uses a statue at coordinates
+             */
+            USESTATUE("USTA"),
+            /**
+             * Player uses an artifact
+             */
+            USEPLAYERARTIFACT("USPA"),
+            /**
+             * Player uses a field artifact
+             */
+            USEFIELDARTIFACT("USFA"),
 
             // Response codes
-            OK("OK"),           // OK response
-            ERROR("ERR");       // Error response
+            /**
+             * OK response
+             */
+            OK("OK"),
+            /**
+             * Error response
+             */
+            ERROR("ERR");
 
             private final String command;
 
@@ -97,7 +195,7 @@ public interface CommunicationAPI {
             /**
              * Returns the command enum from a command string
              *
-             * @param commandName
+             * @param commandName the command name
              * @return the command enum
              */
             public static Commands fromCommand(String commandName) {
@@ -113,7 +211,7 @@ public interface CommunicationAPI {
              * Getter for the command
              *
              * @return the command
-             * @see #command
+             * @see command
              */
             public String getCommand() {
                 return command;

@@ -23,6 +23,8 @@ public class CommandHandler {
 
     /**
      * Constructor for the ClientHandler class.
+     *
+     * @param clientHandler the ClientHandler instance
      */
     public CommandHandler(ClientHandler clientHandler) {
         this.ch = clientHandler;
@@ -64,6 +66,7 @@ public class CommandHandler {
      * Gets called immediately when a player connects
      *
      * @param cmd the transmitted command
+     * @return true if the command was handled successfully, false otherwise
      */
     public boolean handleRegister(Command cmd) {
         String playerName = cmd.getArgs()[0].toLowerCase();
@@ -92,6 +95,7 @@ public class CommandHandler {
      * This method handles the changing of a player's name.
      *
      * @param cmd the transmitted command
+     * @return true if the command was handled successfully, false otherwise
      */
     public boolean handleChangeName(Command cmd) {
         String newPlayerName = cmd.getArgs()[0].toLowerCase();
@@ -152,6 +156,8 @@ public class CommandHandler {
 
     /**
      * This method handles the listing of all lobbies.
+     *
+     * @return true if the command was handled successfully, false otherwise
      */
     public boolean handleListLobbies() {
         List<Lobby> lobbies = server.getLobbies();
@@ -174,6 +180,7 @@ public class CommandHandler {
      * This method handles the creation of a lobby.
      *
      * @param cmd the transmitted command
+     *
      */
     public boolean handleCreateLobby(Command cmd) {
         if (currentLobby != null) {

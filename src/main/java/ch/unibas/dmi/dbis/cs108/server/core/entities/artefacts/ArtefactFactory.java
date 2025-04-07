@@ -1,6 +1,16 @@
 package ch.unibas.dmi.dbis.cs108.server.core.entities.artefacts;
 
+/**
+ * Factory class for creating artefacts.
+ * This class is used to create artefacts based on the data provided.
+ */
 public class ArtefactFactory {
+    /**
+     * Creates an artefact based on the provided data.
+     *
+     * @param data The artefact data.
+     * @return The created artefact, or null if the name is null.
+     */
     public static Artefact createArtefact(ArtefactData data) {
         if (data.getName() == null) {
             return null;

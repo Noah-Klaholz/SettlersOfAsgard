@@ -9,11 +9,17 @@ import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
  * In a real application you might use a DI framework to inject these.
  */
 public abstract class BaseController {
-    protected final ResourceLoader resourceLoader;
-    protected final UIEventBus eventBus;
-    protected final SceneManager sceneManager;
+    protected final ResourceLoader resourceLoader; // Resource loader for loading resources
+    protected final UIEventBus eventBus; // Event bus for handling events
+    protected final SceneManager sceneManager; // Scene manager for managing scenes
 
-    // In a DI framework these dependencies would be injected.
+    /**
+     * Constructor for BaseController.
+     *
+     * @param resourceLoader The resource loader for loading resources.
+     * @param eventBus      The event bus for handling events.
+     * @param sceneManager   The scene manager for managing scenes.
+     */
     public BaseController(ResourceLoader resourceLoader, UIEventBus eventBus, SceneManager sceneManager) {
         this.resourceLoader = resourceLoader;
         this.eventBus = eventBus;

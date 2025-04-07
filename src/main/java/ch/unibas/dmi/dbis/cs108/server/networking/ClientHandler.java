@@ -24,13 +24,13 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     private static final Logger logger = Logger.getLogger(ClientHandler.class.getName());
     private final CommandHandler ch; // Reference to a CommandHandler
     protected GameServer server; // Reference to the GameServer
-    protected Lobby currentLobby = null;
-    protected Player localPlayer = null;
-    private Socket socket;
-    private PrintWriter out;
-    private BufferedReader in;
-    private long lastPingTime = System.currentTimeMillis();
-    private boolean running;
+    protected Lobby currentLobby = null; // Reference to the current lobby of the client
+    protected Player localPlayer = null; // Reference to the local player of the client
+    private Socket socket; // The socket for the client connection
+    private PrintWriter out; // PrintWriter for sending messages to the client
+    private BufferedReader in; // BufferedReader for receiving messages from the client
+    private long lastPingTime = System.currentTimeMillis(); // Last time a ping was sent
+    private boolean running; // Flag to indicate if the client handler is running
 
 
     /**
@@ -204,7 +204,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     /**
      * Sets the local player to the given Player argument
      *
-     * @param player
+     * @param player the player to be assigned to the ClientHandler
      */
     public void setPlayer(Player player) {
         localPlayer = player;
