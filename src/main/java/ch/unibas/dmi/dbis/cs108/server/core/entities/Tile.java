@@ -1,4 +1,4 @@
-package ch.unibas.dmi.dbis.cs108.client.core.entities;
+package ch.unibas.dmi.dbis.cs108.server.core.entities;
 
 public class Tile {
 

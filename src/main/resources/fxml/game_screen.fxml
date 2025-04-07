@@ -83,11 +83,11 @@
             <ScrollPane fitToWidth="true" hbarPolicy="ALWAYS" vbarPolicy="NEVER">
                 <HBox spacing="15" alignment="CENTER_LEFT">
                     <!-- Artifact Cards Section -->
-                    <VBox styleClass="artifact-section">
+                    <VBox styleClass="artefact-section">
                         <Label text="Artifacts" styleClass="section-label"/>
                         <HBox spacing="10">
                             <VBox fx:id="artifact1" styleClass="shop-card">
-                                <StackPane prefWidth="100" prefHeight="120" styleClass="card, artifact-card">
+                                <StackPane prefWidth="100" prefHeight="120" styleClass="card, artefact-card">
                                     <Label text="Mjölnir" styleClass="card-title" StackPane.alignment="TOP_CENTER"/>
                                 </StackPane>
                                 <HBox alignment="CENTER" styleClass="card-price-container">
@@ -95,7 +95,7 @@
                                 </HBox>
                             </VBox>
                             <VBox fx:id="artifact2" styleClass="shop-card">
-                                <StackPane prefWidth="100" prefHeight="120" styleClass="card, artifact-card">
+                                <StackPane prefWidth="100" prefHeight="120" styleClass="card, artefact-card">
                                     <Label text="Gungnir" styleClass="card-title" StackPane.alignment="TOP_CENTER"/>
                                 </StackPane>
                                 <HBox alignment="CENTER" styleClass="card-price-container">
@@ -103,7 +103,7 @@
                                 </HBox>
                             </VBox>
                             <VBox fx:id="artifact3" styleClass="shop-card">
-                                <StackPane prefWidth="100" prefHeight="120" styleClass="card, artifact-card">
+                                <StackPane prefWidth="100" prefHeight="120" styleClass="card, artefact-card">
                                     <Label text="Draupnir" styleClass="card-title" StackPane.alignment="TOP_CENTER"/>
                                 </StackPane>
                                 <HBox alignment="CENTER" styleClass="card-price-container">

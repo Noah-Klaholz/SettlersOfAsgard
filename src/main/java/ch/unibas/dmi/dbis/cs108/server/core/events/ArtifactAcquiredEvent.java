@@ -1,13 +1,13 @@
-package ch.unibas.dmi.dbis.cs108.client.core.events;
+package ch.unibas.dmi.dbis.cs108.server.core.events;
 
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Artefact;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 
-public class ArtifactActivatedEvent implements GameEvent {
+public class ArtifactAcquiredEvent implements GameEvent {
     private final Player player;
     private final Artefact artefact;
 
-    public ArtifactActivatedEvent(Player player, Artefact artefact) {
+    public ArtifactAcquiredEvent(Player player, Artefact artefact) {
         this.player = player;
         this.artefact = artefact;
     }
