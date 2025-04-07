@@ -81,7 +81,9 @@ public class GameState {
      *
      * @param playerRound the player to set
      */
-    public void setPlayerRound(int playerRound) {}
+    public void setPlayerRound(int playerRound) {
+        this.playerRound = playerRound;
+    }
 
     /**
      * Gets the current game round.
@@ -99,7 +101,7 @@ public class GameState {
      *              should be checked in GameLogic
      */
     public void setGameRound(int round) {
-        if (round >= 1 && round <= 5) {
+        if (round >= 0 && round <= 5) {
             gameRound = round;
         } else {
             System.out.println("Invalid game round: " + round);
@@ -133,6 +135,14 @@ public class GameState {
      * @param players An array of player names
      */
     public void setPlayers(String[] players) {
+        if (players == null) {
+            System.out.println("no players found");
+            return;
+        }
+        if(players.length >= 9){
+            System.out.println("too many players");
+            return;
+        }
         this.players = new ArrayList<>();
         for (String playerName : players) {
             Player player = new Player(playerName);
@@ -183,6 +193,14 @@ public class GameState {
      * @param player    The name of the player
      */
     public void setArtifacts(Artefact[] artifactsList, String player) {
+        if(artifactsList == null) {
+            System.out.println("no artifacts found");
+            return;
+        }
+        if(artifactsList.length >= 4){
+            System.out.println("too many artifacts");
+            return;
+        }
         for (Player p : players) {
             if (p.getName().equals(player)) {
                 ArrayList<Artefact> artifacts = new ArrayList<>();
@@ -201,6 +219,14 @@ public class GameState {
      * @param player    The name of the player
      */
     public void addArtifact(Artefact[] artifactsList, String player) {
+        if(artifactsList == null) {
+            System.out.println("no artifacts found");
+            return;
+        }
+        if(artifactsList.length + players.get(0).getArtifacts().size() >= 4){
+            System.out.println("too many artifacts");
+            return;
+        }
         for (Player p : players) {
             if (p.getName().equals(player)) {
                 for (Artefact artifact : artifactsList) {
@@ -249,11 +275,17 @@ public class GameState {
      * @param player The name of the player
      */
     public void setRunes(int runes, String player) {
+        if(runes < 0) {
+            System.out.println("runes cannot be negative");
+            return;
+        }
         for (Player p : players) {
             if (p.getName().equals(player)) {
                 p.setRunes(runes);
+                break;
             }
         }
+        System.out.println("no player found");
     }
 
     /**
@@ -266,12 +298,15 @@ public class GameState {
         for (Player p : players) {
             if (p.getName().equals(player)) {
                 p.addRunes(runes);
+                break;
             }
         }
+        System.out.println("no player found");
     }
 
     /**
      * Removes runes from a player's collection.
+     * //falls player runes < remove runes, set to 0
      *
      * @param runes  The number of runes to remove
      * @param player The name of the player
@@ -279,6 +314,9 @@ public class GameState {
     public void removeRunes(int runes, String player) {
         for (Player p : players) {
             if (p.getName().equals(player)) {
+                if(p.getRunes() < runes) {
+                    p.setRunes(0);
+                }
                 p.removeRunes(runes);
             }
         }

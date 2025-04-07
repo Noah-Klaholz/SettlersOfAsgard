@@ -2,6 +2,7 @@ package ch.unibas.dmi.dbis.cs108.server;
 
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import ch.unibas.dmi.dbis.cs108.server.networking.GameServer;
+import ch.unibas.dmi.dbis.cs108.server.old.GameClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
