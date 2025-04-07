@@ -119,7 +119,7 @@ public class CommandHandler {
 
         String lobbyList = lobbies.stream()
                 .map(lobby -> lobby.getId() + ":  " + lobby.getStatus())
-                .collect(Collectors.joining("\n"));
+                .collect(Collectors.joining("         "));
 
         System.out.println(lobbyList);
         ch.sendMessage("OK$LIST$" + lobbyList);
