@@ -293,6 +293,22 @@ public class CommandHandler {
     }
 
     /**
+     * This method handles the starting of a game.
+     */
+    public boolean handleStartGame() {
+        if (ch.getCurrentLobby() != null && ch.getCurrentLobby().startGame()) {
+            this.currentLobby = ch.getCurrentLobby();
+            this.gameLogic = currentLobby.getGameLogic();
+            currentLobby.broadcastMessage("OK$STRT$");
+            return true;
+        } else {
+            System.out.println("ERR$106$NOT_IN_LOBBY");
+            sendMessage("ERR$106$CANNOT_START_GAME");
+            return false;
+        }
+    }
+
+    /**
      * Handles end turn command from client
      */
     public boolean handleStartTurn() {
@@ -317,22 +333,6 @@ public class CommandHandler {
             gameLogic = currentLobby.getGameLogic();
         }
         return gameLogic;
-    }
-
-    /**
-     * This method handles the starting of a game.
-     */
-    public boolean handleStartGame() {
-        System.out.println("handle start game");
-        if (ch.getCurrentLobby() != null && ch.getCurrentLobby().startGame()) {
-            this.currentLobby = ch.getCurrentLobby();
-            this.gameLogic = currentLobby.getGameLogic();
-            return true;
-        } else {
-            System.out.println("ERR$106$NOT_IN_LOBBY");
-            sendMessage("ERR$106$CANNOT_START_GAME");
-            return false;
-        }
     }
 
     /**
