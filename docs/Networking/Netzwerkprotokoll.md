@@ -20,27 +20,27 @@ Dieser Befehl bedeutet, dass Spieler PL01 eine Struktur vom Typ "Castle" auf das
 ## 3. Befehle
 
 ### Spielverwaltung
-| Befehl | Richtung      | Beschreibung                                                  | Parameter                            | Beispiel                       |
-|--------|---------------|---------------------------------------------------------------|--------------------------------------|--------------------------------|
-| `RGST` | **C→S**       | Spieler verbindet sich erstmals mit Server                    | `Spielername`                        | `RGST$ThorOdinson`             |
-| `CHAN` | **C→S & S→C** | Spieler verändert seinen Namen (S→C: Notify NameChange)       | `neuerSpielername`                   | `CHAN$ThorOdinson`             |
-| `CREA` | **C→S**       | Neue Lobby erstellen                                          | `Spielername$Lobbyname`              | `CREA$ThorOdinson$Lobby1`      |
-| `JOIN` | **C→S**       | Spieler tritt Lobby bei                                       | `Spielername$Lobbyname`              | `CREA$Lobby1$ThorOdinson`      |
-| `LEAV` | **C→S**       | Spieler verlässt Lobby                                        | `Spielername$Lobbyname`              | `LEAV$ThorOdinson$Lobby1`      |
-| `EXIT` | **C→S**       | Spieler disconnected                                          | `Spielername$`                       | `EXIT$ThorOdinson$`            |
-| `CHAN` | **C→S**       | Spieler möchte seinen Namen ändern                            | `Spielername`                        | `CHAN$LokiLaufeyson`           |
-| `CHTG` | **C→S**       | Nachricht senden (global)                                     | `Spielername$Nachricht`              | `CHTG$ThorOdinson$HelloWorld!` |
-| `CHTL` | **C→S**       | Nachricht senden (lobby)                                      | `Spielername$Nachricht`              | `CHTL$ThorOdinson$HelloWorld!` |
-| `CHTP` | **C→S**       | Nachricht senden (privat)                                     | `Spielername$Spielername2$Nachricht` | `CHTP$PL01$PL02$HelloWorld!`   |
-| `LIST` | **C→S**       | Liste der Lobbies                                             |                                      | `LIST$`                        |
-| `LSTP` | **C→S**       | Liste der Spieler in der Lobby oder Serverweit                | `Ort (LOBBY oder SERVER)`            | `LSTP$LOBBY / LSTP$SERVER`     |
-| `STRT` | **C→S**       | Spiel starten                                                 |                                      | `STRT$`                        |
-| `STDN` | **S→C**       | Nachricht an Clients: Server wird beendet                     |                                      | `STDN$`                        |  
-| `PING` | **C→S & S→C** | Verbindung prüfen                                             |                                      | `PING$`                        |
-| `GSTS` | **C→S**       | Spielstatus abrufen   (temporär)                              |                                      | `GSTS$`                        |
-| `GPRC` | **C→S**       | Preise für verschiedene Kaufbare Elemente abfragen (temporär) |                                      | `GPRC$`                        |
-| `SYNC` | **C→S**       | Synchronisation des Spielzustands anfordern                   |                                      | `SYNC$`                        |
-| `OK`   | **S→C**       | Protokoll-Antwort bei erfolgreichen Befehlen                  | `[Arg1][$Arg2]...`                   | `OK$`                          |
+| Befehl | Richtung      | Beschreibung                                                  | Parameter                             | Beispiel                              |
+|--------|---------------|---------------------------------------------------------------|---------------------------------------|---------------------------------------|
+| `RGST` | **C→S**       | Spieler verbindet sich erstmals mit Server                    | `Spielername`                         | `RGST$ThorOdinson`                    |
+| `CHAN` | **C→S & S→C** | Spieler verändert seinen Namen (S→C: Notify NameChange)       | `neuerSpielername`                    | `CHAN$ThorOdinson`                    |
+| `CREA` | **C→S**       | Neue Lobby erstellen                                          | `Spielername$Lobbyname`               | `CREA$ThorOdinson$Lobby1`             |
+| `JOIN` | **C→S**       | Spieler tritt Lobby bei                                       | `Spielername$Lobbyname`               | `CREA$Lobby1$ThorOdinson`             |
+| `LEAV` | **C→S**       | Spieler verlässt Lobby                                        | `Spielername$Lobbyname`               | `LEAV$ThorOdinson$Lobby1`             |
+| `EXIT` | **C→S**       | Spieler disconnected                                          | `Spielername$`                        | `EXIT$ThorOdinson$`                   |
+| `CHAN` | **C→S**       | Spieler möchte seinen Namen ändern                            | `Spielername`                         | `CHAN$LokiLaufeyson`                  |
+| `CHTG` | **C→S**       | Nachricht senden (global)                                     | `Spielername$Nachricht`               | `CHTG$ThorOdinson$HelloWorld!`        |
+| `CHTL` | **C→S**       | Nachricht senden (lobby)                                      | `Spielername$Nachricht`               | `CHTL$ThorOdinson$HelloWorld!`        |
+| `CHTP` | **C→S**       | Nachricht senden (privat)                                     | `Spielername$Spielername2$Nachricht`  | `CHTP$PL01$PL02$HelloWorld!`          |
+| `LIST` | **C→S**       | Liste der Lobbies                                             |                                       | `LIST$`                               |
+| `LSTP` | **C→S**       | Liste der Spieler in der Lobby oder Serverweit                | `Ort (LOBBY oder SERVER)$[lobbyName]` | `LSTP$LOBBY$lobbyName / LSTP$SERVER$` |
+| `STRT` | **C→S**       | Spiel starten                                                 |                                       | `STRT$`                               |
+| `STDN` | **S→C**       | Nachricht an Clients: Server wird beendet                     |                                       | `STDN$`                               |  
+| `PING` | **C→S & S→C** | Verbindung prüfen                                             |                                       | `PING$`                               |
+| `GSTS` | **C→S**       | Spielstatus abrufen   (temporär)                              |                                       | `GSTS$`                               |
+| `GPRC` | **C→S**       | Preise für verschiedene Kaufbare Elemente abfragen (temporär) |                                       | `GPRC$`                               |
+| `SYNC` | **C→S**       | Synchronisation des Spielzustands anfordern                   |                                       | `SYNC$`                               |
+| `OK`   | **S→C**       | Protokoll-Antwort bei erfolgreichen Befehlen                  | `[Arg1][$Arg2]...`                    | `OK$`                                 |
 
 ### Spielmechanik
 | Befehl | Richtung | Beschreibung                                                     | Parameter                | Beispiel                   |

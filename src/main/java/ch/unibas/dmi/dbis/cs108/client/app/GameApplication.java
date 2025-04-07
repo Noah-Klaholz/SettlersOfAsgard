@@ -136,7 +136,7 @@ public class GameApplication extends Application {
                     networkController.listAllPlayers();
                     break;
                 case LISTLOBBYPLAYERS:
-                    networkController.listLobbyPlayers();
+                    networkController.listLobbyPlayers(input.replace("/listlobbyplayers ", ""));
                     break;
                 case GLOBALCHAT:
                     networkController.sendGlobalChat(input.replace("/global ", "")); // Handled differently, because spaces can be included in messages

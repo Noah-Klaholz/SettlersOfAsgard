@@ -202,8 +202,8 @@ public class NetworkController {
                 });
     }
 
-    public void listLobbyPlayers() {
-        String message = translator.formatListLobbyPlayers();
+    public void listLobbyPlayers(String lobbyName) {
+        String message = translator.formatListLobbyPlayers(lobbyName);
         networkClient.send(message);
     }
 

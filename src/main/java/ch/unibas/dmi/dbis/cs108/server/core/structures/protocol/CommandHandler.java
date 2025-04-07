@@ -61,14 +61,15 @@ public class CommandHandler {
 
     public boolean handleListPlayers(Command cmd) {
         String[] arg = cmd.getArgs();
-        if (arg.length != 1) {
+        if (!(arg.length >= 1)) {
             sendMessage("ERR$101$INVALID_ARGUMENTS");
         } else {
             String list;
             if (arg[0].equals("LOBBY")) {
-                if (currentLobby != null) {
-                    list = currentLobby.listPlayers();
-                    sendMessage("OK$LSTP$LOBBY$" + list);
+                Lobby lobby = server.getLobby(arg[1]);
+                if (arg.length == 2 && lobby != null) {
+                    list = lobby.listPlayers();
+                    sendMessage("OK$LSTP$LOBBY$" + lobby.getId() + "$"+ list);
                     return true;
                 } else {
                     sendMessage("ERR$106$NOT_IN_LOBBY");
@@ -116,7 +117,9 @@ public class CommandHandler {
             return true;
         }
 
-        String lobbyList = lobbies.stream().map(lobby -> lobby.getId() + ":  " + lobby.getStatus()).collect(Collectors.joining("%"));
+        String lobbyList = lobbies.stream()
+                .map(lobby -> lobby.getId() + ":  " + lobby.getStatus())
+                .collect(Collectors.joining("\n"));
 
         System.out.println(lobbyList);
         ch.sendMessage("OK$LIST$" + lobbyList);

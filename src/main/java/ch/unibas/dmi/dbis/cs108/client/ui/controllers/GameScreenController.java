@@ -339,9 +339,9 @@ public class GameScreenController extends BaseController {
 
                 switch (type) {
                     case LISTPLAYERS:
-                        if(args.length > 1) {
+                        if(args.length >= 3) {
                             if (args[1].equals("LOBBY")) {
-                                message = "Players in lobby: " + args[2];
+                                message = "Players in lobby " + args[2] + args[3];
                             } else if (args[1].equals("SERVER")) {
                                 message = "Players in server: " + args[2];
                             }

@@ -202,8 +202,8 @@ public class ProtocolTranslator {
         return "CHAN$" + newName;
     }
 
-    public String formatListLobbyPlayers() {
-        return "LSTP$LOBBY$";
+    public String formatListLobbyPlayers(String lobbyName) {
+        return "LSTP$LOBBY$" + lobbyName;
     }
 
     public String formatListAllPlayers() {
