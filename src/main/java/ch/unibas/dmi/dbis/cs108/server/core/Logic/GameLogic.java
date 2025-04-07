@@ -142,7 +142,7 @@ public class GameLogic implements GameLogicInterface {
      *
      * @param x The x-coordinate of the tile to purchase
      * @param y The y-coordinate of the tile to purchase
-     * @param playerID The unique identifier of the player attempting to buy the tile
+     * @param playerName The unique identifier of the player attempting to buy the tile
      */
     @Override
     public boolean buyTile(int x, int y, String playerName) {
@@ -181,7 +181,7 @@ public class GameLogic implements GameLogicInterface {
      * @param x The x-coordinate where the structure will be placed
      * @param y The y-coordinate where the structure will be placed
      * @param structureID The identifier of the structure to place
-     * @param playerID The unique identifier of the player placing the structure
+     * @param playerName The unique identifier of the player placing the structure
      */
     @Override
     public boolean placeStructure(int x, int y, int structureID, String playerName) {
@@ -220,7 +220,7 @@ public class GameLogic implements GameLogicInterface {
      * @param y The y-coordinate of the structure to use
      * @param structureID The identifier of the structure to use
      * @param useType The specific way the structure should be used
-     * @param playerID The unique identifier of the player using the structure
+     * @param playerName The unique identifier of the player using the structure
      */
     @Override
     public boolean useStructure(int x, int y, int structureID, String useType, String playerName) {
@@ -247,7 +247,7 @@ public class GameLogic implements GameLogicInterface {
      * @param x The x-coordinate of the statue to upgrade
      * @param y The y-coordinate of the statue to upgrade
      * @param statueID The identifier of the statue to upgrade
-     * @param playerID The unique identifier of the player upgrading the statue
+     * @param playerName The unique identifier of the player upgrading the statue
      */
     @Override
     public boolean upgradeStatue(int x, int y, String statueID, String playerName) {
@@ -284,7 +284,7 @@ public class GameLogic implements GameLogicInterface {
      * @param y The y-coordinate of the statue to use
      * @param statueID The identifier of the statue to use
      * @param useType The specific way the statue should be used
-     * @param playerID The unique identifier of the player using the statue
+     * @param playerName The unique identifier of the player using the statue
      */
     @Override
     public void useStatue(int x, int y, int statueID, String useType, String playerName) {
@@ -330,7 +330,7 @@ public class GameLogic implements GameLogicInterface {
      * and updates the game state accordingly.
      *
      * @param artifactID The identifier of the artifact to use
-     * @param playerID The unique identifier of the player who will be affected
+     * @param playerName The unique identifier of the player who will be affected
      */
     @Override
     public void usePlayerArtifact(int artifactID, String playerName, String useType, String playerAimedAt) {

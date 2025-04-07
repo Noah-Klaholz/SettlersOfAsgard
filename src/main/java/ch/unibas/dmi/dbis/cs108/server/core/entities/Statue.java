@@ -10,13 +10,13 @@ public class Statue {
     private final int upgradePrice;
     private int level;
 
-    public Statue(int statueID, String name, String description, String useType, int price, int upgradePrice) {
+    public Statue(int statueID, String name, String description, String useType) {
         this.statueID = statueID;
         this.name = name;
         this.description = description;
         this.useType = useType;
-        this.price = price;
-        this.upgradePrice = upgradePrice;
+        this.price = 200;
+        this.upgradePrice = 100;
         this.level = 1; // Default level
     }
 
