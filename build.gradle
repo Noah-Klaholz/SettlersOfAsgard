@@ -1,7 +1,7 @@
 plugins {
     id 'java-library'
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.0.13'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
 }
 
 group 'ch.unibas.dmi.dbis'
@@ -9,6 +9,8 @@ version '0.0.1-ALPHA'
 
 application {
     mainClass = 'ch.unibas.dmi.dbis.cs108.Main'
+    applicationDefaultJvmArgs = ['--module-path', "${System.getProperty('java.home')}/lib/",
+                                 '--add-modules', 'javafx.controls,javafx.fxml,javafx.base']
 }
 
 javadoc {
@@ -62,9 +64,12 @@ repositories {
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.9.2')
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
-
     testImplementation 'org.mockito:mockito-core:5.5.0'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.5.0'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation "org.openjfx:javafx-base:${javafx.version}"
+    implementation "org.openjfx:javafx-controls:${javafx.version}"
+    implementation "org.openjfx:javafx-fxml:${javafx.version}"
 }
 
 test {
@@ -96,9 +101,7 @@ jar {
         attributes 'Main-Class': application.mainClass
     }
     from {
-        configurations.runtimeClasspath.collect { file ->
-            file.isDirectory() ? file : zipTree(file)
-        }
+        configurations.runtimeClasspath.collect { file -> file.isDirectory() ? file : zipTree(file) }
     }
 }
 
@@ -112,9 +115,7 @@ tasks.register('clientJar', Jar) {
         attributes 'Main-Class': 'ch.unibas.dmi.dbis.cs108.client.app.Main'
     }
     from {
-        configurations.runtimeClasspath.collect { file ->
-            file.isDirectory() ? file : zipTree(file)
-        }
+        configurations.runtimeClasspath.collect { file -> file.isDirectory() ? file : zipTree(file) }
     }
 }
 
@@ -128,9 +129,7 @@ tasks.register('serverJar', Jar) {
         attributes 'Main-Class': 'ch.unibas.dmi.dbis.cs108.server.Main'
     }
     from {
-        configurations.runtimeClasspath.collect { file ->
-            file.isDirectory() ? file : zipTree(file)
-        }
+        configurations.runtimeClasspath.collect { file -> file.isDirectory() ? file : zipTree(file) }
     }
 }
 
@@ -141,3 +140,35 @@ tasks.register('build-cs108') {
 }
 
 build.dependsOn clientJar, serverJar
+
+tasks.register('runClient', JavaExec) {
+    group = 'application'
+    description = 'Runs the client application'
+    mainClass = 'ch.unibas.dmi.dbis.cs108.client.app.ClientMainApp'
+    classpath = sourceSets.client.runtimeClasspath + sourceSets.main.runtimeClasspath
+    systemProperty "file.encoding", "utf-8"
+    jvmArgs = [
+            '--module-path', classpath.asPath,
+            '--add-modules', 'javafx.controls,javafx.fxml,javafx.base'
+    ]
+}
+
+tasks.register('runServer', JavaExec) {
+    group = 'application'
+    description = 'Runs the server application'
+    mainClass = 'ch.unibas.dmi.dbis.cs108.server.Main'
+    classpath = sourceSets.server.runtimeClasspath + sourceSets.main.runtimeClasspath
+    systemProperty "file.encoding", "utf-8"
+}
+
+tasks.register('runGame', JavaExec) {
+    group = 'application'
+    description = 'Runs the GameApplication'
+    mainClass = 'ch.unibas.dmi.dbis.cs108.client.app.GameApplication'
+    classpath = sourceSets.client.runtimeClasspath + sourceSets.main.runtimeClasspath
+    systemProperty "file.encoding", "utf-8"
+    jvmArgs = [
+            '--module-path', classpath.asPath,
+            '--add-modules', 'javafx.controls,javafx.fxml,javafx.base'
+    ]
+}

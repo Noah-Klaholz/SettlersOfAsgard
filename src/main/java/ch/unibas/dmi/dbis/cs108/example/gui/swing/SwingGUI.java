@@ -1,7 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.example.gui.swing;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.*;
 
 /**
  * This is an example Swing Application

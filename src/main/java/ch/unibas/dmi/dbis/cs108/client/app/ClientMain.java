@@ -1,11 +1,9 @@
 package ch.unibas.dmi.dbis.cs108.client.app;
 
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
-import ch.unibas.dmi.dbis.cs108.client.networking.GameClient;
+import ch.unibas.dmi.dbis.cs108.client.networking.NetworkController;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.PingFilter;
 
-import java.util.Scanner;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 /**
@@ -13,7 +11,6 @@ import java.util.logging.Logger;
  * This class is the main entry point for the client application.
  */
 public class ClientMain {
-    private static final int MESSAGE_POLLING_DELAY = 50;
     private static final Logger logger = Logger.getLogger(ClientMain.class.getName());
 
     /**
@@ -23,9 +20,7 @@ public class ClientMain {
      * @param args String[] Command line arguments
      */
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        GameClient client = null;
-        AtomicBoolean running = new AtomicBoolean(true);
+        NetworkController networkController = null;
         logger.setFilter(new PingFilter());
 
         try {
@@ -42,7 +37,7 @@ public class ClientMain {
             int serverport = Integer.parseInt(serverAddress[1]);
 
             String username;
-            if(args.length > 2) {
+            if (args.length > 2) {
                 username = args[2];
             } else {
                 username = System.getProperty("user.name");
@@ -51,129 +46,46 @@ public class ClientMain {
 
             logger.info("Connecting to server at " + serverAddress[0] + ":" + serverport + " as " + username + "...");
 
-            client = new GameClient(serverAddress[0], serverport, localPlayer);
+            // Create network controller and connect
+            networkController = new NetworkController(localPlayer);
+            networkController.connect(serverAddress[0], serverport);
 
-            if (checkClient(client)) return;
+            if (!checkConnection(networkController)) return;
 
-            Thread receiverThread = startMessageReceiverThread(client, running);
-
-            logger.info("Connected. Type /help to view available commands");
-
-            processInput(running, scanner, client);
-
-            receiverThread.join(1000);
+            // Initialize and start the command line interface
+            CommandLineInterface cli = new CommandLineInterface(networkController, localPlayer);
+            cli.start();
 
         } catch (Exception e) {
             logger.warning("Client start-up error: " + e.getMessage());
         } finally {
-            if (client != null && client.isConnected()) {
-                client.disconnect();
+            if (networkController != null && networkController.isConnected()) {
+                networkController.disconnect();
             }
-            scanner.close();
             logger.info("Client terminated.");
         }
     }
 
-
     /**
      * Check if the client is connected to the server
      *
-     * @param client GameClient
+     * @param networkController NetworkController
      * @return boolean
      */
-    private static boolean checkClient(GameClient client) {
-        if (!client.isConnected()) { // Add this method to GameClient
-            logger.warning("Client failed to connect to server. Exiting...");
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Process user input
-     * @param running AtomicBoolean
-     * @param scanner Scanner
-     * @param client  GameClient
-     */
-    private static void processInput(AtomicBoolean running, Scanner scanner, GameClient client) {
-        while (running.get()) {
-            String input = scanner.nextLine().trim().toLowerCase();
-            input = input.replaceAll("[$]", "").trim();
-
-            if (input.equals("/exit")) {
-                running.set(false);
-                break;
-            } else if (input.startsWith("/changename ")) {
-                String newName = input.replace("/changename ", "").trim();
-                client.changeName(newName);
-            } else if (input.equals("/ping")) {
-                client.sendPing();
-            } else if (input.startsWith("/join ")) {
-                String lobbyId = input.replace("/join ", "").trim();
-                client.joinLobby(lobbyId);
-            } else if (input.startsWith("/leave")) {
-                client.leaveLobby();
-            } else if (input.startsWith("/create ")) {
-                String lobbyName = input.replace("/create ", "").trim();
-                client.createLobby(lobbyName);
-            } else if (input.startsWith("/start ")) {
-                String lobbyId = input.replace("/start ", "").trim();
-                client.startGame();
-            } else if (input.startsWith("/listlobbies")) {
-                client.listLobbies();
-            }else if (input.startsWith("/lobbyplayers")) {
-                client.listLobbyPlayers();
-            } else if (input.startsWith("/allplayers")) {
-                client.listAllPlayers();
-            } else if (input.startsWith("@")) {
-                client.sendPrivateMessage(input);
-            } else if (input.startsWith("/global ")) {
-                String message = input.replace("/global ", "").trim();
-                client.sendChat(message);
-            } else if (input.startsWith("/help")) {
-                logger.info("Available commands: /changeName <name>, /ping, /exit, /join <lobbyId>, /leave <lobbyId>, /create <lobbyName>, /start <lobbyId>, /listLobbies, " +
-                        "/lobbyPlayers, /allPlayers, /help. Use @<playerName> to whisper and /global for global chat. Typing any non-command results in a lobbyChatMessage, " +
-                        "if you are in a lobby and in a globalChat Message if not.");
-            } else {
-                client.sendLobbyChat(input);
-            }
-        }
-    }
-
-    /**
-     * Start a message receiver thread
-     *
-     * @param client  GameClient
-     * @param running AtomicBoolean
-     * @return Thread
-     */
-    private static Thread startMessageReceiverThread(GameClient client, AtomicBoolean running) {
-        Thread thread = new Thread(() -> {
+    private static boolean checkConnection(NetworkController networkController) {
+        int attempts = 0;
+        while (!networkController.isConnected() && attempts < 5) {
             try {
-                while (running.get()) {
-                    // This method needs to be implemented in GameClient
-                    String message = client.receiveMessage();
-                    if (message != null) {
-                        System.out.println(message);
-                        // If server shutdown was detected, the message will be returned before System.exit
-                        if (message.contains("Server has shut down")) {
-                            running.set(false);
-                            break;
-                        }
-                    }
-                    Thread.sleep(MESSAGE_POLLING_DELAY); // Small delay to prevent CPU hogging
-                }
+                Thread.sleep(500);
+                attempts++;
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-            } catch (Exception e) {
-                System.err.println("Connection error: " + e.getMessage());
-                running.set(false); // Signal main thread to exit
             }
-        });
-        thread.setDaemon(true);
-        thread.start();
-        return thread;
+        }
+        if (!networkController.isConnected()) {
+            logger.warning("Client failed to connect to server. Exiting...");
+            return false;
+        }
+        return true;
     }
-
-
 }

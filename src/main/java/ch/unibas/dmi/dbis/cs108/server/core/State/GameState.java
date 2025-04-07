@@ -79,7 +79,7 @@ public class GameState {
      * Sets the artifacts for a specific player.
      *
      * @param artifacts An array of artifacts to assign to the player
-     * @param player The name of the player
+     * @param player    The name of the player
      */
     public void setArtifacts(String[] artifacts, String player) {
     }
@@ -88,17 +88,19 @@ public class GameState {
      * Adds artifacts to a player's collection.
      *
      * @param artifacts The artifacts to add
-     * @param player The name of the player
+     * @param player    The name of the player
      */
-    public void addArtifact(String[] artifacts, String player) {}
+    public void addArtifact(String[] artifacts, String player) {
+    }
 
     /**
      * Removes artifacts from a player's collection.
      *
      * @param artifacts The artifacts to remove
-     * @param player The name of the player
+     * @param player    The name of the player
      */
-    public void removeArtifact(String[] artifacts, String player) {}
+    public void removeArtifact(String[] artifacts, String player) {
+    }
 
     /**
      * Gets the number of runes a player has.
@@ -113,7 +115,7 @@ public class GameState {
     /**
      * Sets the number of runes for a player.
      *
-     * @param runes The number of runes
+     * @param runes  The number of runes
      * @param player The name of the player
      */
     public void setRunes(int runes, String player) {
@@ -122,17 +124,20 @@ public class GameState {
     /**
      * Adds runes to a player's collection.
      *
-     * @param runes The number of runes to add
+     * @param runes  The number of runes to add
      * @param player The name of the player
      */
-    public void addRunes(int runes, String player) {}
+    public void addRunes(int runes, String player) {
+    }
 
     /**
      * Removes runes from a player's collection.
-     * @param runes The number of runes to remove
+     *
+     * @param runes  The number of runes to remove
      * @param player The name of the player
      */
-    public void removeRunes(String[] runes, String player) {}
+    public void removeRunes(String[] runes, String player) {
+    }
 
     /**
      * Gets the entire game field.
@@ -148,7 +153,8 @@ public class GameState {
      *
      * @param gameField A two-dimensional array representing the game field
      */
-    public void setGameField(int[][] gameField) {}
+    public void setGameField(int[][] gameField) {
+    }
 
     /**
      * Gets the value at a specific position on the game field.
@@ -164,9 +170,10 @@ public class GameState {
     /**
      * Sets the value at a specific position on the game field.
      *
-     * @param x The x-coordinate on the game field
-     * @param y The y-coordinate on the game field
+     * @param x     The x-coordinate on the game field
+     * @param y     The y-coordinate on the game field
      * @param value The value to set at the specified position
      */
-    public void setGameField(int x, int y, int value) {}
+    public void setGameField(int x, int y, int value) {
+    }
 }

@@ -1,26 +1,24 @@
 package ch.unibas.dmi.dbis.cs108.client.core.commands;
 
+import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
+import ch.unibas.dmi.dbis.cs108.client.core.entities.Tile;
+import ch.unibas.dmi.dbis.cs108.client.core.events.EventDispatcher;
+import ch.unibas.dmi.dbis.cs108.client.core.events.TilePurchasedEvent;
+import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
+import ch.unibas.dmi.dbis.cs108.client.core.commands.*;
 
 public class BuyTileCommand implements Command {
+    private final Player player;
+    private final Tile tile;
 
-    private final String data;
-
-    /**
-     * Constructor for the BuyTileCommand
-     *
-     * @param data the data for the command
-     */
-    public BuyTileCommand(String data) {
-        this.data = data;
+    public BuyTileCommand(Player player, Tile tile) {
+        this.player = player;
+        this.tile = tile;
     }
 
-    /**
-     * Executes the command
-     *
-     * @return the command as a String
-     */
     @Override
-    public void execute() {
-        System.out.println("BUY_TILE:" + data);
+    public void execute(GameState gameState, EventDispatcher dispatcher) {
+        gameState.buyTile(player, tile);
+        dispatcher.dispatch(new TilePurchasedEvent(player, tile));
     }
 }

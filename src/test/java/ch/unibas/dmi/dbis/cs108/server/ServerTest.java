@@ -2,9 +2,10 @@ package ch.unibas.dmi.dbis.cs108.server;
 
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import ch.unibas.dmi.dbis.cs108.server.networking.GameServer;
-import ch.unibas.dmi.dbis.cs108.client.networking.GameClient;
-import javafx.application.Platform;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -65,7 +66,8 @@ class ServerTest {
      * Starts the server.
      * Connects a client to the server.
      * Verifies that the server has added the client.
-     * @throws IOException if an I/O error occurs during client-server communication.
+     *
+     * @throws IOException          if an I/O error occurs during client-server communication.
      * @throws InterruptedException if the test thread is interrupted while waiting.
      */
     @Test
@@ -79,7 +81,7 @@ class ServerTest {
         // Wait for the server to process the message
         Thread.sleep(1000); // Adjust the delay as needed
 
-        assert(server.getClients().size() == 1);
+        assert (server.getClients().size() == 1);
         // Disconnect the client
         client.disconnect();
     }
@@ -90,7 +92,8 @@ class ServerTest {
      * Connects a client to the server.
      * Simulates a client disconnect.
      * Verifies that the server handles the disconnect properly.
-     * @throws IOException if an I/O error occurs during client-server communication.
+     *
+     * @throws IOException          if an I/O error occurs during client-server communication.
      * @throws InterruptedException if the test thread is interrupted while waiting.
      */
     @Test

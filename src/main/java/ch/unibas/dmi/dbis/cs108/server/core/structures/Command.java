@@ -15,23 +15,25 @@ public class Command {
 
     /**
      * Creates a new command
+     *
      * @param message the String message
-     * Prints out error Message in case of wrong formatting of message
-     * Correct formatting: commandName$arg1$arg2$arg3
+     *                Prints out error Message in case of wrong formatting of message
+     *                Correct formatting: commandName$arg1$arg2$arg3
      */
     public Command(String message) {
         logger.setFilter(new PingFilter());
         String[] parts = message.split("\\$");
-        if(parts.length == 0){
+        if (parts.length == 0) {
             System.err.println("Trying to create invalid command: " + message);
             return;
         }
         this.command = parts[0];
-        this.args = Arrays.copyOfRange(parts, 1, parts.length);;
+        this.args = Arrays.copyOfRange(parts, 1, parts.length);
     }
 
     /**
      * Checks if the command is valid
+     *
      * @return true if the command is valid, false otherwise
      */
     public boolean isValid() {
@@ -57,14 +59,15 @@ public class Command {
 
     /**
      * Checks whether the command has the correct number of arguments appended
+     *
      * @return
      */
-    public boolean checkArgumentsSize(){
+    public boolean checkArgumentsSize() {
         return switch (command) {
-            case "LIST", "STRT", "STDN", "SYNC" -> args.length == 0;
-            case "RGST", "LEAV", "CHAN", "STAT", "PING", "EXIT", "LSTP"  -> args.length == 1;
-            case "JOIN", "CHTG", "CHTL", "CREA" -> args.length == 2;
-            case "CHTP" -> args.length == 3;
+            case "LIST", "STRT", "STDN", "SYNC", "ENDT", "GSTS", "GPRC" -> args.length == 0;
+            case "RGST", "LEAV", "CHAN", "STAT", "PING", "EXIT", "LSTP", "USPA"  -> args.length == 1;
+            case "JOIN", "CHTG", "CHTL", "CREA", "BUYT", "UPST", "USTA" -> args.length == 2;
+            case "CHTP", "PLST", "USSR" -> args.length == 3;
             default -> {
                 logger.warning("Invalid Command arguments size: " + command + " " + args.length);
                 yield false;
@@ -74,6 +77,7 @@ public class Command {
 
     /**
      * Gets the command
+     *
      * @return the command
      */
     public String getCommand() {
@@ -82,6 +86,7 @@ public class Command {
 
     /**
      * Gets the arguments
+     *
      * @return the arguments as a String Array
      */
     public String[] getArgs() {
@@ -90,6 +95,7 @@ public class Command {
 
     /**
      * Converts the command and the arguments to a String
+     *
      * @return the command and the arguments as a String
      */
     @Override
