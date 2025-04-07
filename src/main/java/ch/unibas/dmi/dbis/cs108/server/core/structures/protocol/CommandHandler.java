@@ -8,6 +8,7 @@ import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 import ch.unibas.dmi.dbis.cs108.server.networking.GameServer;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -216,7 +217,8 @@ public class CommandHandler {
 
         synchronized (server) {
             if (!server.containsPlayerName(newPlayerName)) {
-                server.broadcast("OK$CHAN$" + localPlayer.getName() + "$" + newPlayerName);
+                sendMessage("OK$CHAN$" + localPlayer.getName() + "$" + newPlayerName);
+                server.broadcast("CHAN$" + localPlayer.getName() + "$" + newPlayerName);
                 setLocalPlayerName(newPlayerName);
                 return true;
             } else {
@@ -281,8 +283,9 @@ public class CommandHandler {
     }
 
     public boolean handleGlobalChatMessage(Command cmd) {
-
-        ch.sendGlobalChatMessage(cmd);
+        String com = cmd.toString();
+        com = com.replace("CHTL$", "CHTG$");
+        ch.sendGlobalChatMessage(new Command(com));
         return true;
     }
 

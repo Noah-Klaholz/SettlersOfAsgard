@@ -353,7 +353,7 @@ public class GameScreenController extends BaseController {
                         }
                         break;
                     case CREATELOBBY:
-                        message = "Created lobby: " + args[3];
+                        message = "Created lobby: " + args[2];
                         chatListView.getItems().add(message);
                     case JOIN:
                         if (args.length > 1) {

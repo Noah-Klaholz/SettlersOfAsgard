@@ -29,6 +29,7 @@ public class ProtocolTranslator {
         commandHandlers.put("OK", this::processSuccessMessage);
         commandHandlers.put("PING", this::processPingMessage);
         commandHandlers.put("STDN", this::processShutdownMessage);
+        commandHandlers.put("CHAN", this::processNameChangeMessage);
     }
 
     public void processIncomingMessage(String message) {
@@ -40,6 +41,13 @@ public class ProtocolTranslator {
             handler.accept(message);
         } else {
             LOGGER.warning("Unknown message type: " + command);
+        }
+    }
+
+    private void processNameChangeMessage(String message) {
+        String[] parts = message.split("\\$", 3);
+        if (parts.length >= 3) {
+            eventDispatcher.dispatchEvent(new ReceiveCommandEvent(message));
         }
     }
 
@@ -120,13 +128,13 @@ public class ProtocolTranslator {
             // Ping response is handled in the NetworkController.
             return;
         } else if (message.startsWith("OK$CHAN$")) {
+
             // Extract just the new name - adjust parsing based on server format
             String[] args = message.replace("OK$CHAN$", "").trim().split("\\$");
             String newName = args[1].trim();
             // Dispatch the event with the correct name
             eventDispatcher.dispatchEvent(new NameChangeResponseEvent(true, newName, "Name changed successfully"));
-            eventDispatcher.dispatchEvent(new ReceiveCommandEvent(message));
-        } else if (message.startsWith("OK$RGST$")) {
+       } else if (message.startsWith("OK$RGST$")) {
             String[] args = message.replace("OK$RGST$", "").trim().split("\\$");
             String newName = args[0].trim();
             eventDispatcher.dispatchEvent(new NameChangeResponseEvent(true, newName, "Name changed successfully"));

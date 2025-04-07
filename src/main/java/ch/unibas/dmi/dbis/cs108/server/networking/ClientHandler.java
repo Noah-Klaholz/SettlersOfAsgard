@@ -253,10 +253,11 @@ public class ClientHandler implements Runnable, CommunicationAPI {
 
             switch (command) {
                 case CHATLOBBY:
-                    if (getCurrentLobby() != null) {
-                        worked = ch.handleLobbyMessage(cmd);
-                    } else {
+                    System.out.println("CHATLOBBY: " + currentLobby);
+                    if (currentLobby == null || getCurrentLobby() == null) {
                         worked = ch.handleGlobalChatMessage(cmd);
+                    } else {
+                        worked = ch.handleLobbyMessage(cmd);
                     }
                     answer = false;
                     break;
