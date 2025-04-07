@@ -556,7 +556,8 @@ public class CommandHandler {
             }
             int artifactId = Integer.parseInt(args[0]);
             String useType = args[1];
-            if(gameLogic.usePlayerArtifact(artifactId,playerName, useType)) {
+            String playerAimedAt = args[2];
+            if(gameLogic.usePlayerArtifact(artifactId,playerName, useType, playerAimedAt)) {
                 currentLobby.broadcastMessage("OK$USPA$" + artifactId + "$" + playerName + "$" + useType);
             }
         } catch (NumberFormatException e) {

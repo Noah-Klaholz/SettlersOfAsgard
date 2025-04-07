@@ -193,11 +193,15 @@ public class Lobby {
             player.startGame();
         }
 
-        // Additional game initialization logic can go here
-        this.gameLogic = new GameLogic();
+        String[] playerNames = players.stream()
+                .map(ClientHandler::getPlayerName)
+                .toArray(String[]::new);
 
-        // start game here
-        gameLogic.startGame();
+        // Additional game initialization logic can go here
+        this.gameLogic = new GameLogic(playerNames);
+
+        // start game here (by doing first turn)
+        gameLogic.nextTurn();
 
         return true;
     }

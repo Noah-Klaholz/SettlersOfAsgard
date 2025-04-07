@@ -50,6 +50,8 @@ public class GameState {
         return null;
     }
 
+    public Board getBoard() {return board;}
+
     /**
      * Sets the player whose turn it currently is.
      *

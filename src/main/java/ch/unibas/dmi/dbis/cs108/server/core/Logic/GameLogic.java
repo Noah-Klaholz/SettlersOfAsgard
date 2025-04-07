@@ -22,6 +22,15 @@ public class GameLogic implements GameLogicInterface {
     }
 
     /**
+     * Gets the gamestate
+     *
+     * @return the gamestate
+     */
+    public GameState getGameState() {
+        return gameState;
+    }
+
+    /**
      * Initializes and starts a new game.
      * This method sets up the initial game state, including player order,
      * game field configuration, and starting resources.
@@ -133,8 +142,7 @@ public class GameLogic implements GameLogicInterface {
      *
      * @param x The x-coordinate of the tile to purchase
      * @param y The y-coordinate of the tile to purchase
-     * @param playerName The unique identifier of the player attempting to buy the tile
-     *         //todo: this can be changed later to ID
+     * @param playerID The unique identifier of the player attempting to buy the tile
      */
     @Override
     public boolean buyTile(int x, int y, String playerName) {
@@ -173,7 +181,7 @@ public class GameLogic implements GameLogicInterface {
      * @param x The x-coordinate where the structure will be placed
      * @param y The y-coordinate where the structure will be placed
      * @param structureID The identifier of the structure to place
-     * @param playerName The unique identifier of the player placing the structure
+     * @param playerID The unique identifier of the player placing the structure
      */
     @Override
     public boolean placeStructure(int x, int y, int structureID, String playerName) {
@@ -187,23 +195,19 @@ public class GameLogic implements GameLogicInterface {
                         }
                         for (Tile tile : player.getOwnedTiles()) {
                             if (tile.getTileID() == gameState.getBoard().getTileByCoordinates(x, y).getTileID()) {
-                                //tile and structure are owned by player
-                                if (tile.getHasStructure() == false) {
-                                    //tile hat noch keine Structure
+                                if (!tile.getHasStructure()) {
                                     player.removeOwnedStructure(structure);
                                     tile.setHasStructure(true);
                                     tile.setStructure(structure);
                                     return true;
                                 }
-
                             }
                         }
                     }
-
                 }
             }
         }
-        System.out.println("something went wrong");
+        System.out.println("Could not place structure.");
         return false;
     }
 
@@ -216,7 +220,7 @@ public class GameLogic implements GameLogicInterface {
      * @param y The y-coordinate of the structure to use
      * @param structureID The identifier of the structure to use
      * @param useType The specific way the structure should be used
-     * @param playerName The unique identifier of the player using the structure
+     * @param playerID The unique identifier of the player using the structure
      */
     @Override
     public boolean useStructure(int x, int y, int structureID, String useType, String playerName) {
@@ -243,7 +247,7 @@ public class GameLogic implements GameLogicInterface {
      * @param x The x-coordinate of the statue to upgrade
      * @param y The y-coordinate of the statue to upgrade
      * @param statueID The identifier of the statue to upgrade
-     * @param playerName The unique identifier of the player upgrading the statue
+     * @param playerID The unique identifier of the player upgrading the statue
      */
     @Override
     public boolean upgradeStatue(int x, int y, String statueID, String playerName) {
@@ -304,21 +308,20 @@ public class GameLogic implements GameLogicInterface {
      */
     @Override
     public void useFieldArtifact(int x, int y, int artifactID, String useType, String playerName) {
-
         for (Player player : gameState.getPlayerList()) {
             if (player.getName().equals(playerName)) {
                 for (Artefact artefact : player.getArtifacts()) {
                     if (artefact.getArtifactID() == artifactID) {
-                        //player owns the artifact
                         if (gameState.getBoard().getTileByCoordinates(x, y) == null) {
                             System.out.println("Tile not found");
                             return;
                         }
-                        //todo: later implement use of field artifact
+                        //todo: implement artifact effect
                     }
                 }
             }
         }
+
     }
 
     /**
@@ -356,7 +359,6 @@ public class GameLogic implements GameLogicInterface {
                 break;
             }
         }
-
         if (targetPlayer == null) {
             System.out.println("Player not found.");
             return;
