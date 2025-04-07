@@ -146,46 +146,46 @@ public class CommunicationMediator {
                             "/status \n" +
                             "/prices");
                 case BUYTILE:
-                    if (args.length == 2) {
+                    if (isValidArgument(args, 1)) {
                         networkController.buyTile(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
                     } else {
                         //TODO handle invalid coordinates
                     }
                     break;
                 case PLACESTRUCTURE:
-                    if (args.length == 3) {
+                    if (isValidArgument(args, 2)) {
                         networkController.placeStructure(Integer.parseInt(args[0]), Integer.parseInt(args[1]), args[2]);
                     } else {
                         //TODO handle invalid arguments
                     }
                     break;
                 case USESTRUCTURE:
-                    if (args.length == 4) {
+                    if (isValidArgument(args, 3)) {
                         networkController.useStructure(Integer.parseInt(args[0]), Integer.parseInt(args[1]), args[2], args[3]);
                     } else {
                         //TODO handle invalid arguments
                     }
                     break;
                 case UPGRADESTATUE:
-                    if (args.length == 3) {
+                    if (isValidArgument(args, 2)) {
                         networkController.upgradeStatue(Integer.parseInt(args[0]), Integer.parseInt(args[1]), args[2]);
                     } else {
                         //TODO handle invalid arguments
                     }
                 case USESTATUE:
-                    if (args.length == 4) {
+                    if (isValidArgument(args, 3)) {
                         networkController.useStatue(Integer.parseInt(args[0]), Integer.parseInt(args[1]), args[2], args[3]);
                     } else {
                         //TODO handle invalid arguments
                     }
                 case USEFIELDARTIFACT:
-                    if (args.length == 4) {
+                    if (isValidArgument(args, 3)) {
                         networkController.useFieldArtifact(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]), args[3]);
                     } else {
                         //TODO handle invalid arguments
                     }
                 case USEPLAYERARTIFACT:
-                    if (args.length == 4) {
+                    if (isValidArgument(args, 1)) {
                         networkController.usePlayerArtifact(Integer.parseInt(args[0]), args[1]);
                     } else {
                         //TODO handle invalid arguments
@@ -197,7 +197,7 @@ public class CommunicationMediator {
                     networkController.getPrices();
                     break;
                 default:
-                    System.err.println("Unknown command type: " + event.getType());
+                    publishInfoChatEvent("Unknown command type: " + event.getType() + "\n Use /help to see available commands.");
             }
         });
     }
