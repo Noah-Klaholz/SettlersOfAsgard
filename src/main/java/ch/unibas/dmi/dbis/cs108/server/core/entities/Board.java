@@ -69,4 +69,23 @@ public class Board {
     public Tile[][] getTiles() {
         return tiles;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Board{");
+        sb.append("tiles=[");
+        for (int i = 0; i < tiles.length; i++) {
+            sb.append("[");
+            for (int j = 0; j < tiles[i].length; j++) {
+                sb.append(tiles[i][j] != null ? tiles[i][j].toString() : "null");
+                if (j < tiles[i].length - 1) sb.append(", ");
+            }
+            sb.append("]");
+            if (i < tiles.length - 1) sb.append(", ");
+        }
+        sb.append("]");
+        sb.append("}");
+        return sb.toString();
+    }
 }
