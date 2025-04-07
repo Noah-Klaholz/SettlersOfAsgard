@@ -10,7 +10,7 @@ public class FenrirsBones extends Artefact {
      *
      * @param data The artefact data used to initialize the Fenrir's Bones artefact.
      */
-    public FenrirsBones(ArtefactData data)
+    public FenrirsBones(ArtefactData data) {
         super(data);
     }
 }
