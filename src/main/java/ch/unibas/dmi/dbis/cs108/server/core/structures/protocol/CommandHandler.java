@@ -59,145 +59,6 @@ public class CommandHandler {
         setCurrentLobby(lobby);
     }
 
-    public boolean handleListPlayers(Command cmd) {
-        String[] arg = cmd.getArgs();
-        if (!(arg.length >= 1)) {
-            sendMessage("ERR$101$INVALID_ARGUMENTS");
-        } else {
-            String list;
-            if (arg[0].equals("LOBBY") && arg.length == 2) {
-                Lobby lobby = server.getLobby(arg[1]);
-                if (lobby != null) {
-                    list = lobby.listPlayers();
-                    sendMessage("OK$LSTP$LOBBY$" + lobby.getId() + "$"+ list);
-                    return true;
-                } else {
-                    sendMessage("ERR$106$NOT_IN_LOBBY");
-                }
-            } else if (arg[0].equals("SERVER")) {
-                list = server.listPlayers();
-                sendMessage("OK$LSTP$SERVER$" + list);
-            } else {
-                sendMessage("ERR$101$INVALID_ARGUMENTS");
-            }
-        }
-        return false;
-    }
-
-    /**
-     * This method handles the creation of a lobby.
-     *
-     * @param cmd the transmitted command
-     */
-    public boolean handleCreateLobby(Command cmd) {
-        if (currentLobby != null) {
-            handleLeaveLobby();
-        }
-        String hostname = cmd.getArgs()[0]; // Falls wir später mal den Hostnamen speichern wollen -> könnte man in Lobby hinzufügen
-        String lobbyId = cmd.getArgs()[1];
-        int maxPlayers = 4; //currently, maxPlayers is set to 4
-        Lobby lobby = server.createLobby(lobbyId, maxPlayers);
-        if (lobby != null && lobby.addPlayer(ch)) {
-            joinLobby(lobby);
-            return true;
-        } else {
-            sendMessage("ERR$106$LOBBY_CREATION_FAILED");
-        }
-        return false;
-    }
-
-    /**
-     * This method handles the listing of all lobbies.
-     */
-    public boolean handleListLobbies() {
-        List<Lobby> lobbies = server.getLobbies();
-
-        if (lobbies.isEmpty()) {
-            ch.sendMessage("OK$LIST$No available lobbies. Create your own with /create");
-            return true;
-        }
-
-        String lobbyList = lobbies.stream()
-                .map(lobby -> lobby.getId() + ":  " + lobby.getStatus())
-                .collect(Collectors.joining("%"));
-
-        System.out.println(lobbyList);
-        ch.sendMessage("OK$LIST$" + lobbyList);
-        return true;
-    }
-
-    /**
-     * This method handles a player (client) joining a Lobby.
-     *
-     * @param cmd the transmitted command
-     */
-    public boolean handleJoinLobby(Command cmd) {
-        String lobbyId = cmd.getArgs()[1];
-        Lobby lobby = server.getLobby(lobbyId);
-        if (currentLobby != null && currentLobby.removePlayer(ch)) {
-            String oldLobbyId = currentLobby.getId();
-            Lobby oldLobby = server.getLobby(oldLobbyId);
-            oldLobby.broadcastMessage("OK$LEAV$" + playerName + "$" + oldLobbyId);
-            sendMessage("OK$LEAV$" + playerName + "$" + oldLobbyId);
-            if (oldLobby.isEmpty()) {
-                server.removeLobby(oldLobby);
-            }
-            setCurrentLobby(null);
-        }
-        if (lobby != null && lobby.addPlayer(ch)) {
-            joinLobby(lobby);
-            currentLobby.broadcastMessage("OK$JOIN$" + playerName + "$" + lobbyId);
-            return true;
-        } else {
-            sendMessage("ERR$106$JOIN_LOBBY_FAILED");
-            return false;
-        }
-    }
-
-    /**
-     * This method handles a player (client) exiting a Lobby.
-     */
-    public boolean handleLeaveLobby() {
-        if (currentLobby != null && currentLobby.removePlayer(ch)) {
-            String lobbyId = currentLobby.getId();
-            currentLobby.broadcastMessage("OK$LEAV$" + playerName + "$" + lobbyId);
-            sendMessage("OK$LEAV$" + playerName + "$" + lobbyId);
-            Lobby lobby = server.getLobby(lobbyId);
-            if (lobby != null && lobby.isEmpty()) {
-                server.removeLobby(lobby);
-            }
-            setCurrentLobby(null);
-            return true;
-        } else {
-            sendMessage("ERR$106$NOT_IN_LOBBY");
-            return false;
-        }
-    }
-
-    /**
-     * This method handles the starting of a game.
-     */
-    public boolean handleStartGame() {
-        System.out.println("handle start game");
-        if (ch.getCurrentLobby() != null && ch.getCurrentLobby().startGame()) {
-            this.currentLobby = ch.getCurrentLobby();
-            this.gameLogic = currentLobby.getGameLogic();
-            return true;
-        } else {
-            System.out.println("ERR$106$NOT_IN_LOBBY");
-            sendMessage("ERR$106$CANNOT_START_GAME");
-            return false;
-        }
-    }
-
-    private GameLogic getGameLogic() {
-        // Refresh gameLogic if it's null but the lobby has one
-        if (gameLogic == null && currentLobby != null) {
-            gameLogic = currentLobby.getGameLogic();
-        }
-        return gameLogic;
-    }
-
     /**
      * This method handles the registration of a player.
      * Gets called immediately when a player connects
@@ -256,6 +117,127 @@ public class CommandHandler {
             }
         }
         return false;
+    }
+
+    /**
+     * This method handles the listing of players in a lobby or on the server.
+     *
+     * @param cmd the transmitted command
+     * @return true if the command was handled successfully, false otherwise
+     */
+    public boolean handleListPlayers(Command cmd) {
+        String[] arg = cmd.getArgs();
+        if (!(arg.length >= 1)) {
+            sendMessage("ERR$101$INVALID_ARGUMENTS");
+        } else {
+            String list;
+            if (arg[0].equals("LOBBY") && arg.length == 2) {
+                Lobby lobby = server.getLobby(arg[1]);
+                if (lobby != null) {
+                    list = lobby.listPlayers();
+                    sendMessage("OK$LSTP$LOBBY$" + lobby.getId() + "$" + list);
+                    return true;
+                } else {
+                    sendMessage("ERR$106$NOT_IN_LOBBY");
+                }
+            } else if (arg[0].equals("SERVER")) {
+                list = server.listPlayers();
+                sendMessage("OK$LSTP$SERVER$" + list);
+            } else {
+                sendMessage("ERR$101$INVALID_ARGUMENTS");
+            }
+        }
+        return false;
+    }
+
+    /**
+     * This method handles the listing of all lobbies.
+     */
+    public boolean handleListLobbies() {
+        List<Lobby> lobbies = server.getLobbies();
+
+        if (lobbies.isEmpty()) {
+            ch.sendMessage("OK$LIST$No available lobbies. Create your own with /create");
+            return true;
+        }
+
+        String lobbyList = lobbies.stream()
+                .map(lobby -> lobby.getId() + ":  " + lobby.getStatus())
+                .collect(Collectors.joining("%"));
+
+        System.out.println(lobbyList);
+        ch.sendMessage("OK$LIST$" + lobbyList);
+        return true;
+    }
+
+    /**
+     * This method handles the creation of a lobby.
+     *
+     * @param cmd the transmitted command
+     */
+    public boolean handleCreateLobby(Command cmd) {
+        if (currentLobby != null) {
+            handleLeaveLobby();
+        }
+        String hostname = cmd.getArgs()[0]; // Falls wir später mal den Hostnamen speichern wollen -> könnte man in Lobby hinzufügen
+        String lobbyId = cmd.getArgs()[1];
+        int maxPlayers = 4; //currently, maxPlayers is set to 4
+        Lobby lobby = server.createLobby(lobbyId, maxPlayers);
+        if (lobby != null && lobby.addPlayer(ch)) {
+            joinLobby(lobby);
+            return true;
+        } else {
+            sendMessage("ERR$106$LOBBY_CREATION_FAILED");
+        }
+        return false;
+    }
+
+    /**
+     * This method handles a player (client) joining a Lobby.
+     *
+     * @param cmd the transmitted command
+     */
+    public boolean handleJoinLobby(Command cmd) {
+        String lobbyId = cmd.getArgs()[1];
+        Lobby lobby = server.getLobby(lobbyId);
+        if (currentLobby != null && currentLobby.removePlayer(ch)) {
+            String oldLobbyId = currentLobby.getId();
+            Lobby oldLobby = server.getLobby(oldLobbyId);
+            oldLobby.broadcastMessage("OK$LEAV$" + playerName + "$" + oldLobbyId);
+            sendMessage("OK$LEAV$" + playerName + "$" + oldLobbyId);
+            if (oldLobby.isEmpty()) {
+                server.removeLobby(oldLobby);
+            }
+            setCurrentLobby(null);
+        }
+        if (lobby != null && lobby.addPlayer(ch)) {
+            joinLobby(lobby);
+            currentLobby.broadcastMessage("OK$JOIN$" + playerName + "$" + lobbyId);
+            return true;
+        } else {
+            sendMessage("ERR$106$JOIN_LOBBY_FAILED");
+            return false;
+        }
+    }
+
+    /**
+     * This method handles a player (client) exiting a Lobby.
+     */
+    public boolean handleLeaveLobby() {
+        if (currentLobby != null && currentLobby.removePlayer(ch)) {
+            String lobbyId = currentLobby.getId();
+            currentLobby.broadcastMessage("OK$LEAV$" + playerName + "$" + lobbyId);
+            sendMessage("OK$LEAV$" + playerName + "$" + lobbyId);
+            Lobby lobby = server.getLobby(lobbyId);
+            if (lobby != null && lobby.isEmpty()) {
+                server.removeLobby(lobby);
+            }
+            setCurrentLobby(null);
+            return true;
+        } else {
+            sendMessage("ERR$106$NOT_IN_LOBBY");
+            return false;
+        }
     }
 
     /**
@@ -320,6 +302,35 @@ public class CommandHandler {
             return true;
         } catch (Exception e) {
             logger.warning("Could not start turn because game is not started yet.");
+            return false;
+        }
+    }
+
+    /**
+     * This method returns the current game logic.
+     *
+     * @return the current game logic
+     */
+    private GameLogic getGameLogic() {
+        // Refresh gameLogic if it's null but the lobby has one
+        if (gameLogic == null && currentLobby != null) {
+            gameLogic = currentLobby.getGameLogic();
+        }
+        return gameLogic;
+    }
+
+    /**
+     * This method handles the starting of a game.
+     */
+    public boolean handleStartGame() {
+        System.out.println("handle start game");
+        if (ch.getCurrentLobby() != null && ch.getCurrentLobby().startGame()) {
+            this.currentLobby = ch.getCurrentLobby();
+            this.gameLogic = currentLobby.getGameLogic();
+            return true;
+        } else {
+            System.out.println("ERR$106$NOT_IN_LOBBY");
+            sendMessage("ERR$106$CANNOT_START_GAME");
             return false;
         }
     }
