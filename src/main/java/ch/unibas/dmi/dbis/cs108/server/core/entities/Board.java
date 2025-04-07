@@ -20,6 +20,14 @@ public class Board {
     // usable for potential other maps with other sizes.
     public void initBoard(int x, int y) {
         tiles = new Tile[x][y];
+        for (int i=0; i<7; i++){
+            for (int j=0; j<8; j++){
+                Tile.TileBuilder tilebuilder = new Tile.TileBuilder();
+                tilebuilder.setX(i);
+                tilebuilder.setY(j);
+                tiles[i][j] = new Tile(tilebuilder);
+            }
+        }
     }
 
     public void setTiles(Tile[][] tiles) {
