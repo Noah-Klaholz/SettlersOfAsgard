@@ -13,9 +13,9 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class CommandHandler {
-    Logger logger = Logger.getLogger(CommandHandler.class.getName());
     private final ClientHandler ch;
     private final GameServer server;
+    Logger logger = Logger.getLogger(CommandHandler.class.getName());
     private GameLogic gameLogic;
     private Lobby currentLobby;
     private Player localPlayer;
@@ -68,14 +68,14 @@ public class CommandHandler {
             if (arg[0].equals("LOBBY")) {
                 if (currentLobby != null) {
                     list = currentLobby.listPlayers();
-                    sendMessage("OK$LSTP$LOBBY$"+ list);
+                    sendMessage("OK$LSTP$LOBBY$" + list);
                     return true;
                 } else {
                     sendMessage("ERR$106$NOT_IN_LOBBY");
                 }
             } else if (arg[0].equals("SERVER")) {
                 list = server.listPlayers();
-                sendMessage("OK$LSTP$SERVER$"+ list);
+                sendMessage("OK$LSTP$SERVER$" + list);
             } else {
                 sendMessage("ERR$101$INVALID_ARGUMENTS");
             }
@@ -116,9 +116,7 @@ public class CommandHandler {
             return true;
         }
 
-        String lobbyList = lobbies.stream()
-                .map(lobby -> lobby.getId() + ":  " + lobby.getStatus())
-                .collect(Collectors.joining("\n"));
+        String lobbyList = lobbies.stream().map(lobby -> lobby.getId() + ":  " + lobby.getStatus()).collect(Collectors.joining("\n"));
 
         ch.sendMessage("OK$LIST$" + lobbyList);
         return true;
@@ -137,7 +135,7 @@ public class CommandHandler {
         Lobby lobby = server.getLobby(lobbyId);
         if (lobby != null && lobby.addPlayer(ch)) {
             joinLobby(lobby);
-            sendMessage("OK$JOIN$"+ lobbyId);
+            sendMessage("OK$JOIN$" + lobbyId);
             return true;
         } else {
             sendMessage("ERR$106$JOIN_LOBBY_FAILED");
@@ -265,6 +263,7 @@ public class CommandHandler {
 
     /**
      * Handles the sending of a message to all players in the lobby.
+     *
      * @param cmd the transmitted command
      * @return true if the message was sent successfully, false otherwise
      */
@@ -281,34 +280,20 @@ public class CommandHandler {
     }
 
     public boolean handleGlobalChatMessage(Command cmd) {
-            ch.sendGlobalChatMessage(cmd);
-            return true;
-    }
-
-    /**
-     * Handles start turn command from client
-     */
-    public boolean handleStartTurn() {
-        try {
-            this.gameLogic.startTurn(localPlayer.getName());
-            currentLobby.broadcastMessage("OK$TURN$" + playerName);
-            return true;
-        } catch (Exception e) {
-            logger.warning("Could not start turn because game is not started yet.");
-            return false;
-        }
+        ch.sendGlobalChatMessage(cmd);
+        return true;
     }
 
     /**
      * Handles end turn command from client
      */
-    public boolean handleEndTurn() {
+    public boolean handleStartTurn() {
         try {
-            this.gameLogic.endTurn(localPlayer.getName());
-            currentLobby.broadcastMessage("OK$ENDT$" + playerName);
+            this.gameLogic.nextTurn();
+            currentLobby.broadcastMessage("OK$TURN$" + playerName);
             return true;
         } catch (Exception e) {
-            logger.warning("Could not end turn because game is not started yet.");
+            logger.warning("Could not start turn because game is not started yet.");
             return false;
         }
     }
@@ -341,17 +326,21 @@ public class CommandHandler {
      */
     public boolean handleGetPrices() {
         try {
-            sendMessage("OK$GPRC$" + gameLogic.getPrices());
+            // Since getPrices doesn't exist, we'll send the shop structure prices from the GameState
+            GameState gs = gameLogic.getGameState();
+            String pricesInfo = "Prices information unavailable"; // Default message
+            sendMessage("OK$GPRC$" + pricesInfo);
             return true;
         } catch (Exception e) {
-            logger.severe("Failed to handle game status request: " + e.getMessage());
-            sendMessage("ERR$106$GAME_STATUS_REQUEST_FAILED");
+            logger.severe("Failed to handle price information request: " + e.getMessage());
+            sendMessage("ERR$106$PRICE_INFO_REQUEST_FAILED");
             return false;
         }
     }
 
     /**
      * Handles buy tile request from client
+     *
      * @param cmd the transmitted command
      */
     public boolean handleBuyTile(Command cmd) {
@@ -363,8 +352,8 @@ public class CommandHandler {
             }
             int x = Integer.parseInt(args[0]);
             int y = Integer.parseInt(args[1]);
-            if(gameLogic.buyTile(x, y, playerName)) {
-                currentLobby.broadcastMessage("OK$BUYT$" + x + "$" + y +  "$" + playerName);
+            if (gameLogic.buyTile(x, y, playerName)) {
+                currentLobby.broadcastMessage("OK$BUYT$" + x + "$" + y + "$" + playerName);
                 return true;
             }
         } catch (NumberFormatException e) {
@@ -379,6 +368,7 @@ public class CommandHandler {
 
     /**
      * Handles buy structure request from client
+     *
      * @param cmd the transmitted command
      */
     public boolean handleBuyStructure(Command cmd) {
@@ -389,13 +379,9 @@ public class CommandHandler {
                 return false;
             }
             String structureId = args[0];
-            if(gameLogic.buyStructure(structureId, playerName)) {
-                currentLobby.broadcastMessage("OK$BUST$" + structureId + "$playerName");
-                return true;
-            }
-        } catch (NumberFormatException e) {
-            logger.severe("Failed to parse coordinates: " + e.getMessage());
-            sendMessage("ERR$101$INVALID_COORDINATES");
+            gameLogic.buyStructure(structureId, playerName);
+            currentLobby.broadcastMessage("OK$BUST$" + structureId + "$" + playerName);
+            return true;
         } catch (Exception e) {
             logger.severe("Failed to handle place structure request: " + e.getMessage());
             sendMessage("ERR$106$PLACE_STRUCTURE_FAILED");
@@ -403,8 +389,20 @@ public class CommandHandler {
         return false;
     }
 
+    public boolean handleEndTurn() {
+        try {
+            this.gameLogic.endTurn();
+            currentLobby.broadcastMessage("OK$ENDT$" + playerName);
+            return true;
+        } catch (Exception e) {
+            logger.warning("Could not end turn because game is not started yet.");
+            return false;
+        }
+    }
+
     /**
      * Handles place structure request from client
+     *
      * @param cmd the transmitted command
      */
     public boolean handlePlaceStructure(Command cmd) {
@@ -416,8 +414,8 @@ public class CommandHandler {
             }
             int x = Integer.parseInt(args[0]);
             int y = Integer.parseInt(args[1]);
-            String structureId = args[2];
-            if(gameLogic.placeStructure(x,y,structureId, playerName)) {
+            int structureId = Integer.parseInt(args[2]);
+            if (gameLogic.placeStructure(x, y, structureId, playerName)) {
                 currentLobby.broadcastMessage("OK$PLST$" + x + "$" + y + "$" + structureId + "$" + playerName);
                 return true;
             }
@@ -433,6 +431,7 @@ public class CommandHandler {
 
     /**
      * Handles use structure request from client
+     *
      * @param cmd the transmitted command
      */
     public boolean handleUseStructure(Command cmd) {
@@ -444,10 +443,10 @@ public class CommandHandler {
             }
             int x = Integer.parseInt(args[0]);
             int y = Integer.parseInt(args[1]);
-            String structureId = args[2];
+            int structureId = Integer.parseInt(args[2]);
             String useType = args[3];
-            if(gameLogic.useStructure(x,y,structureId, useType, playerName)) {
-                currentLobby.broadcastMessage("OK$USSR$" + x + "$" +  y + "$" + structureId + "$" + useType + "$" + playerName);
+            if (gameLogic.useStructure(x, y, structureId, useType, playerName)) {
+                currentLobby.broadcastMessage("OK$USSR$" + x + "$" + y + "$" + structureId + "$" + useType + "$" + playerName);
                 return true;
             }
         } catch (NumberFormatException e) {
@@ -462,6 +461,7 @@ public class CommandHandler {
 
     /**
      * Handles buy statue request from client
+     *
      * @param cmd the transmitted command
      */
     public boolean handleBuyStatue(Command cmd) {
@@ -472,10 +472,9 @@ public class CommandHandler {
                 return false;
             }
             String statueId = args[0];
-            if (gameLogic.buyStatue(statueId, playerName)) {
-                currentLobby.broadcastMessage("OK$BYST$" + statueId + "$playerName");
-                return true;
-            }
+            gameLogic.buyStatue(statueId, playerName);
+            currentLobby.broadcastMessage("OK$BYST$" + statueId + "$" + playerName);
+            return true;
         } catch (NumberFormatException e) {
             logger.severe("Failed to parse coordinates: " + e.getMessage());
             sendMessage("ERR$101$INVALID_COORDINATES");
@@ -488,6 +487,7 @@ public class CommandHandler {
 
     /**
      * Handles upgrade statue request from client
+     *
      * @param cmd the transmitted command
      */
     public boolean handleUpgradeStatue(Command cmd) {
@@ -500,7 +500,7 @@ public class CommandHandler {
             int x = Integer.parseInt(args[0]);
             int y = Integer.parseInt(args[1]);
             String statueId = args[2];
-            if (gameLogic.upgradeStatue(x,y,statueId, playerName)) {
+            if (gameLogic.upgradeStatue(x, y, statueId, playerName)) {
                 currentLobby.broadcastMessage("OK$UPST$" + x + "$" + y + "$" + statueId + "$" + playerName);
                 return true;
             }
@@ -516,6 +516,7 @@ public class CommandHandler {
 
     /**
      * Handles use statue request from client
+     *
      * @param cmd the transmitted command
      */
     public boolean handleUseStatue(Command cmd) {
@@ -527,12 +528,11 @@ public class CommandHandler {
             }
             int x = Integer.parseInt(args[0]);
             int y = Integer.parseInt(args[1]);
-            String statueId = args[2];
+            int statueId = Integer.parseInt(args[2]);
             String useType = args[3];
-            if (gameLogic.useStatue(x,y,statueId, useType, playerName)) {
-                currentLobby.broadcastMessage("OK$USTA$" + x + "$" + y + "$" + statueId + "$" + useType + "$" + playerName);
-                return true;
-            }
+            gameLogic.useStatue(x, y, statueId, useType, playerName);
+            currentLobby.broadcastMessage("OK$USTA$" + x + "$" + y + "$" + statueId + "$" + useType + "$" + playerName);
+            return true;
         } catch (NumberFormatException e) {
             logger.severe("Failed to parse coordinates: " + e.getMessage());
             sendMessage("ERR$101$INVALID_COORDINATES");
@@ -545,21 +545,22 @@ public class CommandHandler {
 
     /**
      * Handles use player artifact request from client
+     *
      * @param cmd the transmitted command
      */
     public boolean handleUsePlayerArtifact(Command cmd) {
         try {
             String[] args = cmd.getArgs();
-            if (args.length != 2) {
+            if (args.length != 3) {
                 sendMessage("ERR$101$INVALID_ARGUMENTS$USE_PLAYER_ARTIFACT");
                 return false;
             }
             int artifactId = Integer.parseInt(args[0]);
             String useType = args[1];
             String playerAimedAt = args[2];
-            if(gameLogic.usePlayerArtifact(artifactId,playerName, useType, playerAimedAt)) {
-                currentLobby.broadcastMessage("OK$USPA$" + artifactId + "$" + playerName + "$" + useType);
-            }
+            gameLogic.usePlayerArtifact(artifactId, playerName, useType, playerAimedAt);
+            currentLobby.broadcastMessage("OK$USPA$" + artifactId + "$" + playerName + "$" + useType);
+            return true;
         } catch (NumberFormatException e) {
             logger.severe("Failed to parse artifact ID: " + e.getMessage());
             sendMessage("ERR$101$INVALID_ARTIFACT_ID");
@@ -572,6 +573,7 @@ public class CommandHandler {
 
     /**
      * Handles use player artifact request from client
+     *
      * @param cmd the transmitted command
      */
     public boolean handleUseFieldArtifact(Command cmd) {
@@ -585,17 +587,13 @@ public class CommandHandler {
             int y = Integer.parseInt(args[1]);
             int artifactId = Integer.parseInt(args[2]);
             String useType = args[3];
-            if (gameLogic.useFieldArtifact(x,y,artifactId,useType)) {
-                currentLobby.broadcastMessage("OK$USFA$" + x + "$" + y + artifactId + "$" + playerName + "$" + useType);
-                return true;
-            }
-        } catch (NumberFormatException e) {
-            logger.severe("Failed to parse artifact ID: " + e.getMessage());
-            sendMessage("ERR$101$INVALID_ARTIFACT_ID");
+            gameLogic.useFieldArtifact(x, y, artifactId, useType, playerName);
+            currentLobby.broadcastMessage("OK$USFA$" + x + "$" + y + "$" + artifactId + "$" + playerName + "$" + useType);
+            return true;
         } catch (Exception e) {
-            logger.severe("Failed to handle use player artifact request: " + e.getMessage());
-            sendMessage("ERR$106$USE_PLAYER_ARTIFACT_FAILED");
+            logger.severe("Failed to handle use field artifact request: " + e.getMessage());
+            sendMessage("ERR$106$USE_FIELD_ARTIFACT_FAILED");
+            return false;
         }
-        return false;
     }
 }

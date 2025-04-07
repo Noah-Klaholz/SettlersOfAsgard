@@ -1,4 +1,3 @@
-// File: src/main/java/ch/unibas/dmi/dbis/cs108/client/core/entities/Shop.java
 package ch.unibas.dmi.dbis.cs108.server.core.entities;
 
 import com.google.gson.Gson;
@@ -16,24 +15,6 @@ public class Shop {
     private ArrayList<Statue> buyableStatues;
     private boolean statueInUse; //todo: blocks the list of statues so no new one can be build while one is in possession
 
-    // Helper class for structure JSON data
-    private static class StructureData {
-        int id;
-        String name;
-        String description;
-        String useType;
-        // Additional fields can be added if needed.
-    }
-
-    // Helper class for statue JSON data
-    private static class StatueData {
-        int id;
-        String name;
-        String description;
-        String useType;
-        // Additional fields like "deal", "blessing", or "curse" can be added if needed.
-    }
-
     public Shop() {
         this.buyableStructures = new ArrayList<>();
         this.buyableStatues = new ArrayList<>();
@@ -49,15 +30,15 @@ public class Shop {
             return;
         }
         InputStreamReader reader = new InputStreamReader(inputStream);
-        Type listType = new TypeToken<List<JsonElement>>() {}.getType();
+        Type listType = new TypeToken<List<JsonElement>>() {
+        }.getType();
         List<JsonElement> elements = gson.fromJson(reader, listType);
 
         for (JsonElement elem : elements) {
-            // Only process objects that have a "name" field.
             if (elem.getAsJsonObject().has("name")) {
                 StructureData data = gson.fromJson(elem, StructureData.class);
-                //Structure structure = new Structure(data.id, data.name, data.description, data.useType);
-                //buyableStructures.add(structure);
+                Structure structure = new Structure(data.id, data.name, data.description, data.useType, data.price);
+                buyableStructures.add(structure);
             }
         }
     }
@@ -70,14 +51,15 @@ public class Shop {
             return;
         }
         InputStreamReader reader = new InputStreamReader(inputStream);
-        Type listType = new TypeToken<List<JsonElement>>() {}.getType();
+        Type listType = new TypeToken<List<JsonElement>>() {
+        }.getType();
         List<JsonElement> elements = gson.fromJson(reader, listType);
 
         for (JsonElement elem : elements) {
             // Only process objects that have a "name" field.
             if (elem.getAsJsonObject().has("name")) {
                 StatueData data = gson.fromJson(elem, StatueData.class);
-                Statue statue = new Statue(data.id, data.name, data.description, data.useType);
+                Statue statue = new Statue(data.id, data.name, data.description, data.useType, data.price, data.upgradePrice);
                 buyableStatues.add(statue);
             }
         }
@@ -97,5 +79,22 @@ public class Shop {
 
     public void blockStatue() {
         statueInUse = true;
+    }
+
+    private static class StructureData {
+        int id;
+        String name;
+        String description;
+        String useType;
+        int price;
+    }
+
+    private static class StatueData {
+        int id;
+        String name;
+        String description;
+        String useType;
+        int price;
+        int upgradePrice;
     }
 }

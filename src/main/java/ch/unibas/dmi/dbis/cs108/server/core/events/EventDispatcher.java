@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.server.core.events;
 
+import ch.unibas.dmi.dbis.cs108.client.core.events.GameEvent;
 import ch.unibas.dmi.dbis.cs108.client.core.observer.GameEventListener;
 
 import java.util.ArrayList;
