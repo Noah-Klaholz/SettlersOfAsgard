@@ -14,17 +14,17 @@ public class Board {
      */
     public Board() {
         tiles = new Tile[7][8]; // 7 rows and 8 columns
+        initBoard(7, 8);
     }
 
     // Initialize board with a specified number of tiles
     // usable for potential other maps with other sizes.
     public void initBoard(int x, int y) {
-        tiles = new Tile[x][y];
-        for (int i=0; i<7; i++){
-            for (int j=0; j<8; j++){
+        //tiles = new Tile[x][y];
+        for (int i=0; i<x; i++){
+            for (int j=0; j<y; j++){
                 Tile.TileBuilder tilebuilder = new Tile.TileBuilder();
-                tilebuilder.setX(i);
-                tilebuilder.setY(j);
+                tilebuilder.setX(i).setY(j);
                 tiles[i][j] = new Tile(tilebuilder);
             }
         }
