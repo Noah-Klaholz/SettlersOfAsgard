@@ -32,6 +32,6 @@ public class ChatMessageEvent implements Event {
     }
 
     public enum ChatType {
-        GLOBAL, LOBBY, PRIVATE
+        GLOBAL, LOBBY, PRIVATE, INFO
     }
 }

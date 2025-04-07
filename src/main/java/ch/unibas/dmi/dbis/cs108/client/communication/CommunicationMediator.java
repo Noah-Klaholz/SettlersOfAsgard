@@ -26,6 +26,28 @@ public class CommunicationMediator {
         // ToDo: Register core listeners if needed.
     }
 
+    /**
+     * Publish an info chat event to the UI.
+     * This is used to inform the user about various events.
+     * @param message
+     */
+    private void publishInfoChatEvent(String message) {
+        UIEventBus.getInstance().publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.ChatMessageEvent(
+                message,
+                ChatMessageEvent.ChatType.INFO
+        ));
+    }
+
+    /**
+     * Check if the argument at index i is valid.
+     * @param args the arguments array
+     * @param i index of the argument
+     * @return true if the argument is valid, false otherwise.
+     */
+    private boolean isValidArgument(String[] args, int i) {
+        return args != null && args.length == (i+1) && !args[i].trim().isEmpty();
+    }
+
     // Subscribes to UI events and forwards them to the network layer.
     private void registerUIListeners() {
         UIEventBus.getInstance().subscribe(SendChatEvent.class, event -> {
@@ -53,24 +75,24 @@ public class CommunicationMediator {
                 case EXIT:
                     // TODO handle exit command
                 case CHANGENAME:
-                    if (args.length == 1) {
+                    if (isValidArgument(args, 0)) {
                         networkController.changeName(args[0]);
                     } else {
-                        //TODO handle invalid name
+                        publishInfoChatEvent("Invalid name, use: \n /changename <new_name>");
                     }
                     break;
                 case JOINLOBBY:
-                    if (args.length == 1) {
+                    if (isValidArgument(args, 0)) {
                         networkController.joinLobby(args[0]);
                     } else {
-                        //TODO handle invalid name
+                        publishInfoChatEvent("Invalid lobbyname, use: \n /joinlobby <lobbyName>");
                     }
                     break;
                 case LEAVELOBBY:
                     networkController.leaveLobby();
                     break;
                 case CREATELOBBY:
-                    if (args.length == 1) {
+                    if (isValidArgument(args, 0)) {
                         networkController.createLobby(args[0]);
                     } else {
                         //TODO handle invalid name
@@ -85,13 +107,15 @@ public class CommunicationMediator {
                     networkController.listAllPlayers();
                     break;
                 case LISTLOBBYPLAYERS:
-                    networkController.listLobbyPlayers(args[0]);
+                    if (isValidArgument(args, 0)) {
+                        networkController.listLobbyPlayers(args[0]);
+                    }
                     break;
                 case GLOBALCHAT:
                     networkController.sendGlobalChat(input.replace("/global ", "")); // Handled differently, because spaces can be included in messages
                     break;
                 case WHISPER:
-                    if (args.length > 1) {
+                    if (isValidArgument(args, 0)) {
                         networkController.sendPrivateChat(args[0], input.replace("/whisper " + args[0] + " ", ""));
                     }
                 case HELP:
