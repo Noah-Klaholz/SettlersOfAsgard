@@ -411,4 +411,15 @@ public class GameState {
         }
         board.setTileByCoordinates(x, y, tile);
     }
+
+    @Override
+    public String toString() {
+        return "GameState{" +
+                "playerRound=" + playerRound +
+                ", gameRound=" + gameRound +
+                ", activePlayerID=" + activePlayerID +
+                ", players=" + players +
+                ", board=" + board +
+                '}';
+    }
 }
