@@ -59,7 +59,7 @@ public class Shop {
             // Only process objects that have a "name" field.
             if (elem.getAsJsonObject().has("name")) {
                 StatueData data = gson.fromJson(elem, StatueData.class);
-                Statue statue = new Statue(data.id, data.name, data.description, data.useType, data.price, data.upgradePrice);
+                Statue statue = new Statue(data.id, data.name, data.description, data.useType);
                 buyableStatues.add(statue);
             }
         }
