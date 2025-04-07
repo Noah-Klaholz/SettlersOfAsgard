@@ -170,10 +170,12 @@ public class CommandHandler {
      */
     public boolean handleStartGame() {
         System.out.println("handle start game");
-        if (ch.getCurrentLobby() != null && ch.getCurrentLobby().getPlayers().get(0) == ch && ch.getCurrentLobby().startGame()) {
-            this.gameLogic = ch.getCurrentLobby().getGameLogic();
+        if (ch.getCurrentLobby() != null && ch.getCurrentLobby().startGame()) {
+            this.currentLobby = ch.getCurrentLobby();
+            this.gameLogic = currentLobby.getGameLogic();
             return true;
         } else {
+            System.out.println("ERR$106$NOT_IN_LOBBY");
             sendMessage("ERR$106$CANNOT_START_GAME");
             return false;
         }
@@ -318,7 +320,7 @@ public class CommandHandler {
      */
     public boolean handleGetGameStatus() {
         try {
-            GameState gs = gameLogic.getGameState();
+            GameState gs = ch.getCurrentLobby().getGameLogic().getGameState();
             sendMessage("OK$GSTS$" + gs.toString());
             return true;
         } catch (Exception e) {
