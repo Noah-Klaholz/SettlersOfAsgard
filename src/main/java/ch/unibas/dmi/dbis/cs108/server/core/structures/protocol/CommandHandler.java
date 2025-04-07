@@ -8,7 +8,6 @@ import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 import ch.unibas.dmi.dbis.cs108.server.networking.GameServer;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -69,14 +68,14 @@ public class CommandHandler {
             if (arg[0].equals("LOBBY")) {
                 if (currentLobby != null) {
                     list = currentLobby.listPlayers();
-                    sendMessage("OK$LSTP$LOBBY$"+ list);
+                    sendMessage("OK$LSTP$LOBBY$" + list);
                     return true;
                 } else {
                     sendMessage("ERR$106$NOT_IN_LOBBY");
                 }
             } else if (arg[0].equals("SERVER")) {
                 list = server.listPlayers();
-                sendMessage("OK$LSTP$SERVER$"+ list);
+                sendMessage("OK$LSTP$SERVER$" + list);
             } else {
                 sendMessage("ERR$101$INVALID_ARGUMENTS");
             }
@@ -117,9 +116,7 @@ public class CommandHandler {
             return true;
         }
 
-        String lobbyList = lobbies.stream()
-                .map(lobby -> lobby.getId() + ":  " + lobby.getStatus())
-                .collect(Collectors.joining("%"));
+        String lobbyList = lobbies.stream().map(lobby -> lobby.getId() + ":  " + lobby.getStatus()).collect(Collectors.joining("%"));
 
         System.out.println(lobbyList);
         ch.sendMessage("OK$LIST$" + lobbyList);
@@ -139,7 +136,7 @@ public class CommandHandler {
         Lobby lobby = server.getLobby(lobbyId);
         if (lobby != null && lobby.addPlayer(ch)) {
             joinLobby(lobby);
-            sendMessage("OK$JOIN$"+ lobbyId);
+            sendMessage("OK$JOIN$" + lobbyId);
             return true;
         } else {
             sendMessage("ERR$106$JOIN_LOBBY_FAILED");
@@ -180,6 +177,14 @@ public class CommandHandler {
             sendMessage("ERR$106$CANNOT_START_GAME");
             return false;
         }
+    }
+
+    private GameLogic getGameLogic() {
+        // Refresh gameLogic if it's null but the lobby has one
+        if (gameLogic == null && currentLobby != null) {
+            gameLogic = currentLobby.getGameLogic();
+        }
+        return gameLogic;
     }
 
     /**
@@ -355,6 +360,13 @@ public class CommandHandler {
      */
     public boolean handleBuyTile(Command cmd) {
         try {
+            if (gameLogic == null && currentLobby != null) {
+                gameLogic = currentLobby.getGameLogic();
+            }
+            if (gameLogic == null) {
+                logger.severe("GameLogic is still null - cannot buy tile");
+                return false;
+            }
             String[] args = cmd.getArgs();
             if (args.length != 2) {
                 sendMessage("ERR$101$INVALID_ARGUMENTS$BUY_TILE");
