@@ -95,6 +95,7 @@ public class Lobby {
     }
 
     public boolean startGame() {
+        System.out.println("Lobby started game");
         if (status == LobbyStatus.IN_GAME) {
             logger.warning("Game is already started in lobby " + id);
             return false;

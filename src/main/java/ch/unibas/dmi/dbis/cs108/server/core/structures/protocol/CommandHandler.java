@@ -169,8 +169,9 @@ public class CommandHandler {
      * This method handles the starting of a game.
      */
     public boolean handleStartGame() {
-        if (currentLobby != null && currentLobby.getPlayers().get(0) == ch && currentLobby.startGame()) {
-            this.gameLogic = currentLobby.getGameLogic();
+        System.out.println("handle start game");
+        if (ch.getCurrentLobby() != null && ch.getCurrentLobby().getPlayers().get(0) == ch && ch.getCurrentLobby().startGame()) {
+            this.gameLogic = ch.getCurrentLobby().getGameLogic();
             return true;
         } else {
             sendMessage("ERR$106$CANNOT_START_GAME");
