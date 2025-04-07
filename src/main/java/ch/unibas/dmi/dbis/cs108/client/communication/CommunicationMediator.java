@@ -132,6 +132,10 @@ public class CommunicationMediator {
                             "/listlobbyplayers <lobbyname> \n" +
                             "/exit \n" +
                             "/help \n" +
+                            "/helpgame");
+                    break;
+                case HELPGAME:
+                    publishInfoChatEvent("The following Game-commands are available: \n" +
                             "/buytile <x> <y> \n" +
                             "/placestructure <x> <y> <structureType> \n" +
                             "/usestructure <x> <y> <structureType> <targetPlayer> \n" +
@@ -140,8 +144,7 @@ public class CommunicationMediator {
                             "/usefieldartifact <x> <y> <targetPlayer> \n" +
                             "/useplayerartifact <targetPlayer> \n" +
                             "/status \n" +
-                            "/prices \n");
-                    break;
+                            "/prices");
                 case BUYTILE:
                     if (args.length == 2) {
                         networkController.buyTile(Integer.parseInt(args[0]), Integer.parseInt(args[1]));

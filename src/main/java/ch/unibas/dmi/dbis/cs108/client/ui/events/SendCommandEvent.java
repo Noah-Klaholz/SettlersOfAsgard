@@ -31,6 +31,7 @@ public class SendCommandEvent {
         GLOBALCHAT("/global"),
         WHISPER("/whisper"),
         HELP("/help"),
+        HELPGAME("/helpgame"),
         BUYTILE("/buytile"),
         PLACESTRUCTURE("/placestructure"),
         USESTRUCTURE("/usestructure"),
