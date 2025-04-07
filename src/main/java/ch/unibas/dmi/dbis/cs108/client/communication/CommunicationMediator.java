@@ -85,7 +85,7 @@ public class CommunicationMediator {
                     networkController.listAllPlayers();
                     break;
                 case LISTLOBBYPLAYERS:
-                    networkController.listLobbyPlayers();
+                    networkController.listLobbyPlayers(args[0]);
                     break;
                 case GLOBALCHAT:
                     networkController.sendGlobalChat(input.replace("/global ", "")); // Handled differently, because spaces can be included in messages

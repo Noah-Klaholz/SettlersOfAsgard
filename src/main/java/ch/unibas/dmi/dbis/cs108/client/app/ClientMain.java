@@ -52,10 +52,6 @@ public class ClientMain {
 
             if (!checkConnection(networkController)) return;
 
-            // Initialize and start the command line interface
-            CommandLineInterface cli = new CommandLineInterface(networkController, localPlayer);
-            cli.start();
-
         } catch (Exception e) {
             logger.warning("Client start-up error: " + e.getMessage());
         } finally {
