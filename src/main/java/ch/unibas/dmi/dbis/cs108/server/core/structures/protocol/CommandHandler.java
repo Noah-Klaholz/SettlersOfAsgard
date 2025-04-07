@@ -160,7 +160,8 @@ public class CommandHandler {
     public boolean handleLeaveLobby() {
         if (currentLobby != null && currentLobby.removePlayer(ch)) {
             String lobbyId = currentLobby.getId();
-            sendMessage("OK$LEAV$" + lobbyId);
+            currentLobby.broadcastMessage("OK$LEAV$" + playerName + "$" + lobbyId);
+            sendMessage("OK$LEAV$" + playerName + "$" + lobbyId);
             Lobby lobby = server.getLobby(lobbyId);
             if (lobby != null && lobby.isEmpty()) {
                 server.removeLobby(lobby);
