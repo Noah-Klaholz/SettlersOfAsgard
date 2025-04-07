@@ -180,7 +180,7 @@ public class CommandHandler {
      * This method handles the creation of a lobby.
      *
      * @param cmd the transmitted command
-     *
+     * @return true if the command was handled successfully, false otherwise
      */
     public boolean handleCreateLobby(Command cmd) {
         if (currentLobby != null) {
@@ -203,6 +203,7 @@ public class CommandHandler {
      * This method handles a player (client) joining a Lobby.
      *
      * @param cmd the transmitted command
+     * @return true if the command was handled successfully, false otherwise
      */
     public boolean handleJoinLobby(Command cmd) {
         String lobbyId = cmd.getArgs()[1];
@@ -229,6 +230,8 @@ public class CommandHandler {
 
     /**
      * This method handles a player (client) exiting a Lobby.
+     *
+     * @return true if the command was handled successfully, false otherwise
      */
     public boolean handleLeaveLobby() {
         if (currentLobby != null && currentLobby.removePlayer(ch)) {
@@ -251,6 +254,7 @@ public class CommandHandler {
      * This method handles the sending of a private message to another player.
      *
      * @param cmd the transmitted command
+     * @return true if the message was sent successfully, false otherwise
      */
     public boolean handlePrivateMessage(Command cmd) {
         String[] parts = cmd.getArgs();
@@ -301,6 +305,8 @@ public class CommandHandler {
 
     /**
      * This method handles the starting of a game.
+     *
+     * @return true if the game was started successfully, false otherwise
      */
     public boolean handleStartGame() {
         if (ch.getCurrentLobby() != null && ch.getCurrentLobby().startGame()) {
@@ -317,6 +323,8 @@ public class CommandHandler {
 
     /**
      * Handles end turn command from client
+     *
+     * @return true if the command was handled successfully, false otherwise
      */
     public boolean handleStartTurn() {
         try {
@@ -344,6 +352,8 @@ public class CommandHandler {
 
     /**
      * Handles synchronization request from client
+     *
+     * @return true if the command was handled successfully, false otherwise
      */
     public boolean handleSynchronize() {
         // TODO: Implement synchronization logic
@@ -352,6 +362,8 @@ public class CommandHandler {
 
     /**
      * Handles request for game status
+     *
+     * @return true if the command was handled successfully, false otherwise
      */
     public boolean handleGetGameStatus() {
         try {
@@ -367,6 +379,8 @@ public class CommandHandler {
 
     /**
      * Handles request for price information
+     *
+     * @return true if the command was handled successfully, false otherwise
      */
     public boolean handleGetPrices() {
         try {
@@ -386,6 +400,7 @@ public class CommandHandler {
      * Handles buy tile request from client
      *
      * @param cmd the transmitted command
+     * @return true if the command was handled successfully, false otherwise
      */
     public boolean handleBuyTile(Command cmd) {
         try {
@@ -421,6 +436,7 @@ public class CommandHandler {
      * Handles buy structure request from client
      *
      * @param cmd the transmitted command
+     * @return true if the command was handled successfully, false otherwise
      */
     public boolean handleBuyStructure(Command cmd) {
         try {
@@ -440,6 +456,11 @@ public class CommandHandler {
         return false;
     }
 
+    /**
+     * Handles end turn command from client
+     *
+     * @return true if the command was handled successfully, false otherwise
+     */
     public boolean handleEndTurn() {
         try {
             this.gameLogic.endTurn();
@@ -455,6 +476,7 @@ public class CommandHandler {
      * Handles place structure request from client
      *
      * @param cmd the transmitted command
+     * @return true if the command was handled successfully, false otherwise
      */
     public boolean handlePlaceStructure(Command cmd) {
         try {
@@ -484,6 +506,7 @@ public class CommandHandler {
      * Handles use structure request from client
      *
      * @param cmd the transmitted command
+     * @return true if the command was handled successfully, false otherwise
      */
     public boolean handleUseStructure(Command cmd) {
         try {
@@ -514,6 +537,7 @@ public class CommandHandler {
      * Handles buy statue request from client
      *
      * @param cmd the transmitted command
+     * @return true if the command was handled successfully, false otherwise
      */
     public boolean handleBuyStatue(Command cmd) {
         try {
@@ -540,6 +564,7 @@ public class CommandHandler {
      * Handles upgrade statue request from client
      *
      * @param cmd the transmitted command
+     * @return true if the command was handled successfully, false otherwise
      */
     public boolean handleUpgradeStatue(Command cmd) {
         try {
@@ -569,6 +594,7 @@ public class CommandHandler {
      * Handles use statue request from client
      *
      * @param cmd the transmitted command
+     * @return true if the command was handled successfully, false otherwise
      */
     public boolean handleUseStatue(Command cmd) {
         try {
@@ -598,6 +624,7 @@ public class CommandHandler {
      * Handles use player artifact request from client
      *
      * @param cmd the transmitted command
+     * @return true if the command was handled successfully, false otherwise
      */
     public boolean handleUsePlayerArtifact(Command cmd) {
         try {
@@ -626,6 +653,7 @@ public class CommandHandler {
      * Handles use player artifact request from client
      *
      * @param cmd the transmitted command
+     * @return true if the command was handled successfully, false otherwise
      */
     public boolean handleUseFieldArtifact(Command cmd) {
         try {

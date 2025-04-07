@@ -9,13 +9,37 @@ public class ErrorsAPI {
      * Enum for the different errors that can be sent by the server
      */
     public enum Errors {
+        /**
+         * Error code player already exists
+         */
         PLAYER_ALREADY_EXISTS("106$PLAYER_ALREADY_EXISTS"),
+        /**
+         * Error code player does not exist
+         */
         PLAYER_DOES_NOT_EXIST("106$PLAYER_DOES_NOT_EXIST"),
+        /**
+         * Error code cannot whisper to self
+         */
         CANNOT_WHISPER_TO_SELF("106$CANNOT_WHISPER_TO_SELF"),
+        /**
+         * Error code cannot start game
+         */
         CANNOT_START_GAME("106$CANNOT_START_GAME"),
+        /**
+         * Error code not in lobby
+         */
         NOT_IN_LOBBY("106$NOT_IN_LOBBY"),
+        /**
+         * Error code join lobby failed
+         */
         JOIN_LOBBY_FAILED("106$JOIN_LOBBY_FAILED"),
+        /**
+         * Error code lobby creation failed
+         */
         LOBBY_CREATION_FAILED("106$LOBBY_CREATION_FAILED"),
+        /**
+         * Error code NullPointer
+         */
         NULL_MESSAGE_RECIEVED("103$Null");
 
         private final String error;
@@ -32,7 +56,7 @@ public class ErrorsAPI {
         /**
          * Returns the command enum from a command string
          *
-         * @param errorName
+         * @param errorName the command string
          * @return the command enum
          */
         public static Errors fromError(String errorName) {

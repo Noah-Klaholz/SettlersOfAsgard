@@ -13,10 +13,30 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 
 import java.util.Arrays;
 
+/**
+ * Mediator class that handles communication between the UI and the network layer.
+ * It listens for events from the UI and forwards them to the network layer,
+ * and also listens for events from the network layer and forwards them to the UI.
+ */
 public class CommunicationMediator {
+    /**
+     * The NetworkController instance used for network communication.
+     * This controller handles sending and receiving messages over the network.
+     */
     private final NetworkController networkController;
+    /**
+     * The Game instance representing the current game state.
+     * This instance is used to update the game state based on network events.
+     */
     private final Game game;
 
+    /**
+     * Constructor for CommunicationMediator.
+     * Initializes the mediator with the network controller and game instance.
+     *
+     * @param networkController The network controller to handle network communication.
+     * @param game              The game instance to update the game state.
+     */
     public CommunicationMediator(NetworkController networkController, Game game) {
         this.networkController = networkController;
         this.game = game;
@@ -24,6 +44,10 @@ public class CommunicationMediator {
         registerNetworkListeners();
     }
 
+    /**
+     * Register core listeners for the game.
+     * This method is currently a placeholder and can be implemented as needed.
+     */
     private void registerCoreListeners() {
         // ToDo: Register core listeners if needed.
     }
@@ -31,7 +55,7 @@ public class CommunicationMediator {
     /**
      * Publish an info chat event to the UI.
      * This is used to inform the user about various events.
-     * @param message
+     * @param message the message to be published
      */
     private void publishInfoChatEvent(String message) {
         UIEventBus.getInstance().publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.ChatMessageEvent(
@@ -51,7 +75,9 @@ public class CommunicationMediator {
         return args != null && args.length == (i+1) && !args[i].trim().isEmpty();
     }
 
-    // Subscribes to UI events and forwards them to the network layer.
+    /**
+     * Subscribes to UI events and forwards them to the network layer.
+     */
     private void registerUIListeners() {
         UIEventBus.getInstance().subscribe(SendChatEvent.class, event -> {
             switch (event.getType()) {
@@ -216,7 +242,9 @@ public class CommunicationMediator {
         });
     }
 
-    // Listens for network events and publishes corresponding UI events.
+    /**
+     * Listens for network events and publishes corresponding UI events.
+     */
     private void registerNetworkListeners() {
         EventDispatcher.getInstance().registerListener(ChatMessageEvent.class, new EventListener<ChatMessageEvent>() {
             @Override

@@ -22,15 +22,51 @@ import java.util.logging.Logger;
  */
 public class ClientHandler implements Runnable, CommunicationAPI {
     private static final Logger logger = Logger.getLogger(ClientHandler.class.getName());
-    private final CommandHandler ch; // Reference to a CommandHandler
-    protected GameServer server; // Reference to the GameServer
-    protected Lobby currentLobby = null; // Reference to the current lobby of the client
-    protected Player localPlayer = null; // Reference to the local player of the client
-    private Socket socket; // The socket for the client connection
-    private PrintWriter out; // PrintWriter for sending messages to the client
-    private BufferedReader in; // BufferedReader for receiving messages from the client
-    private long lastPingTime = System.currentTimeMillis(); // Last time a ping was sent
-    private boolean running; // Flag to indicate if the client handler is running
+
+    /**
+     * Reference to a CommandHandler
+     */
+    private final CommandHandler ch;
+
+    /**
+     * Reference to the GameServer
+     */
+    protected GameServer server;
+
+    /**
+     * Reference to the current lobby of the client
+     */
+    protected Lobby currentLobby = null;
+
+    /**
+     * Reference to the local player of the client
+     */
+    protected Player localPlayer = null;
+
+    /**
+     * The socket for the client connection
+     */
+    private Socket socket;
+
+    /**
+     * PrintWriter for sending messages to the client
+     */
+    private PrintWriter out;
+
+    /**
+     * BufferedReader for receiving messages from the client
+     */
+    private BufferedReader in;
+
+    /**
+     * Last time a ping was sent
+     */
+    private long lastPingTime = System.currentTimeMillis();
+
+    /**
+     * Flag to indicate if the client handler is running
+     */
+    private boolean running;
 
 
     /**
@@ -77,6 +113,9 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         }
     }
 
+    /**
+     * Sends a START command to the client to initiate game start
+     */
     public void startGame() {
         sendMessage(NetworkProtocol.Commands.START+"$");
     }
@@ -167,7 +206,11 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         running = false;
     }
 
-
+    /**
+     * Returns the server instance this client handler is connected to
+     *
+     * @return the GameServer instance
+     */
     public GameServer getServer() {
         return server;
     }

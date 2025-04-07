@@ -9,9 +9,20 @@ import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
  * In a real application you might use a DI framework to inject these.
  */
 public abstract class BaseController {
-    protected final ResourceLoader resourceLoader; // Resource loader for loading resources
-    protected final UIEventBus eventBus; // Event bus for handling events
-    protected final SceneManager sceneManager; // Scene manager for managing scenes
+    /**
+     * Resource loader for loading resources
+     */
+    protected final ResourceLoader resourceLoader;
+
+    /**
+     * Event bus for handling events
+     */
+    protected final UIEventBus eventBus;
+
+    /**
+     * Scene manager for managing scenes
+     */
+    protected final SceneManager sceneManager;
 
     /**
      * Constructor for BaseController.
