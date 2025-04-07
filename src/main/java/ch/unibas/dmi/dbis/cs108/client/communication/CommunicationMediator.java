@@ -119,7 +119,28 @@ public class CommunicationMediator {
                         networkController.sendPrivateChat(args[0], input.replace("/whisper " + args[0] + " ", ""));
                     }
                 case HELP:
-                    // TODO handle help command -> Maybe generalize this in a method in network controller
+                    publishInfoChatEvent("The following commands are available: \n" +
+                            "/whisper <playername> <message> \n" +
+                            "/global <message> \n" +
+                            "/changename <newName> \n" +
+                            "/joinlobby <lobbyname> \n" +
+                            "/leavelobby \n" +
+                            "/createlobby <lobbyname> \n" +
+                            "/startgame \n" +
+                            "/listlobbies \n" +
+                            "/listallplayers \n" +
+                            "/listlobbyplayers <lobbyname> \n" +
+                            "/exit \n" +
+                            "/help \n" +
+                            "/buytile <x> <y> \n" +
+                            "/placestructure <x> <y> <structureType> \n" +
+                            "/usestructure <x> <y> <structureType> <targetPlayer> \n" +
+                            "/usestatue <x> <y> <statueType> <targetPlayer> \n" +
+                            "/upgrade <x> <y> <statueType> \n" +
+                            "/usefieldartifact <x> <y> <targetPlayer> \n" +
+                            "/useplayerartifact <targetPlayer> \n" +
+                            "/status \n" +
+                            "/prices \n");
                     break;
                 case BUYTILE:
                     if (args.length == 2) {
