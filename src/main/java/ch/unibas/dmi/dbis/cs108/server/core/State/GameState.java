@@ -306,7 +306,7 @@ public class GameState {
 
     /**
      * Removes runes from a player's collection.
-     * //falls player runes < remove runes, set to 0
+     * //falls player runes kleiner remove runes, set to 0
      *
      * @param runes  The number of runes to remove
      * @param player The name of the player

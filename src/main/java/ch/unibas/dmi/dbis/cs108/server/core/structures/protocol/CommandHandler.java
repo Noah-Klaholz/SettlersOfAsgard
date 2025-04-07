@@ -65,9 +65,9 @@ public class CommandHandler {
             sendMessage("ERR$101$INVALID_ARGUMENTS");
         } else {
             String list;
-            if (arg[0].equals("LOBBY")) {
+            if (arg[0].equals("LOBBY") && arg.length == 2) {
                 Lobby lobby = server.getLobby(arg[1]);
-                if (arg.length == 2 && lobby != null) {
+                if (lobby != null) {
                     list = lobby.listPlayers();
                     sendMessage("OK$LSTP$LOBBY$" + lobby.getId() + "$"+ list);
                     return true;
