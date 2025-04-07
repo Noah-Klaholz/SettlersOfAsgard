@@ -20,4 +20,36 @@ public abstract class Statue {
         this.id = data.getId();
         this.cost = data.getCost();
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDeal() {
+        return deal;
+    }
+
+    public String getBlessing() {
+        return blessing;
+    }
+
+    public String getCurse() {
+        return curse;
+    }
+
+    public String getUseType() {
+        return useType;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getCost() {
+        return cost;
+    }
 }
