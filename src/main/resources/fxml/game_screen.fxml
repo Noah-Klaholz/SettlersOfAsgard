@@ -1,14 +1,193 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Rectangle?>
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController"
+            stylesheets="/css/style.css">
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="ch.unibas.dmi.dbis.cs108.client.ui.controllers.MainMenuController"
-            prefHeight="400.0" prefWidth="600.0">
+    <!-- Right: Chat panel with text wrapping -->
+    <right>
+        <VBox spacing="10" prefWidth="250" styleClass="panel">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label text="Chat" styleClass="label, title"/>
+            <ListView fx:id="chatListView" VBox.vgrow="ALWAYS" styleClass="chat-list"/>
+            <HBox spacing="5">
+                <TextField fx:id="chatInputField" promptText="Type a message..." HBox.hgrow="ALWAYS"
+                           onAction="#handleMessageSend"/>
+                <Button text="Send" onAction="#handleMessageSend"/>
+            </HBox>
+        </VBox>
+    </right>
 
-</AnchorPane>
+    <!-- Center: Game canvas -->
+    <center>
+        <StackPane>
+            <Canvas fx:id="gameCanvas" styleClass="canvas"/>
+        </StackPane>
+    </center>
+
+    <!-- Left: Info bar with energy and runes -->
+    <left>
+        <VBox spacing="15" prefWidth="200" styleClass="panel">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+
+            <!-- Energy Bar Section - Clean and Simple -->
+            <VBox spacing="5">
+                <Label text="Energy" styleClass="label, title"/>
+                <StackPane>
+                    <Rectangle fx:id="energyBarBackground" width="180" height="20"
+                               styleClass="energy-bar-background"/>
+                    <Rectangle fx:id="energyBarFill" width="90" height="20"
+                               styleClass="energy-bar-fill"
+                               StackPane.alignment="CENTER_LEFT"/>
+                </StackPane>
+                <HBox alignment="CENTER">
+                    <Label fx:id="energyLabel" text="2/4" styleClass="energy-value"/>
+                </HBox>
+            </VBox>
+
+            <!-- Runes Counter Section -->
+            <VBox spacing="5">
+                <Label text="Runes" styleClass="label, title"/>
+                <HBox alignment="CENTER" styleClass="runes-container">
+                    <Label fx:id="runesLabel" text="0" styleClass="runes-value"/>
+                </HBox>
+            </VBox>
+
+            <!-- Game Actions -->
+            <Label text="Game Actions" styleClass="label, title"/>
+            <Button text="Resource Overview" onAction="#handleResourceOverview" maxWidth="Infinity"/>
+            <Button text="Game Round" onAction="#handleGameRound" maxWidth="Infinity"/>
+            <Button text="Other Useful Action" onAction="#handleOtherAction" maxWidth="Infinity"/>
+        </VBox>
+    </left>
+
+    <!-- Bottom: Combined card shop area with all cards in one row -->
+    <bottom>
+        <!-- Bottom: Combined card shop with separated sections -->
+        <VBox spacing="10" styleClass="panel">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+
+            <!-- Combined Card Shop -->
+            <Label text="Card Shop:" styleClass="label, title"/>
+            <ScrollPane fitToWidth="true" hbarPolicy="ALWAYS" vbarPolicy="NEVER">
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <!-- Artifact Cards Section -->
+                    <VBox styleClass="artifact-section">
+                        <Label text="Artifacts" styleClass="section-label"/>
+                        <HBox spacing="10">
+                            <VBox fx:id="artifact1" styleClass="shop-card">
+                                <StackPane prefWidth="100" prefHeight="120" styleClass="card, artifact-card">
+                                    <Label text="Mjölnir" styleClass="card-title" StackPane.alignment="TOP_CENTER"/>
+                                </StackPane>
+                                <HBox alignment="CENTER" styleClass="card-price-container">
+                                    <Label text="Cost: 3" styleClass="card-price"/>
+                                </HBox>
+                            </VBox>
+                            <VBox fx:id="artifact2" styleClass="shop-card">
+                                <StackPane prefWidth="100" prefHeight="120" styleClass="card, artifact-card">
+                                    <Label text="Gungnir" styleClass="card-title" StackPane.alignment="TOP_CENTER"/>
+                                </StackPane>
+                                <HBox alignment="CENTER" styleClass="card-price-container">
+                                    <Label text="Cost: 2" styleClass="card-price"/>
+                                </HBox>
+                            </VBox>
+                            <VBox fx:id="artifact3" styleClass="shop-card">
+                                <StackPane prefWidth="100" prefHeight="120" styleClass="card, artifact-card">
+                                    <Label text="Draupnir" styleClass="card-title" StackPane.alignment="TOP_CENTER"/>
+                                </StackPane>
+                                <HBox alignment="CENTER" styleClass="card-price-container">
+                                    <Label text="Cost: 4" styleClass="card-price"/>
+                                </HBox>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Divider -->
+                    <Region styleClass="section-divider" VBox.vgrow="ALWAYS"/>
+
+                    <!-- Structure Cards Section -->
+                    <VBox styleClass="structure-section">
+                        <Label text="Structures" styleClass="section-label"/>
+                        <HBox spacing="10">
+                            <VBox fx:id="structure1" styleClass="shop-card">
+                                <StackPane prefWidth="100" prefHeight="120" styleClass="card, structure-card">
+                                    <Label text="Longhouse" styleClass="card-title" StackPane.alignment="TOP_CENTER"/>
+                                </StackPane>
+                                <HBox alignment="CENTER" styleClass="card-price-container">
+                                    <Label text="Cost: 2" styleClass="card-price"/>
+                                </HBox>
+                            </VBox>
+                            <VBox fx:id="structure2" styleClass="shop-card">
+                                <StackPane prefWidth="100" prefHeight="120" styleClass="card, structure-card">
+                                    <Label text="Forge" styleClass="card-title" StackPane.alignment="TOP_CENTER"/>
+                                </StackPane>
+                                <HBox alignment="CENTER" styleClass="card-price-container">
+                                    <Label text="Cost: 3" styleClass="card-price"/>
+                                </HBox>
+                            </VBox>
+                            <VBox fx:id="structure3" styleClass="shop-card">
+                                <StackPane prefWidth="100" prefHeight="120" styleClass="card, structure-card">
+                                    <Label text="Mead Hall" styleClass="card-title" StackPane.alignment="TOP_CENTER"/>
+                                </StackPane>
+                                <HBox alignment="CENTER" styleClass="card-price-container">
+                                    <Label text="Cost: 4" styleClass="card-price"/>
+                                </HBox>
+                            </VBox>
+                            <VBox fx:id="structure4" styleClass="shop-card">
+                                <StackPane prefWidth="100" prefHeight="120" styleClass="card, structure-card">
+                                    <Label text="Runestone" styleClass="card-title" StackPane.alignment="TOP_CENTER"/>
+                                </StackPane>
+                                <HBox alignment="CENTER" styleClass="card-price-container">
+                                    <Label text="Cost: 2" styleClass="card-price"/>
+                                </HBox>
+                            </VBox>
+                            <VBox fx:id="structure5" styleClass="shop-card">
+                                <StackPane prefWidth="100" prefHeight="120" styleClass="card, structure-card">
+                                    <Label text="Watchtower" styleClass="card-title" StackPane.alignment="TOP_CENTER"/>
+                                </StackPane>
+                                <HBox alignment="CENTER" styleClass="card-price-container">
+                                    <Label text="Cost: 3" styleClass="card-price"/>
+                                </HBox>
+                            </VBox>
+                            <VBox fx:id="structure6" styleClass="shop-card">
+                                <StackPane prefWidth="100" prefHeight="120" styleClass="card, structure-card">
+                                    <Label text="Barracks" styleClass="card-title" StackPane.alignment="TOP_CENTER"/>
+                                </StackPane>
+                                <HBox alignment="CENTER" styleClass="card-price-container">
+                                    <Label text="Cost: 4" styleClass="card-price"/>
+                                </HBox>
+                            </VBox>
+                            <VBox fx:id="structure7" styleClass="shop-card">
+                                <StackPane prefWidth="100" prefHeight="120" styleClass="card, structure-card">
+                                    <Label text="Temple" styleClass="card-title" StackPane.alignment="TOP_CENTER"/>
+                                </StackPane>
+                                <HBox alignment="CENTER" styleClass="card-price-container">
+                                    <Label text="Cost: 5" styleClass="card-price"/>
+                                </HBox>
+                            </VBox>
+                            <VBox fx:id="structure8" styleClass="shop-card">
+                                <StackPane prefWidth="100" prefHeight="120" styleClass="card, structure-card">
+                                    <Label text="Market" styleClass="card-title" StackPane.alignment="TOP_CENTER"/>
+                                </StackPane>
+                                <HBox alignment="CENTER" styleClass="card-price-container">
+                                    <Label text="Cost: 3" styleClass="card-price"/>
+                                </HBox>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+                </HBox>
+            </ScrollPane>
+        </VBox>
+    </bottom>
+</BorderPane>

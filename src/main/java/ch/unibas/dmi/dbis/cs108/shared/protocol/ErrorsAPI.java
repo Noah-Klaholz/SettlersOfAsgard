@@ -18,10 +18,11 @@ public class ErrorsAPI {
         LOBBY_CREATION_FAILED("106$LOBBY_CREATION_FAILED"),
         NULL_MESSAGE_RECIEVED("103$Null");
 
-    private final String error;
+        private final String error;
 
         /**
          * Constructor for the enum
+         *
          * @param error
          */
         Errors(String error) {
@@ -29,25 +30,27 @@ public class ErrorsAPI {
         }
 
         /**
-         * Getter for the command
-         * @return the command
-         */
-        public String getError() {
-            return error;
-        }
-
-        /**
          * Returns the command enum from a command string
+         *
          * @param errorName
          * @return the command enum
          */
         public static Errors fromError(String errorName) {
-            for(Errors err : values()) {
-                if(err.getError().equals(errorName)) {
+            for (Errors err : values()) {
+                if (err.getError().equals(errorName)) {
                     return err;
                 }
             }
             throw new IllegalArgumentException("API-Unknown command: " + errorName);
+        }
+
+        /**
+         * Getter for the command
+         *
+         * @return the command
+         */
+        public String getError() {
+            return error;
         }
     }
 }

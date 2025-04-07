@@ -1,0 +1,89 @@
+[
+  {
+    "_comment": "Here are descriptions for useTypes",
+    "Player": "Effect on another Player",
+    "Tile": "Affects a Tile in possession",
+    "Smeltery": "Affects the Smeltery",
+    "mix": "Affects multiple things"
+  },
+  {
+    "name": "Jörmungandr",
+    "deal": "Destroys 1 random structure of a chosen player: sacrifices 1 structure of your own",
+    "blessing": "-",
+    "curse": "-",
+    "description": "",
+    "useType": "Player",
+    "id": 30,
+    "cost": 0
+  },
+  {
+    "name": "Freyr",
+    "deal": "Grows 1 Tree on a River Tile: costs all available Energy (min 1 Energy)",
+    "blessing": "Grows Trees on all River Tiles",
+    "curse": "Overgrows 1 random Statue so it cannot be used anymore and blocks the tile",
+    "description": "",
+    "useType": "Tile",
+    "id": 31,
+    "cost": 0
+  },
+  {
+    "name": "Dwarf",
+    "deal": "Smeltery: produces +1 Artifact next Round: 1 random Structure does not produce Runes next round",
+    "blessing": "Next Artifact from Smeltery debuffs all Players",
+    "curse": "Destroys the Smeltery",
+    "description": "",
+    "useType": "Smeltery",
+    "id": 32,
+    "cost": 0
+  },
+  {
+    "name": "Freyja",
+    "deal": "Finds 1 random Artifact: costs (a lot of) Runes",
+    "blessing": "1 Tile of choice for free",
+    "curse": "Conquers a Tile in possession and makes it unusable",
+    "description": "",
+    "useType": "mix",
+    "id": 33,
+    "cost": 0
+  },
+  {
+    "name": "Hel",
+    "deal": "Blocks the Statue of a chosen Player next Round: blocks a random Structure of your own next Round",
+    "blessing": "Destroys the statue of a random Player",
+    "curse": "Goes back to Helheim and the Statue gets destroyed",
+    "description": "",
+    "useType": "Player",
+    "id": 34,
+    "cost": 0
+  },
+  {
+    "name": "Nidhöggr",
+    "deal": "Devours a random Tree on the Board: needs to be fed 2 Artifacts",
+    "blessing": "Devours all Trees on the Board",
+    "curse": "Devours 2 of your own Structures",
+    "description": "",
+    "useType": "Tile",
+    "id": 35,
+    "cost": 0
+  },
+  {
+    "name": "Loki",
+    "deal": "Sets 1 Trap for a chosen Player: steals 1 Artefact in return",
+    "blessing": "Steals a set amount of Runes from a random Player and gives them to you",
+    "curse": "Sets 2 Traps for yourself",
+    "description": "",
+    "useType": "Player",
+    "id": 36,
+    "cost": 0
+  },
+  {
+    "name": "Surtr",
+    "deal": "Destroys 1 random Structure or Statue of a chosen Player: consumes the Flaming Sword Structure (needs to have Flaming Sword Tile in possession)",
+    "blessing": "Gifts 2 Tiles of Muspelheim for free",
+    "curse": "Destroys 1 random Structure or Statue of your own",
+    "description": "",
+    "useType": "Player",
+    "id": 37,
+    "cost": 0
+  }
+]

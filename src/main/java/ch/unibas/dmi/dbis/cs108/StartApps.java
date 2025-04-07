@@ -13,6 +13,7 @@ public class StartApps {
      * Main method starting a local server and a client in a different terminal for easier testing.
      * The server is started on port 9000 and the client connects to it.
      * Can differ between operating systems (macOS, Windows, Linux).
+     *
      * @param args
      */
     public static void main(String[] args) {
@@ -103,7 +104,8 @@ public class StartApps {
                 if (process.getInputStream().read() != -1) {
                     return terminal; // Return the first available terminal
                 }
-            } catch (IOException ignored) {}
+            } catch (IOException ignored) {
+            }
         }
         return null; // No terminal found
     }

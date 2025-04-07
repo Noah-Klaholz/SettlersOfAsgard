@@ -1,5 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.core.Logic;
 
+import ch.unibas.dmi.dbis.cs108.server.core.State.GameState;
+
 /**
  * Implementation of the GameLogicInterface that provides the core game logic functionality.
  * This class handles all game mechanics including game flow, player turns, and player actions
@@ -49,8 +51,8 @@ public class GameLogic implements GameLogicInterface {
      * @param playerID The unique identifier of the player whose turn is ending
      */
     @Override
-    public void endTurn(String playerID) {
-
+    public boolean endTurn(String playerID) {
+        return false;
     }
 
     /**
@@ -63,8 +65,8 @@ public class GameLogic implements GameLogicInterface {
      * @param playerID The unique identifier of the player attempting to buy the tile
      */
     @Override
-    public void buyTile(int x, int y, String playerID) {
-
+    public boolean buyTile(int x, int y, String playerID) {
+        return false;
     }
 
     /**
@@ -78,8 +80,8 @@ public class GameLogic implements GameLogicInterface {
      * @param playerID The unique identifier of the player placing the structure
      */
     @Override
-    public void placeStructure(int x, int y, String structureID, String playerID) {
-
+    public boolean placeStructure(int x, int y, String structureID, String playerID) {
+        return false;
     }
 
     /**
@@ -94,8 +96,8 @@ public class GameLogic implements GameLogicInterface {
      * @param playerID The unique identifier of the player using the structure
      */
     @Override
-    public void useStructure(int x, int y, String structureID, String useType, String playerID) {
-
+    public boolean useStructure(int x, int y, String structureID, String useType, String playerID) {
+        return false;
     }
 
     /**
@@ -109,8 +111,8 @@ public class GameLogic implements GameLogicInterface {
      * @param playerID The unique identifier of the player upgrading the statue
      */
     @Override
-    public void upgradeStatue(int x, int y, String statueID, String playerID) {
-
+    public boolean upgradeStatue(int x, int y, String statueID, String playerID) {
+        return false;
     }
 
     /**
@@ -125,8 +127,8 @@ public class GameLogic implements GameLogicInterface {
      * @param playerID The unique identifier of the player using the statue
      */
     @Override
-    public void useStatue(int x, int y, String statueID, String useType, String playerID) {
-
+    public boolean useStatue(int x, int y, String statueID, String useType, String playerID) {
+        return false;
     }
 
     /**
@@ -139,8 +141,8 @@ public class GameLogic implements GameLogicInterface {
      * @param artifactID The identifier of the artifact to use
      */
     @Override
-    public void useFieldArtifact(int x, int y, int artifactID, String useType) {
-
+    public boolean useFieldArtifact(int x, int y, int artifactID, String useType) {
+        return false;
     }
 
     /**
@@ -152,22 +154,36 @@ public class GameLogic implements GameLogicInterface {
      * @param playerID The unique identifier of the player who will be affected
      */
     @Override
-    public void usePlayerArtifact(int artifactID, String playerID, String useType) {
-
+    public boolean usePlayerArtifact(int artifactID, String playerID, String useType) {
+        return false;
     }
 
     /**
-     * Handles a player's request to use a trap at the specified coordinates.
-     * This method activates the trap's effect, potentially affecting other players
-     * or game elements, and updates the game state accordingly.
-     *
-     * @param x The x-coordinate of the trap to use
-     * @param y The y-coordinate of the trap to use
-     * @param trapID The identifier of the trap to use
-     * @param playerID The unique identifier of the player using the trap
+     * Returns a GameState Object which represents the current state of the game and has a toString Method
+     * @return the GameState
      */
     @Override
-    public void useTrap(int x, int y, String trapID, String playerID) {
-
+    public GameState getGameState() {
+        return null;
     }
+
+    /**
+     * Returns the current prices for all different buyAble objects (Structures, Statues, etc.)
+     * @return the Prices as a String
+     */
+    @Override
+    public String getPrices() {
+        return "";
+    }
+
+    public boolean buyStatue(String statueID, String playerID) {
+        // Implementation for buying a statue
+        return false;
+    }
+
+    public boolean buyStructure(String structureID, String playerID) {
+        // Implementation for buying a structure
+        return false;
+    }
+
 }

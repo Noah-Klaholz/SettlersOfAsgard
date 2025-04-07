@@ -1,13 +1,11 @@
 package ch.unibas.dmi.dbis.cs108.client.core.commands;
 
-/**
- * Command interface is responsible for executing commands
- */
+import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
+import ch.unibas.dmi.dbis.cs108.client.core.entities.Tile;
+import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
+import ch.unibas.dmi.dbis.cs108.client.core.events.EventDispatcher;
+
+
 public interface Command {
-    /**
-     * Executes the command
-     *
-     * @return String
-     */
-    void execute();
+    void execute(GameState gameState, EventDispatcher dispatcher);
 }
