@@ -98,7 +98,7 @@ public class CommunicationMediator {
                     if (isValidArgument(args, 0)) {
                         networkController.createLobby(args[0]);
                     } else {
-                        //TODO handle invalid name
+                        publishInfoChatEvent("Invalid lobbyname, use: \n /create <lobbyName>");
                     }
                 case STARTGAME:
                     networkController.startGame();
@@ -112,6 +112,8 @@ public class CommunicationMediator {
                 case LISTLOBBYPLAYERS:
                     if (isValidArgument(args, 0)) {
                         networkController.listLobbyPlayers(args[0]);
+                    } else {
+                        publishInfoChatEvent("Invalid lobbyname, use: \n /listlobbyplayers <lobbyName>");
                     }
                     break;
                 case GLOBALCHAT:
@@ -120,6 +122,8 @@ public class CommunicationMediator {
                 case WHISPER:
                     if (isValidArgument(args, 0)) {
                         networkController.sendPrivateChat(args[0], input.replace("/whisper " + args[0] + " ", ""));
+                    } else {
+                        publishInfoChatEvent("Invalid playername, use: \n /whisper <playerName>");
                     }
                 case HELP:
                     publishInfoChatEvent("The following commands are available: \n" +
