@@ -17,9 +17,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Controller for the game screen that handles UI interactions and game rendering.
@@ -348,7 +350,9 @@ public class GameScreenController extends BaseController {
                         break;
                     case LISTLOBBIES:
                         if (args.length > 1) {
-                            message = "Lobbies: \n" + args[1];
+                            String[] lobbylist = args[1].split("%");
+                            message = String.join("\n", lobbylist);
+                            System.out.println(Arrays.toString(lobbylist));
                             chatListView.getItems().add(message);
                         }
                         break;
