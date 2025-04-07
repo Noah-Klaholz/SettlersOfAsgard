@@ -35,6 +35,7 @@ public class SendCommandEvent {
         BUYTILE("/buytile"),
         PLACESTRUCTURE("/placestructure"),
         USESTRUCTURE("/usestructure"),
+        BUYSTATUE("/buystatue"),
         UPGRADESTATUE("/upgradestructure"),
         USESTATUE("/usestatue"),
         USEFIELDARTIFACT("/usefieldartifact"),

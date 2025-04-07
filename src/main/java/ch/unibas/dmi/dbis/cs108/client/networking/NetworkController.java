@@ -222,27 +222,27 @@ public class NetworkController {
         networkClient.send(message);
     }
 
-    public void buyStatue(String statueID) {
+    public void buyStatue(int statueID) {
         String message = translator.formatBuyStatue(statueID);
         networkClient.send(message);
     }
 
-    public void upgradeStatue(int x, int y, String statueID) {
+    public void upgradeStatue(int x, int y, int statueID) {
         String message = translator.formatUpgradeStatue(x, y, statueID);
         networkClient.send(message);
     }
 
-    public void useStatue(int x, int y, String statueID, String useType) {
+    public void useStatue(int x, int y, int statueID, String useType) {
         String message = translator.formatUseStatue(x, y, statueID, useType);
         networkClient.send(message);
     }
 
-    public void placeStructure(int x, int y, String structureID) {
+    public void placeStructure(int x, int y, int structureID) {
         String message = translator.formatPlaceStructure(x, y, structureID);
         networkClient.send(message);
     }
 
-    public void useStructure(int x, int y, String structureID, String useType) {
+    public void useStructure(int x, int y, int structureID, String useType) {
         String message = translator.formatUseStructure(x, y, structureID, useType);
         networkClient.send(message);
     }

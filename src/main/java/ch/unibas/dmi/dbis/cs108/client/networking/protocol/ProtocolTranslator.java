@@ -218,23 +218,23 @@ public class ProtocolTranslator {
         return "BUYT$" + x + "$" + y;
     }
 
-    public String formatPlaceStructure(int x, int y, String structureID) {
+    public String formatPlaceStructure(int x, int y, int structureID) {
         return "PLST$" + x + "$" + y + "$" + structureID;
     }
 
-    public String formatUseStructure(int x, int y, String structureID, String useType) {
+    public String formatUseStructure(int x, int y, int structureID, String useType) {
         return "USSR$" + x + "$" + y + "$" + structureID + "$" + useType;
     }
 
-    public String formatBuyStatue(String statueID) {
+    public String formatBuyStatue(int statueID) {
         return "BYST$" + statueID;
     }
 
-    public String formatUpgradeStatue(int x, int y, String statueID) {
+    public String formatUpgradeStatue(int x, int y, int statueID) {
         return "UPST$" + x + "$" + y + "$" + statueID;
     }
 
-    public String formatUseStatue(int x, int y, String statueID, String useType) {
+    public String formatUseStatue(int x, int y, int statueID, String useType) {
         return "USTA$" + x + "$" + y + "$" + statueID + "$" + useType;
     }
 
