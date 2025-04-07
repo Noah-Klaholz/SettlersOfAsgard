@@ -61,7 +61,6 @@ public class Player {
     /**
      * Getter for owned structures
      *
-     * @return List<Structure>
      */
     public List<Structure> getOwnedStructures() {
         return ownedStructures;
@@ -70,7 +69,6 @@ public class Player {
     /**
      * Setter for owned structures
      *
-     * @param ownedStructures List<Structure>
      */
     public void setOwnedStructures(List<Structure> ownedStructures) {
         this.ownedStructures = ownedStructures;
@@ -114,7 +112,6 @@ public class Player {
     /**
      * Setter for artifacts
      *
-     * @param artifacts List<Artefact>
      */
     public void setArtifacts(List<Artefact> artifacts) {
         this.artifacts = artifacts;
@@ -123,7 +120,6 @@ public class Player {
     /**
      * Getter for artifacts
      *
-     * @return List<Artefact>
      */
     public List<Artefact> getArtifacts() {
         return artifacts;
@@ -243,7 +239,6 @@ public class Player {
     /**
      * Getter for owned tiles
      *
-     * @return List<Tile>
      */
     public List<Tile> getOwnedTiles() {
         return ownedTiles;
@@ -252,7 +247,6 @@ public class Player {
     /**
      * Setter for owned tiles
      *
-     * @param ownedTiles List<Tile>
      */
     public void setOwnedTiles(List<Tile> ownedTiles) {
         this.ownedTiles = ownedTiles;
