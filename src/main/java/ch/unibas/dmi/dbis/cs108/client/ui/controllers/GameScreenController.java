@@ -360,14 +360,14 @@ public class GameScreenController extends BaseController {
                         message = "Created lobby: " + args[2];
                         chatListView.getItems().add(message);
                     case JOIN:
-                        if (args.length > 1) {
-                            message = "You joined lobby: " + args[2];
+                        if (args.length > 2) {
+                            message = args[1] + " joined lobby: " + args[2];
                             chatListView.getItems().add(message);
                         }
                         break;
                     case LEAVE:
-                        if (args.length > 1) {
-                            message = "You left lobby: " + args[1];
+                        if (args.length > 2) {
+                            message = args[1] + " left lobby: " + args[2];
                             chatListView.getItems().add(message);
                         }
                         break;

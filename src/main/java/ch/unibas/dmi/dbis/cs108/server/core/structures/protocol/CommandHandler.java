@@ -132,14 +132,21 @@ public class CommandHandler {
      * @param cmd the transmitted command
      */
     public boolean handleJoinLobby(Command cmd) {
-        if (currentLobby != null) {
-            handleLeaveLobby();
-        }
         String lobbyId = cmd.getArgs()[1];
         Lobby lobby = server.getLobby(lobbyId);
+        if (currentLobby != null && currentLobby.removePlayer(ch)) {
+            String oldLobbyId = currentLobby.getId();
+            Lobby oldLobby = server.getLobby(oldLobbyId);
+            oldLobby.broadcastMessage("OK$LEAV$" + playerName + "$" + oldLobbyId);
+            sendMessage("OK$LEAV$" + playerName + "$" + oldLobbyId);
+            if (oldLobby.isEmpty()) {
+                server.removeLobby(oldLobby);
+            }
+            setCurrentLobby(null);
+        }
         if (lobby != null && lobby.addPlayer(ch)) {
             joinLobby(lobby);
-            sendMessage("OK$JOIN$" + lobbyId);
+            currentLobby.broadcastMessage("OK$JOIN$" + playerName + "$" + lobbyId);
             return true;
         } else {
             sendMessage("ERR$106$JOIN_LOBBY_FAILED");
