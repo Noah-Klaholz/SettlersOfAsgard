@@ -11,6 +11,8 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.SendChatEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.SendCommandEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 
+import java.util.Arrays;
+
 public class CommunicationMediator {
     private final NetworkController networkController;
     private final Game game;
@@ -45,6 +47,7 @@ public class CommunicationMediator {
      * @return true if the argument is valid, false otherwise.
      */
     private boolean isValidArgument(String[] args, int i) {
+        System.out.println(Arrays.toString(args));
         return args != null && args.length == (i+1) && !args[i].trim().isEmpty();
     }
 

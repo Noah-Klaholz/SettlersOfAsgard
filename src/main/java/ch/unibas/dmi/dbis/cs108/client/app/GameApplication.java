@@ -80,6 +80,7 @@ public class GameApplication extends Application {
         primaryStage.show();
     }
 
+    /** Unnecessary for now, but can be used for future UI event handling
     private void setupUIEventHandlers() {
         // Subscribe to Chat events
         uiEventBus.subscribe(SendChatEvent.class, event -> {
@@ -200,6 +201,7 @@ public class GameApplication extends Application {
             }
         });
     }
+     */
 
     @Override
     public void stop() throws Exception {
