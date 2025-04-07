@@ -357,7 +357,7 @@ public class GameScreenController extends BaseController {
                         chatListView.getItems().add(message);
                     case JOIN:
                         if (args.length > 1) {
-                            message = "You joined lobby: " + args[1];
+                            message = "You joined lobby: " + args[2];
                             chatListView.getItems().add(message);
                         }
                         break;

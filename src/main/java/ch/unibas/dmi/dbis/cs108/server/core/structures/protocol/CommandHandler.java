@@ -113,7 +113,7 @@ public class CommandHandler {
         List<Lobby> lobbies = server.getLobbies();
 
         if (lobbies.isEmpty()) {
-            sendMessage("Lobbies: No available lobbies. Create your own with /create");
+            ch.sendMessage("OK$LIST$No available lobbies. Create your own with /create");
             return true;
         }
 
@@ -121,6 +121,7 @@ public class CommandHandler {
                 .map(lobby -> lobby.getId() + ":  " + lobby.getStatus())
                 .collect(Collectors.joining("\n"));
 
+        System.out.println(lobbyList);
         ch.sendMessage("OK$LIST$" + lobbyList);
         return true;
     }
