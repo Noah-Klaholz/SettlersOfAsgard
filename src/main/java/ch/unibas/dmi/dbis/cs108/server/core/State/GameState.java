@@ -168,7 +168,6 @@ public class GameState {
         Artefact goldenApple = repo.getArtefactById(11);
         for(Player p : this.players) {
             p.addArtifact(goldenApple);
-            p.addEnergy((int)goldenApple.getEffect());
         }
     }
 

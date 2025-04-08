@@ -371,6 +371,8 @@ public class GameLogic implements GameLogicInterface {
                 for (Artefact artefact : player.getArtifacts()) {
                     if (artefact.getArtifactID() == artifactID) {
                         //player owns the artifact
+                        //todo: change later: for demo purpose only
+                        player.addRunes((int)artefact.getEffect());
                         for (Player otherPlayer : gameState.getPlayerList()) {
                             if (otherPlayer.getName().equals(playerName)) {
                                 //todo: later implement use of player artifact
