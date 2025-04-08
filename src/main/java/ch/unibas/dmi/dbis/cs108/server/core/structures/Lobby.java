@@ -142,7 +142,7 @@ public class Lobby {
 
         try {
             gameLogic.nextTurn();
-            broadcastMessage("Turn advanced automatically");
+            broadcastMessage("TURN$" + gameLogic.getGameState().getPlayerTurn());
         } catch (Exception e) {
             logger.severe("Error during automatic turn: " + e.getMessage());
         }
