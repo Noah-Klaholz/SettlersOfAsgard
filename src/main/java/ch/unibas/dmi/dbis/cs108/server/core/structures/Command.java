@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.logging.Logger;
 
 import static ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.PingFilter;
+import static ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol.Commands;
 
 /**
  * Represents a command that is sent between a client to the server
@@ -11,6 +12,7 @@ import static ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.PingFilt
 public class Command {
     private static final Logger logger = Logger.getLogger(Command.class.getName());
     private String command;
+    private Commands commandType;
     private String[] args;
 
     /**
@@ -28,6 +30,7 @@ public class Command {
             return;
         }
         this.command = parts[0];
+        this.commandType = Commands.fromCommand(command);
         this.args = Arrays.copyOfRange(parts, 1, parts.length);
     }
 
@@ -63,12 +66,13 @@ public class Command {
      * @return true if the command has the correct number of arguments, false otherwise
      */
     public boolean checkArgumentsSize() {
-        return switch (command) {
-            case "LIST", "STRT", "STDN", "SYNC", "ENDT", "GSTS", "GPRC" -> args.length == 0;
-            case "RGST", "LEAV", "CHAN", "STAT", "PING", "EXIT", "USPA"  -> args.length == 1;
-            case "JOIN", "CHTG", "CHTL", "CREA", "BUYT", "UPST", "USTA" -> args.length == 2;
-            case "CHTP", "PLST", "USSR" -> args.length == 3;
-            case "LSTP" -> args.length == 1 || args.length == 2;
+        return switch (commandType) {
+            case LISTLOBBIES, START, SHUTDOWN, SYNCHRONIZE, STARTTURN, ENDTURN, GETGAMESTATUS, GETPRICES -> args.length == 0;
+            case REGISTER, LEAVE, CHANGENAME, PING, EXIT, BUYSTRUCTURE, BUYSTATUE  -> args.length == 1;
+            case JOIN, CHATGLOBAL, CHATLOBBY, CREATELOBBY, BUYTILE -> args.length == 2;
+            case CHATPRIVATE, PLACESTRUCTURE, USEPLAYERARTIFACT, UPGRADESTATUE -> args.length == 3;
+            case USESTATUE, USESTRUCTURE, USEFIELDARTIFACT -> args.length == 4;
+            case LISTPLAYERS -> (args.length == 1 && args[0].equals("SERVER"))|| (args.length == 2 && args[0].equals("LOBBY"));
             default -> {
                 logger.warning("Invalid Command arguments size: " + command + " " + args.length);
                 yield false;
