@@ -312,7 +312,8 @@ public class CommandHandler {
         if (ch.getCurrentLobby() != null && ch.getCurrentLobby().startGame()) {
             this.currentLobby = ch.getCurrentLobby();
             this.gameLogic = currentLobby.getGameLogic();
-            currentLobby.broadcastMessage("OK$STRT$");
+            String startPlayerName = gameLogic.getGameState().getPlayerTurn();
+            currentLobby.broadcastMessage("OK$STRT$" + startPlayerName);
             return true;
         } else {
             System.out.println("ERR$106$NOT_IN_LOBBY");

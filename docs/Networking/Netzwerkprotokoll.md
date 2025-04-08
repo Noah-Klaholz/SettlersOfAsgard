@@ -34,7 +34,7 @@ Dieser Befehl bedeutet, dass Spieler PL01 eine Struktur vom Typ "Castle" auf das
 | `CHTP` | **C→S**       | Nachricht senden (privat)                                     | `Spielername$Spielername2$Nachricht`  | `CHTP$PL01$PL02$HelloWorld!`          |
 | `LIST` | **C→S**       | Liste der Lobbies                                             |                                       | `LIST$`                               |
 | `LSTP` | **C→S**       | Liste der Spieler in der Lobby oder Serverweit                | `Ort (LOBBY oder SERVER)$[lobbyName]` | `LSTP$LOBBY$lobbyName / LSTP$SERVER$` |
-| `STRT` | **C→S**       | Spiel starten                                                 |                                       | `STRT$`                               |
+| `STRT` | **C→S**       | Spiel starten                                                 | `StartSpielerName`                    | `STRT$ThorOdinson`                    |
 | `STDN` | **S→C**       | Nachricht an Clients: Server wird beendet                     |                                       | `STDN$`                               |  
 | `PING` | **C→S & S→C** | Verbindung prüfen                                             |                                       | `PING$`                               |
 | `GSTS` | **C→S**       | Spielstatus abrufen   (temporär)                              |                                       | `GSTS$`                               |

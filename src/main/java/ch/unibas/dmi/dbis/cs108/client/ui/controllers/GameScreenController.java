@@ -374,7 +374,7 @@ public class GameScreenController extends BaseController {
                         }
                         break;
                     case START:
-                        chatListView.getItems().add("Game started!");
+                        chatListView.getItems().add("Game started! \n" + "It is " + args[1] + "'s turn.");
                         break;
                     case CHANGENAME:
                         if (args.length > 1) {

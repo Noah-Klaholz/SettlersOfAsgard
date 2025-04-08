@@ -42,3 +42,6 @@ Client: java -jar /build/libs/SettlersOfAsgard.jar client <server-ip> <server-po
 ```
 Beachte: listenport und server-port müssen identisch sein.
 Die server-ip ist entweder die lokale IP-Adresse des Servers im Netzwerk oder "localhost", wenn beides auf der gleichen Maschine läuft.
+
+Eine Anleitung, wie das Spiel zu spielen ist finden Sie hier:
+[Spielanleitung](docs/Spielbeschreibungen/GameManual.pdf).

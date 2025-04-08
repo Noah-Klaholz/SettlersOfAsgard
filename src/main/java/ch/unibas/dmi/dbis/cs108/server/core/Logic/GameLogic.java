@@ -109,6 +109,12 @@ public class GameLogic implements GameLogicInterface {
 
     }
 
+    /**
+     * Initializes the first turn of the game.
+     * This method sets the initial player, assigns starting resources,
+     * and prepares the game state for the first round.
+     *
+     */
     private void initializeFirstTurn() {
         List<Player> players = gameState.getPlayerList();
 
