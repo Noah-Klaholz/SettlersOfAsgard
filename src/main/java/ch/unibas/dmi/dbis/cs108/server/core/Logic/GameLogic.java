@@ -146,31 +146,23 @@ public class GameLogic implements GameLogicInterface {
      */
     @Override
     public boolean buyTile(int x, int y, String playerName) {
+        Tile tile = gameState.getBoard().getTileByCoordinates(x, y);
+        if (tile == null || tile.isPurchased()) {
+            System.out.println(tile == null ? "Tile not found" : "Tile is already purchased");
+            return false;
+        }
         //todo: later implement check: can only purchase max. 3 tiles per turn
-        if (gameState.getBoard().getTileByCoordinates(x, y) == null) {
-            System.out.println("Tile not found");
+        Player player = findPlayerByName(playerName);
+        if (player == null || player.getRunes() < tile.getPrice()) {
+            System.out.println(player == null ? "Player not found" : "Not enough runes");
             return false;
         }
-        if (gameState.getBoard().getTileByCoordinates(x, y).isPurchased()) {
-            System.out.println("Tile already purchased");
-            return false;
-        }
-        for (Player player : gameState.getPlayerList()) {
-            if (player.getName().equals(playerName)) {
-                if (player.getRunes() >= gameState.getBoard().getTileByCoordinates(x, y).getPrice()) {
-                    player.removeRunes(gameState.getBoard().getTileByCoordinates(x, y).getPrice());
-                    gameState.getBoard().getTileByCoordinates(x, y).setPurchased(true);
-                    player.addOwnedTile(gameState.getBoard().getTileByCoordinates(x, y));
-                    System.out.println("Tile purchased");
-                    return true;
-                } else {
-                    System.out.println("Not enough runes");
-                    return false;
-                }
-            }
-        }
-        System.out.println("something went wrong");
-        return false;
+
+        player.removeRunes(tile.getPrice());
+        tile.setPurchased(true);
+        player.addOwnedTile(tile);
+        System.out.println("Tile purchased");
+        return true;
     }
 
     /**
@@ -447,6 +439,16 @@ public class GameLogic implements GameLogicInterface {
         } else {
             System.out.println("Insufficient runes to buy structure.");
         }
+    }
+
+    /**
+     * Gets the player Object by looking for the name.
+     *
+     * @param name the player's name
+     * @return the Player Object corresponding to the name
+     */
+    private Player findPlayerByName(String name) {
+        return gameState.getPlayerList().stream().filter(p -> p.getName().equals(name)).findFirst().orElse(null);
     }
 
 }
