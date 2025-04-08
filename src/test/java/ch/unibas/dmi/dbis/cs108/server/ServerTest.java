@@ -77,7 +77,7 @@ class ServerTest {
 
         Player player = Mockito.mock(Player.class);
         // Start the client
-        GameClient client = new GameClient("127.0.0.1", 9000, player);
+        GameClient client = new GameClient("127.0.0.1", 9000);
 
         // Wait for the server to process the message
         Thread.sleep(1000); // Adjust the delay as needed
@@ -102,7 +102,7 @@ class ServerTest {
         // Start the player
         Player player = new Player("player1");
         // Start the client
-        GameClient client = new GameClient("127.0.0.1", 9000, player);
+        GameClient client = new GameClient("127.0.0.1", 9000);
 
         // Wait for the server to process the message
         Thread.sleep(1000); // Adjust the delay as needed

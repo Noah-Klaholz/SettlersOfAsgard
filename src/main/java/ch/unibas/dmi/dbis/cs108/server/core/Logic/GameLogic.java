@@ -268,7 +268,7 @@ public class GameLogic implements GameLogicInterface {
         }
 
         //todo: later implement 1 time use per turn
-        // todo: later implement structure use
+        //todo: later implement structure use
         return true;
     }
 

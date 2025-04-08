@@ -635,8 +635,8 @@ public class CommandHandler {
                 return false;
             }
             int artifactId = Integer.parseInt(args[0]);
-            String useType = args[1];
             String playerAimedAt = args[2];
+            String useType = args[1];
             gameLogic.usePlayerArtifact(artifactId, playerName, useType, playerAimedAt);
             currentLobby.broadcastMessage("OK$USPA$" + artifactId + "$" + playerName + "$" + useType);
             return true;
