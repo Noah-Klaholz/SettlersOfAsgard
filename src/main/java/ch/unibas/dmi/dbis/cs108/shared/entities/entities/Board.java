@@ -28,9 +28,10 @@ public class Board {
      */
     public void initBoard(int x, int y) {
         //tiles = new Tile[x][y];
+        Tile.TileBuilder tilebuilder = new Tile.TileBuilder();
+        tilebuilder.setPrice(10);
         for (int i=0; i<x; i++){
             for (int j=0; j<y; j++){
-                Tile.TileBuilder tilebuilder = new Tile.TileBuilder();
                 tilebuilder.setX(i).setY(j);
                 tiles[i][j] = new Tile(tilebuilder);
             }
