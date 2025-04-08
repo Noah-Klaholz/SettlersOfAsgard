@@ -465,7 +465,7 @@ public class CommandHandler {
     public boolean handleEndTurn() {
         try {
             this.gameLogic.endTurn();
-            currentLobby.broadcastMessage("OK$ENDT$" + playerName);
+            currentLobby.broadcastMessage("TURN$" + playerName);
             return true;
         } catch (Exception e) {
             logger.warning("Could not end turn because game is not started yet.");
