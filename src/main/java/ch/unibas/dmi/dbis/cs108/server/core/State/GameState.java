@@ -45,7 +45,7 @@ public class GameState {
      */
     public String getPlayerTurn() {
         for (Player p : players) {
-            if (p.getName() == activePlayer.getName()) {
+            if (p.getName().equals(activePlayer.getName())) {
                 return p.getName();
             }
         }

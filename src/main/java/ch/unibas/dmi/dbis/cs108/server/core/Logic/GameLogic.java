@@ -16,8 +16,17 @@ import java.util.List;
  */
 public class GameLogic implements GameLogicInterface {
 
+    /**
+     * The current state of the game, including player information and game board.
+     */
     private GameState gameState;
 
+    /**
+     * Constructor for GameLogic.
+     * Initializes the game state and starts a new game with the provided players.
+     *
+     * @param players Array of player names participating in the game
+     */
     public GameLogic(String[] players) {
         startGame(players);
     }
@@ -35,6 +44,8 @@ public class GameLogic implements GameLogicInterface {
      * Initializes and starts a new game.
      * This method sets up the initial game state, including player order,
      * game field configuration, and starting resources.
+     *
+     * @param players Array of player names participating in the game
      */
     @Override
     public void startGame(String[] players) {
@@ -114,9 +125,9 @@ public class GameLogic implements GameLogicInterface {
     /**
      * Provides resources to all players at the start of their turn.
      * This method distributes resources based on owned tiles and structures.
-     *
      * Structures: A value below 5 gives energy, any above gives runes: that is how it is determined which one is given
      *
+     * @param player The player receiving resources
      */
     public void resourcesIncome(Player player){
         //Tile income (Runes)
@@ -384,6 +395,14 @@ public class GameLogic implements GameLogicInterface {
         }
     }
 
+    /**
+     * Processes a player's request to buy a statue.
+     * This method verifies the purchase is valid, deducts the required resources,
+     * and assigns the statue to the player.
+     *
+     * @param statueID The identifier of the statue to buy
+     * @param playerName The unique identifier of the player buying the statue
+     */
     @Override
     public void buyStatue(String statueID, String playerName) {
         Player targetPlayer = null;
@@ -434,6 +453,14 @@ public class GameLogic implements GameLogicInterface {
         }
     }
 
+    /**
+     * Processes a player's request to buy a structure.
+     * This method verifies the purchase is valid, deducts the required resources,
+     * and assigns the structure to the player.
+     *
+     * @param structureID The identifier of the structure to buy
+     * @param playerName The unique identifier of the player buying the structure
+     */
     public void buyStructure(String structureID, String playerName) {
         Player player = null;
         for (Player p : gameState.getPlayerList()) {
