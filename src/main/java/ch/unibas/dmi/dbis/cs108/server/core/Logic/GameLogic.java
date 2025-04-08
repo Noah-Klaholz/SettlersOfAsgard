@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.core.Logic;
 
 import ch.unibas.dmi.dbis.cs108.server.core.State.GameState;
-import ch.unibas.dmi.dbis.cs108.server.core.entities.*;
+import ch.unibas.dmi.dbis.cs108.shared.entities.entities.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -123,6 +123,7 @@ public class GameLogic implements GameLogicInterface {
         Player firstPlayer = gameState.getPlayerList().get(0);
         gameState.setPlayerTurn(firstPlayer.getName());
         gameState.addRunes(1, firstPlayer.getName());
+        //gameState.setActivePlayer(firstPlayer.getName());
 
     }
 

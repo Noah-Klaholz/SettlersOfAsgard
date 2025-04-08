@@ -1,12 +1,11 @@
 package ch.unibas.dmi.dbis.cs108.server.core.State;
 
-import ch.unibas.dmi.dbis.cs108.server.core.entities.Artefact;
-import ch.unibas.dmi.dbis.cs108.server.core.entities.Board;
-import ch.unibas.dmi.dbis.cs108.server.core.entities.Player;
-import ch.unibas.dmi.dbis.cs108.server.core.entities.Tile;
+import ch.unibas.dmi.dbis.cs108.shared.entities.entities.Artefact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.entities.Board;
+import ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player;
+import ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 /**
  * The GameState class is responsible for storing and managing the current state
@@ -23,14 +22,14 @@ import java.util.UUID;
 public class GameState {
     private int playerRound;
     private int gameRound;
-    private UUID activePlayerID;
+    private Player activePlayer;
     private ArrayList<Player> players;
     private Board board;
 
     public GameState() {
         this.playerRound = 0; //0-Anzahl Spieler
         this.gameRound = 0; //1-5
-        this.activePlayerID = null;
+        this.activePlayer = null;
         this.players = new ArrayList<>(); //determines order
         this.board = new Board();
     }
@@ -42,7 +41,7 @@ public class GameState {
      */
     public String getPlayerTurn() {
         for (Player p : players) {
-            if (p.getPlayerID() == activePlayerID) {
+            if (p.getName() == activePlayer.getName()) {
                 return p.getName();
             }
         }
@@ -52,6 +51,16 @@ public class GameState {
 
     public Board getBoard() {return board;}
 
+    public void setActivePlayer(String name){
+        for(Player p : players) {
+            if (p.getName().equals(name)) {
+                activePlayer = p;
+                return;
+            }
+        }
+        System.out.println("player not found");
+    }
+
     /**
      * Sets the player whose turn it currently is.
      *
@@ -60,7 +69,7 @@ public class GameState {
     public void setPlayerTurn(String player) {
         for (Player p : players) {
             if (p.getName().equals(player)) {
-                activePlayerID = p.getPlayerID();
+                activePlayer = p;
                 return;
             }
         }
@@ -455,7 +464,7 @@ public class GameState {
         return "GameState{" +
                 "playerRound=" + playerRound +
                 ", gameRound=" + gameRound +
-                ", activePlayerID=" + activePlayerID +
+                ", activePlayer=" + activePlayer.getName() +
                 ", players=" + players +
                 ", board=" + board +
                 '}';

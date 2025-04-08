@@ -1,9 +1,5 @@
 package ch.unibas.dmi.dbis.cs108.server.core.Logic;
 
-import ch.unibas.dmi.dbis.cs108.server.core.entities.Player;
-
-import java.util.List;
-
 /**
  * Interface for the GameLogic
  * Contains all the methods that are needed to implement the game logic
