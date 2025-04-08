@@ -296,12 +296,12 @@ public class ClientHandler implements Runnable, CommunicationAPI {
 
             switch (command) {
                 case CHATLOBBY:
+                    answer = false;
                     if (currentLobby == null || getCurrentLobby() == null) {
                         worked = ch.handleGlobalChatMessage(cmd);
                     } else {
                         worked = ch.handleLobbyMessage(cmd);
                     }
-                    answer = false;
                     break;
                 case CHATPRIVATE:
                     answer = false;
@@ -336,6 +336,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                     worked = ch.handleLeaveLobby();
                     break;
                 case START:
+                    answer = false;
                     worked = ch.handleStartGame();
                     break;
                 case CHANGENAME:
@@ -379,6 +380,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                     worked = ch.handleGetPrices();
                     break;
                 case BUYTILE:
+                    answer = false;
                     worked = ch.handleBuyTile(cmd);
                     break;
                 case BUYSTRUCTURE:
@@ -390,6 +392,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                     worked = ch.handlePlaceStructure(cmd);
                     break;
                 case USESTRUCTURE:
+                    answer = false;
                     worked = ch.handleUseStructure(cmd);
                     break;
                 case UPGRADESTATUE:
