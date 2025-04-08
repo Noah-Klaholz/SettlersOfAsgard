@@ -58,22 +58,42 @@ public class ThemeManager {
     }
 
     private void loadFonts() {
+        boolean cinzelLoaded = false;
+        boolean robotoLoaded = false;
+
         try {
-            // Load Cinzel font
-            Font.loadFont(
+            // Load Cinzel font and capture return value
+            Font cinzelFont = Font.loadFont(
                     getClass().getResourceAsStream(ResourceLoader.CINZEL_REGULAR),
                     12
             );
+            cinzelLoaded = cinzelFont != null;
 
-            // Load Roboto font
-            Font.loadFont(
+            // Load Roboto font and capture return value
+            Font robotoFont = Font.loadFont(
                     getClass().getResourceAsStream(ResourceLoader.ROBOTO_REGULAR),
                     12
             );
+            robotoLoaded = robotoFont != null;
 
-            System.out.println("Fonts loaded successfully");
+            // Verify the fonts are in the system
+            boolean cinzelInSystem = Font.getFamilies().contains("Cinzel");
+            boolean robotoInSystem = Font.getFamilies().contains("Roboto");
+
+            System.out.println("Font loading status:");
+            System.out.println("- Cinzel: " + (cinzelLoaded ? "Loaded" : "Failed") +
+                    ", In system: " + cinzelInSystem);
+            System.out.println("- Roboto: " + (robotoLoaded ? "Loaded" : "Failed") +
+                    ", In system: " + robotoInSystem);
+
+            if (cinzelLoaded && robotoLoaded) {
+                System.out.println("Fonts loaded successfully");
+            } else {
+                System.err.println("Some fonts failed to load");
+            }
         } catch (Exception e) {
             System.err.println("Error loading fonts: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
