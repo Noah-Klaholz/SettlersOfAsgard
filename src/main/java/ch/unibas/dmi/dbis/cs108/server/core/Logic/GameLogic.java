@@ -284,13 +284,17 @@ public class GameLogic implements GameLogicInterface {
      */
     @Override
     public void useStatue(int x, int y, int statueID, String useType, String playerName) {
-        for (Player player : gameState.getPlayerList()) {
-            if (player.getName().equals(playerName)) {
-                if (player.getStatue().getStatueID() == statueID) {
-                    player.getStatue().use();
-                }
-            }
+        Player player = findPlayerByName(playerName);
+        if (player == null) {
+            System.out.println("Player not found");
+            return;
         }
+        Statue statue = player.getStatue();
+        if (statue == null || statue.getStatueID() != statueID) {
+            System.out.println(statue == null ? "Statue not found" : "Player does not own statue");
+            return;
+        }
+        statue.use();
     }
 
     /**
