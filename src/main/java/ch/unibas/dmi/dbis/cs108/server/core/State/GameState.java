@@ -161,6 +161,8 @@ public class GameState {
             Player player = new Player(playerName);
             this.players.add(player);
         }
+
+        setActivePlayer(players[0]);
         //todo: later delete demo part below:
         //gives all players an artifact to use for demo purposes
         ArtefactRepository repo = ArtefactRepository.getInstance();

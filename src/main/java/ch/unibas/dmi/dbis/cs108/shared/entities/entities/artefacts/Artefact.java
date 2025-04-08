@@ -3,7 +3,7 @@ package ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts;
  * Abstract class representing an artefact in the game.
  * Artefacts are items that can be found and used by players.
  */
-public abstract class Artefact {
+public class Artefact {
 
     protected final String name;
     protected final String description;
