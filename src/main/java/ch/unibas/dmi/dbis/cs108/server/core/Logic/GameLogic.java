@@ -177,30 +177,34 @@ public class GameLogic implements GameLogicInterface {
      */
     @Override
     public boolean placeStructure(int x, int y, int structureID, String playerName) {
-        for (Player player : gameState.getPlayerList()) {
-            if (player.getName().equals(playerName)) {
-                for (Structure structure : player.getOwnedStructures()) {
-                    if (structure.getStructureID() == structureID) {
-                        if (gameState.getBoard().getTileByCoordinates(x, y) == null) {
-                            System.out.println("Tile not found");
-                            return false;
-                        }
-                        for (Tile tile : player.getOwnedTiles()) {
-                            if (tile.getTileID() == gameState.getBoard().getTileByCoordinates(x, y).getTileID()) {
-                                if (!tile.getHasStructure()) {
-                                    player.removeOwnedStructure(structure);
-                                    tile.setHasStructure(true);
-                                    tile.setStructure(structure);
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        Player player = findPlayerByName(playerName);
+        if (player == null) {
+            System.out.println("Player not found");
+            return false;
         }
-        System.out.println("Could not place structure.");
-        return false;
+        Structure structure = player.getOwnedStructures().stream()
+                .filter(s -> s.getStructureID() == structureID)
+                .findFirst()
+                .orElse(null);
+        if (structure == null) {
+            System.out.println("Structure not found");
+            return false;
+        }
+        Tile tile = gameState.getBoard().getTileByCoordinates(x, y);
+        if (tile == null || tile.isPurchased()) {
+            System.out.println(tile == null ? "Tile not found" : "Tile is already purchased");
+            return false;
+        }
+        if (tile.getHasStructure()) {
+            System.out.println("Tile already has structure");
+            return false;
+        }
+
+        player.removeOwnedStructure(structure);
+        tile.setStructure(structure);
+        tile.setHasStructure(true);
+        return true;
+
     }
 
     /**
