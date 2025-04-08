@@ -336,13 +336,13 @@ public class GameScreenController extends BaseController {
                 if (message == null || message.trim().isEmpty()) return;
 
                 Commands type = event.getType();
-                String[] args = message.replaceAll("OK\\$", "").trim().split("\\$");
+                String[] args = message.replace("OK\\$", "").trim().split("\\$");
                 System.out.println(Arrays.toString(args));
 
                 switch (type) {
                     case LISTPLAYERS:
                         if(args.length >= 3) {
-                            if (args[1].equals("LOBBY")) {
+                            if (args[1].equals("LOBBY") && args.length > 3) {
                                 message = "Players in " + args[2] + ":\n" + args[3];
                             } else if (args[1].equals("SERVER")) {
                                 message = "Players in server: " + args[2];
@@ -359,8 +359,10 @@ public class GameScreenController extends BaseController {
                         }
                         break;
                     case CREATELOBBY:
-                        message = "Created lobby: " + args[2];
-                        chatListView.getItems().add(message);
+                        if (args.length > 2) {
+                            message = "Created lobby: " + args[2];
+                            chatListView.getItems().add(message);
+                        }
                     case JOIN:
                         if (args.length > 2) {
                             message = args[1] + " joined lobby: " + args[2];
@@ -374,8 +376,10 @@ public class GameScreenController extends BaseController {
                         }
                         break;
                     case START:
-                        chatListView.getItems().add("Game started! \n" + "It is " + args[1] + "'s turn.");
-                        break;
+                        if(args.length > 1) {
+                            chatListView.getItems().add("Game started! \n" + "It is " + args[1] + "'s turn.");
+                            break;
+                        }
                     case CHANGENAME:
                         if (args.length > 1) {
                             message = args[1] + " changed their name to: " + args[2];
@@ -383,18 +387,18 @@ public class GameScreenController extends BaseController {
                         }
                         break;
                     case GETGAMESTATUS:
-                        if (args.length > 1) {
+                        if (args.length > 2) {
                             chatListView.getItems().add("Game status: " + args[2]);
                         }
                         break;
                     case GETPRICES:
-                        if (args.length > 1) {
+                        if (args.length > 2) {
                             chatListView.getItems().add("Prices: " + args[2]);
                         }
                         break;
                     default:
-                        chatListView.getItems().add(message);
-                        LOGGER.warning("GameScreen Controller: Unknown command type: " + type);
+                        chatListView.getItems().add(message); // For all GameCommands -> Temporary
+                        //LOGGER.warning("GameScreen Controller: Unknown command type: " + type);
                 }
 
                 // Auto-scroll to bottom
