@@ -1,65 +1,78 @@
-package ch.unibas.dmi.dbis.cs108.shared.entities.entities;
-
-/**
- * Class representing an artefact in the game.
- * Artefacts are items that can be found and used by players.
- */
-public class Artefact {
-    private final int artifactID;
-    private final String name;
-    private final String description;
-    private final String useType;
-
-    /**
-     * Constructor for Artefact.
-     *
-     * @param artifactID  The ID of the artefact.
-     * @param name        The name of the artefact.
-     * @param description A description of the artefact.
-     * @param useType     The type of use for the artefact.
-     */
-    public Artefact(int artifactID, String name, String description, String useType) {
-        this.artifactID = artifactID;
-        this.name = name;
-        this.description = description;
-        this.useType = useType;
-    }
-
-    /**
-     * Get the artifact ID.
-     *
-     * @return int artifactID
-     */
-    public int getArtifactID() {
-        return artifactID;
-    }
-
-    /**
-     * Get the name of the artefact.
-     *
-     * @return String name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Get the description of the artefact.
-     *
-     * @return String description
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * Get the use type of the artefact.
-     *
-     * @return String useType
-     */
-    public String getUseType() {
-        return useType;
-    }
-
-
-}
+//package ch.unibas.dmi.dbis.cs108.shared.entities.entities;
+//
+//import ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.ArtefactData;
+//
+///**
+// * Abstract class representing an artefact in the game.
+// * Artefacts are items that can be found and used by players.
+// */
+//public abstract class Artefact {
+//
+//    protected final String name;
+//    protected final String description;
+//    protected final String useType;
+//    protected final int artifactID;
+//    protected final double chance;
+//
+//    /**
+//     * Constructor for Artefact.
+//     *
+//     * @param data The data object containing artefact information.
+//     */
+//    public Artefact(ArtefactData data) {
+//        this.artifactID = data.getId();
+//        this.name = data.getName();
+//        this.description = data.getDescription();
+//        this.useType = data.getUseType();
+//        this.chance = data.getChance();
+//    }
+//
+//    /**
+//     * Get the artifact ID.
+//     *
+//     * @return int artifactID
+//     */
+//    public int getArtifactID() {
+//        return artifactID;
+//    }
+//
+//    /**
+//     * Get the name of the artefact.
+//     *
+//     * @return String name
+//     */
+//    public String getName() {
+//        return name;
+//    }
+//
+//    /**
+//     * Get the description of the artefact.
+//     *
+//     * @return String description
+//     */
+//    public String getDescription() {
+//        return description;
+//    }
+//
+//    /**
+//     * Get the use type of the artefact.
+//     *
+//     * @return String useType
+//     */
+//    public String getUseType() {
+//        return useType;
+//    }
+//
+//    /**
+//     * Get the chance of finding the artefact.
+//     *
+//     * @return double chance
+//     */
+//
+//    public double getChance() {
+//        return chance;
+//    }
+//
+//
+//
+//}

@@ -2,6 +2,7 @@ package ch.unibas.dmi.dbis.cs108.server.core.Logic;
 
 import ch.unibas.dmi.dbis.cs108.server.core.State.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.entities.*;
+import ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.Artefact;
 
 import java.util.ArrayList;
 import java.util.Collections;

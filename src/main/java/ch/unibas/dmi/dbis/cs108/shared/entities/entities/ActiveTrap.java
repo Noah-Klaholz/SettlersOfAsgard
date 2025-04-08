@@ -1,4 +1,4 @@
-package ch.unibas.dmi.dbis.cs108.client.core.entities;
+package ch.unibas.dmi.dbis.cs108.shared.entities.entities;
 
 /**
  * Class representing an active trap in the game.

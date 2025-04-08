@@ -3,6 +3,7 @@ package ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.*;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -73,7 +74,10 @@ public class ArtefactRepository {
             for (ArtefactData data : dataList) {
                 try {
                     if (data.getName() != null) {
-                        artefacts.add(new Artefact(data));
+                        //todo: test if new implementation works
+                        Artefact a = getArtefactById(data.getId());
+                        artefacts.add(a);
+                        //artefacts.add(new Artefact(data));
                     } else {
                         LOGGER.warning("Skipping artefact with null name");
                     }
@@ -101,7 +105,7 @@ public class ArtefactRepository {
     public Artefact getArtefactById(int id) {
         List<Artefact> artefacts = loadArtefacts();
         for (Artefact artefact : artefacts) {
-            if (((Artefact) artefact).id == id) {
+            if (((Artefact) artefact).artifactID == id) {
                 return artefact;
             }
         }

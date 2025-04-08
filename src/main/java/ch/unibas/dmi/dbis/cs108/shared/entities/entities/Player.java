@@ -1,5 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities.entities;
 
+import ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.Artefact;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;

@@ -10,6 +10,7 @@ public class ArtefactData {
     private String description;
     private String useType;
     private double chance;
+    private double effect;
 
     /**
      * Getter method for the id of the artefact.
@@ -50,4 +51,13 @@ public class ArtefactData {
     public String getUseType() {
         return useType;
     }
+
+    /**
+     * Getter method for the effect of the artefact.
+     * @return double effect
+     */
+    public double getEffect() {
+        return effect;
+    }
+
 }

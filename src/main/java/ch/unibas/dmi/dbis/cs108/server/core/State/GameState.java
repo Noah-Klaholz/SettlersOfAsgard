@@ -1,11 +1,15 @@
 package ch.unibas.dmi.dbis.cs108.server.core.State;
 
-import ch.unibas.dmi.dbis.cs108.shared.entities.entities.Artefact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.Artefact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.entities.Board;
 import ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player;
 import ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile;
+import ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.ArtefactRepository;
+import ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.StructureRepository;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The GameState class is responsible for storing and managing the current state
@@ -156,6 +160,15 @@ public class GameState {
         for (String playerName : players) {
             Player player = new Player(playerName);
             this.players.add(player);
+        }
+        //todo: later delete demo part below:
+        //gives all players an artifact to use for demo purposes
+        ArtefactRepository repo = ArtefactRepository.getInstance();
+        List<Artefact> tempArtefacts =  repo.loadArtefacts();
+        Artefact goldenApple = repo.getArtefactById(11);
+        for(Player p : this.players) {
+            p.addArtifact(goldenApple);
+            p.addEnergy((int)goldenApple.getEffect());
         }
     }
 
