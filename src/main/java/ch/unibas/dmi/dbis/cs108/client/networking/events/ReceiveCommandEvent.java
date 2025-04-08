@@ -19,6 +19,12 @@ public class ReceiveCommandEvent implements Event {
         this.commandType = Commands.fromCommand(message.split("\\$")[0]);
     }
 
+    // Constructor for commands without OK prefix
+    public ReceiveCommandEvent(String message, Commands commandType) {
+        this.message = message;
+        this.commandType = commandType;
+    }
+
     public String getMessage() {
         return message;
     }

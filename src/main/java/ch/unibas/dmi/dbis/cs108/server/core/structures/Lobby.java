@@ -109,10 +109,6 @@ public class Lobby {
         status = LobbyStatus.IN_GAME;
         logger.info("Game started in lobby " + id);
 
-        for (ClientHandler player : players) {
-            player.startGame();
-        }
-
         String[] playerNames = players.stream()
                 .map(ClientHandler::getPlayerName)
                 .toArray(String[]::new);

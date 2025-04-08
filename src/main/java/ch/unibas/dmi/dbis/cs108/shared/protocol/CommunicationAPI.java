@@ -211,7 +211,6 @@ public interface CommunicationAPI {
              * Getter for the command
              *
              * @return the command
-             * @see command
              */
             public String getCommand() {
                 return command;

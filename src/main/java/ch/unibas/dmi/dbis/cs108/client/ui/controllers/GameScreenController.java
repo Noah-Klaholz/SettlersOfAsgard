@@ -400,6 +400,7 @@ public class GameScreenController extends BaseController {
                         if (args.length > 1) {
                             chatListView.getItems().add("It is " + args[1] + "'s turn.");
                         }
+                        break;
                     default:
                         chatListView.getItems().add(message); // For all GameCommands -> Temporary
                         //LOGGER.warning("GameScreen Controller: Unknown command type: " + type);

@@ -313,7 +313,7 @@ public class CommandHandler {
             this.currentLobby = ch.getCurrentLobby();
             this.gameLogic = currentLobby.getGameLogic();
             String startPlayerName = gameLogic.getGameState().getPlayerTurn();
-            currentLobby.broadcastMessage("OK$STRT$" + startPlayerName);
+            currentLobby.broadcastMessage("STRT$" + startPlayerName);
             return true;
         } else {
             System.out.println("ERR$106$NOT_IN_LOBBY");
@@ -330,7 +330,7 @@ public class CommandHandler {
     public boolean handleStartTurn() {
         try {
             this.gameLogic.nextTurn();
-            currentLobby.broadcastMessage("OK$TURN$" + playerName);
+            currentLobby.broadcastMessage("TURN$" + playerName);
             return true;
         } catch (Exception e) {
             logger.warning("Could not start turn because game is not started yet.");

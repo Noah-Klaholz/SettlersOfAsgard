@@ -1,6 +1,9 @@
 package ch.unibas.dmi.dbis.cs108.client.networking.protocol;
 
 import ch.unibas.dmi.dbis.cs108.client.networking.events.*;
+import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
+import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol.Commands;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +33,8 @@ public class ProtocolTranslator {
         commandHandlers.put("PING", this::processPingMessage);
         commandHandlers.put("STDN", this::processShutdownMessage);
         commandHandlers.put("CHAN", this::processNameChangeMessage);
+        commandHandlers.put("TURN", this::processTurnMessage);
+        commandHandlers.put("STRT", this::processStartGameMessage);
     }
 
     public void processIncomingMessage(String message) {
@@ -40,7 +45,21 @@ public class ProtocolTranslator {
         if (handler != null) {
             handler.accept(message);
         } else {
-            LOGGER.warning("Unknown message type: " + command);
+            LOGGER.warning("Unknown message type: " + message);
+        }
+    }
+
+    public void processTurnMessage(String message) {
+        String[] parts = message.split("\\$", 2);
+        if (parts.length > 1) {
+            eventDispatcher.dispatchEvent(new ReceiveCommandEvent(message, Commands.STARTTURN));
+        }
+    }
+
+    public void processStartGameMessage(String message) {
+        String[] parts = message.split("\\$", 2);
+        if (parts.length > 1) {
+            eventDispatcher.dispatchEvent(new ReceiveCommandEvent(message, Commands.START));
         }
     }
 
