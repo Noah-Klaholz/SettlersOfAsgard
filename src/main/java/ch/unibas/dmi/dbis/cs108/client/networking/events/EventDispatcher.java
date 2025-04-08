@@ -26,6 +26,8 @@ public class EventDispatcher {
 
     /**
      * Private constructor to prevent instantiation.
+     *
+     * @return The singleton instance of EventDispatcher.
      */
     public static EventDispatcher getInstance() {
         /**

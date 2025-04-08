@@ -31,9 +31,9 @@ public class GameRound {
     }
 
     /**
-     * Returns the list of player rounds in this game round.
+     * Adds a player round to the list of player rounds in this game round.
      *
-     * @return The list of player rounds.
+     * @param playerRound The player round to be added.
      */
     public void addPlayerRound(PlayerRound playerRound) {
         playerRounds.add(playerRound);

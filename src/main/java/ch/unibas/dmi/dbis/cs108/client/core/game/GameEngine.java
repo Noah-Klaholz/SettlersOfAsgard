@@ -50,9 +50,9 @@ public class GameEngine {
     }
 
     /**
-     * Returns the RuleProcessor object responsible for processing game rules.
+     * Processes a turn by executing the given commands and applying game rules.
      *
-     * @return The RuleProcessor object.
+     * @param commands The list of commands to be executed for the current turn.
      */
     public void processTurn(List<Command> commands) {
         for (Command command : commands) {
@@ -64,9 +64,9 @@ public class GameEngine {
     }
 
     /**
-     * Returns the RuleProcessor object responsible for processing game rules.
+     * Processes a game round by executing the commands for each player and applying rules.
      *
-     * @return The RuleProcessor object.
+     * @param gameRound The GameRound object representing the current game round.
      */
     public void processGameRound(GameRound gameRound) {
         gameRound.executeRound(gameState, eventDispatcher, ruleProcessor);

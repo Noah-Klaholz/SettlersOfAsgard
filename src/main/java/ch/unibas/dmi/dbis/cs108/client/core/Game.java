@@ -174,6 +174,8 @@ public class Game {
 
     /**
      * Updates the Player name to the new name.
+     *
+     * @param newName The new name for the player.
      */
     public void updatePlayerName(String newName) {
         player.setName(newName);

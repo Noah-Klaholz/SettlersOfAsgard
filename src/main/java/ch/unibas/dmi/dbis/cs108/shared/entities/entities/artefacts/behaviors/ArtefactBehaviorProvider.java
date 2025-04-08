@@ -54,6 +54,7 @@ public class ArtefactBehaviorProvider {
      * Registers a new behavior for a specific artefact name.
      *
      * @param artefactName The name of the artefact
+     * @return ArtefactBehavior The behavior associated with the artefact name
      */
     public ArtefactBehavior getBehaviorFor(String artefactName) {
         return behaviors.getOrDefault(artefactName, defaultBehavior);
