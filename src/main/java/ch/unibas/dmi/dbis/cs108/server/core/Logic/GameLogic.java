@@ -252,28 +252,23 @@ public class GameLogic implements GameLogicInterface {
      */
     @Override
     public boolean upgradeStatue(int x, int y, String statueID, String playerName) {
-        for (Player player : gameState.getPlayerList()) {
-            if (player.getName().equals(playerName)) {
-                if (player.getStatue().getName().equals(statueID)) {
-                    //player owns the statue
-                    if (player.getRunes() >= player.getStatue().getUpgradePrice()) {
-                        player.removeRunes(player.getStatue().getUpgradePrice());
-                        player.getStatue().upgrade();
-                        //todo: later check if it does actually upgrade (it gives a boolean back)
-                        System.out.println("Statue upgraded");
-                        return true;
-                    } else {
-                        System.out.println("Not enough runes");
-                        return false;
-                    }
-                } else {
-                    System.out.println("Player does not own the statue");
-                    return false;
-                }
-            }
+        Player player = findPlayerByName(playerName);
+        if (player == null || !player.getStatue().getName().equals(statueID)) {
+            System.out.println(player == null ? "Player not found" : "Player does not own the statue");
+            return false;
         }
-        System.out.println("something went wrong");
-        return false;
+
+        Statue statue = player.getStatue();
+        if (player.getRunes() < statue.getPrice()) {
+            System.out.println("Not enough runes");
+            return false;
+        }
+
+        player.removeRunes(statue.getUpgradePrice());
+        boolean upgraded = statue.upgrade();
+        System.out.println(upgraded ? "Upgraded statue" : "Upgrade failed");
+        return upgraded;
+
     }
 
     /**
