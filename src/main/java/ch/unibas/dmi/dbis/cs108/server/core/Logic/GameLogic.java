@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.core.Logic;
 
 import ch.unibas.dmi.dbis.cs108.server.core.State.GameState;
-import ch.unibas.dmi.dbis.cs108.server.core.entities.*;
+import ch.unibas.dmi.dbis.cs108.shared.entities.entities.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -106,7 +106,31 @@ public class GameLogic implements GameLogicInterface {
         gameState.setPlayerRound(nextPosition);
         Player nextPlayer = gameState.getPlayerList().get(nextPosition);
         gameState.setPlayerTurn(nextPlayer.getName());
+        resourcesIncome(nextPlayer);
 
+    }
+
+    /**
+     * Provides resources to all players at the start of their turn.
+     * This method distributes resources based on owned tiles and structures.
+     *
+     * Structures: A value below 5 gives energy, any above gives runes: that is how it is determined which one is given
+     *
+     */
+    public void resourcesIncome(Player player){
+        //Tile income (Runes)
+        for(Tile tile : player.getOwnedTiles()) {
+            player.addRunes(tile.getResourceValue());
+        }
+        //Structure income (Runes, Energy)
+        for(Structure structure : player.getOwnedStructures()) {
+            if(structure.getResourceValue() <= 4){
+                player.addEnergy(structure.getResourceValue());
+            }
+            else {
+                player.addRunes(structure.getResourceValue());
+            }
+        }
     }
 
     /**
@@ -123,6 +147,7 @@ public class GameLogic implements GameLogicInterface {
         Player firstPlayer = gameState.getPlayerList().get(0);
         gameState.setPlayerTurn(firstPlayer.getName());
         gameState.addRunes(1, firstPlayer.getName());
+        //gameState.setActivePlayer(firstPlayer.getName());
 
     }
 
