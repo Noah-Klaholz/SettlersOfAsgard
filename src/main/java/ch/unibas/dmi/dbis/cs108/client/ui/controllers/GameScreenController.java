@@ -387,13 +387,13 @@ public class GameScreenController extends BaseController {
                         }
                         break;
                     case GETGAMESTATUS:
-                        if (args.length > 2) {
-                            chatListView.getItems().add("Game status: " + args[2]);
+                        if (args.length > 1) {
+                            chatListView.getItems().add("Game status: " + args[1]);
                         }
                         break;
                     case GETPRICES:
-                        if (args.length > 2) {
-                            chatListView.getItems().add("Prices: " + args[2]);
+                        if (args.length > 1) {
+                            chatListView.getItems().add("Prices: " + args[1]);
                         }
                         break;
                     case STARTTURN:
