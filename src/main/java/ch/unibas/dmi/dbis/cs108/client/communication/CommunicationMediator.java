@@ -126,6 +126,7 @@ public class CommunicationMediator {
                     } else {
                         publishInfoChatEvent("Invalid lobbyname, use: \n /create <lobbyName>");
                     }
+                    break;
                 case STARTGAME:
                     networkController.startGame();
                     break;
@@ -151,6 +152,7 @@ public class CommunicationMediator {
                     } else {
                         publishInfoChatEvent("Invalid playername, use: \n /whisper <playerName>");
                     }
+                    break;
                 case HELP:
                     publishInfoChatEvent("The following commands are available: \n" +
                             "/whisper <playername> <message> \n" +
@@ -179,6 +181,7 @@ public class CommunicationMediator {
                             "/status \n" +
                             "/prices \n" +
                             "Note: Coordinates are 0-indexed and IDs are 0 indexed numbers.");
+                    break;
                 case BUYTILE:
                     if (isValidArgument(args, 1)) {
                         networkController.buyTile(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
@@ -206,30 +209,35 @@ public class CommunicationMediator {
                     } else {
                         publishInfoChatEvent("Invalid arguments, use: \n /upgradestructure <x> <y> <statueId> ");
                     }
+                    break;
                 case BUYSTATUE:
                     if (isValidArgument(args, 2)) {
                         networkController.buyStatue(Integer.parseInt(args[0]));
                     } else {
                         publishInfoChatEvent("Invalid arguments, use: \n /buystatue <statueId>");
                     }
+                    break;
                 case USESTATUE:
                     if (isValidArgument(args, 3)) {
                         networkController.useStatue(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]), args[3]);
                     } else {
                         publishInfoChatEvent("Invalid arguments, use: \n /usestatue <x> <y> <statueId> <useType>");
                     }
+                    break;
                 case USEFIELDARTIFACT:
                     if (isValidArgument(args, 3)) {
                         networkController.useFieldArtifact(Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]), args[3]);
                     } else {
                         publishInfoChatEvent("Invalid arguments, use: \n /usefieldartifact <x> <y> <artifactId> <useType>");
                     }
+                    break;
                 case USEPLAYERARTIFACT:
                     if (isValidArgument(args, 1)) {
                         networkController.usePlayerArtifact(Integer.parseInt(args[0]), args[1]);
                     } else {
                         publishInfoChatEvent("Invalid arguments, use: \n /useplayerartifact <artifactId> <useType>");
                     }
+                    break;
                 case STATUS:
                     networkController.getGameState();
                     break;
