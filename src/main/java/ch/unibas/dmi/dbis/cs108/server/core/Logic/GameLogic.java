@@ -152,31 +152,23 @@ public class GameLogic implements GameLogicInterface {
      */
     @Override
     public boolean buyTile(int x, int y, String playerName) {
+        Tile tile = gameState.getBoard().getTileByCoordinates(x, y);
+        if (tile == null || tile.isPurchased()) {
+            System.out.println(tile == null ? "Tile not found" : "Tile is already purchased");
+            return false;
+        }
         //todo: later implement check: can only purchase max. 3 tiles per turn
-        if (gameState.getBoard().getTileByCoordinates(x, y) == null) {
-            System.out.println("Tile not found");
+        Player player = findPlayerByName(playerName);
+        if (player == null || player.getRunes() < tile.getPrice()) {
+            System.out.println(player == null ? "Player not found" : "Not enough runes");
             return false;
         }
-        if (gameState.getBoard().getTileByCoordinates(x, y).isPurchased()) {
-            System.out.println("Tile already purchased");
-            return false;
-        }
-        for (Player player : gameState.getPlayerList()) {
-            if (player.getName().equals(playerName)) {
-                if (player.getRunes() >= gameState.getBoard().getTileByCoordinates(x, y).getPrice()) {
-                    player.removeRunes(gameState.getBoard().getTileByCoordinates(x, y).getPrice());
-                    gameState.getBoard().getTileByCoordinates(x, y).setPurchased(true);
-                    player.addOwnedTile(gameState.getBoard().getTileByCoordinates(x, y));
-                    System.out.println("Tile purchased");
-                    return true;
-                } else {
-                    System.out.println("Not enough runes");
-                    return false;
-                }
-            }
-        }
-        System.out.println("something went wrong");
-        return false;
+
+        player.removeRunes(tile.getPrice());
+        tile.setPurchased(true);
+        player.addOwnedTile(tile);
+        System.out.println("Tile purchased");
+        return true;
     }
 
     /**
@@ -191,30 +183,34 @@ public class GameLogic implements GameLogicInterface {
      */
     @Override
     public boolean placeStructure(int x, int y, int structureID, String playerName) {
-        for (Player player : gameState.getPlayerList()) {
-            if (player.getName().equals(playerName)) {
-                for (Structure structure : player.getOwnedStructures()) {
-                    if (structure.getStructureID() == structureID) {
-                        if (gameState.getBoard().getTileByCoordinates(x, y) == null) {
-                            System.out.println("Tile not found");
-                            return false;
-                        }
-                        for (Tile tile : player.getOwnedTiles()) {
-                            if (tile.getTileID() == gameState.getBoard().getTileByCoordinates(x, y).getTileID()) {
-                                if (!tile.getHasStructure()) {
-                                    player.removeOwnedStructure(structure);
-                                    tile.setHasStructure(true);
-                                    tile.setStructure(structure);
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        Player player = findPlayerByName(playerName);
+        if (player == null) {
+            System.out.println("Player not found");
+            return false;
         }
-        System.out.println("Could not place structure.");
-        return false;
+        Structure structure = player.getOwnedStructures().stream()
+                .filter(s -> s.getStructureID() == structureID)
+                .findFirst()
+                .orElse(null);
+        if (structure == null) {
+            System.out.println("Structure not found");
+            return false;
+        }
+        Tile tile = gameState.getBoard().getTileByCoordinates(x, y);
+        if (tile == null || tile.isPurchased()) {
+            System.out.println(tile == null ? "Tile not found" : "Tile is already purchased");
+            return false;
+        }
+        if (tile.getHasStructure()) {
+            System.out.println("Tile already has structure");
+            return false;
+        }
+
+        player.removeOwnedStructure(structure);
+        tile.setStructure(structure);
+        tile.setHasStructure(true);
+        return true;
+
     }
 
     /**
@@ -230,19 +226,24 @@ public class GameLogic implements GameLogicInterface {
      */
     @Override
     public boolean useStructure(int x, int y, int structureID, String useType, String playerName) {
-        for (Player player : gameState.getPlayerList()) {
-            if (player.getName().equals(playerName)) {
-                for (Structure structure : player.getOwnedStructures()) {
-                    if (structure.getStructureID() == structureID) {
-                        //player owns the structure
-                        //todo: later implement 1 time use per turn
-                        //todo: later implement structure use
-                        return true;
-                    }
-                }
-            }
+        Player player = findPlayerByName(playerName);
+        if (player == null) {
+            System.out.println("Player not found");
+            return false;
         }
-        return false;
+        Structure structure = player.getOwnedStructures().stream()
+                .filter(s -> s.getStructureID() == structureID)
+                .findFirst()
+                .orElse(null);
+
+        if(structure == null) {
+            System.out.println("Structure not found");
+            return false;
+        }
+
+        //todo: later implement 1 time use per turn
+        // todo: later implement structure use
+        return true;
     }
 
     /**
@@ -257,28 +258,23 @@ public class GameLogic implements GameLogicInterface {
      */
     @Override
     public boolean upgradeStatue(int x, int y, String statueID, String playerName) {
-        for (Player player : gameState.getPlayerList()) {
-            if (player.getName().equals(playerName)) {
-                if (player.getStatue().getName().equals(statueID)) {
-                    //player owns the statue
-                    if (player.getRunes() >= player.getStatue().getUpgradePrice()) {
-                        player.removeRunes(player.getStatue().getUpgradePrice());
-                        player.getStatue().upgrade();
-                        //todo: later check if it does actually upgrade (it gives a boolean back)
-                        System.out.println("Statue upgraded");
-                        return true;
-                    } else {
-                        System.out.println("Not enough runes");
-                        return false;
-                    }
-                } else {
-                    System.out.println("Player does not own the statue");
-                    return false;
-                }
-            }
+        Player player = findPlayerByName(playerName);
+        if (player == null || !player.getStatue().getName().equals(statueID)) {
+            System.out.println(player == null ? "Player not found" : "Player does not own the statue");
+            return false;
         }
-        System.out.println("something went wrong");
-        return false;
+
+        Statue statue = player.getStatue();
+        if (player.getRunes() < statue.getPrice()) {
+            System.out.println("Not enough runes");
+            return false;
+        }
+
+        player.removeRunes(statue.getUpgradePrice());
+        boolean upgraded = statue.upgrade();
+        System.out.println(upgraded ? "Upgraded statue" : "Upgrade failed");
+        return upgraded;
+
     }
 
     /**
@@ -294,13 +290,17 @@ public class GameLogic implements GameLogicInterface {
      */
     @Override
     public void useStatue(int x, int y, int statueID, String useType, String playerName) {
-        for (Player player : gameState.getPlayerList()) {
-            if (player.getName().equals(playerName)) {
-                if (player.getStatue().getStatueID() == statueID) {
-                    player.getStatue().use();
-                }
-            }
+        Player player = findPlayerByName(playerName);
+        if (player == null) {
+            System.out.println("Player not found");
+            return;
         }
+        Statue statue = player.getStatue();
+        if (statue == null || statue.getStatueID() != statueID) {
+            System.out.println(statue == null ? "Statue not found" : "Player does not own statue");
+            return;
+        }
+        statue.use();
     }
 
     /**
@@ -453,6 +453,16 @@ public class GameLogic implements GameLogicInterface {
         } else {
             System.out.println("Insufficient runes to buy structure.");
         }
+    }
+
+    /**
+     * Gets the player Object by looking for the name.
+     *
+     * @param name the player's name
+     * @return the Player Object corresponding to the name
+     */
+    private Player findPlayerByName(String name) {
+        return gameState.getPlayerList().stream().filter(p -> p.getName().equals(name)).findFirst().orElse(null);
     }
 
 }
