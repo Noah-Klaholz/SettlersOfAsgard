@@ -1,7 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.networking.protocol;
 
 import ch.unibas.dmi.dbis.cs108.client.networking.events.*;
-import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol.Commands;
 
 
@@ -257,8 +256,8 @@ public class ProtocolTranslator {
         return "USTA$" + x + "$" + y + "$" + statueID + "$" + useType;
     }
 
-    public String formatUsePlayerArtifact(int artifactId, String useType) {
-        return "USPA$" + artifactId + "$" + useType;
+    public String formatUsePlayerArtifact(int artifactId, String useType, String playerAimedAt) {
+        return "USPA$" + artifactId + "$" + useType + "$" + playerAimedAt;
     }
 
     public String formatUseFieldArtifact(int x, int y, int artifactId, String useType) {

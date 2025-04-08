@@ -36,7 +36,7 @@ public class SendCommandEvent {
         PLACESTRUCTURE("/placestructure"),
         USESTRUCTURE("/usestructure"),
         BUYSTATUE("/buystatue"),
-        UPGRADESTATUE("/upgradestructure"),
+        UPGRADESTATUE("/upgradestatue"),
         USESTATUE("/usestatue"),
         USEFIELDARTIFACT("/usefieldartifact"),
         USEPLAYERARTIFACT("/useplayerartifact"),

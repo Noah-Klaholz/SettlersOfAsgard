@@ -172,12 +172,13 @@ public class CommunicationMediator {
                 case HELPGAME:
                     publishInfoChatEvent("The following Game-commands are available: \n" +
                             "/buytile <x> <y> \n" +
-                            "/placestructure <x> <y> <structureType> \n" +
-                            "/usestructure <x> <y> <structureType> <targetPlayer> \n" +
+                            "/placestructure <x> <y> <structureId> \n" +
+                            "/usestructure <x> <y> <structureType> <useType> \n" +
+                            "/buystatue <statueId> \n" +
                             "/usestatue <x> <y> <statueType> <targetPlayer> \n" +
-                            "/upgrade <x> <y> <statueType> \n" +
-                            "/usefieldartifact <x> <y> <targetPlayer> \n" +
-                            "/useplayerartifact <targetPlayer> \n" +
+                            "/upgradestatue <x> <y> <statueId> \n" +
+                            "/usefieldartifact <x> <y> <artifactId> <useType> \n" +
+                            "/useplayerartifact <artifactId> <useType> <playerAimedAt> \n" +
                             "/status \n" +
                             "/prices \n" +
                             "Note: Coordinates are 0-indexed and IDs are 0 indexed numbers.");
@@ -207,7 +208,7 @@ public class CommunicationMediator {
                     if (isValidArgument(args, 2)) {
                         networkController.upgradeStatue(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
                     } else {
-                        publishInfoChatEvent("Invalid arguments, use: \n /upgradestructure <x> <y> <statueId> ");
+                        publishInfoChatEvent("Invalid arguments, use: \n /upgradestatue <x> <y> <statueId> ");
                     }
                     break;
                 case BUYSTATUE:
@@ -221,21 +222,21 @@ public class CommunicationMediator {
                     if (isValidArgument(args, 3)) {
                         networkController.useStatue(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]), args[3]);
                     } else {
-                        publishInfoChatEvent("Invalid arguments, use: \n /usestatue <x> <y> <statueId> <useType>");
+                        publishInfoChatEvent("Invalid arguments, use: \n /usestatue <x> <y> <statueId> <useType> <playerName>");
                     }
                     break;
                 case USEFIELDARTIFACT:
                     if (isValidArgument(args, 3)) {
-                        networkController.useFieldArtifact(Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]), args[3]);
+                        networkController.useFieldArtifact(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]), args[3]);
                     } else {
                         publishInfoChatEvent("Invalid arguments, use: \n /usefieldartifact <x> <y> <artifactId> <useType>");
                     }
                     break;
                 case USEPLAYERARTIFACT:
-                    if (isValidArgument(args, 1)) {
-                        networkController.usePlayerArtifact(Integer.parseInt(args[0]), args[1]);
+                    if (isValidArgument(args, 2)) {
+                        networkController.usePlayerArtifact(Integer.parseInt(args[0]), args[1], args[2]);
                     } else {
-                        publishInfoChatEvent("Invalid arguments, use: \n /useplayerartifact <artifactId> <useType>");
+                        publishInfoChatEvent("Invalid arguments, use: \n /useplayerartifact <artifactId> <useType> <playerAimedAt>");
                     }
                     break;
                 case STATUS:

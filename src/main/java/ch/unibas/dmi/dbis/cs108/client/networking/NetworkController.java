@@ -247,8 +247,8 @@ public class NetworkController {
         networkClient.send(message);
     }
 
-    public void usePlayerArtifact(int artifactID, String useType) {
-        String message = translator.formatUsePlayerArtifact(artifactID, useType);
+    public void usePlayerArtifact(int artifactID, String useType, String playerAimedAt) {
+        String message = translator.formatUsePlayerArtifact(artifactID, useType, playerAimedAt);
         networkClient.send(message);
     }
 
