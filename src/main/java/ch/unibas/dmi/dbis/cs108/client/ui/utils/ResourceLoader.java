@@ -14,5 +14,7 @@ public class ResourceLoader {
     public static final String DEFAULT_THEME_CSS = "/css/themes/default.css";
     public static final String DARK_THEME_CSS = "/css/themes/dark.css";
 
-    // Optionally add helper methods for resource loading
+    // Fontes
+    public static final String CINZEL_REGULAR = "/fonts/Cinzel/static/Cinzel-Regular.ttf";
+    public static final String ROBOTO_REGULAR = "/fonts/Roboto/static/Roboto-Regular.ttf";
 }

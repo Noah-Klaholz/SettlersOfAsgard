@@ -3,7 +3,7 @@
 /* ========== Global Styles ========== */
 .root {
     -fx-background-color: #1a2133;
-    -fx-font-family: "Avenir", "Segoe UI", "Roboto", sans-serif;
+    -fx-font-family: "Roboto", sans-serif;
     -fx-font-size: 14px;
 }
 
@@ -14,7 +14,7 @@
 }
 
 .label.title {
-    -fx-font-family: "Cinzel", "Trajan Pro", serif;
+    -fx-font-family: "Cinzel", serif;
     -fx-font-size: 18px;
     -fx-font-weight: bold;
     -fx-text-fill: #e4c065;
@@ -41,7 +41,7 @@
 }
 
 .header-title, .navbar-title {
-    -fx-font-family: "Cinzel", "Trajan Pro", serif;
+    -fx-font-family: "Cinzel", serif;
     -fx-font-size: 28px;
     -fx-font-weight: bold;
     -fx-text-fill: #e4c065;

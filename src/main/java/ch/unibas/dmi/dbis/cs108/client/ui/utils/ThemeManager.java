@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.utils;
 
 import javafx.scene.Scene;
+import javafx.scene.text.Font;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ public class ThemeManager {
     private Theme currentTheme = Theme.DEFAULT;
 
     private ThemeManager() {
+        loadFonts();
     }
 
     public static ThemeManager getInstance() {
@@ -52,6 +54,26 @@ public class ThemeManager {
             scene.getStylesheets().add(themeUrl.toExternalForm());
         } else {
             System.err.println("Theme stylesheet " + currentTheme.getPath() + " not found.");
+        }
+    }
+
+    private void loadFonts() {
+        try {
+            // Load Cinzel font
+            Font.loadFont(
+                    getClass().getResourceAsStream(ResourceLoader.CINZEL_REGULAR),
+                    12
+            );
+
+            // Load Roboto font
+            Font.loadFont(
+                    getClass().getResourceAsStream(ResourceLoader.ROBOTO_REGULAR),
+                    12
+            );
+
+            System.out.println("Fonts loaded successfully");
+        } catch (Exception e) {
+            System.err.println("Error loading fonts: " + e.getMessage());
         }
     }
 
