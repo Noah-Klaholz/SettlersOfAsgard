@@ -12,13 +12,38 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+/**
+ * CommandHandler class handles the commands sent by the client.
+ * It processes the commands and interacts with the server and game logic.
+ */
 public class CommandHandler {
+    /**
+     * The ClientHandler instance that this CommandHandler is associated with.
+     */
     private final ClientHandler ch;
+    /**
+     * The GameServer instance that this CommandHandler is associated with.
+     */
     private final GameServer server;
+    /**
+     * The logger for this class.
+     */
     Logger logger = Logger.getLogger(CommandHandler.class.getName());
+    /**
+     * The GameLogic instance that this CommandHandler is associated with.
+     */
     private GameLogic gameLogic;
+    /**
+     * The current Lobby that this CommandHandler is associated with.
+     */
     private Lobby currentLobby;
+    /**
+     * The local player that this CommandHandler is associated with.
+     */
     private Player localPlayer;
+    /**
+     * The name of the player that this CommandHandler is associated with.
+     */
     private String playerName;
 
     /**
@@ -33,27 +58,52 @@ public class CommandHandler {
         this.server = ch.getServer();
     }
 
+    /**
+     * This method sends the message and calls the appropriate handler method.
+     *
+     * @param message the message to send
+     */
     private void sendMessage(String message) {
         ch.sendMessage(message);
     }
 
+    /**
+     * This method sets the current lobby for this CommandHandler.
+     *
+     * @param lobby the lobby to set
+     */
     private void setCurrentLobby(Lobby lobby) {
         ch.setCurrentLobby(lobby);
         currentLobby = lobby;
     }
 
+    /**
+     * This method sets the name of the local player.
+     *
+     * @param playerName the name to set
+     */
     private void setLocalPlayerName(String playerName) {
         this.localPlayer.setName(playerName);
         this.playerName = playerName;
         ch.getPlayer().setName(playerName);
     }
 
+    /**
+     * This method sets the local player for this CommandHandler.
+     *
+     * @param player the player to set
+     */
     private void setLocalPlayer(Player player) {
         this.localPlayer = player;
         this.playerName = player.getName();
         ch.setPlayer(player);
     }
 
+    /**
+     * This method sets the current lobby for this CommandHandler.
+     *
+     * @param lobby the lobby to set
+     */
     private void joinLobby(Lobby lobby) {
         if (ch.getCurrentLobby() != null) {
             ch.getCurrentLobby().removePlayer(ch);
@@ -296,6 +346,12 @@ public class CommandHandler {
         return false;
     }
 
+    /**
+     * Handles the sending of a message to all players on the server.
+     *
+     * @param cmd the transmitted command
+     * @return true if the message was sent successfully, false otherwise
+     */
     public boolean handleGlobalChatMessage(Command cmd) {
         String com = cmd.toString();
         com = com.replace("CHTL$", "CHTG$");

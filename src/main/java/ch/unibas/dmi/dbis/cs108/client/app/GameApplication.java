@@ -16,16 +16,46 @@ import javafx.stage.Stage;
 
 import java.util.List;
 
+/**
+ * The main application class for the Settlers of Asgard game.
+ * This class initializes the game, sets up the network connection,
+ * and manages the main application lifecycle.
+ */
 public class GameApplication extends Application {
+    /**
+     * The NetworkController instance for managing network communication.
+     */
     private NetworkController networkController;
+    /**
+     * The UIEventBus instance for managing UI events.
+     */
     private UIEventBus uiEventBus;
+    /**
+     * The EventDispatcher instance for managing network events.
+     */
     private EventDispatcher networkEventDispatcher;
+    /**
+     * The Player instance representing the local player.
+     */
     private Player localPlayer;
 
+    /**
+     * The main entry point for the JavaFX application.
+     * It launches the application and sets up the primary stage.
+     *
+     * @param args Command-line arguments passed to the application.
+     */
     public static void main(String[] args) {
         launch(args);
     }
 
+    /**
+     * Starts the JavaFX application.
+     * It retrieves command-line parameters, initializes the game,
+     * sets up the network connection, and displays the main menu.
+     *
+     * @param primaryStage The primary stage for this application.
+     */
     @Override
     public void start(Stage primaryStage) {
         // Retrieve command-line parameters.
@@ -203,6 +233,10 @@ public class GameApplication extends Application {
     }
      */
 
+    /**
+     * Stops the JavaFX application.
+     * @throws Exception if an error occurs during shutdown.
+     */
     @Override
     public void stop() throws Exception {
         // Gracefully close the network connection

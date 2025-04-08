@@ -9,11 +9,29 @@ import ch.unibas.dmi.dbis.cs108.client.core.commands.*;
 
 import java.util.List;
 
+/**
+ * The GameEngine class is responsible for managing the game state, processing commands,
+ * and handling events. It serves as the main controller for the game logic.
+ */
 public class GameEngine {
+    /**
+     * The GameState object representing the current state of the game.
+     */
     private GameState gameState;
+    /**
+     * The EventDispatcher object responsible for handling events in the game.
+     */
     private EventDispatcher eventDispatcher;
+    /**
+     * The RuleProcessor object responsible for processing game rules.
+     */
     private RuleProcessor ruleProcessor;
 
+    /**
+     * Constructor for the GameEngine class.
+     *
+     * @param gameState The GameState object representing the current state of the game.
+     */
     public GameEngine(GameState gameState) {
         this.gameState = gameState;
         eventDispatcher = new EventDispatcher();
@@ -22,10 +40,20 @@ public class GameEngine {
         ruleProcessor.addRule(new ResourceGenerationRule());
     }
 
+    /**
+     * Returns the GameState object representing the current state of the game.
+     *
+     * @return The GameState object.
+     */
     public EventDispatcher getEventDispatcher() {
         return eventDispatcher;
     }
 
+    /**
+     * Returns the RuleProcessor object responsible for processing game rules.
+     *
+     * @return The RuleProcessor object.
+     */
     public void processTurn(List<Command> commands) {
         for (Command command : commands) {
             //todo:fix this weird error message
@@ -35,6 +63,11 @@ public class GameEngine {
         gameState.nextTurn();
     }
 
+    /**
+     * Returns the RuleProcessor object responsible for processing game rules.
+     *
+     * @return The RuleProcessor object.
+     */
     public void processGameRound(GameRound gameRound) {
         gameRound.executeRound(gameState, eventDispatcher, ruleProcessor);
     }

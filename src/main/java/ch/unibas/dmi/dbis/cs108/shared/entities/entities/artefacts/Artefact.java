@@ -5,11 +5,29 @@ package ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts;
  */
 public class Artefact {
 
+    /**
+     * The name of the artefact.
+     */
     protected final String name;
+    /**
+     * The description of the artefact.
+     */
     protected final String description;
+    /**
+     * The type of use for the artefact (e.g., "consumable", "equipment").
+     */
     protected final String useType;
+    /**
+     * The ID of the artefact.
+     */
     protected final int artifactID;
+    /**
+     * The chance of finding the artefact.
+     */
     protected final double chance;
+    /**
+     * The effect of the artefact.
+     */
     protected final double effect;
 
     /**
@@ -67,15 +85,22 @@ public class Artefact {
      *
      * @return double chance
      */
-
     public double getChance() {
         return chance;
     }
 
-    public void useArtifact(ArtefactData data) {
+    /**
+     * Use the artefact.
+     *
+     * @param data The data object containing artefact information.
+     */
+    public void useArtifact(ArtefactData data) {}
 
-    }
-
+    /**
+     * Get the effect of the artefact.
+     *
+     * @return double effect
+     */
     public double getEffect(){
         return effect;
     }
