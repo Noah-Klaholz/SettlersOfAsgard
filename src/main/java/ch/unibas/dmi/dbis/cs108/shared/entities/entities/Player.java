@@ -208,14 +208,6 @@ public class Player {
     }
 
     /**
-     * Adds runes to the player
-     *
-     */
-    public void addRunes() {
-        this.runes += 1;
-    }
-
-    /**
      * Getter for energy
      *
      * @return int
@@ -273,6 +265,10 @@ public class Player {
      * @param amount int
      */
     public void addEnergy(int amount) {
+        if(energy + amount > 4){
+            energy = 4;
+            return;
+        }
         this.energy += amount;
     }
 
