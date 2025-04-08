@@ -220,19 +220,24 @@ public class GameLogic implements GameLogicInterface {
      */
     @Override
     public boolean useStructure(int x, int y, int structureID, String useType, String playerName) {
-        for (Player player : gameState.getPlayerList()) {
-            if (player.getName().equals(playerName)) {
-                for (Structure structure : player.getOwnedStructures()) {
-                    if (structure.getStructureID() == structureID) {
-                        //player owns the structure
-                        //todo: later implement 1 time use per turn
-                        //todo: later implement structure use
-                        return true;
-                    }
-                }
-            }
+        Player player = findPlayerByName(playerName);
+        if (player == null) {
+            System.out.println("Player not found");
+            return false;
         }
-        return false;
+        Structure structure = player.getOwnedStructures().stream()
+                .filter(s -> s.getStructureID() == structureID)
+                .findFirst()
+                .orElse(null);
+
+        if(structure == null) {
+            System.out.println("Structure not found");
+            return false;
+        }
+
+        //todo: later implement 1 time use per turn
+        // todo: later implement structure use
+        return true;
     }
 
     /**
