@@ -401,6 +401,16 @@ public class GameScreenController extends BaseController {
                             chatListView.getItems().add("It is " + args[1] + "'s turn.");
                         }
                         break;
+                    case BUYTILE:
+                        if (args.length > 3) {
+                            chatListView.getItems().add(args[3] + " bought tile: " + args[1] + " " + args[2]);
+                        }
+                        break;
+                    case USEPLAYERARTIFACT:
+                        if (args.length > 3) {
+                            chatListView.getItems().add(args[2] + " used artifact: " + args[1] + " as " + args[3]);
+                        }
+                        break;
                     default:
                         chatListView.getItems().add(message); // For all GameCommands -> Temporary
                         //LOGGER.warning("GameScreen Controller: Unknown command type: " + type);
