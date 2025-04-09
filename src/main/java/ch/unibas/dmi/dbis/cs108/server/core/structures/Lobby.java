@@ -144,6 +144,11 @@ public class Lobby {
         }
     }
 
+    /**
+     * ends the game
+     *
+     * @return if ending the game was successful
+     */
     public boolean endGame() {
         if (status == LobbyStatus.IN_GAME) {
             status = LobbyStatus.GAME_ENDED;
