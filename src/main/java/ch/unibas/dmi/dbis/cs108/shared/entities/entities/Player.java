@@ -299,4 +299,16 @@ public class Player {
 
 
     }
+
+    /**
+     * Cleanup the resources at the end of the game.
+     */
+    public void reset() {
+        this.ownedTiles.clear();
+        this.ownedStructures.clear();
+        this.artifacts.clear();
+        this.statue = null;
+        this.runes = 0;
+        this.energy = 0;
+    }
 }
