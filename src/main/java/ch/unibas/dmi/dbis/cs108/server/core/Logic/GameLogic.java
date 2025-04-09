@@ -226,7 +226,6 @@ public class GameLogic implements GameLogicInterface {
         gameState.setPlayerRound(0);
         Player firstPlayer = gameState.getPlayerList().get(0);
         gameState.setPlayerTurn(firstPlayer.getName());
-        gameState.addRunes(1, firstPlayer.getName());
         //gameState.setActivePlayer(firstPlayer.getName());
 
     }
