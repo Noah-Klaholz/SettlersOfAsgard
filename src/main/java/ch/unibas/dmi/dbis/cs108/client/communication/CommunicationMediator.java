@@ -4,6 +4,7 @@ import ch.unibas.dmi.dbis.cs108.client.core.Game;
 import ch.unibas.dmi.dbis.cs108.client.networking.NetworkController;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.*;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher.EventListener;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.ConnectionStatusEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.SendChatEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.SendCommandEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
@@ -306,6 +307,23 @@ public class CommunicationMediator {
             @Override
             public Class<ReceiveCommandEvent> getEventType() {
                 return ReceiveCommandEvent.class;
+            }
+        });
+
+        EventDispatcher.getInstance().registerListener(ConnectionEvent.class, new EventListener<ConnectionEvent>() {
+            @Override
+            public void onEvent(ConnectionEvent networkEvent) {
+                // Transform the networking chat event into a UI chat event.
+                ch.unibas.dmi.dbis.cs108.client.ui.events.ConnectionStatusEvent uiEvent =
+                        new ch.unibas.dmi.dbis.cs108.client.ui.events.ConnectionStatusEvent(
+                                networkEvent.getState(), networkEvent.getMessage()
+                        );
+                UIEventBus.getInstance().publish(uiEvent);
+            }
+
+            @Override
+            public Class<ConnectionEvent> getEventType() {
+                return ConnectionEvent.class;
             }
         });
 

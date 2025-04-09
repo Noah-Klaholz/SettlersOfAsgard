@@ -23,6 +23,7 @@ public class GameLogic implements GameLogicInterface {
         BUY_TILE,
         PLACE_STRUCTURE,
         USE_STRUCTURE,
+        BUY_STRUCTURE,
         BUY_STATUE,
         UPGRADE_STATUE,
         USE_STATUE,
@@ -68,6 +69,7 @@ public class GameLogic implements GameLogicInterface {
         playerActionHandlers.put(PlayerAction.BUY_TILE, params -> buyTile((int)params[0], (int)params[1], (String)params[2]));
         playerActionHandlers.put(PlayerAction.PLACE_STRUCTURE, params -> placeStructure((int)params[0], (int)params[1], (int)params[2], (String)params[3]));
         playerActionHandlers.put(PlayerAction.USE_STRUCTURE, params -> useStructure((int)params[0], (int)params[1], (int)params[2], (String)params[3], (String)params[4]));
+        playerActionHandlers.put(PlayerAction.BUY_STRUCTURE, params -> buyStructure((String)params[0], (String)params[1]));
         playerActionHandlers.put(PlayerAction.BUY_STATUE, params -> buyStatue((String)params[0], (String)params[1]));
         playerActionHandlers.put(PlayerAction.UPGRADE_STATUE, params -> upgradeStatue((int)params[0], (int)params[1], (String)params[2], (String)params[3]));
         playerActionHandlers.put(PlayerAction.USE_STATUE, params -> useStatue((int)params[0], (int)params[1], (int)params[2], (String)params[3], (String)params[4]));

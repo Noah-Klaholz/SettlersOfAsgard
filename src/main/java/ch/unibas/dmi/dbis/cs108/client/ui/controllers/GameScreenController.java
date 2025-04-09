@@ -127,6 +127,7 @@ public class GameScreenController extends BaseController {
         eventBus.subscribe(ChatMessageEvent.class, this::handleIncomingChatMessage);
         eventBus.subscribe(ReceiveCommandEvent.class, this::handleIncomingCommandMessage);
         eventBus.subscribe(ErrorEvent.class, this::handleIncomingErrorMessage);
+        eventBus.subscribe(ConnectionStatusEvent.class, this::handleIncomingConnectionEvent);
 
         // Enhanced cell factory for proper text wrapping
         chatListView.setCellFactory(list -> new ListCell<String>() {
@@ -343,6 +344,27 @@ public class GameScreenController extends BaseController {
     private void drawGridDecorations(double cellSize) {
         // Implementation for decorative elements at grid points
         // This would be expanded in the actual game implementation
+    }
+
+    /**
+     * Handle incoming ConnectionEvent messages from the event bus.
+     */
+    private void handleIncomingConnectionEvent(ConnectionStatusEvent event) {
+        Platform.runLater(() -> {
+            try {
+                String message = event.getMessage();
+                if (message == null || message.trim().isEmpty()) return;
+
+                String chat = "[" + event.getStatus() + "] " + message;
+
+                chatListView.getItems().add(chat);
+
+                // Auto-scroll to bottom
+                chatListView.scrollTo(chatListView.getItems().size() - 1);
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Error handling chat message", e);
+            }
+        });
     }
 
     /**
