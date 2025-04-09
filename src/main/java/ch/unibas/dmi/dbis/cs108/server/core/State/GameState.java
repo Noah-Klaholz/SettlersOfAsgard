@@ -487,4 +487,16 @@ public class GameState {
     public Player getActivePlayer() {
         return activePlayer;
     }
+
+    /**
+     * Reset the resources at the end of the game.
+     */
+    public void reset() {
+        this.activePlayer = null;
+        this.playerRound = 0;
+        this.gameRound = 0;
+        this.board.resetTiles();
+        this.players.forEach(Player::reset);
+    }
+
 }
