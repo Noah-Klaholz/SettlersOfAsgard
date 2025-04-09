@@ -160,13 +160,6 @@ public class GameLogic implements GameLogicInterface {
     }
 
     /**
-     * Begins a player's turn.
-     * This method initializes the turn state, provides the player with turn-based
-     * resources, and enables their ability to perform actions.
-     *
-     * @param playerID The unique identifier of the player whose turn is starting
-     */
-    /**
      * Advances to the next player's turn automatically.
      * Handles all turn initialization and round progression.
      */
