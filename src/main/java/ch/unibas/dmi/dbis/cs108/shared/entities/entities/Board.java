@@ -141,4 +141,27 @@ public class Board {
         sb.append("}");
         return sb.toString();
     }
+
+    /**
+     * Resets all tiles on the board to their initial state.
+     * This includes:
+     * - Marking tiles as unpurchased
+     * - Removing any structures
+     * - Resetting any tile-specific state
+     */
+    public void resetTiles() {
+        for (Tile[] tile : tiles) {
+            for (Tile value : tile) {
+                if (value != null) {
+                    // Reset tile properties
+                    value.setPurchased(false);
+                    value.setHasStructure(false);
+                    value.setStructure(null);
+
+                    // If there are other properties to reset, add them here
+                    // tiles[i][j].setSomeOtherProperty(defaultValue);
+                }
+            }
+        }
+    }
 }
