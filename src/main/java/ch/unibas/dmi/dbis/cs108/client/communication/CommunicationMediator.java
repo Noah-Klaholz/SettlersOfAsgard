@@ -144,7 +144,7 @@ public class CommunicationMediator {
                     networkController.sendGlobalChat(input.replace("/global ", "")); // Handled differently, because spaces can be included in messages
                     break;
                 case WHISPER:
-                    if (isValidArgument(args, 0)) {
+                    if (isValidArgument(args, 1)) {
                         networkController.sendPrivateChat(args[0], input.replace("/whisper " + args[0] + " ", ""));
                     } else {
                         publishInfoChatEvent("Invalid playername, use: \n /whisper <playerName>");

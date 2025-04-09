@@ -1,6 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
-import ch.unibas.dmi.dbis.cs108.client.networking.events.ErrorEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.ReceiveCommandEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
@@ -427,6 +427,7 @@ public class GameScreenController extends BaseController {
     public void handleIncomingErrorMessage(ErrorEvent event) {
         Platform.runLater(() -> {
             try {
+                LOGGER.info("Received error message: " + event.getErrorMessage());
                 String errorCode = event.getErrorCode();
                 String message = event.getErrorMessage();
                 if (message == null || message.trim().isEmpty()) return;

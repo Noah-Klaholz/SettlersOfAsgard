@@ -115,6 +115,7 @@ public class ProtocolTranslator {
     }
 
     private void processErrorMessage(String message) {
+        System.out.println("Error message: " + message);
         String errorPart = message.substring("ERR$".length());
         String errorCode;
         String errorMessage;
