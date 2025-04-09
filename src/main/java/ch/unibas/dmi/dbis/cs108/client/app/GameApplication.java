@@ -61,9 +61,11 @@ public class GameApplication extends Application {
         // Retrieve command-line parameters.
         List<String> params = getParameters().getRaw();
         // Expecting: client <serverip>:<serverport> [username]
-        String username = "Player1";
+        String username;
         if (params.size() >= 3) {
             username = params.get(2);
+        } else {
+            username = System.getProperty("user.name");
         }
 
         localPlayer = new Player(username);
