@@ -2,11 +2,8 @@ package ch.unibas.dmi.dbis.cs108.client.communication;
 
 import ch.unibas.dmi.dbis.cs108.client.core.Game;
 import ch.unibas.dmi.dbis.cs108.client.networking.NetworkController;
-import ch.unibas.dmi.dbis.cs108.client.networking.events.ChatMessageEvent;
-import ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher;
+import ch.unibas.dmi.dbis.cs108.client.networking.events.*;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher.EventListener;
-import ch.unibas.dmi.dbis.cs108.client.networking.events.NameChangeResponseEvent;
-import ch.unibas.dmi.dbis.cs108.client.networking.events.ReceiveCommandEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.SendChatEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.SendCommandEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
@@ -269,6 +266,25 @@ public class CommunicationMediator {
             @Override
             public Class<ChatMessageEvent> getEventType() {
                 return ChatMessageEvent.class;
+            }
+        });
+
+        EventDispatcher.getInstance().registerListener(ErrorEvent.class, new EventListener<ErrorEvent>() {
+            @Override
+            public void onEvent(ErrorEvent networkEvent) {
+                // Transform the networking chat event into a UI chat event.
+                ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent uiEvent =
+                        new ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent(
+                                networkEvent.getErrorCode(),
+                                networkEvent.getErrorMessage(),
+                                networkEvent.getSeverity()
+                        );
+                UIEventBus.getInstance().publish(uiEvent);
+            }
+
+            @Override
+            public Class<ErrorEvent> getEventType() {
+                return ErrorEvent.class;
             }
         });
 
