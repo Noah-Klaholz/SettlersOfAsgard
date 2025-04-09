@@ -118,7 +118,7 @@ public class Lobby {
 
         // Start automatic turn scheduler (runs every minute)
         turnScheduler.scheduleAtFixedRate(
-                () -> handleAutomaticTurn(),  // Using a lambda expression here
+                () -> {handleAutomaticTurn(); broadcastMessage("TURN$" + gameLogic.getGameState().getPlayerTurn());},
                 1,  // Initial delay (1 minute)
                 1,  // Period (1 minute)
                 TimeUnit.MINUTES
@@ -236,7 +236,6 @@ public class Lobby {
 
         try {
             gameLogic.nextTurn();
-            broadcastMessage("TURN$" + gameLogic.getGameState().getPlayerTurn());
         } catch (Exception e) {
             logger.severe("Error during automatic turn: " + e.getMessage());
         }

@@ -385,7 +385,7 @@ public class CommandHandler {
      */
     public boolean handleStartTurn() {
         try {
-            this.gameLogic.nextTurn();
+            this.currentLobby.manualEndTurn();
             String turnPlayerName = gameLogic.getGameState().getPlayerTurn();
             currentLobby.broadcastMessage("TURN$" + turnPlayerName);
             return true;
