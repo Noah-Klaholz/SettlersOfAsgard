@@ -71,6 +71,7 @@ public class GameScreenController extends BaseController {
     /**
      * Button for showing the game round.
      */
+    @FXML
     private Pane artifact1, artifact2, artifact3;
     /**
      * Button for showing other actions.
