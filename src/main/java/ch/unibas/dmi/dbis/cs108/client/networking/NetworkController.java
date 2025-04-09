@@ -89,6 +89,9 @@ public class NetworkController {
         } else {
             networkClient.disconnect();
         }
+        eventDispatcher.dispatchEvent(new ConnectionEvent(
+                ConnectionEvent.ConnectionState.DISCONNECTED,
+                "Lost connection to server."));
     }
 
     public boolean isConnected() {
