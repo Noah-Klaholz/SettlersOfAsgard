@@ -139,12 +139,14 @@ public class GameLogic implements GameLogicInterface {
         String place1st = players.get(0).getName();
         String place2nd = players.get(1).getName();
         String place3rd = players.get(2).getName();
+        System.out.println("Game ended successfully. Final standings are recorded.");
         int i = 1;
         for(Player player : players) {
             System.out.println("#" + i + ": " + player.getName() + " has " + player.getRunes() + " runes.");
             i++;
         }
-        //todo: cleanup game resources
+        //cleanup
+        gameState.reset();
     }
 
     /**
