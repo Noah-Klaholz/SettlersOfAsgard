@@ -178,6 +178,7 @@ public class CommunicationMediator {
                             "/useplayerartifact <artifactId> <useType> <playerAimedAt> \n" +
                             "/status \n" +
                             "/prices \n" +
+                            "/endturn \n" +
                             "Note: Coordinates are 0-indexed and IDs are 0 indexed numbers.");
                     break;
                 case BUYTILE:
@@ -241,6 +242,9 @@ public class CommunicationMediator {
                     break;
                 case PRICES:
                     networkController.getPrices();
+                    break;
+                case ENDTURN:
+                    networkController.endTurn();
                     break;
                 default:
                     publishInfoChatEvent("Unknown command type: " + event.getType() + "\n Use /help to see available commands.");

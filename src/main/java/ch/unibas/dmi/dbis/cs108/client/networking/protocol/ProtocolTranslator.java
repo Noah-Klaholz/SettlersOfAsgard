@@ -230,7 +230,7 @@ public class ProtocolTranslator {
     }
 
     public String formatEndTurn() {
-        return "ENDT$";
+        return "TURN$";
     }
 
     public String formatBuyTile(int x, int y) {

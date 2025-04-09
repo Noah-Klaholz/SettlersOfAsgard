@@ -40,6 +40,7 @@ public class SendCommandEvent {
         USESTATUE("/usestatue"),
         USEFIELDARTIFACT("/usefieldartifact"),
         USEPLAYERARTIFACT("/useplayerartifact"),
+        ENDTURN("/endturn"),
         STATUS("/status"),
         PRICES("/prices");
 

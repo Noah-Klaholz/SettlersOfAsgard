@@ -386,7 +386,8 @@ public class CommandHandler {
     public boolean handleStartTurn() {
         try {
             this.gameLogic.nextTurn();
-            currentLobby.broadcastMessage("TURN$" + playerName);
+            String turnPlayerName = gameLogic.getGameState().getPlayerTurn();
+            currentLobby.broadcastMessage("TURN$" + turnPlayerName);
             return true;
         } catch (Exception e) {
             logger.warning("Could not start turn because game is not started yet.");
