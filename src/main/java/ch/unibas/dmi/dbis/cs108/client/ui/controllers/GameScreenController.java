@@ -28,27 +28,64 @@ import java.util.stream.Collectors;
  * Controller for the game screen that handles UI interactions and game rendering.
  */
 public class GameScreenController extends BaseController {
+    /**
+     * Logger for logging events and errors.
+     */
     private static final Logger LOGGER = Logger.getLogger(GameScreenController.class.getName());
+    /**
+     * Event bus for handling events.
+     */
     private Image mapImage;
 
     // UI Components
+    /**
+     * ListView for displaying chat messages.
+     */
     @FXML
     private ListView<String> chatListView;
+    /**
+     * TextField for user input in the chat.
+     */
     @FXML
     private TextField chatInputField;
+    /**
+     * Button for sending chat messages.
+     */
     @FXML
     private Canvas gameCanvas;
+    /**
+     * HBox for displaying the artifact hand.
+     */
     @FXML
     private HBox artifactHand;
+    /**
+     * HBox for displaying the structure hand.
+     */
     @FXML
     private HBox structureHand;
+    /**
+     * Button for starting a game round.
+     */
     @FXML
+    private Button resourceOverviewButton;
+    /**
+     * Button for showing the game round.
+     */
     private Pane artifact1, artifact2, artifact3;
+    /**
+     * Button for showing other actions.
+     */
     @FXML
     private Pane structure1, structure2, structure3, structure4, structure5, structure6, structure7, structure8;
 
     // Game state tracking
+    /**
+     * Flag to check if the controller is initialized.
+     */
     private boolean isInitialized = false;
+    /**
+     * Event bus for handling events.
+     */
     private GraphicsContext gc;
 
     /**
@@ -328,6 +365,9 @@ public class GameScreenController extends BaseController {
         });
     }
 
+    /**
+     * Handle incoming command messages from the event bus.
+     */
     private void handleIncomingCommandMessage(ReceiveCommandEvent event) {
         Platform.runLater(() -> {
             try {
@@ -424,6 +464,9 @@ public class GameScreenController extends BaseController {
         });
     }
 
+    /**
+     * Handle incoming error messages from the event bus.
+     */
     public void handleIncomingErrorMessage(ErrorEvent event) {
         Platform.runLater(() -> {
             try {
@@ -501,6 +544,9 @@ public class GameScreenController extends BaseController {
         // Future implementation: Other game action
     }
 
+    /**
+     * Handle name change response from the server.
+     */
     private void handleNameChangeResponse(ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeResponseEvent event) {
         Platform.runLater(() -> {
             try {
