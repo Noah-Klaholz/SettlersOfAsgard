@@ -474,6 +474,11 @@ public class GameScreenController extends BaseController {
                             chatListView.getItems().add(args[2] + " used artifact: " + args[1] + " as " + args[3]);
                         }
                         break;
+                    case PLACESTRUCTURE:
+                        if (args.length > 3) {
+                            chatListView.getItems().add(args[3] + " placed structure: " + args[2] + " on tile: " + args[0] + " " + args[1]);
+                        }
+                        break;
                     default:
                         chatListView.getItems().add(message); // For all GameCommands -> Temporary
                         //LOGGER.warning("GameScreen Controller: Unknown command type: " + type);
