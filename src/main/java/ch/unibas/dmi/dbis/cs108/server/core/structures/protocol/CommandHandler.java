@@ -479,13 +479,15 @@ public class CommandHandler {
             if (gameLogic.executeAction(GameLogic.PlayerAction.BUY_TILE,x, y, playerName)) {
                 currentLobby.broadcastMessage("OK$BUYT$" + x + "$" + y + "$" + playerName);
                 return true;
+            } else {
+                sendMessage("ERR$106$BUY_TILE_FAILED");
+                return false;
             }
         } catch (NumberFormatException e) {
             logger.severe("Failed to parse coordinates: " + e.getMessage());
             sendMessage("ERR$101$INVALID_COORDINATES");
         } catch (Exception e) {
             logger.severe("Failed to handle buy tile request: " + e.getMessage());
-            sendMessage("ERR$106$BUY_TILE_FAILED");
         }
         return false;
     }
@@ -504,12 +506,15 @@ public class CommandHandler {
                 return false;
             }
             String structureId = args[0];
-            gameLogic.executeAction(GameLogic.PlayerAction.BUY_TILE,structureId, playerName);
-            currentLobby.broadcastMessage("OK$BUST$" + structureId + "$" + playerName);
-            return true;
+            if (gameLogic.executeAction(GameLogic.PlayerAction.BUY_STRUCTURE,structureId, playerName)) {
+                currentLobby.broadcastMessage("OK$BUST$" + structureId + "$" + playerName);
+                return true;
+            } else {
+                sendMessage("ERR$106$BUY_STRUCTURE_FAILED");
+                return true;
+            }
         } catch (Exception e) {
             logger.severe("Failed to handle place structure request: " + e.getMessage());
-            sendMessage("ERR$106$PLACE_STRUCTURE_FAILED");
         }
         return false;
     }
@@ -525,6 +530,7 @@ public class CommandHandler {
             currentLobby.broadcastMessage("TURN$" + playerName);
             return true;
         } catch (Exception e) {
+            sendMessage("ERR$106$TURN_FAILED");
             logger.warning("Could not end turn because game is not started yet.");
             return false;
         }
@@ -549,6 +555,8 @@ public class CommandHandler {
             if (gameLogic.executeAction(GameLogic.PlayerAction.PLACE_STRUCTURE,x, y, structureId, playerName)) {
                 currentLobby.broadcastMessage("OK$PLST$" + x + "$" + y + "$" + structureId + "$" + playerName);
                 return true;
+            } else {
+                sendMessage("ERR$106$PLACE_STRUCTURE_FAILED");
             }
         } catch (NumberFormatException e) {
             logger.severe("Failed to parse coordinates: " + e.getMessage());
@@ -580,6 +588,8 @@ public class CommandHandler {
             if (gameLogic.executeAction(GameLogic.PlayerAction.USE_STRUCTURE,x, y, structureId, useType, playerName)) {
                 currentLobby.broadcastMessage("OK$USSR$" + x + "$" + y + "$" + structureId + "$" + useType + "$" + playerName);
                 return true;
+            } else {
+                sendMessage("ERR$106$USE_STRUCTURE_FAILED");
             }
         } catch (NumberFormatException e) {
             logger.severe("Failed to parse coordinates: " + e.getMessage());
@@ -605,9 +615,12 @@ public class CommandHandler {
                 return false;
             }
             String statueId = args[0];
-            gameLogic.executeAction(GameLogic.PlayerAction.BUY_STATUE,statueId, playerName);
-            currentLobby.broadcastMessage("OK$BYST$" + statueId + "$" + playerName);
-            return true;
+            if (gameLogic.executeAction(GameLogic.PlayerAction.BUY_STATUE,statueId, playerName)) {
+                currentLobby.broadcastMessage("OK$BYST$" + statueId + "$" + playerName);
+                return true;
+            } else {
+                sendMessage("ERR$106$BUY_STATUE_FAILED");
+            }
         } catch (NumberFormatException e) {
             logger.severe("Failed to parse coordinates: " + e.getMessage());
             sendMessage("ERR$101$INVALID_COORDINATES");
@@ -637,6 +650,8 @@ public class CommandHandler {
             if (gameLogic.executeAction(GameLogic.PlayerAction.UPGRADE_STATUE,x, y, statueId, playerName)) {
                 currentLobby.broadcastMessage("OK$UPST$" + x + "$" + y + "$" + statueId + "$" + playerName);
                 return true;
+            } else {
+                sendMessage("ERR$106$UPGRADE_STATUE_FAILED");
             }
         } catch (NumberFormatException e) {
             logger.severe("Failed to parse coordinates: " + e.getMessage());
@@ -665,9 +680,12 @@ public class CommandHandler {
             int y = Integer.parseInt(args[1]);
             int statueId = Integer.parseInt(args[2]);
             String useType = args[3];
-            gameLogic.executeAction(GameLogic.PlayerAction.USE_STATUE,x, y, statueId, useType, playerName);
-            currentLobby.broadcastMessage("OK$USTA$" + x + "$" + y + "$" + statueId + "$" + useType + "$" + playerName);
-            return true;
+            if (gameLogic.executeAction(GameLogic.PlayerAction.USE_STATUE,x, y, statueId, useType, playerName)) {
+                currentLobby.broadcastMessage("OK$USTA$" + x + "$" + y + "$" + statueId + "$" + useType + "$" + playerName);
+                return true;
+            } else {
+                sendMessage("ERR$106$USE_STATUE_FAILED");
+            }
         } catch (NumberFormatException e) {
             logger.severe("Failed to parse coordinates: " + e.getMessage());
             sendMessage("ERR$101$INVALID_COORDINATES");
@@ -694,9 +712,12 @@ public class CommandHandler {
             int artifactId = Integer.parseInt(args[0]);
             String useType = args[1];
             String playerAimedAt = args[2];
-            gameLogic.executeAction(GameLogic.PlayerAction.USE_PLAYER_ARTIFACT,artifactId, useType, playerAimedAt, playerName);
-            currentLobby.broadcastMessage("OK$USPA$" + artifactId + "$" + playerName + "$" + useType);
-            return true;
+            if (gameLogic.executeAction(GameLogic.PlayerAction.USE_PLAYER_ARTIFACT,artifactId, useType, playerAimedAt, playerName)) {
+                currentLobby.broadcastMessage("OK$USPA$" + artifactId + "$" + playerName + "$" + useType);
+                return true;
+            } else {
+                sendMessage("ERR$106$USE_PLAYER_ARTIFACT_FAILED");
+            }
         } catch (NumberFormatException e) {
             logger.severe("Failed to parse artifact ID: " + e.getMessage());
             sendMessage("ERR$101$INVALID_ARTIFACT_ID");
@@ -724,9 +745,13 @@ public class CommandHandler {
             int y = Integer.parseInt(args[1]);
             int artifactId = Integer.parseInt(args[2]);
             String useType = args[3];
-            gameLogic.executeAction(GameLogic.PlayerAction.USE_FIELD_ARTIFACT,x, y, artifactId, useType, playerName);
-            currentLobby.broadcastMessage("OK$USFA$" + x + "$" + y + "$" + artifactId + "$" + playerName + "$" + useType);
-            return true;
+            if (gameLogic.executeAction(GameLogic.PlayerAction.USE_FIELD_ARTIFACT,x, y, artifactId, useType, playerName)) {
+                currentLobby.broadcastMessage("OK$USFA$" + x + "$" + y + "$" + artifactId + "$" + playerName + "$" + useType);
+                return true;
+            } else {
+                sendMessage("ERR$106$USE_FIELD_ARTIFACT_FAILED");
+                return false;
+            }
         } catch (Exception e) {
             logger.severe("Failed to handle use field artifact request: " + e.getMessage());
             sendMessage("ERR$106$USE_FIELD_ARTIFACT_FAILED");
