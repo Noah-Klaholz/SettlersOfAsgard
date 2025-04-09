@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.core.Logic;
 
 import ch.unibas.dmi.dbis.cs108.server.core.State.GameState;
+import ch.unibas.dmi.dbis.cs108.shared.entities.entities.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.entities.entities.*;
 import ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.Artefact;
 
@@ -277,6 +278,32 @@ public class GameLogic implements GameLogicInterface {
         return true;
     }
 
+    public boolean buyStructure(int structureID, String playerName) {
+        //todo: change later: for demo purposes only
+        Structure demo = new Structure(structureID, "Mimisbrunnr", "...", "gift", 15);
+        for(Player player : gameState.getPlayerList()) {
+            //another check if structure exists in shop here?
+            if (player.getName().equals(playerName)) {
+                //this would be for proper implementation
+//                for (Structure structure : player.getOwnedStructures()) {
+//                    if (structure.getStructureID() == structureID) {
+//                        System.out.println("structure already owned");
+//                        return false;
+//                    }
+//                }
+                if(player.getRunes() < demo.getPrice()) {
+                    System.out.println("not enough runes");
+                    return false;
+                }
+                player.removeRunes(demo.getPrice());
+                player.addOwnedStructure(demo);
+                System.out.println("Structure purchased");
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Handles a player's request to place a structure at the specified coordinates.
      * This method verifies the placement is valid according to game rules,
@@ -456,7 +483,8 @@ public class GameLogic implements GameLogicInterface {
                     if (artefact.getArtifactID() == artifactID) {
                         //player owns the artifact
                         //todo: change later: for demo purpose only
-                        player.addRunes((int)artefact.getEffect());
+                        //player.addRunes((int)artefact.getEffect());
+                        player.addRunes(2);
                         for (Player otherPlayer : gameState.getPlayerList()) {
                             if (otherPlayer.getName().equals(playerName)) {
                                 //todo: later implement use of player artifact
