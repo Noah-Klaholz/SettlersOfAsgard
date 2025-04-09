@@ -483,4 +483,8 @@ public class GameState {
                 ", board=" + board +
                 '}';
     }
+
+    public Player getActivePlayer() {
+        return activePlayer;
+    }
 }

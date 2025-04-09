@@ -475,7 +475,7 @@ public class CommandHandler {
             }
             int x = Integer.parseInt(args[0]);
             int y = Integer.parseInt(args[1]);
-            if (gameLogic.buyTile(x, y, playerName)) {
+            if (gameLogic.executeAction(GameLogic.PlayerAction.BUY_TILE,x, y, playerName)) {
                 currentLobby.broadcastMessage("OK$BUYT$" + x + "$" + y + "$" + playerName);
                 return true;
             }
@@ -503,7 +503,7 @@ public class CommandHandler {
                 return false;
             }
             String structureId = args[0];
-            gameLogic.buyStructure(structureId, playerName);
+            gameLogic.executeAction(GameLogic.PlayerAction.BUY_TILE,structureId, playerName);
             currentLobby.broadcastMessage("OK$BUST$" + structureId + "$" + playerName);
             return true;
         } catch (Exception e) {
@@ -545,7 +545,7 @@ public class CommandHandler {
             int x = Integer.parseInt(args[0]);
             int y = Integer.parseInt(args[1]);
             int structureId = Integer.parseInt(args[2]);
-            if (gameLogic.placeStructure(x, y, structureId, playerName)) {
+            if (gameLogic.executeAction(GameLogic.PlayerAction.PLACE_STRUCTURE,x, y, structureId, playerName)) {
                 currentLobby.broadcastMessage("OK$PLST$" + x + "$" + y + "$" + structureId + "$" + playerName);
                 return true;
             }
@@ -576,7 +576,7 @@ public class CommandHandler {
             int y = Integer.parseInt(args[1]);
             int structureId = Integer.parseInt(args[2]);
             String useType = args[3];
-            if (gameLogic.useStructure(x, y, structureId, useType, playerName)) {
+            if (gameLogic.executeAction(GameLogic.PlayerAction.USE_STRUCTURE,x, y, structureId, useType, playerName)) {
                 currentLobby.broadcastMessage("OK$USSR$" + x + "$" + y + "$" + structureId + "$" + useType + "$" + playerName);
                 return true;
             }
@@ -604,7 +604,7 @@ public class CommandHandler {
                 return false;
             }
             String statueId = args[0];
-            gameLogic.buyStatue(statueId, playerName);
+            gameLogic.executeAction(GameLogic.PlayerAction.BUY_STATUE,statueId, playerName);
             currentLobby.broadcastMessage("OK$BYST$" + statueId + "$" + playerName);
             return true;
         } catch (NumberFormatException e) {
@@ -633,7 +633,7 @@ public class CommandHandler {
             int x = Integer.parseInt(args[0]);
             int y = Integer.parseInt(args[1]);
             String statueId = args[2];
-            if (gameLogic.upgradeStatue(x, y, statueId, playerName)) {
+            if (gameLogic.executeAction(GameLogic.PlayerAction.UPGRADE_STATUE,x, y, statueId, playerName)) {
                 currentLobby.broadcastMessage("OK$UPST$" + x + "$" + y + "$" + statueId + "$" + playerName);
                 return true;
             }
@@ -664,7 +664,7 @@ public class CommandHandler {
             int y = Integer.parseInt(args[1]);
             int statueId = Integer.parseInt(args[2]);
             String useType = args[3];
-            gameLogic.useStatue(x, y, statueId, useType, playerName);
+            gameLogic.executeAction(GameLogic.PlayerAction.USE_STATUE,x, y, statueId, useType, playerName);
             currentLobby.broadcastMessage("OK$USTA$" + x + "$" + y + "$" + statueId + "$" + useType + "$" + playerName);
             return true;
         } catch (NumberFormatException e) {
@@ -693,7 +693,7 @@ public class CommandHandler {
             int artifactId = Integer.parseInt(args[0]);
             String useType = args[1];
             String playerAimedAt = args[2];
-            gameLogic.usePlayerArtifact(artifactId, playerName, useType, playerAimedAt);
+            gameLogic.executeAction(GameLogic.PlayerAction.USE_PLAYER_ARTIFACT,artifactId, useType, playerAimedAt, playerName);
             currentLobby.broadcastMessage("OK$USPA$" + artifactId + "$" + playerName + "$" + useType);
             return true;
         } catch (NumberFormatException e) {
@@ -723,7 +723,7 @@ public class CommandHandler {
             int y = Integer.parseInt(args[1]);
             int artifactId = Integer.parseInt(args[2]);
             String useType = args[3];
-            gameLogic.useFieldArtifact(x, y, artifactId, useType, playerName);
+            gameLogic.executeAction(GameLogic.PlayerAction.USE_FIELD_ARTIFACT,x, y, artifactId, useType, playerName);
             currentLobby.broadcastMessage("OK$USFA$" + x + "$" + y + "$" + artifactId + "$" + playerName + "$" + useType);
             return true;
         } catch (Exception e) {

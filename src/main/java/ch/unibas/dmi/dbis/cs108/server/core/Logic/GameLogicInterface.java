@@ -44,7 +44,7 @@ public interface GameLogicInterface {
      * @param statueID Identifier of the statue to buy
      * @param playerID Identifier of the player buying the statue
      */
-    public void buyStatue(String statueID, String playerID);
+    public boolean buyStatue(String statueID, String playerID);
 
     /**
      * Buys a structure for a player.
@@ -52,7 +52,7 @@ public interface GameLogicInterface {
      * @param structureID Identifier of the structure to buy
      * @param playerID Identifier of the player buying the structure
      */
-    public void buyStructure(String structureID, String playerID);
+    public boolean buyStructure(String structureID, String playerID);
 
     /**
      * Buys and places a structure at the specified coordinates for a player.
@@ -97,7 +97,7 @@ public interface GameLogicInterface {
      * @param useType Type of action to perform with the statue
      * @param playerName Name of the player using the statue
      */
-    public void useStatue(int x, int y, int statueID, String useType, String playerName);
+    public boolean useStatue(int x, int y, int statueID, String useType, String playerName);
 
     /**
      * Uses a field artifact at the specified coordinates.
@@ -108,7 +108,7 @@ public interface GameLogicInterface {
      * @param useType Type of action to perform with the artifact
      * @param playerName Name of the player using the artifact
      */
-    public void useFieldArtifact(int x, int y, int artifactID, String useType, String playerName);
+    public boolean useFieldArtifact(int x, int y, int artifactID, String useType, String playerName);
 
     /**
      * Uses a player artifact.
@@ -118,5 +118,5 @@ public interface GameLogicInterface {
      * @param useType Type of action to perform with the artifact
      * @param playerAimedAt Name of the target player for the artifact effect
      */
-    public void usePlayerArtifact(int artifactID, String playerName, String useType, String playerAimedAt);
+    public boolean usePlayerArtifact(int artifactID, String playerName, String useType, String playerAimedAt);
 }
