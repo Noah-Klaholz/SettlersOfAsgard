@@ -220,7 +220,9 @@ public class Lobby {
 
         // Schedule next turn (1 minute delay)
         turnScheduler.scheduleAtFixedRate(
-                this::handleAutomaticTurn,
+                () -> {
+                    handleAutomaticTurn();
+                    broadcastMessage("TURN$" + gameLogic.getGameState().getPlayerTurn());},
                 1,  // Initial delay (1 minute)
                 1,  // Period (1 minute)
                 TimeUnit.MINUTES
