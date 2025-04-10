@@ -118,7 +118,9 @@ public class Lobby {
 
         // Start automatic turn scheduler (runs every minute)
         turnScheduler.scheduleAtFixedRate(
-                () -> {handleAutomaticTurn(); broadcastMessage("TURN$" + gameLogic.getGameState().getPlayerTurn());},
+                () -> {
+                    handleAutomaticTurn();
+                    broadcastMessage("TURN$" + gameLogic.getGameState().getPlayerTurn());},
                 1,  // Initial delay (1 minute)
                 1,  // Period (1 minute)
                 TimeUnit.MINUTES

@@ -157,9 +157,9 @@ public class CommunicationMediator {
                             "/global <message> \n" +
                             "/changename <newName> \n" +
                             "/joinlobby <lobbyname> \n" +
-                            "/leavelobby \n" +
+                            "/leave\n" +
                             "/createlobby <lobbyname> \n" +
-                            "/startgame \n" +
+                            "/start \n" +
                             "/listlobbies \n" +
                             "/listallplayers \n" +
                             "/listlobbyplayers <lobbyname> \n" +
