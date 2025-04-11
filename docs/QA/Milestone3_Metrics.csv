@@ -1,0 +1,1203 @@
+Lines of code metrics,Fr., 11 Apr. 2025 12:32:19 MESZ
+Method,CLOC,JLOC,LOC,NCLOC,RLOC
+StatueRepository.loadStructures(),0,0,20,20,"86,96%"
+ch.unibas.dmi.dbis.cs108.Main.main(String[]),4,7,24,17,"80,00%"
+ch.unibas.dmi.dbis.cs108.SETTINGS.Config.Config(int),0,0,3,3,"27,27%"
+ch.unibas.dmi.dbis.cs108.SETTINGS.Config.getValue(),0,0,3,3,"27,27%"
+ch.unibas.dmi.dbis.cs108.StartApps.findAvailableTerminal(),5,3,16,13,"16,67%"
+ch.unibas.dmi.dbis.cs108.StartApps.main(String[]),16,7,75,58,"78,12%"
+ch.unibas.dmi.dbis.cs108.client.app.ClientMain.checkConnection(NetworkController),4,6,22,16,"31,43%"
+ch.unibas.dmi.dbis.cs108.client.app.ClientMain.main(String[]),6,6,41,34,"58,57%"
+ch.unibas.dmi.dbis.cs108.client.app.GameApplication.main(String[]),5,6,9,3,"4,05%"
+ch.unibas.dmi.dbis.cs108.client.app.GameApplication.start(Stage),15,7,56,41,"25,23%"
+ch.unibas.dmi.dbis.cs108.client.app.GameApplication.stop(),5,4,13,7,"5,86%"
+ch.unibas.dmi.dbis.cs108.client.app.MainLogic.main(String[]),12,0,52,41,"96,30%"
+"ch.unibas.dmi.dbis.cs108.client.communication.CommunicationMediator.CommunicationMediator(NetworkController, Game)",5,7,13,6,"3,89%"
+"ch.unibas.dmi.dbis.cs108.client.communication.CommunicationMediator.isValidArgument(String[], int)",3,6,10,4,"2,99%"
+ch.unibas.dmi.dbis.cs108.client.communication.CommunicationMediator.publishInfoChatEvent(String),4,5,11,6,"3,29%"
+ch.unibas.dmi.dbis.cs108.client.communication.CommunicationMediator.registerCoreListeners(),5,4,7,2,"2,10%"
+ch.unibas.dmi.dbis.cs108.client.communication.CommunicationMediator.registerNetworkListeners(),10,3,93,83,"27,84%"
+ch.unibas.dmi.dbis.cs108.client.communication.CommunicationMediator.registerUIListeners(),6,3,178,173,"53,29%"
+"ch.unibas.dmi.dbis.cs108.client.core.Game.Game(Player, Shop)",5,6,13,6,"8,33%"
+ch.unibas.dmi.dbis.cs108.client.core.Game.buyStatue(String),4,4,7,2,"4,49%"
+ch.unibas.dmi.dbis.cs108.client.core.Game.buyStructure(String),4,4,7,2,"4,49%"
+"ch.unibas.dmi.dbis.cs108.client.core.Game.buyTile(int, int)",4,5,8,2,"5,13%"
+ch.unibas.dmi.dbis.cs108.client.core.Game.endTurn(),4,3,6,2,"3,85%"
+ch.unibas.dmi.dbis.cs108.client.core.Game.getBoard(),3,4,7,3,"4,49%"
+ch.unibas.dmi.dbis.cs108.client.core.Game.getPlayer(),3,4,7,3,"4,49%"
+ch.unibas.dmi.dbis.cs108.client.core.Game.getShop(),3,4,7,3,"4,49%"
+"ch.unibas.dmi.dbis.cs108.client.core.Game.placeStatue(int, int, String)",4,6,9,2,"5,77%"
+"ch.unibas.dmi.dbis.cs108.client.core.Game.placeStructure(int, int, String)",4,6,9,2,"5,77%"
+ch.unibas.dmi.dbis.cs108.client.core.Game.startTurn(),4,3,6,2,"3,85%"
+ch.unibas.dmi.dbis.cs108.client.core.Game.updatePlayerName(String),5,5,9,3,"5,77%"
+ch.unibas.dmi.dbis.cs108.client.core.Game.upgradeStatue(String),4,4,7,2,"4,49%"
+"ch.unibas.dmi.dbis.cs108.client.core.Game.usePlayerArtifact(int, String)",4,5,8,2,"5,13%"
+ch.unibas.dmi.dbis.cs108.client.core.Game.useStatue(String),4,4,7,2,"4,49%"
+ch.unibas.dmi.dbis.cs108.client.core.Game.useStructure(String),4,4,7,2,"4,49%"
+"ch.unibas.dmi.dbis.cs108.client.core.Game.useTileArtifact(int, int, int)",4,6,9,2,"5,77%"
+"ch.unibas.dmi.dbis.cs108.client.core.commands.BuyTileCommand.BuyTileCommand(Player, Tile)",4,6,10,4,"34,48%"
+"ch.unibas.dmi.dbis.cs108.client.core.commands.BuyTileCommand.execute(GameState, EventDispatcher)",4,6,11,5,"37,93%"
+"ch.unibas.dmi.dbis.cs108.client.core.commands.Command.execute(GameState, EventDispatcher)",4,n/a,n/a,1,"53,85%"
+"ch.unibas.dmi.dbis.cs108.client.core.entities.Artefact.Artefact(int, String, String, String)",4,8,14,6,"26,92%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Artefact.getArtifactID(),3,4,7,3,"13,46%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Artefact.getDescription(),3,4,7,3,"13,46%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Artefact.getName(),3,4,7,3,"13,46%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Artefact.getUseType(),3,4,7,3,"13,46%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Board.Board(),4,4,7,3,"14,29%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Board.getTile(int),4,6,14,8,"28,57%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Board.getTiles(),4,5,8,3,"16,33%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Board.initBoard(int),9,6,12,2,"24,49%"
+"ch.unibas.dmi.dbis.cs108.client.core.entities.ClientActiveTrap.ClientActiveTrap(int, int)",4,6,10,4,"55,56%"
+"ch.unibas.dmi.dbis.cs108.client.core.entities.FixedStructure.FixedStructure(int, String, String, String)",5,9,15,6,"19,48%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.FixedStructure.getDescription(),4,5,8,3,"10,39%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.FixedStructure.getId(),4,5,8,3,"10,39%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.FixedStructure.getName(),4,5,8,3,"10,39%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.FixedStructure.getUsage(),4,5,8,3,"10,39%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.GameRound.GameRound(),4,4,8,4,"11,76%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.GameRound.addPlayerRound(PlayerRound),4,5,8,3,"11,76%"
+"ch.unibas.dmi.dbis.cs108.client.core.entities.GameRound.executeRound(GameState, EventDispatcher, RuleProcessor)",6,8,15,6,"22,06%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.GameRound.getNumber(),4,5,8,3,"11,76%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.GameRound.nextRound(),3,3,6,3,"8,82%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.GameRound.setNumber(int),4,5,8,3,"11,76%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Player.Player(String),6,7,14,7,"12,07%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Player.addEnergy(int),0,0,3,3,"2,59%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Player.addOwnedTile(Tile),0,0,3,3,"2,59%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Player.addRunes(int),0,0,3,3,"2,59%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Player.getEnergy(),4,5,8,3,"6,90%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Player.getId(),5,6,9,3,"7,76%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Player.getName(),4,5,8,3,"6,90%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Player.getOwnedTiles(),0,0,3,3,"2,59%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Player.getPlayerID(),0,0,3,3,"2,59%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Player.getPlayer_id(),4,5,8,3,"6,90%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Player.getRunes(),4,5,8,3,"6,90%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Player.setEnergy(int),4,5,8,3,"6,90%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Player.setName(String),4,5,8,3,"6,90%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Player.setOwnedTiles(List<Tile>),0,0,3,3,"2,59%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Player.setRunes(int),4,5,8,3,"6,90%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Player.toString(),0,0,8,8,"6,90%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.PlayerRound.PlayerRound(),0,0,5,5,"13,51%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.PlayerRound.addCommand(Command),0,0,3,3,"8,11%"
+"ch.unibas.dmi.dbis.cs108.client.core.entities.PlayerRound.executeCommands(GameState, EventDispatcher)",0,0,5,5,"13,51%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.PlayerRound.getActivePlayer(),0,0,3,3,"8,11%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.PlayerRound.getCommands(),0,0,3,3,"8,11%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.PlayerRound.getNumber(),0,0,3,3,"8,11%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.PlayerRound.nextRound(),1,0,4,3,"10,81%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.PlayerRound.setActivePlayer(Player),0,0,3,3,"8,11%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.PlayerRound.setNumber(int),0,0,3,3,"8,11%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Shop.Shop(),0,0,6,6,"7,79%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Shop.blockStatue(),0,0,3,3,"3,90%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Shop.getBuyableStatues(),0,0,3,3,"3,90%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Shop.getBuyableStructures(),0,0,3,3,"3,90%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Shop.loadStatues(),1,0,19,18,"24,68%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Shop.loadStructures(),3,0,19,16,"24,68%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Shop.removeStructure(Structure),0,0,3,3,"3,90%"
+"ch.unibas.dmi.dbis.cs108.client.core.entities.Statue.Statue(int, String, String, String)",0,0,6,6,"25,00%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Statue.getDescription(),0,0,3,3,"12,50%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Statue.getName(),0,0,3,3,"12,50%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Statue.getStatueID(),0,0,3,3,"12,50%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Statue.getUseType(),0,0,3,3,"12,50%"
+"ch.unibas.dmi.dbis.cs108.client.core.entities.Structure.Structure(int, String, String, String, int)",0,0,7,7,"26,92%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Structure.getDescription(),0,0,3,3,"11,54%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Structure.getName(),0,0,3,3,"11,54%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Structure.getStructureID(),0,0,3,3,"11,54%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Structure.getUseType(),0,0,3,3,"11,54%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.Tile(TileBuilder),0,0,16,16,"8,70%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.TileBuilder.build(),0,0,3,3,"4,00%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.TileBuilder.setArtifact(Artefact),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.TileBuilder.setHasRiver(boolean),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.TileBuilder.setHasStructure(boolean),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.TileBuilder.setOwner(String),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.TileBuilder.setPrice(int),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.TileBuilder.setPurchased(boolean),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.TileBuilder.setResourceValue(int),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.TileBuilder.setStatue(Statue),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.TileBuilder.setStructure(Structure),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.TileBuilder.setTileID(int),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.TileBuilder.setTrap(ClientActiveTrap),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.TileBuilder.setWorld(String),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.TileBuilder.setX(int),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.TileBuilder.setY(int),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.getArtifact(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.getHasStructure(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.getOwner(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.getPrice(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.getResourceValue(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.getStatue(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.getStructure(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.getTileID(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.getTrap(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.getWorld(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.getX(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.getY(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.hasRiver(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.isPurchased(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.setArtifact(Artefact),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.setHasRiver(boolean),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.setHasStructure(boolean),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.setOwner(String),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.setPurchased(boolean),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.setResourceValue(int),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.setStatue(Statue),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.setStructure(Structure),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.setTrap(ClientActiveTrap),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.toString(),0,0,8,8,"4,35%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.Artefact.Artefact(ArtefactData),4,5,12,7,"31,58%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.ArtefactData.getChance(),3,4,7,3,"15,22%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.ArtefactData.getDescription(),3,4,7,3,"15,22%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.ArtefactData.getId(),3,4,7,3,"15,22%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.ArtefactData.getName(),3,4,7,3,"15,22%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.ArtefactData.getUseType(),3,4,7,3,"15,22%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.ArtefactFactory.createArtefact(ArtefactData),4,6,27,21,"81,82%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.ArtefactRepository.loadArtefacts(),4,5,16,11,"72,73%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.AshesOfSurtr.AshesOfSurtr(ArtefactData),5,6,9,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.BloodOfJoermungand.BloodOfJoermungand(ArtefactData),5,6,9,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.FenrirsBones.FenrirsBones(ArtefactData),5,6,9,3,"64,29%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.FenrirsChains.FenrirsChains(ArtefactData),5,6,9,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.FlameOfMuspelheim.FlameOfMuspelheim(ArtefactData),4,5,8,3,"61,54%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.FragmentOfMjoelnir.FragmentOfMjoelnir(ArtefactData),4,5,8,3,"61,54%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.FreyjasNecklace.FreyjasNecklace(ArtefactData),4,5,8,3,"61,54%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.FreyrsGoldenApple.FreyrsGoldenApple(ArtefactData),4,5,8,3,"61,54%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.HelsShadow.HelsShadow(ArtefactData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.IceSplinterOfNiflheim.IceSplinterOfNiflheim(ArtefactData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.OdinsEye.OdinsEye(ArtefactData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.TearOfYggdrasil.TearOfYggdrasil(ArtefactData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.Dwarf.Dwarf(StatueData),5,6,9,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.Freyja.Freyja(StatueData),4,5,8,3,"61,54%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.Freyr.Freyr(StatueData),4,5,8,3,"61,54%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.Hel.Hel(StatueData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.Joermungandr.Joermungandr(StatueData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.Loki.Loki(StatueData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.Nidhoeggr.Nidhoeggr(StatueData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.Statue.Statue(StatueData),0,0,10,10,"50,00%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.StatueData.getBlessing(),0,0,3,3,"8,57%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.StatueData.getCost(),0,0,3,3,"8,57%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.StatueData.getCurse(),0,0,3,3,"8,57%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.StatueData.getDeal(),0,0,3,3,"8,57%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.StatueData.getDescription(),0,0,3,3,"8,57%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.StatueData.getId(),0,0,3,3,"8,57%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.StatueData.getName(),1,0,4,3,"11,43%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.StatueData.getUseType(),0,0,3,3,"8,57%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.StatueFactory.createStatue(StatueData),0,0,13,13,"86,67%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.Surtr.Surtr(StatueData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.Helgrindr.Helgrindr(StructureData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.HuginnAndMuninn.HuginnAndMuninn(StructureData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.Mimisbrunnr.Mimisbrunnr(StructureData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.RansHall.RansHall(StructureData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.RuneTable.RuneTable(StructureData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.Structure.Structure(StructureData),0,0,8,8,"50,00%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.StructureData.getCost(),0,0,3,3,"11,54%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.StructureData.getDescription(),0,0,3,3,"11,54%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.StructureData.getId(),0,0,3,3,"11,54%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.StructureData.getName(),0,0,3,3,"11,54%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.StructureData.getUsage(),0,0,3,3,"11,54%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.StructureData.getUseType(),0,0,3,3,"11,54%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.StructureFactory.createStructure(StructureData),0,0,12,12,"85,71%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.StructureRepository.loadStructures(),0,0,20,20,"86,96%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.SurtursSmeltery.SurtursSmeltery(StructureData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.Tree.Tree(StructureData),0,0,3,3,"60,00%"
+"ch.unibas.dmi.dbis.cs108.client.core.events.ArtifactAcquiredEvent.ArtifactAcquiredEvent(Player, Artefact)",4,6,10,4,"29,41%"
+ch.unibas.dmi.dbis.cs108.client.core.events.ArtifactAcquiredEvent.getArtifact(),4,5,8,3,"23,53%"
+ch.unibas.dmi.dbis.cs108.client.core.events.ArtifactAcquiredEvent.getPlayer(),4,5,8,3,"23,53%"
+"ch.unibas.dmi.dbis.cs108.client.core.events.ArtifactActivatedEvent.ArtifactActivatedEvent(Player, Artefact)",4,6,10,4,"29,41%"
+ch.unibas.dmi.dbis.cs108.client.core.events.ArtifactActivatedEvent.getArtifact(),4,5,8,3,"23,53%"
+ch.unibas.dmi.dbis.cs108.client.core.events.ArtifactActivatedEvent.getPlayer(),4,5,8,3,"23,53%"
+ch.unibas.dmi.dbis.cs108.client.core.events.EventDispatcher.dispatch(GameEvent),4,5,10,5,"35,71%"
+ch.unibas.dmi.dbis.cs108.client.core.events.EventDispatcher.register(GameEventListener),4,5,8,3,"28,57%"
+ch.unibas.dmi.dbis.cs108.client.core.events.GameRoundEndedEvent.GameRoundEndedEvent(int),4,5,8,3,"32,00%"
+ch.unibas.dmi.dbis.cs108.client.core.events.GameRoundEndedEvent.getRoundNumber(),4,5,8,3,"32,00%"
+ch.unibas.dmi.dbis.cs108.client.core.events.GameRoundStartedEvent.GameRoundStartedEvent(int),0,0,3,3,"33,33%"
+ch.unibas.dmi.dbis.cs108.client.core.events.GameRoundStartedEvent.getRoundNumber(),0,0,3,3,"33,33%"
+"ch.unibas.dmi.dbis.cs108.client.core.events.StatueActivatedEvent.StatueActivatedEvent(Player, Statue, Outcome)",0,0,5,5,"25,00%"
+ch.unibas.dmi.dbis.cs108.client.core.events.StatueActivatedEvent.getOutcome(),0,0,3,3,"15,00%"
+ch.unibas.dmi.dbis.cs108.client.core.events.StatueActivatedEvent.getPlayer(),0,0,3,3,"15,00%"
+ch.unibas.dmi.dbis.cs108.client.core.events.StatueActivatedEvent.getStatue(),0,0,3,3,"15,00%"
+"ch.unibas.dmi.dbis.cs108.client.core.events.StatuePurchasedEvent.StatuePurchasedEvent(Player, Tile, Statue)",0,0,5,5,"26,32%"
+ch.unibas.dmi.dbis.cs108.client.core.events.StatuePurchasedEvent.getPlayer(),0,0,3,3,"15,79%"
+ch.unibas.dmi.dbis.cs108.client.core.events.StatuePurchasedEvent.getStatue(),0,0,3,3,"15,79%"
+ch.unibas.dmi.dbis.cs108.client.core.events.StatuePurchasedEvent.getTile(),0,0,3,3,"15,79%"
+"ch.unibas.dmi.dbis.cs108.client.core.events.StructurePurchasedEvent.StructurePurchasedEvent(Player, Tile, Structure)",0,0,5,5,"26,32%"
+ch.unibas.dmi.dbis.cs108.client.core.events.StructurePurchasedEvent.getPlayer(),0,0,3,3,"15,79%"
+ch.unibas.dmi.dbis.cs108.client.core.events.StructurePurchasedEvent.getStructure(),0,0,3,3,"15,79%"
+ch.unibas.dmi.dbis.cs108.client.core.events.StructurePurchasedEvent.getTile(),0,0,3,3,"15,79%"
+"ch.unibas.dmi.dbis.cs108.client.core.events.StructureUpgradedEvent.StructureUpgradedEvent(Player, Structure, int, int)",0,0,6,6,"25,00%"
+ch.unibas.dmi.dbis.cs108.client.core.events.StructureUpgradedEvent.getNewLevel(),0,0,3,3,"12,50%"
+ch.unibas.dmi.dbis.cs108.client.core.events.StructureUpgradedEvent.getPlayer(),0,0,3,3,"12,50%"
+ch.unibas.dmi.dbis.cs108.client.core.events.StructureUpgradedEvent.getPreviousLevel(),0,0,3,3,"12,50%"
+ch.unibas.dmi.dbis.cs108.client.core.events.StructureUpgradedEvent.getStructure(),0,0,3,3,"12,50%"
+"ch.unibas.dmi.dbis.cs108.client.core.events.TilePurchasedEvent.TilePurchasedEvent(Player, Tile)",0,0,4,4,"28,57%"
+ch.unibas.dmi.dbis.cs108.client.core.events.TilePurchasedEvent.getPlayer(),0,0,3,3,"21,43%"
+ch.unibas.dmi.dbis.cs108.client.core.events.TilePurchasedEvent.getTile(),0,0,3,3,"21,43%"
+"ch.unibas.dmi.dbis.cs108.client.core.events.TrapPlacedEvent.TrapPlacedEvent(Player, Tile)",1,0,5,4,"26,32%"
+ch.unibas.dmi.dbis.cs108.client.core.events.TrapPlacedEvent.getPlayer(),0,0,3,3,"15,79%"
+ch.unibas.dmi.dbis.cs108.client.core.events.TrapPlacedEvent.getTile(),0,0,3,3,"15,79%"
+"ch.unibas.dmi.dbis.cs108.client.core.events.TrapTriggeredEvent.TrapTriggeredEvent(Player, Tile)",1,0,5,4,"26,32%"
+ch.unibas.dmi.dbis.cs108.client.core.events.TrapTriggeredEvent.getTile(),0,0,3,3,"15,79%"
+ch.unibas.dmi.dbis.cs108.client.core.events.TrapTriggeredEvent.getTriggeredPlayer(),0,0,3,3,"15,79%"
+ch.unibas.dmi.dbis.cs108.client.core.game.GameEngine.GameEngine(GameState),5,5,12,6,"20,34%"
+ch.unibas.dmi.dbis.cs108.client.core.game.GameEngine.getEventDispatcher(),4,5,8,3,"13,56%"
+ch.unibas.dmi.dbis.cs108.client.core.game.GameEngine.processGameRound(GameRound),4,5,8,3,"13,56%"
+ch.unibas.dmi.dbis.cs108.client.core.game.GameEngine.processTurn(List<Command>),6,5,13,6,"22,03%"
+ch.unibas.dmi.dbis.cs108.client.core.observer.GameEventListener.onEvent(GameEvent),4,n/a,n/a,1,"50,00%"
+ch.unibas.dmi.dbis.cs108.client.core.rules.ResourceGenerationRule.apply(GameState),1,0,9,8,"56,25%"
+ch.unibas.dmi.dbis.cs108.client.core.rules.ResourceGenerationRule.isApplicable(GameState),1,0,5,4,"31,25%"
+ch.unibas.dmi.dbis.cs108.client.core.rules.Rule.apply(GameState),0,n/a,n/a,1,"25,00%"
+ch.unibas.dmi.dbis.cs108.client.core.rules.Rule.isApplicable(GameState),0,n/a,n/a,1,"25,00%"
+ch.unibas.dmi.dbis.cs108.client.core.rules.RuleProcessor.RuleProcessor(),0,0,3,3,"18,75%"
+ch.unibas.dmi.dbis.cs108.client.core.rules.RuleProcessor.addRule(Rule),0,0,3,3,"18,75%"
+ch.unibas.dmi.dbis.cs108.client.core.rules.RuleProcessor.processRules(GameState),0,0,7,7,"43,75%"
+ch.unibas.dmi.dbis.cs108.client.core.state.GameState.GameState(),0,0,6,6,"6,90%"
+ch.unibas.dmi.dbis.cs108.client.core.state.GameState.addPlayer(Player),0,0,3,3,"3,45%"
+"ch.unibas.dmi.dbis.cs108.client.core.state.GameState.buyTile(Player, Tile)",1,0,15,14,"17,24%"
+ch.unibas.dmi.dbis.cs108.client.core.state.GameState.getBoard(),0,0,3,3,"3,45%"
+ch.unibas.dmi.dbis.cs108.client.core.state.GameState.getCurrentGameRound(),0,0,3,3,"3,45%"
+ch.unibas.dmi.dbis.cs108.client.core.state.GameState.getCurrentGameRoundNumber(),0,0,3,3,"3,45%"
+ch.unibas.dmi.dbis.cs108.client.core.state.GameState.getCurrentPlayerRound(),0,0,3,3,"3,45%"
+ch.unibas.dmi.dbis.cs108.client.core.state.GameState.getCurrentPlayerRoundNumber(),0,0,3,3,"3,45%"
+ch.unibas.dmi.dbis.cs108.client.core.state.GameState.getGameRound(),0,0,3,3,"3,45%"
+ch.unibas.dmi.dbis.cs108.client.core.state.GameState.getPlayerRound(),0,0,3,3,"3,45%"
+ch.unibas.dmi.dbis.cs108.client.core.state.GameState.getPlayers(),0,0,3,3,"3,45%"
+ch.unibas.dmi.dbis.cs108.client.core.state.GameState.nextTurn(),1,0,15,14,"17,24%"
+ch.unibas.dmi.dbis.cs108.client.core.state.GameState.removePlayer(Player),0,0,3,3,"3,45%"
+ch.unibas.dmi.dbis.cs108.client.core.state.GameState.setBoard(Board),0,0,3,3,"3,45%"
+ch.unibas.dmi.dbis.cs108.client.core.state.GameState.setCurrentGameRoundNumber(int),0,0,3,3,"3,45%"
+ch.unibas.dmi.dbis.cs108.client.core.state.GameState.setCurrentPlayerRoundNumber(int),0,0,3,3,"3,45%"
+ch.unibas.dmi.dbis.cs108.client.core.state.GameState.setGameRound(GameRound),0,0,3,3,"3,45%"
+ch.unibas.dmi.dbis.cs108.client.core.state.GameState.setPlayerRound(PlayerRound),0,0,3,3,"3,45%"
+ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.NetworkController(Player),0,0,7,7,"3,18%"
+ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.buyStatue(int),0,0,4,4,"1,82%"
+"ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.buyTile(int, int)",0,0,4,4,"1,82%"
+ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.changeName(String),0,0,4,4,"1,82%"
+"ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.connect(String, int)",0,0,22,22,"10,00%"
+ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.createLobby(String),0,0,4,4,"1,82%"
+ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.disconnect(),0,0,19,19,"8,64%"
+ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.endTurn(),0,0,4,4,"1,82%"
+ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.getGameState(),0,0,4,4,"1,82%"
+ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.getPrices(),0,0,4,4,"1,82%"
+ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.handleIncomingMessage(String),1,0,17,16,"7,73%"
+ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.isConnected(),0,0,3,3,"1,36%"
+ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.joinLobby(String),0,0,4,4,"1,82%"
+ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.leaveLobby(),0,0,4,4,"1,82%"
+ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.listAllPlayers(),0,0,4,4,"1,82%"
+ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.listLobbies(),0,0,4,4,"1,82%"
+ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.listLobbyPlayers(String),0,0,4,4,"1,82%"
+"ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.placeStructure(int, int, int)",0,0,4,4,"1,82%"
+ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.register(),0,0,4,4,"1,82%"
+ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.sendGlobalChat(String),0,0,5,5,"2,27%"
+ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.sendLobbyChat(String),0,0,5,5,"2,27%"
+ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.sendPing(),0,0,9,9,"4,09%"
+"ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.sendPrivateChat(String, String)",0,0,5,5,"2,27%"
+ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.setupMessageHandler(),0,0,16,16,"7,27%"
+ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.startGame(),0,0,4,4,"1,82%"
+ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.startPingScheduler(),0,0,16,16,"7,27%"
+ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.stopPingScheduler(),0,0,6,6,"2,73%"
+"ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.upgradeStatue(int, int, int)",0,0,4,4,"1,82%"
+"ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.useFieldArtifact(int, int, int, String)",0,0,4,4,"1,82%"
+"ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.usePlayerArtifact(int, String, String)",0,0,4,4,"1,82%"
+"ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.useStatue(int, int, int, String)",0,0,4,4,"1,82%"
+"ch.unibas.dmi.dbis.cs108.client.networking.NetworkController.useStructure(int, int, int, String)",0,0,4,4,"1,82%"
+ch.unibas.dmi.dbis.cs108.client.networking.core.NetworkClient.MessageHandler.onDisconnect(Throwable),0,n/a,n/a,1,"14,29%"
+ch.unibas.dmi.dbis.cs108.client.networking.core.NetworkClient.MessageHandler.onMessage(String),0,n/a,n/a,1,"14,29%"
+"ch.unibas.dmi.dbis.cs108.client.networking.core.NetworkClient.connect(String, int)",4,n/a,n/a,1,"20,00%"
+ch.unibas.dmi.dbis.cs108.client.networking.core.NetworkClient.disconnect(),3,n/a,n/a,1,"10,00%"
+ch.unibas.dmi.dbis.cs108.client.networking.core.NetworkClient.isConnected(),4,n/a,n/a,1,"15,00%"
+ch.unibas.dmi.dbis.cs108.client.networking.core.NetworkClient.send(String),4,n/a,n/a,1,"17,50%"
+ch.unibas.dmi.dbis.cs108.client.networking.core.NetworkClient.setMessageHandler(MessageHandler),4,n/a,n/a,1,"15,00%"
+ch.unibas.dmi.dbis.cs108.client.networking.core.SocketNetworkClient.SocketNetworkClient(),0,0,7,7,"6,14%"
+"ch.unibas.dmi.dbis.cs108.client.networking.core.SocketNetworkClient.connect(String, int)",1,0,27,26,"23,68%"
+ch.unibas.dmi.dbis.cs108.client.networking.core.SocketNetworkClient.disconnect(),0,0,15,15,"13,16%"
+ch.unibas.dmi.dbis.cs108.client.networking.core.SocketNetworkClient.isConnected(),0,0,4,4,"3,51%"
+ch.unibas.dmi.dbis.cs108.client.networking.core.SocketNetworkClient.notifyDisconnect(Throwable),0,0,8,8,"7,02%"
+ch.unibas.dmi.dbis.cs108.client.networking.core.SocketNetworkClient.send(String),0,0,18,18,"15,79%"
+ch.unibas.dmi.dbis.cs108.client.networking.core.SocketNetworkClient.setMessageHandler(MessageHandler),0,0,4,4,"3,51%"
+ch.unibas.dmi.dbis.cs108.client.networking.core.SocketNetworkClient.startReaderThread(),0,0,21,21,"18,42%"
+"ch.unibas.dmi.dbis.cs108.client.networking.events.ChatMessageEvent.ChatMessageEvent(String, String, ChatType)",4,7,12,5,"16,67%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.ChatMessageEvent.getContent(),3,4,7,3,"9,72%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.ChatMessageEvent.getSender(),3,4,7,3,"9,72%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.ChatMessageEvent.getTimestamp(),3,4,8,4,"11,11%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.ChatMessageEvent.getType(),3,4,7,3,"9,72%"
+"ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent.ConnectionEvent(ConnectionState, String)",4,6,10,4,"14,29%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent.getMessage(),4,5,8,3,"11,43%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent.getState(),4,5,8,3,"11,43%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent.getTimestamp(),4,5,9,4,"12,86%"
+"ch.unibas.dmi.dbis.cs108.client.networking.events.ErrorEvent.ErrorEvent(String, String, ErrorSeverity)",4,7,12,5,"15,79%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.ErrorEvent.getErrorCode(),4,5,8,3,"10,53%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.ErrorEvent.getErrorMessage(),4,5,8,3,"10,53%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.ErrorEvent.getSeverity(),4,5,8,3,"10,53%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.ErrorEvent.getTimestamp(),4,5,9,4,"11,84%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.Event.getTimestamp(),3,n/a,n/a,1,"45,45%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher.EventListener.getEventType(),4,n/a,n/a,1,"31,58%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher.EventListener.onEvent(T),4,n/a,n/a,1,"31,58%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher.dispatchEvent(T),4,6,18,12,"20,22%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher.getInstance(),7,8,11,3,"12,36%"
+"ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher.registerListener(Class<T>, EventListener<T>)",4,7,11,4,"12,36%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher.unregisterListener(EventListener<T>),4,6,9,3,"10,11%"
+"ch.unibas.dmi.dbis.cs108.client.networking.events.LobbyEvent.LobbyEvent(LobbyAction, String, String)",0,0,5,5,"18,52%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.LobbyEvent.getAction(),0,0,3,3,"11,11%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.LobbyEvent.getLobbyName(),0,0,3,3,"11,11%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.LobbyEvent.getPlayerName(),0,0,3,3,"11,11%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.LobbyEvent.getTimestamp(),0,0,4,4,"14,81%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.LobbyListEvent.LobbyListEvent(String),0,0,3,3,"21,43%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.LobbyListEvent.getLobbies(),0,0,3,3,"21,43%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.LobbyListEvent.getTimestamp(),0,0,4,4,"28,57%"
+"ch.unibas.dmi.dbis.cs108.client.networking.events.NameChangeResponseEvent.NameChangeResponseEvent(boolean, String, String)",0,0,5,5,"21,74%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.NameChangeResponseEvent.getMessage(),0,0,3,3,"13,04%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.NameChangeResponseEvent.getNewName(),0,0,3,3,"13,04%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.NameChangeResponseEvent.getTimestamp(),0,0,4,4,"17,39%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.NameChangeResponseEvent.isSuccess(),0,0,3,3,"13,04%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.NameChangedEvent.NameChangedEvent(String),0,0,3,3,"21,43%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.NameChangedEvent.getNewName(),0,0,3,3,"21,43%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.NameChangedEvent.getTimestamp(),0,0,4,4,"28,57%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.NotificationEvent.NotificationEvent(String),0,0,3,3,"21,43%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.NotificationEvent.getMessage(),0,0,3,3,"21,43%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.NotificationEvent.getTimestamp(),0,0,4,4,"28,57%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.ReceiveCommandEvent.ReceiveCommandEvent(String),1,0,5,4,"15,62%"
+"ch.unibas.dmi.dbis.cs108.client.networking.events.ReceiveCommandEvent.ReceiveCommandEvent(String, Commands)",1,0,5,4,"15,62%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.ReceiveCommandEvent.getMessage(),0,0,3,3,"9,38%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.ReceiveCommandEvent.getTimestamp(),2,3,7,4,"21,88%"
+ch.unibas.dmi.dbis.cs108.client.networking.events.ReceiveCommandEvent.getType(),0,0,3,3,"9,38%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.ProtocolTranslator(EventDispatcher),0,0,4,4,"1,81%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatBuyStatue(int),0,0,3,3,"1,36%"
+"ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatBuyTile(int, int)",0,0,3,3,"1,36%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatChangeName(String),0,0,3,3,"1,36%"
+"ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatCreateLobby(String, String)",0,0,3,3,"1,36%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatDisconnect(String),0,0,3,3,"1,36%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatEndTurn(),0,0,3,3,"1,36%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatGetGameStatus(),1,0,4,3,"1,81%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatGetPrices(),1,0,4,3,"1,81%"
+"ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatGlobalChatMessage(String, String)",0,0,3,3,"1,36%"
+"ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatJoinLobby(String, String)",0,0,3,3,"1,36%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatLeaveLobby(String),0,0,3,3,"1,36%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatListAllPlayers(),0,0,3,3,"1,36%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatListLobbies(),0,0,3,3,"1,36%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatListLobbyPlayers(String),0,0,3,3,"1,36%"
+"ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatLobbyChatMessage(String, String)",0,0,3,3,"1,36%"
+"ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatPlaceStructure(int, int, int)",0,0,3,3,"1,36%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatPong(String),0,0,3,3,"1,36%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatRegister(String),0,0,3,3,"1,36%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatStartGame(),0,0,3,3,"1,36%"
+"ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatUpgradeStatue(int, int, int)",0,0,3,3,"1,36%"
+"ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatUseFieldArtifact(int, int, int, String)",0,0,3,3,"1,36%"
+"ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatUsePlayerArtifact(int, String, String)",0,0,3,3,"1,36%"
+"ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatUseStatue(int, int, int, String)",0,0,3,3,"1,36%"
+"ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatUseStructure(int, int, int, String)",0,0,3,3,"1,36%"
+"ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatWhisper(String, String, String)",0,0,3,3,"1,36%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.processErrorMessage(String),1,0,21,20,"9,50%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.processGlobalChatMessage(String),0,0,7,7,"3,17%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.processIncomingMessage(String),0,0,11,11,"4,98%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.processJoinMessage(String),0,0,7,7,"3,17%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.processLeaveMessage(String),0,0,7,7,"3,17%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.processLobbyChatMessage(String),0,0,7,7,"3,17%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.processLobbyListMessage(String),0,0,4,4,"1,81%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.processNameChangeMessage(String),0,0,6,6,"2,71%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.processNotificationMessage(String),0,0,4,4,"1,81%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.processPingMessage(String),1,0,3,2,"1,36%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.processPrivateChatMessage(String),0,0,7,7,"3,17%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.processShutdownMessage(String),0,0,4,4,"1,81%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.processStartGameMessage(String),0,0,6,6,"2,71%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.processSuccessMessage(String),3,0,18,15,"8,14%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.processTurnMessage(String),0,0,6,6,"2,71%"
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.registerHandlers(),0,0,16,16,"7,24%"
+"ch.unibas.dmi.dbis.cs108.client.ui.SceneManager.SceneHolder.SceneHolder(Scene, Object)",0,0,4,4,"28,57%"
+ch.unibas.dmi.dbis.cs108.client.ui.SceneManager.SceneHolder.getController(),0,0,3,3,"21,43%"
+ch.unibas.dmi.dbis.cs108.client.ui.SceneManager.SceneHolder.getScene(),0,0,3,3,"21,43%"
+ch.unibas.dmi.dbis.cs108.client.ui.SceneManager.SceneManager(ResourceLoader),1,0,4,3,"4,76%"
+ch.unibas.dmi.dbis.cs108.client.ui.SceneManager.SceneType.SceneType(String),0,0,3,3,"25,00%"
+ch.unibas.dmi.dbis.cs108.client.ui.SceneManager.SceneType.getPath(),0,0,3,3,"25,00%"
+ch.unibas.dmi.dbis.cs108.client.ui.SceneManager.getController(SceneType),0,0,8,8,"9,52%"
+ch.unibas.dmi.dbis.cs108.client.ui.SceneManager.getInstance(),0,0,10,10,"11,90%"
+ch.unibas.dmi.dbis.cs108.client.ui.SceneManager.loadScene(SceneType),0,0,14,14,"16,67%"
+ch.unibas.dmi.dbis.cs108.client.ui.SceneManager.setPrimaryStage(Stage),0,0,3,3,"3,57%"
+ch.unibas.dmi.dbis.cs108.client.ui.SceneManager.switchToScene(SceneType),1,0,12,11,"14,29%"
+ch.unibas.dmi.dbis.cs108.client.ui.components.UIComponent.UIComponent(String),0,0,10,10,"45,45%"
+ch.unibas.dmi.dbis.cs108.client.ui.components.UIComponent.getView(),0,0,3,3,"13,64%"
+"ch.unibas.dmi.dbis.cs108.client.ui.controllers.BaseController.BaseController(ResourceLoader, UIEventBus, SceneManager)",4,7,12,5,"38,71%"
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController.GameScreenController(),3,3,6,3,"1,13%"
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController.cleanup(),5,3,15,10,"2,84%"
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController.drawGame(),12,3,28,17,"5,29%"
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController.drawGameGrid(),8,3,26,18,"4,91%"
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController.drawGridDecorations(double),5,3,7,2,"1,32%"
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController.handleCardSelection(Pane),4,3,8,4,"1,51%"
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController.handleGameRound(),4,3,8,4,"1,51%"
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController.handleIncomingChatMessage(ChatMessageEvent),4,3,17,13,"3,21%"
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController.handleIncomingCommandMessage(ReceiveCommandEvent),6,3,100,95,"18,90%"
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController.handleIncomingConnectionEvent(ConnectionStatusEvent),4,3,17,13,"3,21%"
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController.handleIncomingErrorMessage(ErrorEvent),4,3,19,15,"3,59%"
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController.handleMessageSend(),7,3,27,20,"5,10%"
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController.handleNameChangeResponse(NameChangeResponseEvent),4,3,16,12,"3,02%"
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController.handleOtherAction(),4,3,8,4,"1,51%"
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController.handleResourceOverview(),4,3,8,4,"1,51%"
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController.initialize(),5,3,19,14,"3,59%"
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController.initializeCardHands(),5,3,18,13,"3,40%"
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController.initializeChat(),7,3,36,29,"6,81%"
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController.initializeGameCanvas(),9,3,35,26,"6,62%"
+"ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController.setupCardPane(Pane, String)",3,3,20,17,"3,78%"
+"ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController.showError(String, String)",3,3,12,9,"2,27%"
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.MainMenuController.MainMenuController(),0,0,3,3,"20,00%"
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.MainMenuController.handlePlayGame(),0,0,5,5,"33,33%"
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.MainMenuController.initialize(),0,0,4,4,"26,67%"
+"ch.unibas.dmi.dbis.cs108.client.ui.events.ChatMessageEvent.ChatMessageEvent(String, ChatType)",4,6,10,4,"31,25%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.ChatMessageEvent.getMessage(),3,4,7,3,"21,88%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.ChatMessageEvent.getType(),3,4,7,3,"21,88%"
+"ch.unibas.dmi.dbis.cs108.client.ui.events.ConnectionStatusEvent.ConnectionStatusEvent(ConnectionState, String)",4,6,10,4,"30,30%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.ConnectionStatusEvent.getMessage(),4,5,8,3,"24,24%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.ConnectionStatusEvent.getStatus(),4,5,8,3,"24,24%"
+"ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent.ErrorEvent(String, String, ErrorSeverity)",4,7,12,5,"22,22%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent.getErrorCode(),4,5,8,3,"14,81%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent.getErrorMessage(),4,5,8,3,"14,81%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent.getSeverity(),4,5,8,3,"14,81%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent.getTimestamp(),4,5,8,3,"14,81%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeRequestEvent.NameChangeRequestEvent(String),0,0,3,3,"33,33%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeRequestEvent.getNewName(),0,0,3,3,"33,33%"
+"ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeResponseEvent.NameChangeResponseEvent(boolean, String, String)",0,0,5,5,"26,32%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeResponseEvent.getMessage(),0,0,3,3,"15,79%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeResponseEvent.getNewName(),0,0,3,3,"15,79%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeResponseEvent.isSuccess(),0,0,3,3,"15,79%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.ReceiveCommandEvent.ReceiveCommandEvent(String),1,0,5,4,"26,32%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.ReceiveCommandEvent.getMessage(),0,0,3,3,"15,79%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.ReceiveCommandEvent.getType(),0,0,3,3,"15,79%"
+"ch.unibas.dmi.dbis.cs108.client.ui.events.SendChatEvent.SendChatEvent(String, ChatType)",0,0,3,3,"12,00%"
+"ch.unibas.dmi.dbis.cs108.client.ui.events.SendChatEvent.SendChatEvent(String, ChatType, String)",0,0,5,5,"20,00%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.SendChatEvent.getMessage(),0,0,3,3,"12,00%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.SendChatEvent.getRecipient(),0,0,3,3,"12,00%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.SendChatEvent.getType(),0,0,3,3,"12,00%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.SendCommandEvent.CommandType.CommandType(String),0,0,3,3,"7,14%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.SendCommandEvent.CommandType.fromCommand(String),0,0,8,8,"19,05%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.SendCommandEvent.CommandType.getCommand(),0,0,3,3,"7,14%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.SendCommandEvent.SendCommandEvent(String),0,0,4,4,"7,14%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.SendCommandEvent.getMessage(),0,0,3,3,"5,36%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.SendCommandEvent.getType(),0,0,3,3,"5,36%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus.EventListener.onEvent(T),0,n/a,n/a,1,"33,33%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus.UIEventBus(),0,0,2,2,"5,88%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus.getInstance(),0,0,6,6,"17,65%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus.publish(T),0,0,10,10,"29,41%"
+"ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus.subscribe(Class<T>, EventListener<T>)",0,0,3,3,"8,82%"
+"ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus.unsubscribe(Class<T>, EventListener<T>)",0,0,6,6,"17,65%"
+ch.unibas.dmi.dbis.cs108.client.ui.utils.ThemeManager.Theme.Theme(String),0,0,3,3,"30,00%"
+ch.unibas.dmi.dbis.cs108.client.ui.utils.ThemeManager.Theme.getPath(),0,0,3,3,"30,00%"
+ch.unibas.dmi.dbis.cs108.client.ui.utils.ThemeManager.ThemeManager(),0,0,3,3,"3,45%"
+ch.unibas.dmi.dbis.cs108.client.ui.utils.ThemeManager.applyThemeToAllScenes(),0,0,5,5,"5,75%"
+ch.unibas.dmi.dbis.cs108.client.ui.utils.ThemeManager.applyThemeToScene(Scene),2,0,11,9,"12,64%"
+ch.unibas.dmi.dbis.cs108.client.ui.utils.ThemeManager.getInstance(),0,0,6,6,"6,90%"
+ch.unibas.dmi.dbis.cs108.client.ui.utils.ThemeManager.loadFonts(),3,0,34,31,"39,08%"
+ch.unibas.dmi.dbis.cs108.client.ui.utils.ThemeManager.registerScene(Scene),0,0,6,6,"6,90%"
+ch.unibas.dmi.dbis.cs108.client.ui.utils.ThemeManager.setTheme(Theme),0,0,6,6,"6,90%"
+ch.unibas.dmi.dbis.cs108.example.HelloWorld.main(String[]),0,0,3,3,"37,50%"
+"ch.unibas.dmi.dbis.cs108.example.HexMap.HexMap(int, int)",4,6,9,3,"25,71%"
+"ch.unibas.dmi.dbis.cs108.example.HexMap.generateMap(int, int)",5,6,9,2,"25,71%"
+ch.unibas.dmi.dbis.cs108.example.HexMap.printMap(),4,3,6,2,"17,14%"
+"ch.unibas.dmi.dbis.cs108.example.HexTile.HexTile(int, int, String, String)",4,8,14,6,"23,73%"
+ch.unibas.dmi.dbis.cs108.example.HexTile.getInfo(),4,5,9,4,"15,25%"
+ch.unibas.dmi.dbis.cs108.example.HexTile.placeBuilding(String),4,5,8,3,"13,56%"
+ch.unibas.dmi.dbis.cs108.example.HexTile.removeBuilding(),3,3,6,3,"10,17%"
+ch.unibas.dmi.dbis.cs108.example.gui.javafx.GUI.main(String[]),4,4,7,3,"33,33%"
+ch.unibas.dmi.dbis.cs108.example.gui.javafx.GUI.start(Stage),0,0,9,9,"42,86%"
+ch.unibas.dmi.dbis.cs108.example.gui.javafx.Main.main(String[]),4,4,7,3,"58,33%"
+ch.unibas.dmi.dbis.cs108.example.gui.swing.SwingGUI.createAndShowGUI(),4,0,12,9,"57,14%"
+ch.unibas.dmi.dbis.cs108.example.gui.swing.SwingGUI.main(String[]),1,0,4,3,"19,05%"
+ch.unibas.dmi.dbis.cs108.server.app.ServerMain.main(String),5,6,20,14,"76,92%"
+ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.GameLogic(String[]),5,6,10,4,"1,77%"
+ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.PlayerActionHandler.execute(Object...),0,n/a,n/a,1,"12,50%"
+"ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.buyStatue(String, String)",6,8,54,46,"9,56%"
+"ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.buyStructure(String, String)",7,8,52,43,"9,20%"
+"ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.buyStructure(int, String)",9,0,25,16,"4,42%"
+"ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.buyTile(int, int, String)",7,9,28,18,"4,96%"
+ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.endGame(),7,5,22,15,"3,89%"
+ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.endTurn(),7,6,13,7,"2,30%"
+"ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.executeAction(PlayerAction, Object...)",4,7,15,8,"2,65%"
+ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.findPlayerByName(String),4,6,9,3,"1,59%"
+ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.getGameState(),4,5,8,3,"1,42%"
+ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.getPlayerByName(String),4,6,12,6,"2,12%"
+ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.initializeFirstTurn(),7,6,14,7,"2,48%"
+ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.nextTurn(),6,4,25,19,"4,42%"
+"ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.placeStructure(int, int, int, String)",6,10,39,29,"6,90%"
+ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.registerActionHandlers(),3,3,14,11,"2,48%"
+ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.resourcesIncome(Player),8,7,22,13,"3,89%"
+ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.sortPlayersByScore(List<Player>),5,6,9,3,"1,59%"
+ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.startGame(String[]),6,7,12,5,"2,12%"
+"ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.upgradeStatue(int, int, String, String)",6,10,27,17,"4,78%"
+"ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.useFieldArtifact(int, int, int, String, String)",7,9,27,17,"4,78%"
+"ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.usePlayerArtifact(int, String, String, String)",10,10,32,18,"5,66%"
+"ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.useStatue(int, int, int, String, String)",6,11,26,15,"4,60%"
+"ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.useStructure(int, int, int, String, String)",8,11,30,17,"5,31%"
+"ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogicInterface.buyStatue(String, String)",4,n/a,n/a,1,"6,48%"
+"ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogicInterface.buyStructure(String, String)",4,n/a,n/a,1,"6,48%"
+"ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogicInterface.buyTile(int, int, String)",4,n/a,n/a,1,"8,33%"
+ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogicInterface.endGame(),3,n/a,n/a,1,"3,70%"
+ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogicInterface.endTurn(),3,n/a,n/a,1,"3,70%"
+ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogicInterface.nextTurn(),3,n/a,n/a,1,"3,70%"
+"ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogicInterface.placeStructure(int, int, int, String)",4,n/a,n/a,1,"9,26%"
+ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogicInterface.startGame(String[]),4,n/a,n/a,1,"5,56%"
+"ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogicInterface.upgradeStatue(int, int, String, String)",4,n/a,n/a,1,"9,26%"
+"ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogicInterface.useFieldArtifact(int, int, int, String, String)",4,n/a,n/a,1,"9,26%"
+"ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogicInterface.usePlayerArtifact(int, String, String, String)",4,n/a,n/a,1,"8,33%"
+"ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogicInterface.useStatue(int, int, int, String, String)",4,n/a,n/a,1,"9,26%"
+"ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogicInterface.useStructure(int, int, int, String, String)",4,n/a,n/a,1,"10,19%"
+ch.unibas.dmi.dbis.cs108.server.core.State.GameState.GameState(),3,0,7,7,"1,53%"
+"ch.unibas.dmi.dbis.cs108.server.core.State.GameState.addArtifact(Artefact[], String)",4,6,23,17,"5,03%"
+ch.unibas.dmi.dbis.cs108.server.core.State.GameState.addPlayer(String),4,5,9,4,"1,97%"
+"ch.unibas.dmi.dbis.cs108.server.core.State.GameState.addRunes(int, String)",4,6,15,9,"3,28%"
+ch.unibas.dmi.dbis.cs108.server.core.State.GameState.getActivePlayer(),0,0,3,3,"0,66%"
+ch.unibas.dmi.dbis.cs108.server.core.State.GameState.getArtifacts(String),4,6,25,19,"5,47%"
+ch.unibas.dmi.dbis.cs108.server.core.State.GameState.getBoard(),0,0,1,1,"0,22%"
+ch.unibas.dmi.dbis.cs108.server.core.State.GameState.getGameField(),4,5,16,11,"3,50%"
+"ch.unibas.dmi.dbis.cs108.server.core.State.GameState.getGameFieldValue(int, int)",4,7,22,15,"4,81%"
+ch.unibas.dmi.dbis.cs108.server.core.State.GameState.getGameRound(),4,5,8,3,"1,75%"
+ch.unibas.dmi.dbis.cs108.server.core.State.GameState.getPlayerList(),0,0,3,3,"0,66%"
+ch.unibas.dmi.dbis.cs108.server.core.State.GameState.getPlayerRound(),4,5,8,3,"1,75%"
+ch.unibas.dmi.dbis.cs108.server.core.State.GameState.getPlayerTurn(),4,5,14,9,"3,06%"
+ch.unibas.dmi.dbis.cs108.server.core.State.GameState.getPlayers(),4,5,16,11,"3,50%"
+ch.unibas.dmi.dbis.cs108.server.core.State.GameState.getRunes(String),4,6,15,9,"3,28%"
+"ch.unibas.dmi.dbis.cs108.server.core.State.GameState.getTile(int, int)",4,7,18,11,"3,94%"
+"ch.unibas.dmi.dbis.cs108.server.core.State.GameState.removeArtifact(Artefact[], String)",4,6,15,9,"3,28%"
+"ch.unibas.dmi.dbis.cs108.server.core.State.GameState.removeRunes(int, String)",5,7,17,10,"3,72%"
+ch.unibas.dmi.dbis.cs108.server.core.State.GameState.reset(),3,3,10,7,"2,19%"
+ch.unibas.dmi.dbis.cs108.server.core.State.GameState.setActivePlayer(String),0,0,9,9,"1,97%"
+"ch.unibas.dmi.dbis.cs108.server.core.State.GameState.setArtifacts(Artefact[], String)",4,6,25,19,"5,47%"
+ch.unibas.dmi.dbis.cs108.server.core.State.GameState.setGameField(Tile[][]),6,5,22,15,"4,81%"
+"ch.unibas.dmi.dbis.cs108.server.core.State.GameState.setGameFieldValue(int, int, int)",4,7,22,15,"4,81%"
+ch.unibas.dmi.dbis.cs108.server.core.State.GameState.setGameRound(int),4,6,13,7,"2,84%"
+ch.unibas.dmi.dbis.cs108.server.core.State.GameState.setPlayerRound(int),4,5,8,3,"1,75%"
+ch.unibas.dmi.dbis.cs108.server.core.State.GameState.setPlayerTurn(String),4,5,14,9,"3,06%"
+ch.unibas.dmi.dbis.cs108.server.core.State.GameState.setPlayers(String[]),6,5,29,22,"6,35%"
+"ch.unibas.dmi.dbis.cs108.server.core.State.GameState.setRunes(int, String)",4,6,19,13,"4,16%"
+"ch.unibas.dmi.dbis.cs108.server.core.State.GameState.setTile(int, int, Tile)",4,7,22,15,"4,81%"
+ch.unibas.dmi.dbis.cs108.server.core.State.GameState.toString(),0,0,10,10,"2,19%"
+"ch.unibas.dmi.dbis.cs108.server.core.events.ArtifactAcquiredEvent.ArtifactAcquiredEvent(Player, Artefact)",4,6,10,4,"29,41%"
+ch.unibas.dmi.dbis.cs108.server.core.events.ArtifactAcquiredEvent.getArtifact(),4,5,8,3,"23,53%"
+ch.unibas.dmi.dbis.cs108.server.core.events.ArtifactAcquiredEvent.getPlayer(),4,5,8,3,"23,53%"
+"ch.unibas.dmi.dbis.cs108.server.core.events.ArtifactActivatedEvent.ArtifactActivatedEvent(Player, Artefact)",4,6,10,4,"29,41%"
+ch.unibas.dmi.dbis.cs108.server.core.events.ArtifactActivatedEvent.getArtifact(),4,5,8,3,"23,53%"
+ch.unibas.dmi.dbis.cs108.server.core.events.ArtifactActivatedEvent.getPlayer(),4,5,8,3,"23,53%"
+ch.unibas.dmi.dbis.cs108.server.core.events.EventDispatcher.dispatch(GameEvent),4,5,10,5,"35,71%"
+ch.unibas.dmi.dbis.cs108.server.core.events.EventDispatcher.register(GameEventListener),4,5,8,3,"28,57%"
+ch.unibas.dmi.dbis.cs108.server.core.events.GameRoundEndedEvent.GameRoundEndedEvent(int),0,0,3,3,"33,33%"
+ch.unibas.dmi.dbis.cs108.server.core.events.GameRoundEndedEvent.getRoundNumber(),0,0,3,3,"33,33%"
+ch.unibas.dmi.dbis.cs108.server.core.events.GameRoundStartedEvent.GameRoundStartedEvent(int),0,0,3,3,"33,33%"
+ch.unibas.dmi.dbis.cs108.server.core.events.GameRoundStartedEvent.getRoundNumber(),0,0,3,3,"33,33%"
+"ch.unibas.dmi.dbis.cs108.server.core.events.StatueActivatedEvent.StatueActivatedEvent(Player, Statue, Outcome)",0,0,5,5,"25,00%"
+ch.unibas.dmi.dbis.cs108.server.core.events.StatueActivatedEvent.getOutcome(),0,0,3,3,"15,00%"
+ch.unibas.dmi.dbis.cs108.server.core.events.StatueActivatedEvent.getPlayer(),0,0,3,3,"15,00%"
+ch.unibas.dmi.dbis.cs108.server.core.events.StatueActivatedEvent.getStatue(),0,0,3,3,"15,00%"
+"ch.unibas.dmi.dbis.cs108.server.core.events.StructureUpgradedEvent.StructureUpgradedEvent(Player, Structure, int, int)",0,0,6,6,"25,00%"
+ch.unibas.dmi.dbis.cs108.server.core.events.StructureUpgradedEvent.getNewLevel(),0,0,3,3,"12,50%"
+ch.unibas.dmi.dbis.cs108.server.core.events.StructureUpgradedEvent.getPlayer(),0,0,3,3,"12,50%"
+ch.unibas.dmi.dbis.cs108.server.core.events.StructureUpgradedEvent.getPreviousLevel(),0,0,3,3,"12,50%"
+ch.unibas.dmi.dbis.cs108.server.core.events.StructureUpgradedEvent.getStructure(),0,0,3,3,"12,50%"
+"ch.unibas.dmi.dbis.cs108.server.core.events.TilePurchasedEvent.TilePurchasedEvent(Player, Tile)",0,0,4,4,"28,57%"
+ch.unibas.dmi.dbis.cs108.server.core.events.TilePurchasedEvent.getPlayer(),0,0,3,3,"21,43%"
+ch.unibas.dmi.dbis.cs108.server.core.events.TilePurchasedEvent.getTile(),0,0,3,3,"21,43%"
+"ch.unibas.dmi.dbis.cs108.server.core.events.TrapPlacedEvent.TrapPlacedEvent(Player, Tile)",1,0,5,4,"26,32%"
+ch.unibas.dmi.dbis.cs108.server.core.events.TrapPlacedEvent.getPlayer(),0,0,3,3,"15,79%"
+ch.unibas.dmi.dbis.cs108.server.core.events.TrapPlacedEvent.getTile(),0,0,3,3,"15,79%"
+"ch.unibas.dmi.dbis.cs108.server.core.events.TrapTriggeredEvent.TrapTriggeredEvent(Player, Tile)",1,0,5,4,"26,32%"
+ch.unibas.dmi.dbis.cs108.server.core.events.TrapTriggeredEvent.getTile(),0,0,3,3,"15,79%"
+ch.unibas.dmi.dbis.cs108.server.core.events.TrapTriggeredEvent.getTriggeredPlayer(),0,0,3,3,"15,79%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.Command.Command(String),4,7,18,11,"18,75%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.Command.checkArgumentsSize(),4,5,19,14,"19,79%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.Command.getArgs(),4,5,8,3,"8,33%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.Command.getCommand(),4,5,8,3,"8,33%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.Command.isValid(),9,5,24,14,"25,00%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.Command.toString(),4,5,10,5,"10,42%"
+"ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby.Lobby(String, int)",0,0,7,7,"3,52%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby.LobbyStatus.LobbyStatus(String),0,0,3,3,"25,00%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby.LobbyStatus.getStatus(),0,0,3,3,"25,00%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby.addPlayer(ClientHandler),0,0,9,9,"4,52%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby.broadcastMessage(String),0,0,5,5,"2,51%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby.endGame(),5,5,21,15,"10,55%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby.getGameLogic(),0,0,7,7,"3,52%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby.getId(),0,0,3,3,"1,51%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby.getPlayers(),0,0,3,3,"1,51%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby.getStatus(),0,0,3,3,"1,51%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby.handleAutomaticTurn(),3,3,14,11,"7,04%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby.isEmpty(),0,0,3,3,"1,51%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby.isFull(),0,0,3,3,"1,51%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby.listPlayers(),0,0,8,8,"4,02%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby.manualEndTurn(),5,3,13,8,"6,53%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby.removePlayer(ClientHandler),0,0,9,9,"4,52%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby.resetTurnTimer(),8,3,26,20,"13,07%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby.startGame(),3,0,28,27,"14,07%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby.toString(),0,0,9,9,"4,52%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.CommandHandler(ClientHandler),4,5,11,6,"1,55%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.getGameLogic(),5,5,12,6,"1,69%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.handleBuyStatue(Command),4,6,29,23,"4,09%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.handleBuyStructure(Command),4,6,26,20,"3,67%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.handleBuyTile(Command),4,6,37,31,"5,22%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.handleChangeName(Command),5,6,28,21,"3,95%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.handleCreateLobby(Command),6,6,22,16,"3,10%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.handleEndTurn(),4,5,16,11,"2,26%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.handleGetGameStatus(),4,5,16,11,"2,26%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.handleGetPrices(),6,5,18,12,"2,54%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.handleGlobalChatMessage(Command),4,6,12,6,"1,69%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.handleJoinLobby(Command),4,6,28,22,"3,95%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.handleLeaveLobby(),4,5,21,16,"2,96%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.handleListLobbies(),4,5,18,13,"2,54%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.handleListPlayers(Command),4,6,30,24,"4,23%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.handleLobbyMessage(Command),4,6,17,11,"2,40%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.handlePlaceStructure(Command),4,6,31,25,"4,37%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.handlePrivateMessage(Command),4,6,27,21,"3,81%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.handleRegister(Command),6,7,29,21,"4,09%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.handleStartGame(),4,5,18,13,"2,54%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.handleStartTurn(),4,5,16,11,"2,26%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.handleSynchronize(),5,5,9,3,"1,27%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.handleUpgradeStatue(Command),4,6,31,25,"4,37%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.handleUseFieldArtifact(Command),4,6,30,24,"4,23%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.handleUsePlayerArtifact(Command),4,6,31,25,"4,37%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.handleUseStatue(Command),4,6,32,26,"4,51%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.handleUseStructure(Command),4,6,32,26,"4,51%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.joinLobby(Lobby),4,5,11,6,"1,55%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.sendMessage(String),4,5,8,3,"1,13%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.setCurrentLobby(Lobby),4,5,9,4,"1,27%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.setLocalPlayer(Player),4,5,10,5,"1,41%"
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler.setLocalPlayerName(String),4,5,10,5,"1,41%"
+"ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler.ClientHandler(Socket, GameServer)",5,6,22,16,"5,74%"
+ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler.closeResources(),3,3,21,18,"5,48%"
+ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler.getCurrentLobby(),4,6,9,3,"2,35%"
+ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler.getPlayer(),4,5,8,3,"2,09%"
+ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler.getPlayerName(),4,5,8,3,"2,09%"
+ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler.getServer(),4,5,8,3,"2,09%"
+ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler.isRunning(),4,5,8,3,"2,09%"
+ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler.processMessage(String),9,8,160,151,"41,78%"
+ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler.run(),6,5,20,15,"5,22%"
+ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler.sendGlobalChatMessage(Command),4,5,8,3,"2,09%"
+ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler.sendMessage(String),5,5,23,18,"6,01%"
+ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler.sendPing(),4,4,14,10,"3,66%"
+ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler.setCurrentLobby(Lobby),4,6,9,3,"2,35%"
+ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler.setPlayer(Player),4,5,8,3,"2,09%"
+ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler.startGame(),3,3,6,3,"1,57%"
+ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler.stop(),3,3,6,3,"1,57%"
+ch.unibas.dmi.dbis.cs108.server.networking.GameServer.GameServer(int),0,0,7,7,"3,21%"
+ch.unibas.dmi.dbis.cs108.server.networking.GameServer.broadcast(String),4,5,10,5,"4,59%"
+ch.unibas.dmi.dbis.cs108.server.networking.GameServer.containsPlayerName(String),0,0,10,10,"4,59%"
+"ch.unibas.dmi.dbis.cs108.server.networking.GameServer.createLobby(String, int)",5,8,18,10,"8,26%"
+ch.unibas.dmi.dbis.cs108.server.networking.GameServer.getClients(),4,6,9,3,"4,13%"
+ch.unibas.dmi.dbis.cs108.server.networking.GameServer.getLobbies(),4,6,9,3,"4,13%"
+ch.unibas.dmi.dbis.cs108.server.networking.GameServer.getLobby(String),4,7,15,8,"6,88%"
+ch.unibas.dmi.dbis.cs108.server.networking.GameServer.listPlayers(),0,0,8,8,"3,67%"
+ch.unibas.dmi.dbis.cs108.server.networking.GameServer.pingClients(),3,3,13,10,"5,96%"
+ch.unibas.dmi.dbis.cs108.server.networking.GameServer.removeClient(ClientHandler),4,5,18,13,"8,26%"
+ch.unibas.dmi.dbis.cs108.server.networking.GameServer.removeLobby(Lobby),4,5,9,4,"4,13%"
+ch.unibas.dmi.dbis.cs108.server.networking.GameServer.shutdown(),5,3,36,32,"16,51%"
+ch.unibas.dmi.dbis.cs108.server.networking.GameServer.start(),5,3,29,25,"13,30%"
+ch.unibas.dmi.dbis.cs108.server.networking.GameServer.toString(),4,5,13,8,"5,96%"
+"ch.unibas.dmi.dbis.cs108.server.old.GameClient.GameClient(String, int)",4,6,11,5,"7,01%"
+ch.unibas.dmi.dbis.cs108.server.old.GameClient.connect(),8,5,37,30,"23,57%"
+ch.unibas.dmi.dbis.cs108.server.old.GameClient.disconnect(),5,5,14,9,"8,92%"
+ch.unibas.dmi.dbis.cs108.server.old.GameClient.handleRecievedChatMessage(Command),5,6,9,3,"5,73%"
+ch.unibas.dmi.dbis.cs108.server.old.GameClient.processMessage(String),4,6,43,37,"27,39%"
+ch.unibas.dmi.dbis.cs108.server.old.GameClient.sendMessage(String),5,5,10,5,"6,37%"
+ch.unibas.dmi.dbis.cs108.server.old.GameClient.sendPing(),5,6,14,8,"8,92%"
+ch.unibas.dmi.dbis.cs108.server.old.GameClient.start(),4,3,6,3,"3,82%"
+"ch.unibas.dmi.dbis.cs108.shared.entities.entities.ActiveTrap.ActiveTrap(int, int)",4,6,10,4,"55,56%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Board.Board(),7,6,10,4,"6,49%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Board.getTile(int),4,6,16,10,"10,39%"
+"ch.unibas.dmi.dbis.cs108.shared.entities.entities.Board.getTileByCoordinates(int, int)",5,7,14,7,"9,09%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Board.getTiles(),4,5,8,3,"5,19%"
+"ch.unibas.dmi.dbis.cs108.shared.entities.entities.Board.initBoard(int, int)",6,7,18,10,"11,69%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Board.resetTiles(),10,7,21,11,"13,64%"
+"ch.unibas.dmi.dbis.cs108.shared.entities.entities.Board.setTile(int, int, Tile)",5,7,14,7,"9,09%"
+"ch.unibas.dmi.dbis.cs108.shared.entities.entities.Board.setTileByCoordinates(int, int, Tile)",5,7,14,7,"9,09%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Board.setTiles(Tile[][]),4,5,8,3,"5,19%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Board.toString(),4,5,23,18,"14,94%"
+"ch.unibas.dmi.dbis.cs108.shared.entities.entities.FixedStructure.FixedStructure(int, String, String, String)",4,8,14,6,"19,44%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.FixedStructure.getDescription(),3,4,7,3,"9,72%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.FixedStructure.getId(),3,4,7,3,"9,72%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.FixedStructure.getName(),3,4,7,3,"9,72%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.FixedStructure.getUsage(),3,4,7,3,"9,72%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.GameRound.GameRound(),4,4,8,4,"11,76%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.GameRound.addPlayerRound(PlayerRound),4,5,8,3,"11,76%"
+"ch.unibas.dmi.dbis.cs108.shared.entities.entities.GameRound.executeRound(GameState, EventDispatcher, RuleProcessor)",6,8,15,6,"22,06%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.GameRound.getNumber(),4,5,8,3,"11,76%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.GameRound.nextRound(),3,3,6,3,"8,82%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.GameRound.setNumber(int),4,5,8,3,"11,76%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.Player(String),8,7,18,11,"6,64%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.addArtifact(Artefact),5,5,9,3,"3,32%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.addEnergy(int),4,5,12,7,"4,43%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.addOwnedStructure(Structure),3,3,6,3,"2,21%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.addOwnedTile(Tile),4,5,8,3,"2,95%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.addRunes(int),4,5,8,3,"2,95%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.getArtifacts(),4,4,7,3,"2,58%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.getEnergy(),4,5,8,3,"2,95%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.getId(),5,6,9,3,"3,32%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.getName(),4,5,8,3,"2,95%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.getOwnedStructures(),4,4,7,3,"2,58%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.getOwnedTiles(),4,4,7,3,"2,58%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.getPlayerID(),4,5,8,3,"2,95%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.getPlayer_id(),4,5,8,3,"2,95%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.getRunes(),4,5,8,3,"2,95%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.getShop(),4,5,8,3,"2,95%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.getStatue(),4,5,8,3,"2,95%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.removeArtifact(Artefact),4,5,8,3,"2,95%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.removeOwnedStructure(Structure),4,5,8,3,"2,95%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.removeRunes(int),4,5,8,3,"2,95%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.reset(),3,3,11,8,"4,06%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.setArtifacts(List<Artefact>),4,4,7,3,"2,58%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.setEnergy(int),4,5,8,3,"2,95%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.setName(String),4,5,8,3,"2,95%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.setOwnedStructures(List<Structure>),4,4,7,3,"2,58%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.setOwnedTiles(List<Tile>),4,4,7,3,"2,58%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.setRunes(int),4,5,8,3,"2,95%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.setShop(Shop),4,5,8,3,"2,95%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.setStatue(Statue),4,5,8,3,"2,95%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player.toString(),4,5,13,8,"4,80%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.PlayerRound.PlayerRound(),0,0,5,5,"13,51%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.PlayerRound.addCommand(Command),0,0,3,3,"8,11%"
+"ch.unibas.dmi.dbis.cs108.shared.entities.entities.PlayerRound.executeCommands(GameState, EventDispatcher)",0,0,5,5,"13,51%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.PlayerRound.getActivePlayer(),0,0,3,3,"8,11%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.PlayerRound.getCommands(),0,0,3,3,"8,11%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.PlayerRound.getNumber(),0,0,3,3,"8,11%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.PlayerRound.nextRound(),1,0,4,3,"10,81%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.PlayerRound.setActivePlayer(Player),0,0,3,3,"8,11%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.PlayerRound.setNumber(int),0,0,3,3,"8,11%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Shop.Shop(),0,0,6,6,"7,79%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Shop.blockStatue(),0,0,3,3,"3,90%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Shop.getBuyableStatues(),0,0,3,3,"3,90%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Shop.getBuyableStructures(),0,0,3,3,"3,90%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Shop.loadStatues(),1,0,20,19,"25,97%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Shop.loadStructures(),0,0,19,19,"24,68%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Shop.removeStructure(Structure),0,0,3,3,"3,90%"
+"ch.unibas.dmi.dbis.cs108.shared.entities.entities.Statue.Statue(int, String, String, String)",1,0,9,9,"16,36%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Statue.getDescription(),0,0,3,3,"5,45%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Statue.getLevel(),0,0,3,3,"5,45%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Statue.getName(),0,0,3,3,"5,45%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Statue.getPrice(),0,0,3,3,"5,45%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Statue.getStatueID(),0,0,3,3,"5,45%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Statue.getUpgradePrice(),0,0,3,3,"5,45%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Statue.getUseType(),0,0,3,3,"5,45%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Statue.setLevel(int),0,0,3,3,"5,45%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Statue.upgrade(),1,0,9,9,"16,36%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Statue.use(),1,0,3,2,"5,45%"
+"ch.unibas.dmi.dbis.cs108.shared.entities.entities.Structure.Structure(int, String, String, String, int)",1,0,9,8,"25,71%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Structure.getDescription(),0,0,3,3,"8,57%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Structure.getName(),0,0,3,3,"8,57%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Structure.getPrice(),0,0,3,3,"8,57%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Structure.getResourceValue(),0,0,3,3,"8,57%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Structure.getStructureID(),0,0,3,3,"8,57%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Structure.getUseType(),0,0,3,3,"8,57%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.Tile(TileBuilder),0,0,16,16,"8,70%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.TileBuilder.build(),0,0,3,3,"4,00%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.TileBuilder.setArtifact(Artefact),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.TileBuilder.setHasRiver(boolean),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.TileBuilder.setHasStructure(boolean),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.TileBuilder.setOwner(String),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.TileBuilder.setPrice(int),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.TileBuilder.setPurchased(boolean),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.TileBuilder.setResourceValue(int),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.TileBuilder.setStatue(Statue),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.TileBuilder.setStructure(Structure),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.TileBuilder.setTileID(int),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.TileBuilder.setTrap(ActiveTrap),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.TileBuilder.setWorld(String),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.TileBuilder.setX(int),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.TileBuilder.setY(int),0,0,4,4,"5,33%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.getArtifact(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.getHasStructure(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.getOwner(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.getPrice(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.getResourceValue(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.getStatue(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.getStructure(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.getTileID(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.getTrap(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.getWorld(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.getX(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.getY(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.hasRiver(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.isPurchased(),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.setArtifact(Artefact),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.setHasRiver(boolean),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.setHasStructure(boolean),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.setOwner(String),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.setPurchased(boolean),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.setResourceValue(int),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.setStatue(Statue),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.setStructure(Structure),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.setTrap(ActiveTrap),0,0,3,3,"1,63%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.toString(),0,0,8,8,"4,35%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.Artefact.Artefact(ArtefactData),4,5,13,8,"13,40%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.Artefact.getArtifactID(),4,5,8,3,"8,25%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.Artefact.getChance(),4,5,8,3,"8,25%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.Artefact.getDescription(),4,5,8,3,"8,25%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.Artefact.getEffect(),4,5,8,3,"8,25%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.Artefact.getName(),4,5,8,3,"8,25%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.Artefact.getUseType(),4,5,8,3,"8,25%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.Artefact.useArtifact(ArtefactData),4,5,6,1,"6,19%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.ArtefactData.getChance(),3,4,7,3,"12,96%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.ArtefactData.getDescription(),3,4,7,3,"12,96%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.ArtefactData.getEffect(),3,4,7,3,"12,96%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.ArtefactData.getId(),3,4,7,3,"12,96%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.ArtefactData.getName(),3,4,7,3,"12,96%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.ArtefactData.getUseType(),3,4,7,3,"12,96%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.ArtefactRepository.ArtefactRepository(),1,0,3,2,"2,63%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.ArtefactRepository.clearCache(),4,4,8,4,"7,02%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.ArtefactRepository.createArtefact(ArtefactData),4,6,9,3,"7,89%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.ArtefactRepository.getArtefactById(int),4,6,15,9,"13,16%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.ArtefactRepository.getInstance(),4,5,11,6,"9,65%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.ArtefactRepository.loadArtefactData(),4,5,30,25,"26,32%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.ArtefactRepository.loadArtefacts(),5,6,27,21,"23,68%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.behaviors.ArtefactBehavior.execute(Artefact),4,n/a,n/a,1,"50,00%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.behaviors.ArtefactBehaviorProvider.ArtefactBehaviorProvider(),4,4,7,3,"11,86%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.behaviors.ArtefactBehaviorProvider.executeArtefactBehavior(Artefact),4,5,8,3,"13,56%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.behaviors.ArtefactBehaviorProvider.getBehaviorFor(String),4,6,9,3,"15,25%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.behaviors.ArtefactBehaviorProvider.getInstance(),4,5,8,3,"13,56%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.behaviors.ArtefactBehaviorProvider.registerBehaviors(),5,4,9,4,"15,25%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.behaviors.DefaultArtefactBehavior.execute(Artefact),6,6,10,3,"62,50%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.behaviors.FreyjasNecklaceBehavior.execute(Artefact),4,4,8,3,"57,14%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.behaviors.FreyrsGoldenApple.execute(Artefact),3,4,9,5,"60,00%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.behaviors.OdinsEyeBehavior.execute(Artefact),1,0,4,3,"66,67%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Dwarf.Dwarf(StatueData),5,6,9,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Freyja.Freyja(StatueData),4,5,8,3,"57,14%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Freyr.Freyr(StatueData),4,5,8,3,"57,14%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Hel.Hel(StatueData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Joermungandr.Joermungandr(StatueData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Loki.Loki(StatueData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Nidhoeggr.Nidhoeggr(StatueData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Statue.Statue(StatueData),0,0,10,10,"22,73%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Statue.getBlessing(),0,0,3,3,"6,82%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Statue.getCost(),0,0,3,3,"6,82%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Statue.getCurse(),0,0,3,3,"6,82%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Statue.getDeal(),0,0,3,3,"6,82%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Statue.getDescription(),0,0,3,3,"6,82%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Statue.getId(),0,0,3,3,"6,82%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Statue.getName(),0,0,3,3,"6,82%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Statue.getUseType(),0,0,3,3,"6,82%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.StatueData.getBlessing(),0,0,3,3,"8,57%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.StatueData.getCost(),0,0,3,3,"8,57%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.StatueData.getCurse(),0,0,3,3,"8,57%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.StatueData.getDeal(),0,0,3,3,"8,57%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.StatueData.getDescription(),0,0,3,3,"8,57%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.StatueData.getId(),0,0,3,3,"8,57%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.StatueData.getName(),1,0,4,3,"11,43%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.StatueData.getUseType(),0,0,3,3,"8,57%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.StatueFactory.createStatue(StatueData),0,0,13,13,"86,67%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.StatueRepository.loadStructures(),0,0,20,20,"86,96%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Surtr.Surtr(StatueData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.Helgrindr.Helgrindr(StructureData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.HuginnAndMuninn.HuginnAndMuninn(StructureData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.Mimisbrunnr.Mimisbrunnr(StructureData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.RansHall.RansHall(StructureData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.RuneTable.RuneTable(StructureData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.Structure.Structure(StructureData),0,0,8,8,"23,53%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.Structure.getDescription(),0,0,3,3,"8,82%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.Structure.getId(),0,0,3,3,"8,82%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.Structure.getName(),0,0,3,3,"8,82%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.Structure.getPrice(),0,0,3,3,"8,82%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.Structure.getUsage(),0,0,3,3,"8,82%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.Structure.getUseType(),0,0,3,3,"8,82%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.StructureData.getCost(),0,0,3,3,"11,54%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.StructureData.getDescription(),0,0,3,3,"11,54%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.StructureData.getId(),0,0,3,3,"11,54%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.StructureData.getName(),0,0,3,3,"11,54%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.StructureData.getUsage(),0,0,3,3,"11,54%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.StructureData.getUseType(),0,0,3,3,"11,54%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.StructureFactory.createStructure(StructureData),0,0,12,12,"85,71%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.StructureRepository.loadStructures(),0,0,20,20,"86,96%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.SurtursSmeltery.SurtursSmeltery(StructureData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.Tree.Tree(StructureData),0,0,3,3,"60,00%"
+ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol.Commands.Commands(String),4,5,8,3,"4,79%"
+ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol.Commands.fromCommand(String),4,6,14,8,"8,38%"
+ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol.Commands.getCommand(),4,5,8,3,"4,79%"
+ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.PingFilter.isLoggable(LogRecord),0,0,4,4,"44,44%"
+ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.processMessage(String),4,n/a,n/a,1,"2,97%"
+ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.sendMessage(String),4,n/a,n/a,1,"2,97%"
+ch.unibas.dmi.dbis.cs108.shared.protocol.ErrorsAPI.Errors.Errors(String),4,5,8,3,"11,76%"
+ch.unibas.dmi.dbis.cs108.shared.protocol.ErrorsAPI.Errors.fromError(String),4,6,14,8,"20,59%"
+ch.unibas.dmi.dbis.cs108.shared.protocol.ErrorsAPI.Errors.getError(),4,5,8,3,"11,76%"
+
+Class,CLOC,JLOC,LOC
+StatueRepository,0,0,23
+ch.unibas.dmi.dbis.cs108.Main,10,10,30
+ch.unibas.dmi.dbis.cs108.SETTINGS,3,3,5
+ch.unibas.dmi.dbis.cs108.SETTINGS.Config,1,0,11
+ch.unibas.dmi.dbis.cs108.StartApps,25,13,96
+ch.unibas.dmi.dbis.cs108.client.app.ClientMain,17,16,70
+ch.unibas.dmi.dbis.cs108.client.app.GameApplication,166,155,222
+ch.unibas.dmi.dbis.cs108.client.app.MainLogic,12,0,54
+ch.unibas.dmi.dbis.cs108.client.communication.CommunicationMediator,57,41,334
+ch.unibas.dmi.dbis.cs108.client.core.Game,108,93,156
+ch.unibas.dmi.dbis.cs108.client.core.commands.BuyTileCommand,16,16,29
+ch.unibas.dmi.dbis.cs108.client.core.entities.Artefact,32,28,52
+ch.unibas.dmi.dbis.cs108.client.core.entities.ArtefactFactory,4,4,6
+ch.unibas.dmi.dbis.cs108.client.core.entities.Board,30,25,49
+ch.unibas.dmi.dbis.cs108.client.core.entities.ClientActiveTrap,10,10,18
+ch.unibas.dmi.dbis.cs108.client.core.entities.FixedStructure,51,51,77
+ch.unibas.dmi.dbis.cs108.client.core.entities.GameRound,42,40,68
+ch.unibas.dmi.dbis.cs108.client.core.entities.Player,52,51,116
+ch.unibas.dmi.dbis.cs108.client.core.entities.PlayerRound,1,0,37
+ch.unibas.dmi.dbis.cs108.client.core.entities.Shop,5,0,61
+ch.unibas.dmi.dbis.cs108.client.core.entities.Shop.StatueData,2,0,8
+ch.unibas.dmi.dbis.cs108.client.core.entities.Shop.StructureData,2,0,8
+ch.unibas.dmi.dbis.cs108.client.core.entities.Statue,0,0,24
+ch.unibas.dmi.dbis.cs108.client.core.entities.Structure,0,0,26
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile,3,0,109
+ch.unibas.dmi.dbis.cs108.client.core.entities.Tile.TileBuilder,0,0,75
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.Artefact,24,24,38
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.ArtefactData,24,24,46
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.ArtefactFactory,10,10,33
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.ArtefactRepository,9,9,22
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.AshesOfSurtr,10,10,15
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.BloodOfJoermungand,10,10,15
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.FenrirsBones,9,9,14
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.FenrirsChains,10,10,15
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.FlameOfMuspelheim,8,8,13
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.FragmentOfMjoelnir,8,8,13
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.FreyjasNecklace,8,8,13
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.FreyrsGoldenApple,8,8,13
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.HelsShadow,0,0,5
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.IceSplinterOfNiflheim,0,0,5
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.OdinsEye,0,0,5
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.TearOfYggdrasil,0,0,5
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.Dwarf,10,10,15
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.Freyja,8,8,13
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.Freyr,8,8,13
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.Hel,0,0,5
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.Joermungandr,0,0,5
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.Loki,0,0,5
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.Nidhoeggr,0,0,5
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.Statue,0,0,20
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.StatueData,1,0,35
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.StatueFactory,0,0,15
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue.Surtr,0,0,5
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.Helgrindr,0,0,5
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.HuginnAndMuninn,0,0,5
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.Mimisbrunnr,0,0,5
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.RansHall,0,0,5
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.RuneTable,0,0,5
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.Structure,0,0,16
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.StructureData,0,0,26
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.StructureFactory,0,0,14
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.StructureRepository,0,0,23
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.SurtursSmeltery,0,0,5
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures.Tree,0,0,5
+ch.unibas.dmi.dbis.cs108.client.core.events.ArtifactAcquiredEvent,20,20,34
+ch.unibas.dmi.dbis.cs108.client.core.events.ArtifactActivatedEvent,20,20,34
+ch.unibas.dmi.dbis.cs108.client.core.events.EventDispatcher,17,17,28
+ch.unibas.dmi.dbis.cs108.client.core.events.GameRoundEndedEvent,16,16,25
+ch.unibas.dmi.dbis.cs108.client.core.events.GameRoundStartedEvent,0,0,9
+ch.unibas.dmi.dbis.cs108.client.core.events.StatueActivatedEvent,0,0,19
+ch.unibas.dmi.dbis.cs108.client.core.events.StatueActivatedEvent.Outcome,0,0,1
+ch.unibas.dmi.dbis.cs108.client.core.events.StatuePurchasedEvent,0,0,19
+ch.unibas.dmi.dbis.cs108.client.core.events.StructurePurchasedEvent,0,0,19
+ch.unibas.dmi.dbis.cs108.client.core.events.StructureUpgradedEvent,0,0,24
+ch.unibas.dmi.dbis.cs108.client.core.events.TilePurchasedEvent,0,0,14
+ch.unibas.dmi.dbis.cs108.client.core.events.TrapPlacedEvent,5,0,19
+ch.unibas.dmi.dbis.cs108.client.core.events.TrapTriggeredEvent,5,0,19
+ch.unibas.dmi.dbis.cs108.client.core.game.GameEngine,36,33,59
+ch.unibas.dmi.dbis.cs108.client.core.game.GameLoop,3,3,5
+ch.unibas.dmi.dbis.cs108.client.core.game.Leaderboard,0,0,2
+ch.unibas.dmi.dbis.cs108.client.core.game.TurnManager,0,0,2
+ch.unibas.dmi.dbis.cs108.client.core.observer.PlayerStatus,0,0,2
+ch.unibas.dmi.dbis.cs108.client.core.rules.ResourceGenerationRule,2,0,16
+ch.unibas.dmi.dbis.cs108.client.core.rules.RuleProcessor,0,0,16
+ch.unibas.dmi.dbis.cs108.client.core.state.GameState,2,0,87
+ch.unibas.dmi.dbis.cs108.client.networking.NetworkController,2,0,220
+ch.unibas.dmi.dbis.cs108.client.networking.core.SocketNetworkClient,1,0,114
+ch.unibas.dmi.dbis.cs108.client.networking.events.ChatMessageEvent,27,27,51
+ch.unibas.dmi.dbis.cs108.client.networking.events.ChatMessageEvent.ChatType,15,15,21
+ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent,34,34,53
+ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent.ConnectionState,12,12,17
+ch.unibas.dmi.dbis.cs108.client.networking.events.ErrorEvent,31,31,55
+ch.unibas.dmi.dbis.cs108.client.networking.events.ErrorEvent.ErrorSeverity,15,15,21
+ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher,43,43,70
+ch.unibas.dmi.dbis.cs108.client.networking.events.LobbyEvent,0,0,24
+ch.unibas.dmi.dbis.cs108.client.networking.events.LobbyEvent.LobbyAction,0,0,3
+ch.unibas.dmi.dbis.cs108.client.networking.events.LobbyListEvent,0,0,14
+ch.unibas.dmi.dbis.cs108.client.networking.events.NameChangeResponseEvent,0,0,23
+ch.unibas.dmi.dbis.cs108.client.networking.events.NameChangedEvent,0,0,14
+ch.unibas.dmi.dbis.cs108.client.networking.events.NotificationEvent,0,0,14
+ch.unibas.dmi.dbis.cs108.client.networking.events.ReceiveCommandEvent,9,7,32
+ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator,8,0,221
+ch.unibas.dmi.dbis.cs108.client.ui.SceneManager,2,0,58
+ch.unibas.dmi.dbis.cs108.client.ui.SceneManager.SceneHolder,0,0,14
+ch.unibas.dmi.dbis.cs108.client.ui.SceneManager.SceneType,0,0,12
+ch.unibas.dmi.dbis.cs108.client.ui.components.UIComponent,5,5,22
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.BaseController,21,20,31
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController,167,102,529
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.LobbyScreenController,0,0,2
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.MainMenuController,0,0,15
+ch.unibas.dmi.dbis.cs108.client.ui.controllers.SettingsController,0,0,2
+ch.unibas.dmi.dbis.cs108.client.ui.events.ChatMessageEvent,18,18,32
+ch.unibas.dmi.dbis.cs108.client.ui.events.ConnectionStatusEvent,19,19,33
+ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent,31,31,54
+ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeRequestEvent,0,0,9
+ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeResponseEvent,0,0,19
+ch.unibas.dmi.dbis.cs108.client.ui.events.ReceiveCommandEvent,5,4,19
+ch.unibas.dmi.dbis.cs108.client.ui.events.SendChatEvent,1,0,22
+ch.unibas.dmi.dbis.cs108.client.ui.events.SendChatEvent.ChatType,0,0,3
+ch.unibas.dmi.dbis.cs108.client.ui.events.SendCommandEvent,0,0,14
+ch.unibas.dmi.dbis.cs108.client.ui.events.SendCommandEvent.CommandType,1,0,42
+ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus,0,0,31
+ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader,4,0,15
+ch.unibas.dmi.dbis.cs108.client.ui.utils.ThemeManager,6,0,77
+ch.unibas.dmi.dbis.cs108.client.ui.utils.ThemeManager.Theme,0,0,10
+ch.unibas.dmi.dbis.cs108.client.utils.ConfigLoader,5,5,7
+ch.unibas.dmi.dbis.cs108.client.utils.Logger,3,3,5
+ch.unibas.dmi.dbis.cs108.example.HelloWorld,3,3,8
+ch.unibas.dmi.dbis.cs108.example.HexMap,25,23,35
+ch.unibas.dmi.dbis.cs108.example.HexTile,37,37,59
+ch.unibas.dmi.dbis.cs108.example.gui.javafx.GUI,7,7,21
+ch.unibas.dmi.dbis.cs108.example.gui.javafx.Main,7,7,12
+ch.unibas.dmi.dbis.cs108.example.gui.swing.SwingGUI,8,3,21
+ch.unibas.dmi.dbis.cs108.server.app.ServerMain,9,9,26
+ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic,198,172,542
+ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.PlayerAction,4,4,15
+ch.unibas.dmi.dbis.cs108.server.core.State.GameState,155,148,457
+ch.unibas.dmi.dbis.cs108.server.core.events.ArtifactAcquiredEvent,20,20,34
+ch.unibas.dmi.dbis.cs108.server.core.events.ArtifactActivatedEvent,20,20,34
+ch.unibas.dmi.dbis.cs108.server.core.events.EventDispatcher,17,17,28
+ch.unibas.dmi.dbis.cs108.server.core.events.GameRoundEndedEvent,0,0,9
+ch.unibas.dmi.dbis.cs108.server.core.events.GameRoundStartedEvent,0,0,9
+ch.unibas.dmi.dbis.cs108.server.core.events.StatueActivatedEvent,0,0,19
+ch.unibas.dmi.dbis.cs108.server.core.events.StatueActivatedEvent.Outcome,0,0,1
+ch.unibas.dmi.dbis.cs108.server.core.events.StructureUpgradedEvent,0,0,24
+ch.unibas.dmi.dbis.cs108.server.core.events.TilePurchasedEvent,0,0,14
+ch.unibas.dmi.dbis.cs108.server.core.events.TrapPlacedEvent,5,0,19
+ch.unibas.dmi.dbis.cs108.server.core.events.TrapTriggeredEvent,5,0,19
+ch.unibas.dmi.dbis.cs108.server.core.structures.Command,40,35,96
+ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby,33,21,187
+ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby.LobbyStatus,0,0,12
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler,211,203,709
+ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler,120,112,383
+ch.unibas.dmi.dbis.cs108.server.networking.GameServer,65,60,218
+ch.unibas.dmi.dbis.cs108.server.old.GameClient,50,45,157
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.ActiveTrap,10,10,18
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.ArtefactFactory,3,3,4
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Board,75,67,154
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.FixedStructure,46,46,72
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.GameRound,42,40,68
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Player,151,146,271
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.PlayerRound,1,0,37
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Shop,2,0,62
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Shop.StatueData,0,0,8
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Shop.StructureData,0,0,7
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Statue,4,0,55
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Structure,1,0,35
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile,3,0,109
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.Tile.TileBuilder,0,0,75
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.Artefact,62,62,97
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.ArtefactData,28,28,54
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.ArtefactRepository,37,36,114
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.behaviors.ArtefactBehaviorProvider,38,37,59
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.behaviors.DefaultArtefactBehavior,11,10,16
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.behaviors.FreyjasNecklaceBehavior,9,8,14
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.behaviors.FreyrsGoldenApple,8,8,15
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.behaviors.OdinsEyeBehavior,1,0,6
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Dwarf,10,10,15
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Freyja,9,9,14
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Freyr,9,9,14
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Hel,0,0,5
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Joermungandr,0,0,5
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Loki,0,0,5
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Nidhoeggr,0,0,5
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Statue,0,0,44
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.StatueData,1,0,35
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.StatueFactory,0,0,15
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.StatueRepository,0,0,23
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue.Surtr,0,0,5
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.Helgrindr,0,0,5
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.HuginnAndMuninn,0,0,5
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.Mimisbrunnr,0,0,5
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.RansHall,0,0,5
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.RuneTable,0,0,5
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.Structure,0,0,34
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.StructureData,0,0,26
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.StructureFactory,0,0,14
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.StructureRepository,0,0,23
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.SurtursSmeltery,0,0,5
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures.Tree,0,0,5
+ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol,6,6,8
+ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol.Commands,119,112,167
+ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.PingFilter,3,3,9
+ch.unibas.dmi.dbis.cs108.shared.protocol.ErrorsAPI,3,3,5
+ch.unibas.dmi.dbis.cs108.shared.protocol.ErrorsAPI.Errors,43,43,68
+
+Interface,CLOC,JLOC,LOC,NCLOC
+ch.unibas.dmi.dbis.cs108.client.core.commands.Command,10,10,13,3
+ch.unibas.dmi.dbis.cs108.client.core.events.GameEvent,4,4,5,1
+ch.unibas.dmi.dbis.cs108.client.core.observer.GameEventListener,9,9,12,3
+ch.unibas.dmi.dbis.cs108.client.core.rules.Rule,0,0,4,4
+ch.unibas.dmi.dbis.cs108.client.networking.core.NetworkClient,26,29,33,7
+ch.unibas.dmi.dbis.cs108.client.networking.core.NetworkClient.MessageHandler,3,3,7,4
+ch.unibas.dmi.dbis.cs108.client.networking.events.Event,8,8,11,3
+ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher.EventListener,15,15,19,5
+ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus.EventListener,0,0,3,4
+ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic.PlayerActionHandler,4,4,8,4
+ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogicInterface,93,93,108,15
+ch.unibas.dmi.dbis.cs108.server.core.events.GameEvent,4,4,5,1
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.behaviors.ArtefactBehavior,9,9,12,3
+ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI,14,135,18,4
+
+Package,CLOC,CLOC(rec),JLOC,JLOC(rec),LOC,LOC(rec),LOCp,LOCp(rec),LOCt,LOCt(rec),NCLOC,NCLOCp,NCLOCp(rec),NCLOCt
+,n/a,801,n/a,3.070,n/a,12.294,n/a,12.294,n/a,0,n/a,n/a,11.268,n/a
+ch,n/a,771,n/a,3.070,n/a,11.179,n/a,11.179,n/a,0,n/a,n/a,10.465,n/a
+ch.unibas,n/a,771,n/a,3.070,n/a,11.179,n/a,11.179,n/a,0,n/a,n/a,10.465,n/a
+ch.unibas.dmi,n/a,771,n/a,3.070,n/a,11.179,n/a,11.179,n/a,0,n/a,n/a,10.465,n/a
+ch.unibas.dmi.dbis,n/a,771,n/a,3.070,n/a,11.179,n/a,11.179,n/a,0,n/a,n/a,10.465,n/a
+ch.unibas.dmi.dbis.cs108,0,771,26,3.070,151,11.179,151,11.179,0,0,141,141,10.465,0
+ch.unibas.dmi.dbis.cs108.client,n/a,548,n/a,1.277,n/a,5.468,n/a,5.468,n/a,0,n/a,n/a,4.934,n/a
+ch.unibas.dmi.dbis.cs108.client.app,0,25,171,171,375,375,375,375,0,0,352,352,352,0
+ch.unibas.dmi.dbis.cs108.client.communication,0,16,41,41,344,344,344,344,0,0,329,329,329,0
+ch.unibas.dmi.dbis.cs108.client.core,0,412,93,622,161,2.493,161,2.493,0,0,146,146,2.089,0
+ch.unibas.dmi.dbis.cs108.client.core.commands,0,352,28,34,111,414,111,414,0,0,56,56,62,0
+ch.unibas.dmi.dbis.cs108.client.core.commands.chat,0,297,6,6,303,303,303,303,0,0,6,6,6,0
+ch.unibas.dmi.dbis.cs108.client.core.entities,0,28,209,373,770,1.379,770,1.379,0,0,752,752,1.359,0
+ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts,0,0,138,138,292,292,292,292,0,0,292,292,292,0
+ch.unibas.dmi.dbis.cs108.client.core.entities.statue,0,1,26,26,182,182,182,182,0,0,181,181,181,0
+ch.unibas.dmi.dbis.cs108.client.core.entities.structures,0,1,0,0,135,135,135,135,0,0,134,134,134,0
+ch.unibas.dmi.dbis.cs108.client.core.events,0,10,77,77,306,306,306,306,0,0,296,296,296,0
+ch.unibas.dmi.dbis.cs108.client.core.game,0,3,36,36,79,79,79,79,0,0,76,76,76,0
+ch.unibas.dmi.dbis.cs108.client.core.observer,0,0,9,9,17,17,17,17,0,0,17,17,17,0
+ch.unibas.dmi.dbis.cs108.client.core.rules,0,2,0,0,46,46,46,46,0,0,44,44,44,0
+ch.unibas.dmi.dbis.cs108.client.core.state,0,2,0,0,91,91,91,91,0,0,89,89,89,0
+ch.unibas.dmi.dbis.cs108.client.networking,0,13,0,236,234,1.093,234,1.093,0,0,232,232,1.080,0
+ch.unibas.dmi.dbis.cs108.client.networking.core,0,1,29,29,165,165,165,165,0,0,164,164,164,0
+ch.unibas.dmi.dbis.cs108.client.networking.events,0,2,207,207,466,466,466,466,0,0,464,464,464,0
+ch.unibas.dmi.dbis.cs108.client.networking.protocol,0,8,0,0,228,228,228,228,0,0,220,220,220,0
+ch.unibas.dmi.dbis.cs108.client.ui,0,82,0,199,98,1.149,98,1.149,0,0,96,96,1.070,0
+ch.unibas.dmi.dbis.cs108.client.ui.components,0,0,5,5,28,28,28,28,0,0,28,28,28,0
+ch.unibas.dmi.dbis.cs108.client.ui.controllers,0,67,122,122,615,615,615,615,0,0,550,550,550,0
+ch.unibas.dmi.dbis.cs108.client.ui.events,0,3,72,72,299,299,299,299,0,0,297,297,297,0
+ch.unibas.dmi.dbis.cs108.client.ui.utils,0,10,0,0,109,109,109,109,0,0,99,99,99,0
+ch.unibas.dmi.dbis.cs108.client.utils,0,0,8,8,14,14,14,14,0,0,14,14,14,0
+ch.unibas.dmi.dbis.cs108.example,0,7,63,80,105,169,105,169,0,0,103,103,163,0
+ch.unibas.dmi.dbis.cs108.example.gui,n/a,5,n/a,17,n/a,64,n/a,64,n/a,0,n/a,n/a,60,n/a
+ch.unibas.dmi.dbis.cs108.example.gui.javafx,0,0,14,14,41,41,41,41,0,0,41,41,41,0
+ch.unibas.dmi.dbis.cs108.example.gui.swing,0,5,3,3,23,23,23,23,0,0,19,19,19,0
+ch.unibas.dmi.dbis.cs108.server,n/a,86,n/a,967,n/a,3.248,n/a,3.248,n/a,0,n/a,n/a,3.187,n/a
+ch.unibas.dmi.dbis.cs108.server.app,0,0,9,9,29,29,29,29,0,0,29,29,29,0
+ch.unibas.dmi.dbis.cs108.server.core,n/a,68,n/a,741,n/a,2.422,n/a,2.422,n/a,0,n/a,n/a,2.366,n/a
+ch.unibas.dmi.dbis.cs108.server.core.Logic,0,26,273,273,681,681,681,681,0,0,656,656,656,0
+ch.unibas.dmi.dbis.cs108.server.core.State,0,7,148,148,467,467,467,467,0,0,463,463,463,0
+ch.unibas.dmi.dbis.cs108.server.core.events,0,10,61,61,244,244,244,244,0,0,234,234,234,0
+ch.unibas.dmi.dbis.cs108.server.core.structures,0,25,56,259,310,1.030,310,1.030,0,0,298,298,1.013,0
+ch.unibas.dmi.dbis.cs108.server.core.structures.protocol,0,8,203,203,720,720,720,720,0,0,715,715,715,0
+ch.unibas.dmi.dbis.cs108.server.networking,0,13,172,172,625,625,625,625,0,0,622,622,622,0
+ch.unibas.dmi.dbis.cs108.server.old,0,5,45,45,172,172,172,172,0,0,170,170,170,0
+ch.unibas.dmi.dbis.cs108.shared,n/a,117,n/a,720,n/a,2.143,n/a,2.143,n/a,0,n/a,n/a,2.040,n/a
+ch.unibas.dmi.dbis.cs108.shared.entities,n/a,110,n/a,539,n/a,1.864,n/a,1.864,n/a,0,n/a,n/a,1.768,n/a
+ch.unibas.dmi.dbis.cs108.shared.entities.entities,0,110,313,539,1.088,1.864,1.088,1.864,0,0,999,999,1.768,0
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts,0,5,126,198,278,414,278,414,0,0,277,277,409,0
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.behaviors,0,4,72,72,136,136,136,136,0,0,132,132,132,0
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.statue,0,1,28,28,209,209,209,209,0,0,208,208,208,0
+ch.unibas.dmi.dbis.cs108.shared.entities.entities.structures,0,1,0,0,153,153,153,153,0,0,152,152,152,0
+ch.unibas.dmi.dbis.cs108.shared.protocol,0,7,181,181,279,279,279,279,0,0,272,272,272,0
+css,0,16,n/a,n/a,239,239,239,239,0,0,223,223,223,0
+fonts,n/a,n/a,n/a,n/a,n/a,296,n/a,296,n/a,0,n/a,n/a,n/a,n/a
+fonts.Cinzel,0,0,n/a,n/a,123,123,123,123,0,0,n/a,n/a,n/a,n/a
+fonts.Roboto,0,0,n/a,n/a,173,173,173,173,0,0,n/a,n/a,n/a,n/a
+fxml,0,14,n/a,n/a,313,313,313,313,0,0,313,313,313,0
+json,0,0,n/a,n/a,267,267,267,267,0,0,267,267,267,0
+sounds,0,0,n/a,n/a,0,0,0,0,0,0,n/a,n/a,n/a,n/a
+
+Module,JLOC,L(CSS),L(Groovy),L(HTML),L(J),L(JS),L(JSP),L(KT),L(XML),LOC,LOCp,LOCt,NCLOC,NCLOCp,NCLOCt
+SettlersOfAsgard.main,3.070,239,0,0,11.179,0,0,0,313,12.294,12.294,0,8.198,8.198,0
+
+FileType,LOC,NCLOC
+Cascading style sheet,239,223
+JSON,267,267
+Java,11.179,7.395
+Text,296,n/a
+XML,313,313
+
+Project,CLOC,JLOC,L(CSS),L(Groovy),L(HTML),L(J),L(JS),L(JSP),L(KT),L(XML),LOC,LOCp,LOCt,NCLOC,NCLOCp,NCLOCt
+project,3.871,3.070,239,0,0,11.179,0,0,0,313,12.294,12.294,0,8.198,8.198,0
+
