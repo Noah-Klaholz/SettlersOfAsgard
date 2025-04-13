@@ -195,7 +195,7 @@ public class GameServer {
     /**
      * Returns the lobby with the given id.
      *
-     * @param id
+     * @param id The string id of the lobby
      * @return The lobby with the given id or null if no lobby with that id exists
      * @see Lobby
      */
