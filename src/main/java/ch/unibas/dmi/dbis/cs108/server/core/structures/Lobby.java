@@ -101,7 +101,7 @@ public class Lobby {
             return false;
         }
 
-        if (players.size() != maxPlayers) {
+        if (!isFull()) {
             logger.warning("Could not start game in lobby " + id + ": " + players.size() + " players (expected " + maxPlayers + ")");
             return false;
         }
