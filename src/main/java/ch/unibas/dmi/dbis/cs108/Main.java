@@ -30,7 +30,7 @@ public class Main {
         String mode = args[0];
 
         if (mode.equalsIgnoreCase("server")) {
-            ServerMain.main(args[1]);
+            ServerMain.main(args);
         } else if (mode.equalsIgnoreCase("client")) {
             GameApplication.main(args);
         } else {

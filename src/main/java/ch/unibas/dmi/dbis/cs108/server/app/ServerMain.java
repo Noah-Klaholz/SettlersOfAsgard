@@ -15,11 +15,11 @@ public class ServerMain {
      * Main method for the server
      * Starts the server and adds a shutdown hook
      *
-     * @param portNr String indicating the port number
+     * @param args contains the portNr at index 0.
      */
-    public static void main(String portNr) {
+    public static void main(String[] args) {
         try {
-            int port = Integer.parseInt(portNr);
+            int port = Integer.parseInt(args[0]);
             GameServer server = new GameServer(port);
             new Thread(server::start).start();
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
