@@ -7,6 +7,7 @@ import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
+import ch.unibas.dmi.dbis.cs108.shared.protocol.ErrorsAPI;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -283,11 +284,16 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             return;
         }
         Command cmd = new Command(received, localPlayer);
+        logger.info(cmd + " from message: " + received);
         if (cmd.isValid()) {
             if (cmd.isAdministrative()) {
                 processAdminCommand(cmd);
-            } else if (Objects.equals(currentLobby.getStatus(), Lobby.LobbyStatus.IN_GAME.getStatus()) && ch.getGameLogic() != null) {
-                ch.getGameLogic().processCommand(cmd);
+            } else if (ch.getGameLogic() != null) {
+                if (Objects.equals(currentLobby.getStatus(), Lobby.LobbyStatus.IN_GAME.getStatus())) {
+                    ch.getGameLogic().processCommand(cmd);
+                } else {
+                    sendMessage("ERR$" + ErrorsAPI.Errors.NOT_IN_GAME.getError());
+                }
             } else {
                 sendMessage("ERR$106$NOT_IN_LOBBY");
             }

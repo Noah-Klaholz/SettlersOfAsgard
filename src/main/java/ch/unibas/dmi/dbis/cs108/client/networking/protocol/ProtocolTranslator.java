@@ -214,7 +214,7 @@ public class ProtocolTranslator {
     }
 
     public String formatPong(String playerName) {
-        return "OK$PING$" + playerName;
+        return Commands.PING.getCommand();
     }
 
     public String formatChangeName(String newName) {

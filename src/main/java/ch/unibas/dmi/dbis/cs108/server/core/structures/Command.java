@@ -32,7 +32,7 @@ public class Command {
         if (message == null || message.trim().isEmpty()) {
             logger.warning(ErrorsAPI.Errors.NULL_MESSAGE_RECIEVED.getError());
         } else {
-            String[] parts = message.split("//$", 2);
+            String[] parts = message.split("[$]");
             if (parts.length < 1) {
                 logger.warning(ErrorsAPI.Errors.INVALID_COMMAND.getError());
             }

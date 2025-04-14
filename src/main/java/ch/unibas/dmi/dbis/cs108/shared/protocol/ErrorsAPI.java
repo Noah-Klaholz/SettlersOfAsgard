@@ -34,6 +34,10 @@ public class ErrorsAPI {
          */
         NOT_IN_LOBBY("106$NOT_IN_LOBBY"),
         /**
+         * Error code for not in game
+         */
+        NOT_IN_GAME("106$NOT_IN_GAME"),
+        /**
          * Error code not your turn
          */
         NOT_PLAYER_TURN("106$NOT_PLAYER_TURN"),

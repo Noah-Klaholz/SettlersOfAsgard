@@ -355,7 +355,7 @@ public class CommandHandler {
     public boolean handleGlobalChatMessage(Command cmd) {
         String com = cmd.toString();
         com = com.replace("CHTL$", "CHTG$");
-        ch.sendGlobalChatMessage(new Command(com));
+        ch.sendGlobalChatMessage(new Command(com,localPlayer));
         return true;
     }
 
