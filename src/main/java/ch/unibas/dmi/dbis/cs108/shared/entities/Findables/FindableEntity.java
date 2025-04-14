@@ -58,6 +58,8 @@ public abstract class FindableEntity extends GameEntity {
         return "PLAYER".equals(targetType);
     }
 
+    //TODO find a way to implement actually finding an artifact
+
     /**
      * Loads entity data from a JSON object.
      * Extends the parent method to also load target type data.
