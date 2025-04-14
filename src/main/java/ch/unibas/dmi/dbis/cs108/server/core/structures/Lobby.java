@@ -210,6 +210,9 @@ public class Lobby {
         );
     }
 
+    /**
+     * Stops the TurnScheduler by resetting it.
+     */
     private void stopTurnScheduler() {
         if (turnScheduler != null) {
             turnScheduler.shutdownNow();
