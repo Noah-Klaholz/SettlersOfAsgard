@@ -77,6 +77,10 @@ public class Lobby {
         return id;
     }
 
+    /**
+     * Gets the players as a List of ClientHandlers.
+     * @return the current players in the Lobby.
+     */
     public List<ClientHandler> getPlayers() {
         return players;
     }
