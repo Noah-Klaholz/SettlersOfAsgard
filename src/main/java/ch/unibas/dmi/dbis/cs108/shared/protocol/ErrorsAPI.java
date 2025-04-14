@@ -10,6 +10,10 @@ public class ErrorsAPI {
      */
     public enum Errors {
         /**
+         * Error code for failed game command execution
+         */
+        GAME_COMMAND_FAILED("106$GAME_COMMAND_FAILED"),
+        /**
          * Error code player already exists
          */
         PLAYER_ALREADY_EXISTS("106$PLAYER_ALREADY_EXISTS"),

@@ -112,17 +112,17 @@ public class CommandProcessor {
         try {
             String playerName = params[0];
             if (playerName == null || playerName.isEmpty()) {
-                return formatError("Invalid player name");
+                return formatError(ErrorsAPI.Errors.PLAYER_DOES_NOT_EXIST.getError());
             }
 
             // Validate it's this player's turn
             if (!playerName.equals(gameState.getTurnManager().getPlayerTurn())) {
-                return formatError("Not your turn");
+                return formatError(ErrorsAPI.Errors.NOT_PLAYER_TURN.getError());
             }
 
             boolean success = gameState.getTurnManager().endTurn(playerName);
             if (!success) {
-                return formatError("Failed to end turn");
+                return formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError());
             }
             return formatSuccess("Turn ended for " + playerName + ", next player: " +
                     gameState.getTurnManager().getPlayerTurn());
