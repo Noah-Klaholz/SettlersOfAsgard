@@ -151,6 +151,10 @@ public class Lobby {
         return players.isEmpty();
     }
 
+    /**
+     * Returns the state of the Lobby (id, players, maxplayers, status) as a String.
+     * @return the state of the Lobby as a String.
+     */
     @Override
     public String toString() {
         return "Lobby{" +
