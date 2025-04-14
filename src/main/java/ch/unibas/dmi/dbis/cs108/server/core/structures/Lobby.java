@@ -113,14 +113,14 @@ public class Lobby {
                 .map(ClientHandler::getPlayerName)
                 .toArray(String[]::new);
 
-        this.gameLogic = new GameLogic(playerNames);
-        gameLogic.nextTurn();
+        this.gameLogic = new GameLogic();
+        gameLogic.startGame(playerNames);
 
         // Start automatic turn scheduler (runs every minute)
         turnScheduler.scheduleAtFixedRate(
                 () -> {
                     handleAutomaticTurn();
-                    broadcastMessage("TURN$" + gameLogic.getGameState().getPlayerTurn());},
+                    broadcastMessage("TURN$" + gameLogic.getTurnManager().getPlayerTurn());},
                 1,  // Initial delay (1 minute)
                 1,  // Period (1 minute)
                 TimeUnit.MINUTES
@@ -222,7 +222,7 @@ public class Lobby {
         turnScheduler.scheduleAtFixedRate(
                 () -> {
                     handleAutomaticTurn();
-                    broadcastMessage("TURN$" + gameLogic.getGameState().getPlayerTurn());},
+                    broadcastMessage("TURN$" + gameLogic.getTurnManager().getPlayerTurn());},
                 1,  // Initial delay (1 minute)
                 1,  // Period (1 minute)
                 TimeUnit.MINUTES
@@ -239,7 +239,7 @@ public class Lobby {
         }
 
         try {
-            gameLogic.nextTurn();
+            gameLogic.getTurnManager().nextTurn();
         } catch (Exception e) {
             logger.severe("Error during automatic turn: " + e.getMessage());
         }
