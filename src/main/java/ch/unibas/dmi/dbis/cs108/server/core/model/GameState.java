@@ -29,18 +29,34 @@ public class GameState {
         this.turnManager = new TurnManager(this, resourceManager);
     }
 
+    /**
+     * Gets the current state of the PlayerManager.
+     * @return The current object of the PlayerManager.
+     */
     public PlayerManager getPlayerManager() {
         return playerManager;
     }
 
+    /**
+     * Gets the current state of the BoardManager.
+     * @return The current object of the BoardManager.
+     */
     public BoardManager getBoardManager() {
         return boardManager;
     }
 
+    /**
+     * Gets the current state of the TurnManager.
+     * @return The current object of the TurnManager.
+     */
     public TurnManager getTurnManager() {
         return turnManager;
     }
 
+    /**
+     * Gets the current state of the StateLock.
+     * @return The current object of the StateLock.
+     */
     public ReadWriteLock getStateLock() {
         return stateLock;
     }

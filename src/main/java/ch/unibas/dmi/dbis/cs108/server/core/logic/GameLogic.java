@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.server.core.logic;
 
+import ch.unibas.dmi.dbis.cs108.server.core.model.PlayerManager;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.ArtifactActionHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.StatueActionHandler;
@@ -51,7 +52,8 @@ public class GameLogic implements GameLogicInterface {
     }
 
     /**
-     * Gets the gamestate with thread-safe access
+     * Gets the GameState with thread-safe access.
+     * @return the current object of the GameState.
      */
     public GameState getGameState() {
         gameLock.readLock().lock();
@@ -71,7 +73,8 @@ public class GameLogic implements GameLogicInterface {
     }
 
     /**
-     * @param players
+     * Starts the game.
+     * @param players the names of the players as an array of Strings.
      */
     @Override
     public void startGame(String[] players) {
@@ -117,14 +120,15 @@ public class GameLogic implements GameLogicInterface {
     }
 
     /**
-     * Sorts the players based on scores
+     * Sorts the players based on scores.
      */
     public void sortPlayersByScore(List<Player> players) {
         players.sort(Comparator.comparingInt(Player::getRunes).reversed());
     }
 
     /**
-     * Creates the final score message
+     * Creates the final score message.
+     * @return the final score message as a String.
      */
     public String createFinalScoreMessage() {
         List<Player> players = gameState.getPlayerManager().getPlayers();
@@ -138,49 +142,56 @@ public class GameLogic implements GameLogicInterface {
     }
 
     /**
-     * Buy a tile on the board
+     * Buy a tile on the board.
+     * @return if the action was successful.
      */
     public boolean buyTile(int x, int y, String playerName) {
         return tileActionHandler.buyTile(x, y, playerName);
     }
 
     /**
-     * Buy a structure
+     * Buy a structure.
+     * @return if the action was successful.
      */
     public boolean buyStructure(String structureId, String playerName) {
         return structureActionHandler.buyStructure(structureId, playerName);
     }
 
     /**
-     * Place a structure on the board
+     * Place a structure on the board.
+     * @return if the action was successful.
      */
     public boolean placeStructure(int x, int y, int structureId, String playerName) {
         return structureActionHandler.placeStructure(x, y, structureId, playerName);
     }
 
     /**
-     * Use a structure on the board
+     * Use a structure on the board.
+     * @return if the action was successful.
      */
     public boolean useStructure(int x, int y, int structureId, String useType, String playerName) {
         return structureActionHandler.useStructure(x, y, structureId, useType, playerName);
     }
 
     /**
-     * Buy a statue
+     * Buy a statue.
+     * @return if the action was successful.
      */
     public boolean buyStatue(String statueId, String playerName) {
         return statueActionHandler.buyStatue(statueId, playerName);
     }
 
     /**
-     * Upgrade a statue
+     * Upgrade a statue.
+     * @return if the action was successful.
      */
     public boolean upgradeStatue(int x, int y, String statueId, String playerName) {
         return statueActionHandler.upgradeStatue(x, y, statueId, playerName);
     }
 
     /**
-     * Use a statue
+     * Use a statue.
+     * @return if the action was successful.
      */
     public boolean useStatue(int x, int y, int statueId, String useType, String playerName) {
         return statueActionHandler.useStatue(x, y, statueId, useType, playerName);
@@ -188,13 +199,15 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Use a field artifact
+     * @return if the action was successful.
      */
     public boolean useFieldArtifact(int x, int y, int artifactId, String useType, String playerName) {
         return artifactActionHandler.useFieldArtifact(x, y, artifactId, useType, playerName);
     }
 
     /**
-     * Use a player artifact
+     * Use a player artifact.
+     * @return if the action was successful.
      */
     public boolean usePlayerArtifact(int artifactId, String targetPlayer, String useType, String playerName) {
         return artifactActionHandler.usePlayerArtifact(artifactId, targetPlayer, useType, playerName);
@@ -206,5 +219,53 @@ public class GameLogic implements GameLogicInterface {
      */
     public TurnManager getTurnManager() {
         return turnManager;
+    }
+
+    /**
+     * Gets the current state of the ResourceManager.
+     * @return The current ResourceManager object.
+     */
+    public ResourceManager getResourceManager() {
+        return resourceManager;
+    }
+
+    /**
+     * Gets the current state of the CommandProcessor.
+     * @return The current object of the CommandProcessor.
+     */
+    public CommandProcessor getCommandProcessor() {
+        return commandProcessor;
+    }
+
+    /**
+     * Gets the current state of the TileActionHandler.
+     * @return The current object of the TileActionHandler.
+     */
+    public TileActionHandler getTileActionHandler() {
+        return tileActionHandler;
+    }
+
+    /**
+     * Gets the current state of the StructureActionHandler.
+     * @return The current object of the StructureActionHandler.
+     */
+    public StructureActionHandler getStructureActionHandlerActionHandler() {
+        return structureActionHandler;
+    }
+
+    /**
+     * Gets the current state of the ArtifactActionHandler.
+     * @return The current object of the ArtifactActionHandler.
+     */
+    public ArtifactActionHandler getArtifactActionHandler() {
+        return artifactActionHandler;
+    }
+
+    /**
+     * Gets the current state of the StatueActionHandler.
+     * @return The current object of the StatueActionHandler.
+     */
+    public StatueActionHandler getStatueActionHandler() {
+        return statueActionHandler;
     }
 }
