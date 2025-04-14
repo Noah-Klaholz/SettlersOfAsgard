@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.core.events;
 
-import ch.unibas.dmi.dbis.cs108.shared.entities.Artefact;
-import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
+import ch.unibas.dmi.dbis.cs108.shared.entities.artefacts.Artefact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Player;
 
 /**
  * Event representing the acquisition of an artifact by a player.

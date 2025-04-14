@@ -1,6 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.server.core.logic;
 
-import ch.unibas.dmi.dbis.cs108.server.core.ClientHandler;
+import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.ArtifactActionHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.StatueActionHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.StructureActionHandler;
@@ -70,12 +70,11 @@ public class GameLogic implements GameLogicInterface {
         this.turnManager.setCommunicationApi(communicationApi);
     }
 
-    //TODO fix this method: Should handle startGame using a ClientHandler (player who started the game) and his lobbyplayers instead of a String of playernames!
     /**
-     * Initializes and starts a new game with thread safety
+     * @param players
      */
     @Override
-    public boolean startGame(ClientHandler client) {
+    public void startGame(String[] players) {
         gameLock.writeLock().lock();
         try {
             gameState.getPlayerManager().setPlayers(players);
@@ -85,13 +84,6 @@ public class GameLogic implements GameLogicInterface {
         } finally {
             gameLock.writeLock().unlock();
         }
-    }
-
-    /**
-     * @param players
-     */
-    @Override
-    public void startGame(String[] players) {
 
     }
 
