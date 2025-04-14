@@ -72,7 +72,8 @@ public class GameLogic implements GameLogicInterface {
     }
 
     /**
-     * @param players
+     * Starts the game.
+     * @param players the names of the players as an array of Strings.
      */
     @Override
     public void startGame(String[] players) {
