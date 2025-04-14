@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.core.model;
 
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
-import ch.unibas.dmi.dbis.cs108.shared.entities.artifacts.Artifact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 
 import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -33,7 +33,7 @@ public class GameStateSerializer {
             state.append("current_player=").append(gameState.getTurnManager().getPlayerTurn()).append(",");
 
             // Add player basic info
-            List<Player> players = gameState.getPlayerManager().getPlayers();
+            List<Player> players = gameState.getPlayers();
             for (Player player : players) {
                 state.append("player=").append(player.getName()).append(",");
             }
@@ -59,7 +59,7 @@ public class GameStateSerializer {
             status.append("turn=").append(gameState.getTurnManager().getPlayerTurn()).append(",");
 
             // Add player details
-            List<Player> players = gameState.getPlayerManager().getPlayers();
+            List<Player> players = gameState.getPlayers();
             status.append("players=");
             for (Player player : players) {
                 status.append(player.getName()).append("[");
@@ -71,7 +71,7 @@ public class GameStateSerializer {
                 // Add artifacts
                 status.append("artifacts[");
                 for (Artifact artifact : player.getArtifacts()) {
-                    status.append(artifact.getArtifactID()).append(",");
+                    status.append(artifact.getID()).append(",");
                 }
                 status.append("];");
             }
