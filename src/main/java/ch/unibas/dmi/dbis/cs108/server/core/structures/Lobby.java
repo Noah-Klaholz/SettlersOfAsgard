@@ -313,6 +313,11 @@ public class Lobby {
         }
     }
 
+    /**
+     * Sends a message to all clients when called. It sends:
+     * TURN$... when a player begins his turn.
+     * ENDR$... when a gameRound ends.
+     */
     private void broadcastTurnUpdate() {
         broadcastMessage("TURN$" + gameLogic.getTurnManager().getPlayerTurn());
         if (gameLogic.getTurnManager().isGameRoundComplete()) {
