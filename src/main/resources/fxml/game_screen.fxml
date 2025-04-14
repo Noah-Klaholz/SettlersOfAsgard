@@ -7,7 +7,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController"
-            stylesheets="/css/style.css">
+            stylesheets="/css/game-screen.css">
 
     <!-- Right: Chat panel with text wrapping -->
     <right>
