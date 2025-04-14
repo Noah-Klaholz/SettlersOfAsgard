@@ -119,16 +119,24 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Creates the final score message.
-     * @return the final score message as a String.
+     * @return the final score message as a String in the format:
+     * player1$score1$player2$score2$player3$score3$player4$score4
+     * (ordered from highest to lowest score)
      */
     public String createFinalScoreMessage() {
         List<Player> players = gameState.getPlayers();
         sortPlayersByScore(players);
 
-        StringBuilder result = new StringBuilder("FINAL_SCORE$");
+        StringBuilder result = new StringBuilder();
         for (Player player : players) {
-            result.append(player.getName()).append("=").append(player.getRunes()).append(",");
+            result.append(player.getName())
+                    .append("$")
+                    .append(player.getRunes())
+                    .append("$");
         }
+        // remove the last '$'
+        result.setLength(result.length() - 1);
+
         return result.toString();
     }
 
