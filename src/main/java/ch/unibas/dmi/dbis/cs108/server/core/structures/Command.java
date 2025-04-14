@@ -109,8 +109,14 @@ public class Command {
         return command + "$" + args;
     }
 
-    //TODO: Implement this method to show wether a command is a game command (false) or not (true)
     public boolean isAdministrative() {
-        return true;
+        return switch (commandType) {
+            case LISTLOBBIES, START, SHUTDOWN, SYNCHRONIZE, REGISTER, LEAVE, CHANGENAME, PING, EXIT, JOIN, CHATGLOBAL, CHATLOBBY, CHATPRIVATE, CREATELOBBY, LISTPLAYERS -> true;
+            case BUYSTRUCTURE, BUYSTATUE, GETGAMESTATUS, GETPRICES, STARTTURN, ENDTURN, BUYTILE, PLACESTRUCTURE, USEPLAYERARTIFACT, UPGRADESTATUE, USESTATUE, USESTRUCTURE, USEFIELDARTIFACT  -> false;
+            default -> {
+                logger.warning("Invalid Command " + command + " " + Arrays.toString(args));
+                yield false;
+            }
+        };
     }
 }
