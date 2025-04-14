@@ -29,6 +29,9 @@ public class Lobby {
      * Name of the Lobby (unique), serves as an ID.
      */
     private final String id;
+    /**
+     * The players, stored in a List of ClientHandlers.
+     */
     private final List<ClientHandler> players;
     private final int maxPlayers;
     private LobbyStatus status;
