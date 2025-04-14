@@ -1,52 +1,65 @@
-# IntelliJ IDEA
+# IDE - IntelliJ IDEA
 .idea/
 *.iml
 *.iws
 *.ipr
 .idea_modules/
-.idea/libraries/
-.idea/vcs.xml
-.idea/tasks.xml
-.idea/gradle.xml
-.idea/shelf/
-.idea/httpRequests/
-.idea/dataSources/
-.idea/dataSources.local.xml
-.idea/workspace.xml  # Only once
+out/
+httpRequests/
+dataSources/
+dataSources.local.xml
 
-# Editor-based HTTP Client requests
-/httpRequests/
-
-# Datasource local storage ignored files
-/dataSources/
-/dataSources.local.xml
-
-# Gradle
+# Build Systems - Gradle
 .gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
-gradle/wrapper/gradle-wrapper.properties
-gradle/wrapper/dists/
-gradle/wrapper/gradle-wrapper/
-gradle/wrapper/gradle-wrapper.tgz
-gradle/wrapper/gradle-wrapper.zip
+gradle-app.setting
+# Ensure gradle wrapper jar is not ignored
+!gradle/wrapper/gradle-wrapper.jar
 
-# Java/Kotlin
+# Java
 *.class
 *.jar
 *.war
 *.ear
+*.nar
+hs_err_pid*
+replay_pid*
 
-# Dependency Cache
-**/build/
-**/out/
-**/.gradle/
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+dist/
+downloads/
+eggs/
+.eggs/
 
-# Betriebssystem-spezifische Dateien
+# Compiled output
+bin/
+target/
+
+# Logs and databases
+*.log
+*.sqlite
+*.db
+
+# OS specific files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 
-# Logs und Temp-Dateien
-*.log  # Only once
-hs_err_pid*
+# Editor temporary/backup files
+*~
+*.bak
 *.swp
+*.tmp
