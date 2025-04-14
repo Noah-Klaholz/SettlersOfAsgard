@@ -1,6 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.core.state;
 
-import ch.unibas.dmi.dbis.cs108.client.core.entities.*;
+import ch.unibas.dmi.dbis.cs108.shared.entities.*;
 
 import java.util.ArrayList;
 import java.util.List;

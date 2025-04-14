@@ -1,6 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.core.game;
 
-import ch.unibas.dmi.dbis.cs108.client.core.entities.GameRound;
+import ch.unibas.dmi.dbis.cs108.shared.entities.GameRound;
 import ch.unibas.dmi.dbis.cs108.client.core.events.EventDispatcher;
 import ch.unibas.dmi.dbis.cs108.client.core.rules.ResourceGenerationRule;
 import ch.unibas.dmi.dbis.cs108.client.core.rules.RuleProcessor;
