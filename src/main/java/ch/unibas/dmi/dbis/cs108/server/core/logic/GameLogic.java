@@ -195,7 +195,8 @@ public class GameLogic implements GameLogicInterface {
     }
 
     /**
-     * Use a player artifact
+     * Use a player artifact.
+     * @return if the action was successful.
      */
     public boolean usePlayerArtifact(int artifactId, String targetPlayer, String useType, String playerName) {
         return artifactActionHandler.usePlayerArtifact(artifactId, targetPlayer, useType, playerName);
