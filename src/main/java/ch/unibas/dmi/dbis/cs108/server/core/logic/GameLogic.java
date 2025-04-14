@@ -181,7 +181,8 @@ public class GameLogic implements GameLogicInterface {
     }
 
     /**
-     * Use a statue
+     * Use a statue.
+     * @return if the action was successful.
      */
     public boolean useStatue(int x, int y, int statueId, String useType, String playerName) {
         return statueActionHandler.useStatue(x, y, statueId, useType, playerName);
