@@ -285,8 +285,8 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         if (cmd.isValid()) {
             if (cmd.isAdministrative()) {
                 processAdminCommand(cmd);
-            } else if (getCurrentLobby().getGameLogic() != null) {
-                getCurrentLobby().getGameLogic().processMessage(received);
+            } else if (ch.getGameLogic() != null) {
+                ch.getGameLogic().processMessage(received);
             } else {
                 sendMessage("ERR$106$NOT_IN_LOBBY");
             }
