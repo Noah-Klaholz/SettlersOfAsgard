@@ -146,7 +146,8 @@ public class GameLogic implements GameLogicInterface {
     }
 
     /**
-     * Buy a structure
+     * Buy a structure.
+     * @return if the action was successful.
      */
     public boolean buyStructure(String structureId, String playerName) {
         return structureActionHandler.buyStructure(structureId, playerName);
