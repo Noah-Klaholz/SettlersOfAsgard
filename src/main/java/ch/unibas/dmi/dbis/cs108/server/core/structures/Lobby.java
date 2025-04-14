@@ -25,6 +25,9 @@ public class Lobby {
      * Logger to log logging.
      */
     private static final Logger logger = Logger.getLogger(Lobby.class.getName());
+    /**
+     * Name of the Lobby (unique), serves as an ID.
+     */
     private final String id;
     private final List<ClientHandler> players;
     private final int maxPlayers;
