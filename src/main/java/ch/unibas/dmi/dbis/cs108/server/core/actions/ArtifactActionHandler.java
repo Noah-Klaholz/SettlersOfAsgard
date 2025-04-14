@@ -13,12 +13,12 @@ public class ArtifactActionHandler {
         this.gameLock = gameLock;
     }
 
-    public boolean useFieldArtifact(int x, int y, int artifactId, String useType, String playerName) {
+    public boolean useFieldArtifact(int x, int y, int artifactId, String playerName) {
         // Implementation will be added later
         return false;
     }
 
-    public boolean usePlayerArtifact(int artifactId, String targetPlayer, String useType, String playerName) {
+    public boolean usePlayerArtifact(int artifactId, String targetPlayer, String playerName) {
         // Implementation will be added later
         return false;
     }
