@@ -98,7 +98,7 @@ public class ThemeManager {
     }
 
     public enum Theme {
-        DEFAULT("/css/style.css");
+        DEFAULT("/css/game-screen.css");
 
         private final String cssPath;
 
