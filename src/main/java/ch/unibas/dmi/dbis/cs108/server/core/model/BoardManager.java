@@ -38,7 +38,10 @@ public class BoardManager {
             // Create and set tiles with default values
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
-                    Tile newTile = new Tile(x, y);
+                    Tile.TileBuilder tilebuilder = new Tile.TileBuilder();
+                    tilebuilder.setX(x);
+                    tilebuilder.setY(y);
+                    Tile newTile = new Tile(tilebuilder);
                     board.setTileByCoordinates(x, y, newTile);
                 }
             }
