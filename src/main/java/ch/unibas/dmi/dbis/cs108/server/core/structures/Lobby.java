@@ -50,6 +50,10 @@ public class Lobby {
      * The GameLogic corresponding to the game ongoing in the Lobby (only initialized when game starts).
      */
     private GameLogic gameLogic;
+
+    /**
+     * The turnScheduler responsible for automatically calling TurnManager.nextTurn() after a fixed time.
+     */
     private ScheduledExecutorService turnScheduler; // For automatic turns
 
     public Lobby(String id, int maxPlayers) {
