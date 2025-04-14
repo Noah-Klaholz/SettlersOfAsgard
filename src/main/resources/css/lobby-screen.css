@@ -1,0 +1,276 @@
+/* ===== Lobby Screen - Modern Norse Theme ===== */
+
+/* Base styles */
+.root {
+    -fx-base: #1e2538;
+    -fx-background: #1a2133;
+    -fx-control-inner-background: #2c3347;
+}
+
+/* Header styling */
+.header-panel {
+    -fx-background-color: linear-gradient(to bottom, #2a2f40, #1a2133);
+    -fx-border-width: 0 0 2px 0;
+    -fx-border-color: #e4c065;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 10, 0, 0, 3);
+}
+
+.screen-title {
+    -fx-font-family: "Cinzel", serif;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e4c065;
+}
+
+.player-name {
+    -fx-font-size: 14px;
+    -fx-text-fill: #e8e8e8;
+}
+
+.back-button {
+    -fx-background-color: rgba(228, 192, 101, 0.2);
+    -fx-text-fill: #e4c065;
+    -fx-border-color: #e4c065;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+}
+
+.back-button:hover {
+    -fx-background-color: rgba(228, 192, 101, 0.3);
+}
+
+/* Content styling */
+.content-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.content-pane .split-pane-divider {
+    -fx-background-color: rgba(228, 192, 101, 0.3);
+    -fx-padding: 0 1px 0 1px;
+}
+
+/* Left panel - Available Games */
+.lobby-panel {
+    -fx-background-color: rgba(26, 33, 51, 0.95);
+    -fx-background-radius: 5px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 8, 0, 0, 2);
+}
+
+.section-header {
+    -fx-font-family: "Cinzel", serif;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e4c065;
+    -fx-padding: 0 0 5 0;
+}
+
+.search-field {
+    -fx-background-color: rgba(44, 51, 71, 0.7);
+    -fx-text-fill: #e8e8e8;
+    -fx-prompt-text-fill: #9a9a9a;
+    -fx-border-color: rgba(228, 192, 101, 0.3);
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+}
+
+.refresh-button {
+    -fx-background-color: rgba(101, 149, 228, 0.3);
+    -fx-text-fill: #e8e8e8;
+    -fx-border-color: #6595e4;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+}
+
+.refresh-button:hover {
+    -fx-background-color: rgba(101, 149, 228, 0.5);
+}
+
+/* Table styling */
+.lobby-table {
+    -fx-background-color: rgba(44, 51, 71, 0.7);
+    -fx-border-color: rgba(228, 192, 101, 0.3);
+    -fx-border-radius: 3px;
+}
+
+.lobby-table .column-header {
+    -fx-background-color: rgba(101, 149, 228, 0.2);
+    -fx-border-color: transparent transparent rgba(228, 192, 101, 0.3) transparent;
+    -fx-text-fill: #e4c065;
+    -fx-font-weight: bold;
+}
+
+.lobby-table .table-cell {
+    -fx-text-fill: #e8e8e8;
+    -fx-border-color: transparent transparent rgba(76, 83, 102, 0.5) transparent;
+    -fx-padding: 5px;
+}
+
+.lobby-table .table-row-cell {
+    -fx-background-color: rgba(44, 51, 71, 0.4);
+}
+
+.lobby-table .table-row-cell:odd {
+    -fx-background-color: rgba(44, 51, 71, 0.6);
+}
+
+.lobby-table .table-row-cell:selected {
+    -fx-background-color: rgba(228, 192, 101, 0.3);
+}
+
+.placeholder-label {
+    -fx-text-fill: #9a9a9a;
+    -fx-font-style: italic;
+}
+
+/* Lobby creation controls */
+.lobby-name-field {
+    -fx-background-color: rgba(44, 51, 71, 0.7);
+    -fx-text-fill: #e8e8e8;
+    -fx-prompt-text-fill: #9a9a9a;
+    -fx-border-color: rgba(228, 192, 101, 0.3);
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+}
+
+.create-button {
+    -fx-background-color: rgba(62, 142, 62, 0.3);
+    -fx-text-fill: #b8e8b8;
+    -fx-border-color: #4eb34e;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+}
+
+.create-button:hover {
+    -fx-background-color: rgba(62, 142, 62, 0.5);
+}
+
+.join-button {
+    -fx-background-color: rgba(228, 192, 101, 0.3);
+    -fx-text-fill: #e4c065;
+    -fx-border-color: #e4c065;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+    -fx-font-weight: bold;
+}
+
+.join-button:hover {
+    -fx-background-color: rgba(228, 192, 101, 0.5);
+}
+
+.error-message {
+    -fx-text-fill: #ff7070;
+    -fx-font-size: 12px;
+}
+
+/* Right panel - Chat & Players */
+.right-panel {
+    -fx-background-color: rgba(26, 33, 51, 0.95);
+    -fx-background-radius: 5px;
+}
+
+/* Chat section */
+.chat-section {
+    -fx-background-color: rgba(44, 51, 71, 0.3);
+    -fx-background-radius: 5px;
+    -fx-border-color: rgba(228, 192, 101, 0.15);
+    -fx-border-radius: 5px;
+}
+
+.chat-list {
+    -fx-background-color: rgba(44, 51, 71, 0.7);
+    -fx-background-radius: 3px;
+    -fx-border-color: rgba(76, 83, 102, 0.8);
+    -fx-border-radius: 3px;
+}
+
+.chat-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #e8e8e8;
+    -fx-padding: 6px 8px;
+    -fx-border-color: transparent transparent rgba(76, 83, 102, 0.5) transparent;
+}
+
+.chat-list .list-cell:odd {
+    -fx-background-color: rgba(44, 51, 71, 0.3);
+}
+
+.chat-input {
+    -fx-background-color: rgba(44, 51, 71, 0.7);
+    -fx-text-fill: #e8e8e8;
+    -fx-prompt-text-fill: #9a9a9a;
+    -fx-border-color: rgba(228, 192, 101, 0.3);
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+}
+
+.send-button {
+    -fx-background-color: rgba(101, 149, 228, 0.3);
+    -fx-text-fill: #e8e8e8;
+    -fx-border-color: #6595e4;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+}
+
+.send-button:hover {
+    -fx-background-color: rgba(101, 149, 228, 0.5);
+}
+
+/* Players section */
+.players-section {
+    -fx-background-color: rgba(44, 51, 71, 0.3);
+    -fx-background-radius: 5px;
+    -fx-border-color: rgba(228, 192, 101, 0.15);
+    -fx-border-radius: 5px;
+    -fx-margin-top: 10px;
+}
+
+.player-list {
+    -fx-background-color: rgba(44, 51, 71, 0.7);
+    -fx-background-radius: 3px;
+    -fx-border-color: rgba(76, 83, 102, 0.8);
+    -fx-border-radius: 3px;
+}
+
+.player-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #e8e8e8;
+    -fx-padding: 6px 8px;
+    -fx-border-color: transparent transparent rgba(76, 83, 102, 0.5) transparent;
+}
+
+/* Host controls */
+.host-controls {
+    -fx-background-color: rgba(228, 192, 101, 0.1);
+    -fx-background-radius: 5px;
+    -fx-border-color: rgba(228, 192, 101, 0.3);
+    -fx-border-radius: 5px;
+    -fx-padding: 10px;
+}
+
+.settings-label {
+    -fx-text-fill: #e4c065;
+}
+
+.settings-combo {
+    -fx-background-color: rgba(44, 51, 71, 0.7);
+    -fx-text-fill: #e8e8e8;
+    -fx-prompt-text-fill: #e4c065;
+}
+
+.start-game-button {
+    -fx-background-color: rgba(62, 142, 62, 0.3);
+    -fx-text-fill: #b8e8b8;
+    -fx-border-color: #4eb34e;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.start-game-button:hover {
+    -fx-background-color: rgba(62, 142, 62, 0.5);
+}
