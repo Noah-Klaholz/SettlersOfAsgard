@@ -164,7 +164,7 @@ public class CommandProcessor {
 
             boolean success = gameLogic.buyStructure(structureId, playerName);
             return success ?
-                    formatSuccess(Commands.BUYSTRUCTURE.getCommand() + "$" + structureId) :
+                    formatSuccess(Commands.BUYSTRUCTURE.getCommand() + "$" + structureId + "$" + playerName) :
                     formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$BUYSTRUCTURE");
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error buying structure", e);
@@ -189,7 +189,7 @@ public class CommandProcessor {
 
             boolean success = gameLogic.placeStructure(x, y, structureId, playerName);
             return success ?
-                    formatSuccess(Commands.PLACESTRUCTURE.getCommand() + "$" + x + "$" + y + "$"  + structureId) :
+                    formatSuccess(Commands.PLACESTRUCTURE.getCommand() + "$" + x + "$" + y + "$"  + structureId + "$" + playerName) :
                     formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$PLACESTRUCTURE");
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error placing structure", e);
@@ -213,10 +213,8 @@ public class CommandProcessor {
             String playerName = cmd.getPlayer().getName();
 
             boolean success = gameLogic.useStructure(x, y, structureId, playerName);
-            return success ? formatSuccess("Structure used") :
-                    formatError("Failed to use structure");
-        } catch (NumberFormatException e) {
-            return formatError("Invalid coordinates or structure ID");
+            return success ? formatSuccess(Commands.USESTRUCTURE.getCommand() + "$" + x + "$" + y + "$" + structureId + "$" + playerName) :
+                    formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$USESTRUCTURE");
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error using structure", e);
             return formatError(e.getMessage());
@@ -226,20 +224,20 @@ public class CommandProcessor {
     /**
      * Process buy statue command
      */
-    private String handleBuyStatue(String[] params) {
+    private String handleBuyStatue(Command cmd) {
         try {
-            String[] parts = params.split(",");
-            if (parts.length != 2) {
-                return formatError("Invalid parameters for BUYSTATUE");
+            String[] parts = cmd.getArgs();
+            if (parts.length != 1) {
+                return formatError(ErrorsAPI.Errors.INVALID_PARAMETERS.getError() + "$BUYSTATUE");
             }
 
             String statueId = parts[0];
-            String playerName = parts[1];
+            String playerName = cmd.getPlayer().getName();
 
             boolean success = gameLogic.buyStatue(statueId, playerName);
             return success ?
-                    formatSuccess("Statue purchased: " + statueId) :
-                    formatError("Failed to buy statue");
+                    formatSuccess(Commands.BUYSTATUE.getCommand() + "$" + statueId + "$" + playerName) :
+                    formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$BUYSTATUE");
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error buying statue", e);
             return formatError(e.getMessage());
@@ -249,22 +247,21 @@ public class CommandProcessor {
     /**
      * Process upgrade statue command
      */
-    private String handleUpgradeStatue(String[] params) {
+    private String handleUpgradeStatue(Command cmd) {
         try {
-            String[] parts = params.split(",");
-            if (parts.length != 4) {
-                return formatError("Invalid parameters for UPGRADESTATUE");
+            String[] parts = cmd.getArgs();
+            if (parts.length != 3) {
+                return formatError(ErrorsAPI.Errors.INVALID_PARAMETERS.getError() + "$UPGRADESTATUE");
             }
 
             int x = Integer.parseInt(parts[0]);
             int y = Integer.parseInt(parts[1]);
             String statueId = parts[2];
-            String playerName = parts[3];
+            String playerName = cmd.getPlayer().getName();
 
             boolean success = gameLogic.upgradeStatue(x, y, statueId, playerName);
-            return success ? formatSuccess("Statue upgraded") : formatError("Failed to upgrade statue");
-        } catch (NumberFormatException e) {
-            return formatError("Invalid coordinates");
+            return success ? formatSuccess(Commands.BUYSTATUE.getCommand() + "$" + x + "$" + y + "$" + statueId + "$" + playerName) :
+                    formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$UPGRADESTATUE");
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error upgrading statue", e);
             return formatError(e.getMessage());
@@ -274,22 +271,21 @@ public class CommandProcessor {
     /**
      * Process use statue command
      */
-    private String handleUseStatue(String[] params) {
+    private String handleUseStatue(Command cmd) {
         try {
-            String[] parts = params.split(",");
-            if (parts.length != 5) {
-                return formatError("Invalid parameters for USESTATUE");
+            String[] parts = cmd.getArgs();
+            if (parts.length != 3) {
+                return formatError(ErrorsAPI.Errors.INVALID_PARAMETERS + "$USESTATUE");
             }
 
             int x = Integer.parseInt(parts[0]);
             int y = Integer.parseInt(parts[1]);
             int statueId = Integer.parseInt(parts[2]);
-            String playerName = parts[3];
+            String playerName = cmd.getPlayer().getName();
 
             boolean success = gameLogic.useStatue(x, y, statueId, playerName);
-            return success ? formatSuccess("Statue used") : formatError("Failed to use statue");
-        } catch (NumberFormatException e) {
-            return formatError("Invalid coordinates or statue ID");
+            return success ? formatSuccess(Commands.USESTATUE.getCommand() + "$" + x + "$" + y + "$" + statueId + "$" + playerName) :
+                    formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$USESTATUE");
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error using statue", e);
             return formatError(e.getMessage());
@@ -299,22 +295,22 @@ public class CommandProcessor {
     /**
      * Process use field artifact command
      */
-    private String handleUseFieldArtifact(String[] params) {
+    private String handleUseFieldArtifact(Command cmd) {
         try {
-            String[] parts = params.split(",");
-            if (parts.length != 5) {
-                return formatError("Invalid parameters for USEFIELDARTIFACT");
+            String[] parts = cmd.getArgs();
+            if (parts.length != 3) {
+                return formatError(ErrorsAPI.Errors.INVALID_PARAMETERS + "$USEFIELDARTIFACT");
             }
 
             int x = Integer.parseInt(parts[0]);
             int y = Integer.parseInt(parts[1]);
             int artifactId = Integer.parseInt(parts[2]);
-            String playerName = parts[3];
+            String playerName = cmd.getPlayer().getName();
 
             boolean success = gameLogic.useFieldArtifact(x, y, artifactId, playerName);
             return success ?
-                    formatSuccess("Field artifact used") :
-                    formatError("Failed to use field artifact");
+                    formatSuccess(Commands.USEFIELDARTIFACT.getCommand() + "$" + x + "$" + y + "$" + artifactId + "$" + playerName) :
+                    formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$USEFIELDARTIFACT");
         } catch (NumberFormatException e) {
             return formatError("Invalid coordinates or artifact ID");
         } catch (Exception e) {
@@ -326,23 +322,21 @@ public class CommandProcessor {
     /**
      * Process use player artifact command
      */
-    private String handleUsePlayerArtifact(String[] params) {
+    private String handleUsePlayerArtifact(Command cmd) {
         try {
-            String[] parts = params.split(",");
-            if (parts.length != 4) {
-                return formatError("Invalid parameters for USEPLAYERARTIFACT");
+            String[] parts = cmd.getArgs();
+            if (parts.length != 2) {
+                return formatError(ErrorsAPI.Errors.INVALID_PARAMETERS + "$USEPLAYERARTIFACT");
             }
 
             int artifactId = Integer.parseInt(parts[0]);
             String targetPlayer = parts[1];
-            String playerName = parts[2];
+            String playerName = cmd.getPlayer().getName();
 
             boolean success = gameLogic.usePlayerArtifact(artifactId, targetPlayer, playerName);
             return success ?
-                    formatSuccess("Player artifact used") :
-                    formatError("Failed to use player artifact");
-        } catch (NumberFormatException e) {
-            return formatError("Invalid artifact ID");
+                    formatSuccess(Commands.USEPLAYERARTIFACT.getCommand() + "$" + artifactId + "$" + targetPlayer + "$" + playerName) :
+                    formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$USEPLAYERARTIFACT");
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error using player artifact", e);
             return formatError(e.getMessage());

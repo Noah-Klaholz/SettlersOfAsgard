@@ -43,20 +43,20 @@ Dieser Befehl bedeutet, dass Spieler PL01 eine Struktur vom Typ "Castle" auf das
 | `OK`   | **S→C**       | Protokoll-Antwort bei erfolgreichen Befehlen                  | `[Arg1][$Arg2]...`                    | `OK$`                                 |
 
 ### Spielmechanik
-| Befehl | Richtung | Beschreibung                                            | Parameter                         | Beispiel                    |
-|--------|----------|---------------------------------------------------------|-----------------------------------|-----------------------------|
-| `TURN` | **S→C**  | Startet Zug des neuen Spielers, beendet den des alten   | `AlterSpieler$NeuerSpieler`       | `TURN$ThorOdinson$Freya`    |
-| `ENDT` | **C→S**  | Beendet Zug des alten Spielers, startet den nächsten    |                                   | `ENDT$`                     |
-| `BUYT` | **C→S**  | Kauft ein Feld an Koordinaten x,y                       | `X$Y`                             | `BUYT$1$2`                  |
-| `BYSR` | **C→S**  | Kauft eine Struktur                                     | `StrukturID`                      | `BYSR$1`                    |
-| `PLST` | **C→S**  | Baut Struktur an Koordinaten x,y                        | `X$Y$StrukturID`                  | `PLST$1$2$1`                |
-| `USSR` | **C→S**  | Eine Struktur verwenden                                 | `X$Y$StrukturID$ `                | `USSR$1$2$1 `               |
-| `BYST` | **C→S**  | Kaufen einer Statue                                     | `StatueID`                        | `BYST$1`                    |
-| `UPST` | **C→S**  | Aufwerten einer Statue                                  | `X$Y$StatueID`                    | `UPST$1$2$1`                |
-| `USTA` | **C→S**  | Benutzen einer Statue                                   | `X$Y$StatueID$UseType`            | `USTA$1$2$Freyr$Runes"`     |
-| `USPA` | **C→S**  | Benutzen eines Spieler-Artefakts (auf Spieler anwenden) | `ArtifactID$TargetPlayer$UseType` | `USPA$1$ThorOdninson$Runes` |
-| `USFA` | **C→S**  | Benutzen eines Feld-Artefakts (auf Feld anwenden)       | `X$Y$ArtifactID$UseType`          | `USFA$2$Runes`              |
-| `ENDG` | **S→C**  | Beenden des Spiels                                      |                                   | `ENDG$`                     |
+| Befehl | Richtung | Beschreibung                                            | Parameter                   | Beispiel                 |
+|--------|----------|---------------------------------------------------------|-----------------------------|--------------------------|
+| `TURN` | **S→C**  | Startet Zug des neuen Spielers, beendet den des alten   | `AlterSpieler$NeuerSpieler` | `TURN$ThorOdinson$Freya` |
+| `ENDT` | **C→S**  | Beendet Zug des alten Spielers, startet den nächsten    |                             | `ENDT$`                  |
+| `BUYT` | **C→S**  | Kauft ein Feld an Koordinaten x,y                       | `X$Y`                       | `BUYT$1$2`               |
+| `BYSR` | **C→S**  | Kauft eine Struktur                                     | `StrukturID`                | `BYSR$1`                 |
+| `PLST` | **C→S**  | Baut Struktur an Koordinaten x,y                        | `X$Y$StrukturID`            | `PLST$1$2$1`             |
+| `USSR` | **C→S**  | Eine Struktur verwenden                                 | `X$Y$StrukturID$ `          | `USSR$1$2$1 `            |
+| `BYST` | **C→S**  | Kaufen einer Statue                                     | `StatueID`                  | `BYST$1`                 |
+| `UPST` | **C→S**  | Aufwerten einer Statue                                  | `X$Y$StatueID`              | `UPST$1$2$1`             |
+| `USTA` | **C→S**  | Benutzen einer Statue                                   | `X$Y$StatueID$`             | `USTA$1$2$Freyr"`        |
+| `USPA` | **C→S**  | Benutzen eines Spieler-Artefakts (auf Spieler anwenden) | `ArtifactID$TargetPlayer`   | `USPA$1$ThorOdninson`    |
+| `USFA` | **C→S**  | Benutzen eines Feld-Artefakts (auf Feld anwenden)       | `X$Y$ArtifactID$UseType`    | `USFA$2$Runes`           |
+| `ENDG` | **S→C**  | Beenden des Spiels                                      |                             | `ENDG$`                  |
 
 ## 4. Fehlerbehandlung
 Eine allgemeine Fehlernachricht hat folgendes Format:  
@@ -78,7 +78,7 @@ Beispiel:
 
 ### Protokoll-Antwort bei erfolgreichen Befehlen
 Wenn ein Befehl korrekt verarbeitet wurde, schickt der Server eine Bestätigung zurück, damit der Client weiß, dass alles erfolgreich war. Diese Nachricht hat folgendes Format:  
-`OK$<Befehl>$[Parameter1]$[Parameter2]$...`  
-Die Parameter sind optional und hängen vom Befehl ab.
+`OK$<Befehl>$[Parameter1]$[Parameter2]$...$playerName`  
+Die Parameter sind optional und hängen vom Befehl ab, der SpielerName wird bspw. bei den GameCommands angehängt, damit die anderen Clients entsprechende Anzeigen machen können.
 Beispiel:  
 `OK$JOIN`
