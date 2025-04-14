@@ -153,7 +153,8 @@ public class GameLogic implements GameLogicInterface {
     }
 
     /**
-     * Place a structure on the board
+     * Place a structure on the board.
+     * @return if the action was successful.
      */
     public boolean placeStructure(int x, int y, int structureId, String playerName) {
         return structureActionHandler.placeStructure(x, y, structureId, playerName);
