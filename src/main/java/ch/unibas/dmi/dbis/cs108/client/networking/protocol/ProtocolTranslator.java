@@ -237,6 +237,10 @@ public class ProtocolTranslator {
         return "BUYT$" + x + "$" + y;
     }
 
+    public String formatBuyStructure(int structureID) {
+        return "BYST$" + "$" + structureID;
+    }
+
     public String formatPlaceStructure(int x, int y, int structureID) {
         return "PLST$" + x + "$" + y + "$" + structureID;
     }

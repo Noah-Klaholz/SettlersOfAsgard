@@ -1,6 +1,8 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities;
 
 import ch.unibas.dmi.dbis.cs108.shared.entities.artifacts.Artifact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.statue.Statue;
+import ch.unibas.dmi.dbis.cs108.shared.entities.structures.Structure;
 
 import java.util.ArrayList;
 import java.util.List;

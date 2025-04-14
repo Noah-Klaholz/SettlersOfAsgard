@@ -114,7 +114,7 @@ public class TurnManager {
         );
         // Structure income
         player.getOwnedStructures().forEach(structure -> {
-            int value = structure.getResourceValue(); //TODO wtf is this
+            int value = structure.getPrice();
             if (value <= 4) player.addEnergy(value);
             else player.addRunes(value);
         });

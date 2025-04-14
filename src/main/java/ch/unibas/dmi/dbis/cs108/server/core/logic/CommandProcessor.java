@@ -157,10 +157,10 @@ public class CommandProcessor {
                 return formatError(ErrorsAPI.Errors.INVALID_PARAMETERS.getError() + "$BUYSTRUCTURE");
             }
 
-            String structureId = parts[0];
+            int structureId = Integer.parseInt(parts[0]);
             String playerName = cmd.getPlayer().getName();
 
-            boolean success = gameLogic.buyStructure(structureId, playerName); //TODO this is currently a String, but it would make more sense to be an int
+            boolean success = gameLogic.buyStructure(structureId, playerName);
             return success ?
                     formatSuccess(Commands.BUYSTRUCTURE.getCommand() + "$" + structureId + "$" + playerName) :
                     formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$BUYSTRUCTURE");
