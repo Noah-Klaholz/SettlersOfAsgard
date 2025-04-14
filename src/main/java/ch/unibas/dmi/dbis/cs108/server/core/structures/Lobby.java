@@ -135,6 +135,10 @@ public class Lobby {
         return status.getStatus();
     }
 
+    /**
+     * Checks if the Lobby is full.
+     * @return if the Lobby is full.
+     */
     public boolean isFull() {
         return players.size() == maxPlayers;
     }
