@@ -52,7 +52,8 @@ public class GameLogic implements GameLogicInterface {
     }
 
     /**
-     * Gets the gamestate with thread-safe access
+     * Gets the GameState with thread-safe access.
+     * @return the current object of the GameState.
      */
     public GameState getGameState() {
         gameLock.readLock().lock();
