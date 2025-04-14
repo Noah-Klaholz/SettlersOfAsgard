@@ -38,13 +38,17 @@ public class GameState {
     }
 
     /**
-     * Gets the current state of the StatueActionHandler.
-     * @return The current object of the StatueActionHandler.
+     * Gets the current state of the BoardManager.
+     * @return The current object of the BoardManager.
      */
     public BoardManager getBoardManager() {
         return boardManager;
     }
 
+    /**
+     * Gets the current state of the TurnManager.
+     * @return The current object of the TurnManager.
+     */
     public TurnManager getTurnManager() {
         return turnManager;
     }
