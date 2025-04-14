@@ -15,7 +15,7 @@ public class MainLogic {
         // Initialize game state and board.
         GameState gameState = new GameState();
         Board board = gameState.getBoard();
-        board.initBoard(5);  // Create 5 fields.
+        board.initBoard(7,8);  // Create 5 fields.
 
         // Create players.
         Player alice = new Player("Alice");
