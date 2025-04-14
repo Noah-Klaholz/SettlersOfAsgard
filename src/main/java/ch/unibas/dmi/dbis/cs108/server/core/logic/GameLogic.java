@@ -207,4 +207,12 @@ public class GameLogic implements GameLogicInterface {
     public TurnManager getTurnManager() {
         return turnManager;
     }
+
+    /**
+     * Gets the current state of the ResourceManager.
+     * @return The current ResourceManager object.
+     */
+    public ResourceManager getResourceManager() {
+        return resourceManager;
+    }
 }
