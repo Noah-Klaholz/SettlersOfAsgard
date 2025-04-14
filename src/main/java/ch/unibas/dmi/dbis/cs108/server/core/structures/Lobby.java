@@ -267,6 +267,10 @@ public class Lobby {
         }
     }
 
+    /**
+     * Sends a message to every player in the Lobby.
+     * @param message The message to send.
+     */
     public void broadcastMessage(String message) {
         for (ClientHandler player : players) {
             player.sendMessage(message);
