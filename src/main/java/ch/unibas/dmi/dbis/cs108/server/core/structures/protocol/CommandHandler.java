@@ -1,8 +1,8 @@
 package ch.unibas.dmi.dbis.cs108.server.core.structures.protocol;
 
-import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Player;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
-import ch.unibas.dmi.dbis.cs108.server.core.State.GameState;
+import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
@@ -368,7 +368,7 @@ public class CommandHandler {
         if (ch.getCurrentLobby() != null && ch.getCurrentLobby().startGame()) {
             this.currentLobby = ch.getCurrentLobby();
             this.gameLogic = currentLobby.getGameLogic();
-            String startPlayerName = gameLogic.getGameState().getPlayerTurn();
+            String startPlayerName = gameLogic.getTurnManager().getPlayerTurn();
             currentLobby.broadcastMessage("STRT$" + startPlayerName);
             return true;
         } else {
@@ -386,7 +386,7 @@ public class CommandHandler {
     public boolean handleStartTurn() {
         try {
             this.currentLobby.manualEndTurn();
-            String turnPlayerName = gameLogic.getGameState().getPlayerTurn();
+            String turnPlayerName = gameLogic.getTurnManager().getPlayerTurn();
             currentLobby.broadcastMessage("TURN$" + turnPlayerName);
             return true;
         } catch (Exception e) {
