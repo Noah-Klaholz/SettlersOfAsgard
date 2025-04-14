@@ -139,7 +139,8 @@ public class GameLogic implements GameLogicInterface {
     }
 
     /**
-     * Buy a tile on the board
+     * Buy a tile on the board.
+     * @return if the action was successful.
      */
     public boolean buyTile(int x, int y, String playerName) {
         return tileActionHandler.buyTile(x, y, playerName);
