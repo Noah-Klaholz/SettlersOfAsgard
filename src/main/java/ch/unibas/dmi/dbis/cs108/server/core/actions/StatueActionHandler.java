@@ -23,7 +23,7 @@ public class StatueActionHandler {
         return false;
     }
 
-    public boolean useStatue(int x, int y, int statueId, String useType, String playerName) {
+    public boolean useStatue(int x, int y, int statueId, String playerName) {
         // Implementation will be added later
         return false;
     }
