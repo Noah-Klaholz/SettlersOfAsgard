@@ -45,8 +45,8 @@ Dieser Befehl bedeutet, dass Spieler PL01 eine Struktur vom Typ "Castle" auf das
 ### Spielmechanik
 | Befehl | Richtung | Beschreibung                                            | Parameter                         | Beispiel                    |
 |--------|----------|---------------------------------------------------------|-----------------------------------|-----------------------------|
-| `TURN` | **S→C**  | Startet Zug des neuen Spielers, beendet den des alten   | `Spielername`                     | `TURN$ThorOdinson`          |
-| `ENDT` | **C→S**  | Beendet Zug                                             |                                   | `ENDT$`                     |
+| `TURN` | **S→C**  | Startet Zug des neuen Spielers, beendet den des alten   | `AlterSpieler$NeuerSpieler`       | `TURN$ThorOdinson$Freya`    |
+| `ENDT` | **C→S**  | Beendet Zug des alten Spielers, startet den nächsten    |                                   | `ENDT$`                     |
 | `BUYT` | **C→S**  | Kauft ein Feld an Koordinaten x,y                       | `X$Y`                             | `BUYT$1$2`                  |
 | `BYSR` | **C→S**  | Kauft eine Struktur                                     | `StrukturID`                      | `BYSR$1`                    |
 | `PLST` | **C→S**  | Baut Struktur an Koordinaten x,y                        | `X$Y$StrukturID`                  | `PLST$1$2$1`                |

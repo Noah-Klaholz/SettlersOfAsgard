@@ -282,12 +282,12 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             sendMessage("ERR$103$Null");
             return;
         }
-        Command cmd = new Command(received);
+        Command cmd = new Command(received, localPlayer);
         if (cmd.isValid()) {
             if (cmd.isAdministrative()) {
                 processAdminCommand(cmd);
             } else if (Objects.equals(currentLobby.getStatus(), Lobby.LobbyStatus.IN_GAME.getStatus()) && ch.getGameLogic() != null) {
-                ch.getGameLogic().processCommand(cmd, localPlayer);
+                ch.getGameLogic().processCommand(cmd);
             } else {
                 sendMessage("ERR$106$NOT_IN_LOBBY");
             }

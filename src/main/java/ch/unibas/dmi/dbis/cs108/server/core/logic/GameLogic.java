@@ -95,9 +95,9 @@ public class GameLogic implements GameLogicInterface {
      * Process incoming message by delegating to CommandProcessor
      */
     @Override
-    public void processCommand(Command command, Player player) {
+    public void processCommand(Command command) {
         if (command != null) {
-            String response = commandProcessor.processCommand(command, player);
+            String response = commandProcessor.processCommand(command);
             if (communicationApi != null && response != null) {
                 communicationApi.sendMessage(response);
             }

@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.server.core.structures;
 
+import ch.unibas.dmi.dbis.cs108.shared.entities.Player;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.ErrorsAPI;
 
 import java.util.Arrays;
@@ -16,6 +17,7 @@ public class Command {
     private String command;
     private Commands commandType;
     private String[] args;
+    private Player player;
 
     /**
      * Creates a new command
@@ -23,8 +25,9 @@ public class Command {
      * @param message the String message
      *                Prints out error Message in case of wrong formatting of message
      *                Correct formatting: commandName$arg1$arg2$arg3
+     * @param player  the player who sent the command
      */
-    public Command(String message) {
+    public Command(String message, Player player) {
         logger.setFilter(new PingFilter());
         if (message == null || message.trim().isEmpty()) {
             logger.warning(ErrorsAPI.Errors.NULL_MESSAGE_RECIEVED.getError());
@@ -35,6 +38,7 @@ public class Command {
             }
 
             this.command = parts[0];
+            this.player = player;
             try {
                 this.commandType = Commands.fromCommand(command);
             } catch (IllegalArgumentException e) {
@@ -115,6 +119,15 @@ public class Command {
      */
     public String[] getArgs() {
         return args;
+    }
+
+    /**
+     * Gets the player
+     *
+     * @return the player
+     */
+    public Player getPlayer() {
+        return player;
     }
 
     /**

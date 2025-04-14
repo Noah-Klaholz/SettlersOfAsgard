@@ -50,7 +50,7 @@ public class ProtocolTranslator {
 
     public void processTurnMessage(String message) {
         String[] parts = message.split("\\$", 2);
-        if (parts.length > 1) {
+        if (parts.length > 2) {
             eventDispatcher.dispatchEvent(new ReceiveCommandEvent(message, Commands.STARTTURN));
         }
     }
@@ -230,7 +230,7 @@ public class ProtocolTranslator {
     }
 
     public String formatEndTurn() {
-        return "TURN$";
+        return "ENDT$";
     }
 
     public String formatBuyTile(int x, int y) {

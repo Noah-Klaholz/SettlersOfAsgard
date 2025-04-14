@@ -21,7 +21,7 @@ public class CommandProcessor {
     private final GameLogic gameLogic;
     private final GameRules gameRules;
     private final GameState gameState;
-    private final Map<Commands, Function<String[], String>> commandHandlers = new ConcurrentHashMap<>();
+    private final Map<Commands, Function<Command, String>> commandHandlers = new ConcurrentHashMap<>();
 
     // Use a single lock for state-changing commands to ensure consistency
     private final Object commandExecutionLock = new Object();
@@ -34,7 +34,6 @@ public class CommandProcessor {
     }
 
     private void registerCommandHandlers() {
-        commandHandlers.put(Commands.STARTTURN, this::handleStartTurn);
         commandHandlers.put(Commands.ENDTURN, this::handleEndTurn);
         commandHandlers.put(Commands.SYNCHRONIZE, this::handleSynchronize);
         commandHandlers.put(Commands.GETGAMESTATUS, this::handleGetGameStatus);
@@ -52,9 +51,9 @@ public class CommandProcessor {
     /**
      * Process a command message and return the response
      */
-    public String processCommand(Command command, Player player) {
+    public String processCommand(Command command) {
 
-        Function<String[], String> handler = commandHandlers.get(command.getCommandType());
+        Function<Command, String> handler = commandHandlers.get(command.getCommandType());
         if (handler == null) {
             return formatError(ErrorsAPI.Errors.UNHANDLED_COMMAND.getError() + command);
         }
@@ -62,13 +61,13 @@ public class CommandProcessor {
         try {
             if (isStateChangingCommand(command.getCommandType())) {
                 synchronized (commandExecutionLock) {
-                    if (!gameLogic.getTurnManager().getPlayerTurn().equals(player.getName())) {
+                    if (!gameLogic.getTurnManager().getPlayerTurn().equals(command.getPlayer().getName())) {
                         return formatError(ErrorsAPI.Errors.NOT_PLAYER_TURN.getError());
                     }
-                    return handler.apply(command.getArgs());
+                    return handler.apply(command);
                 }
             } else {
-                return handler.apply(command.getArgs());
+                return handler.apply(command);
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error processing command: " + command, e);
@@ -84,33 +83,11 @@ public class CommandProcessor {
     }
 
     /**
-     * Start a player's turn
-     */
-    private String handleStartTurn(String[] params) {
-        try {
-            String playerName = params[0];
-            if (playerName == null || playerName.isEmpty()) {
-                return formatError("Invalid player name");
-            }
-
-            // Validate turn order
-            if (!playerName.equals(gameState.getTurnManager().getPlayerTurn())) {
-                return formatError("Not your turn");
-            }
-
-            return formatSuccess("Turn started for " + playerName);
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Error starting turn", e);
-            return formatError(e.getMessage());
-        }
-    }
-
-    /**
      * End the current player's turn
      */
-    private String handleEndTurn(String[] params) {
+    private String handleEndTurn(Command cmd) {
         try {
-            String playerName = params[0];
+            String playerName = cmd.getPlayer().getName();
             if (playerName == null || playerName.isEmpty()) {
                 return formatError(ErrorsAPI.Errors.PLAYER_DOES_NOT_EXIST.getError());
             }
@@ -124,7 +101,7 @@ public class CommandProcessor {
             if (!success) {
                 return formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError());
             }
-            return formatSuccess("Turn ended for " + playerName + ", next player: " +
+            return formatSuccess(Commands.STARTTURN.getCommand() + "$" + playerName + "$" +
                     gameState.getTurnManager().getPlayerTurn());
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error ending turn", e);
@@ -135,37 +112,37 @@ public class CommandProcessor {
     /**
      * Synchronize game state
      */
-    private String handleSynchronize(String[] params) {
+    private String handleSynchronize(Command cmd) {
         return gameState.createStateMessage();
     }
 
     /**
      * Get detailed game status
      */
-    private String handleGetGameStatus(String[] params) {
+    private String handleGetGameStatus(Command cmd) {
         return gameState.createDetailedStatusMessage();
     }
 
     /**
      * Process buy tile command
      */
-    private String handleBuyTile(String[] params) {
+    private String handleBuyTile(Command cmd) {
         try {
-            String[] parts = params.split(",");
-            if (parts.length != 3) {
-                return formatError("Invalid parameters for BUYTILE");
+            String[] params = cmd.getArgs();
+            if (params.length != 2) {
+                return formatError(ErrorsAPI.Errors.INVALID_PARAMETERS.getError() + "$BUYTILE");
             }
 
-            int x = Integer.parseInt(parts[0]);
-            int y = Integer.parseInt(parts[1]);
-            String playerName = parts[2];
+            int x = Integer.parseInt(params[0]);
+            int y = Integer.parseInt(params[1]);
+            String playerName = cmd.getPlayer().getName();
 
             boolean success = gameLogic.buyTile(x, y, playerName);
             return success ?
-                    formatSuccess("Tile purchased at " + x + "," + y) :
-                    formatError("Failed to buy tile");
+                    formatSuccess("OK$" + Commands.BUYTILE.getCommand() + "$" + x + "$" + y + "$" + playerName) :
+                    formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$BUYTILE");
         } catch (NumberFormatException e) {
-            return formatError("Invalid coordinates");
+            return formatError(ErrorsAPI.Errors.INVALID_PARAMETERS.getError() + "$BUYTILE");
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error buying tile", e);
             return formatError(e.getMessage());
@@ -175,20 +152,20 @@ public class CommandProcessor {
     /**
      * Process buy structure command
      */
-    private String handleBuyStructure(String[] params) {
+    private String handleBuyStructure(Command cmd) {
         try {
-            String[] parts = params.split(",");
-            if (parts.length != 2) {
-                return formatError("Invalid parameters for BUYSTRUCTURE");
+            String[] parts = cmd.getArgs();
+            if (parts.length != 1) {
+                return formatError(ErrorsAPI.Errors.INVALID_PARAMETERS.getError() + "$BUYSTRUCTURE");
             }
 
             String structureId = parts[0];
-            String playerName = parts[1];
+            String playerName = cmd.getPlayer().getName();
 
             boolean success = gameLogic.buyStructure(structureId, playerName);
             return success ?
-                    formatSuccess("Structure purchased: " + structureId) :
-                    formatError("Failed to buy structure");
+                    formatSuccess("OK$" + Commands.BUYSTRUCTURE.getCommand() + "$" + structureId) :
+                    formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$BUYSTRUCTURE");
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error buying structure", e);
             return formatError(e.getMessage());
@@ -198,24 +175,22 @@ public class CommandProcessor {
     /**
      * Process place structure command
      */
-    private String handlePlaceStructure(String[] params) {
+    private String handlePlaceStructure(Command cmd) {
         try {
-            String[] parts = params.split(",");
-            if (parts.length != 4) {
-                return formatError("Invalid parameters for PLACESTRUCTURE");
+            String[] parts = cmd.getArgs();
+            if (parts.length != 3) {
+                return formatError(ErrorsAPI.Errors.INVALID_PARAMETERS.getError() + "$PLACESTRUCTURE");
             }
 
             int x = Integer.parseInt(parts[0]);
             int y = Integer.parseInt(parts[1]);
             int structureId = Integer.parseInt(parts[2]);
-            String playerName = parts[3];
+            String playerName = cmd.getPlayer().getName();
 
             boolean success = gameLogic.placeStructure(x, y, structureId, playerName);
             return success ?
-                    formatSuccess("Structure placed at " + x + "," + y) :
-                    formatError("Failed to place structure");
-        } catch (NumberFormatException e) {
-            return formatError("Invalid coordinates or structure ID");
+                    formatSuccess("OK$" + Commands.PLACESTRUCTURE.getCommand() + "$" + x + "$" + y + "$"  + structureId) :
+                    formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$PLACESTRUCTURE");
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error placing structure", e);
             return formatError(e.getMessage());
@@ -225,17 +200,17 @@ public class CommandProcessor {
     /**
      * Process use structure command
      */
-    private String handleUseStructure(String[] params) {
+    private String handleUseStructure(Command cmd) {
         try {
-            String[] parts = params.split(",");
-            if (parts.length != 5) {
+            String[] parts = cmd.getArgs();
+            if (parts.length != 3) {
                 return formatError("Invalid parameters for USESTRUCTURE");
             }
 
             int x = Integer.parseInt(parts[0]);
             int y = Integer.parseInt(parts[1]);
             int structureId = Integer.parseInt(parts[2]);
-            String playerName = parts[3];
+            String playerName = cmd.getPlayer().getName();
 
             boolean success = gameLogic.useStructure(x, y, structureId, playerName);
             return success ? formatSuccess("Structure used") : formatError("Failed to use structure");

@@ -54,6 +54,10 @@ public class ErrorsAPI {
          */
         UNHANDLED_COMMAND("106$UNHANDLED_COMMAND"),
         /**
+         * Error code for invalid parameters -> append commandname to the error message
+         */
+        INVALID_PARAMETERS("106$INVALID_PARAMETERS"),
+        /**
          * Error code for invalid commands
          */
         INVALID_COMMAND("106$INVALID_COMMAND"),

@@ -6,7 +6,7 @@ import ch.unibas.dmi.dbis.cs108.shared.entities.Player;
 public interface GameLogicInterface {
     void startGame(String[] players);
 
-    void processCommand(Command command, Player player);
+    void processCommand(Command command);
 
     void endGame();
 }
