@@ -189,6 +189,7 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Use a field artifact
+     * @return if the action was successful.
      */
     public boolean useFieldArtifact(int x, int y, int artifactId, String useType, String playerName) {
         return artifactActionHandler.useFieldArtifact(x, y, artifactId, useType, playerName);
