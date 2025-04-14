@@ -118,7 +118,7 @@ public class GameLogic implements GameLogicInterface {
     }
 
     /**
-     * Sorts the players based on scores
+     * Sorts the players based on scores.
      */
     public void sortPlayersByScore(List<Player> players) {
         players.sort(Comparator.comparingInt(Player::getRunes).reversed());
