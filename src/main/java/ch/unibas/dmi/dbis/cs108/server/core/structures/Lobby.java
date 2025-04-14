@@ -127,6 +127,10 @@ public class Lobby {
         return false;
     }
 
+    /**
+     * Gets the status of the Lobby.
+     * @return The status of the Lobby.
+     */
     public String getStatus() {
         return status.getStatus();
     }
