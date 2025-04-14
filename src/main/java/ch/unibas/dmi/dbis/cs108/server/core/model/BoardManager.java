@@ -35,16 +35,7 @@ public class BoardManager {
     public void initializeBoard(int width, int height) {
         stateLock.writeLock().lock();
         try {
-            // Create and set tiles with default values
-            for (int x = 0; x < width; x++) {
-                for (int y = 0; y < height; y++) {
-                    Tile.TileBuilder tilebuilder = new Tile.TileBuilder();
-                    tilebuilder.setX(x);
-                    tilebuilder.setY(y);
-                    Tile newTile = new Tile(tilebuilder);
-                    board.setTileByCoordinates(x, y, newTile);
-                }
-            }
+            board.initBoard(width, height);
             observerManager.notifyObservers(null);
         } finally {
             stateLock.writeLock().unlock();

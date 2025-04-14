@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.app;
 
 import ch.unibas.dmi.dbis.cs108.client.core.commands.BuyTileCommand;
-import ch.unibas.dmi.dbis.cs108.client.core.entities.*;
+import ch.unibas.dmi.dbis.cs108.shared.entities.*;
 import ch.unibas.dmi.dbis.cs108.client.core.events.*;
 import ch.unibas.dmi.dbis.cs108.client.core.game.GameEngine;
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
@@ -15,7 +15,7 @@ public class MainLogic {
         // Initialize game state and board.
         GameState gameState = new GameState();
         Board board = gameState.getBoard();
-        board.initBoard(5);  // Create 5 fields.
+        board.initBoard(7,8);  // Create 5 fields.
 
         // Create players.
         Player alice = new Player("Alice");
