@@ -1,630 +1,210 @@
-package ch.unibas.dmi.dbis.cs108.server.core.Logic;
+package ch.unibas.dmi.dbis.cs108.server.core.logic;
 
-import ch.unibas.dmi.dbis.cs108.server.core.State.GameState;
-import ch.unibas.dmi.dbis.cs108.shared.entities.entities.Structure;
-import ch.unibas.dmi.dbis.cs108.shared.entities.entities.*;
-import ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.Artefact;
+import ch.unibas.dmi.dbis.cs108.server.core.ClientHandler;
+import ch.unibas.dmi.dbis.cs108.server.core.actions.ArtifactActionHandler;
+import ch.unibas.dmi.dbis.cs108.server.core.actions.StatueActionHandler;
+import ch.unibas.dmi.dbis.cs108.server.core.actions.StructureActionHandler;
+import ch.unibas.dmi.dbis.cs108.server.core.actions.TileActionHandler;
+import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Player;
+import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Logger;
 
 /**
- * Implementation of the GameLogicInterface that provides the core game logic functionality.
- * This class handles all game mechanics including game flow, player turns, and player actions
- * such as buying tiles, placing structures, and using artifacts.
+ * Implementation of the GameLogicInterface with proper concurrency control.
+ * Acts as a facade coordinating specialized components.
  */
 public class GameLogic implements GameLogicInterface {
     private static final Logger LOGGER = Logger.getLogger(GameLogic.class.getName());
 
+    // Thread safety mechanism
+    private final ReadWriteLock gameLock = new ReentrantReadWriteLock();
+
+    private final GameState gameState;
+    private final CommandProcessor commandProcessor;
+    private final TurnManager turnManager;
+    private final ResourceManager resourceManager;
+    private final TileActionHandler tileActionHandler;
+    private final StructureActionHandler structureActionHandler;
+    private final StatueActionHandler statueActionHandler;
+    private final ArtifactActionHandler artifactActionHandler;
+
+    private CommunicationAPI communicationApi;
+
     /**
-     * Enum representing the various actions a player can take during their turn.
-     * This includes actions like buying tiles, placing structures, and using artifacts.
+     * Constructor initializes game with proper components
      */
-    public enum PlayerAction {
-        BUY_TILE,
-        PLACE_STRUCTURE,
-        USE_STRUCTURE,
-        BUY_STRUCTURE,
-        BUY_STATUE,
-        UPGRADE_STATUE,
-        USE_STATUE,
-        USE_FIELD_ARTIFACT,
-        USE_PLAYER_ARTIFACT
+    public GameLogic() {
+        this.gameState = new GameState();
+        this.resourceManager = new ResourceManager();
+        this.turnManager = gameState.getTurnManager();
+        this.tileActionHandler = new TileActionHandler(gameState, gameLock);
+        this.structureActionHandler = new StructureActionHandler(gameState, gameLock);
+        this.statueActionHandler = new StatueActionHandler(gameState, gameLock);
+        this.artifactActionHandler = new ArtifactActionHandler(gameState, gameLock);
+        this.commandProcessor = new CommandProcessor(this, new GameRules(gameState));
     }
 
     /**
-     * Functional interface for handling player actions.
-     * This allows for flexible action handling based on the action type.
-     */
-    @FunctionalInterface
-    private interface PlayerActionHandler {
-        boolean execute(Object... params);
-    }
-
-    /**
-     * Map to associate player actions with their respective handlers.
-     * This allows for dynamic handling of player actions based on the action type.
-     */
-    private final Map<PlayerAction, PlayerActionHandler> playerActionHandlers = new HashMap<>();
-
-    /**
-     * The current state of the game, including player information and game board.
-     */
-    private GameState gameState;
-
-    /**
-     * Constructor for GameLogic.
-     * Initializes the game state and starts a new game with the provided players.
-     *
-     * @param players Array of player names participating in the game
-     */
-    public GameLogic(String[] players) {
-        startGame(players);
-        registerActionHandlers();
-    }
-
-    /**
-     * Registers action handlers for various player actions.
-     */
-    private void registerActionHandlers() {
-        playerActionHandlers.put(PlayerAction.BUY_TILE, params -> buyTile((int)params[0], (int)params[1], (String)params[2]));
-        playerActionHandlers.put(PlayerAction.PLACE_STRUCTURE, params -> placeStructure((int)params[0], (int)params[1], (int)params[2], (String)params[3]));
-        playerActionHandlers.put(PlayerAction.USE_STRUCTURE, params -> useStructure((int)params[0], (int)params[1], (int)params[2], (String)params[3], (String)params[4]));
-        playerActionHandlers.put(PlayerAction.BUY_STRUCTURE, params -> buyStructure((String)params[0], (String)params[1]));
-        playerActionHandlers.put(PlayerAction.BUY_STATUE, params -> buyStatue((String)params[0], (String)params[1]));
-        playerActionHandlers.put(PlayerAction.UPGRADE_STATUE, params -> upgradeStatue((int)params[0], (int)params[1], (String)params[2], (String)params[3]));
-        playerActionHandlers.put(PlayerAction.USE_STATUE, params -> useStatue((int)params[0], (int)params[1], (int)params[2], (String)params[3], (String)params[4]));
-        playerActionHandlers.put(PlayerAction.USE_FIELD_ARTIFACT, params -> useFieldArtifact((int)params[0], (int)params[1], (int)params[2], (String)params[3], (String)params[4]));
-        playerActionHandlers.put(PlayerAction.USE_PLAYER_ARTIFACT, params -> usePlayerArtifact((int)params[0], (String)params[1], (String)params[2], (String)params[3]));
-    }
-
-    /**
-     * Executes a player action using the command pattern
-     *
-     * @param action The player action to execute
-     * @param params Parameters required for the action
-     * @return true if the action was successful, false otherwise
-     */
-    public boolean executeAction(PlayerAction action, Object... params) {
-        PlayerActionHandler handler = playerActionHandlers.get(action);
-        Player actionPlayer = getPlayerByName((String) params[params.length - 1]);
-        if (handler != null && actionPlayer.equals(gameState.getActivePlayer())) {
-            return handler.execute(params);
-        }
-        return false;
-    }
-
-    /**
-     * Get a player by name
-     *
-     * @param name the player's name
-     * @return the Player object corresponding to the name
-     */
-    public Player getPlayerByName(String name) {
-        return gameState.getPlayerList().stream()
-                .filter(player -> player.getName().equals(name))
-                .findFirst()
-                .orElse(null);
-    }
-
-    /**
-     * Gets the gamestate
-     *
-     * @return the gamestate
+     * Gets the gamestate with thread-safe access
      */
     public GameState getGameState() {
-        return gameState;
+        gameLock.readLock().lock();
+        try {
+            return gameState;
+        } finally {
+            gameLock.readLock().unlock();
+        }
     }
 
     /**
-     * Initializes and starts a new game.
-     * This method sets up the initial game state, including player order,
-     * game field configuration, and starting resources.
-     *
-     * @param players Array of player names participating in the game
+     * Set the communication API for notifying clients
+     */
+    public void setCommunicationApi(CommunicationAPI communicationApi) {
+        this.communicationApi = communicationApi;
+        this.turnManager.setCommunicationApi(communicationApi);
+    }
+
+    //TODO fix this method: Should handle startGame using a ClientHandler (player who started the game) and his lobbyplayers instead of a String of playernames!
+    /**
+     * Initializes and starts a new game with thread safety
+     */
+    @Override
+    public boolean startGame(ClientHandler client) {
+        gameLock.writeLock().lock();
+        try {
+            gameState.getPlayerManager().setPlayers(players);
+            gameState.getBoardManager().initializeBoard(10, 10);
+            gameState.getTurnManager().setGameRound(0);
+            gameState.getTurnManager().nextTurn();
+        } finally {
+            gameLock.writeLock().unlock();
+        }
+    }
+
+    /**
+     * @param players
      */
     @Override
     public void startGame(String[] players) {
-        gameState = new GameState();
-        gameState.setPlayers(players);
+
     }
 
     /**
-     * Finalizes and ends the current game.
-     * This method calculates final scores, determines the winner,
-     * and cleans up game resources.
+     * Process incoming message by delegating to CommandProcessor
+     */
+    @Override
+    public void processMessage(String message) {
+        if (message != null && !message.isEmpty()) {
+            String response = commandProcessor.processCommand(message);
+            if (communicationApi != null && response != null) {
+                communicationApi.sendMessage(response);
+            }
+        }
+    }
+
+    /**
+     * Finalizes and ends the current game with proper cleanup
      */
     @Override
     public void endGame() {
-        ArrayList<Player> players = gameState.getPlayerList();
-        sortPlayersByScore(players);
-        //todo: later: give players with same scores the same place
-        String place1st = players.get(0).getName();
-        String place2nd = players.get(1).getName();
-        String place3rd = players.get(2).getName();
-        System.out.println("Game ended successfully. Final standings are recorded.");
-        int i = 1;
-        for(Player player : players) {
-            System.out.println("#" + i + ": " + player.getName() + " has " + player.getRunes() + " runes.");
-            i++;
+        gameLock.writeLock().lock();
+        try {
+            gameState.reset();
+            if (communicationApi != null) {
+                communicationApi.sendMessage("GAME_ENDED");
+            }
+        } finally {
+            gameLock.writeLock().unlock();
         }
-        //cleanup
-        gameState.reset();
     }
 
     /**
-     * Sorts the players based on their scores (runes).
-     * This method sorts the players in descending order based on their runes.
-     *
-     * @param players List of players to be sorted
+     * Sorts the players based on scores
      */
     public void sortPlayersByScore(List<Player> players) {
-        Collections.sort(players, Comparator.comparingInt(Player::getRunes).reversed());
+        players.sort(Comparator.comparingInt(Player::getRunes).reversed());
     }
 
     /**
-     * Advances to the next player's turn automatically.
-     * Handles all turn initialization and round progression.
+     * Creates the final score message
      */
-    public void nextTurn() {
-        // If first turn of game, initialize
-        if (gameState.getPlayerTurn() == null) {
-            initializeFirstTurn();
-            return;
+    public String createFinalScoreMessage() {
+        List<Player> players = gameState.getPlayerManager().getPlayers();
+        sortPlayersByScore(players);
+
+        StringBuilder result = new StringBuilder("FINAL_SCORE$");
+        for (Player player : players) {
+            result.append(player.getName()).append("=").append(player.getRunes()).append(",");
         }
-
-        int nextPosition = (gameState.getPlayerRound() + 1) % gameState.getPlayerList().size();
-        boolean newRound = nextPosition == 0;
-
-        if (newRound) {
-            gameState.setGameRound(gameState.getGameRound() + 1);
-
-            // Check for game end condition (after 5 rounds)
-            if (gameState.getGameRound() > 5) {
-                endGame();
-                return;
-            }
-        }
-
-        gameState.setPlayerRound(nextPosition);
-        Player nextPlayer = gameState.getPlayerList().get(nextPosition);
-        gameState.setPlayerTurn(nextPlayer.getName());
-        resourcesIncome(nextPlayer);
-
+        return result.toString();
     }
 
     /**
-     * Provides resources to all players at the start of their turn.
-     * This method distributes resources based on owned tiles and structures.
-     * Structures: A value below 5 gives energy, any above gives runes: that is how it is determined which one is given
-     *
-     * @param player The player receiving resources
+     * Buy a tile on the board
      */
-    public void resourcesIncome(Player player){
-        //Tile income (Runes)
-        for(Tile tile : player.getOwnedTiles()) {
-            player.addRunes(tile.getResourceValue());
-        }
-        //Structure income (Runes, Energy)
-        for(Structure structure : player.getOwnedStructures()) {
-            if(structure.getResourceValue() <= 4){
-                player.addEnergy(structure.getResourceValue());
-            }
-            else {
-                player.addRunes(structure.getResourceValue());
-            }
-        }
-    }
-
-    /**
-     * Initializes the first turn of the game.
-     * This method sets the initial player, assigns starting resources,
-     * and prepares the game state for the first round.
-     *
-     */
-    private void initializeFirstTurn() {
-        List<Player> players = gameState.getPlayerList();
-
-        gameState.setGameRound(1);
-        gameState.setPlayerRound(0);
-        Player firstPlayer = gameState.getPlayerList().get(0);
-        gameState.setPlayerTurn(firstPlayer.getName());
-        //gameState.setActivePlayer(firstPlayer.getName());
-
-    }
-
-    /**
-     * Concludes a player's turn.
-     * This method finalizes any pending actions, applies end-of-turn effects,
-     * and transitions to the next player's turn.
-     *
-     */
-    @Override
-    public void endTurn() {
-        if (gameState.getPlayerTurn() == null) {
-            throw new IllegalStateException("No active turn to end");
-        }
-
-        nextTurn(); // Advance to next player
-    }
-
-    /**
-     * Processes a player's request to buy a tile at the specified coordinates.
-     * Validates the purchase against game rules and updates the game state
-     * if the purchase is successful.
-     *
-     * @param x The x-coordinate of the tile to purchase
-     * @param y The y-coordinate of the tile to purchase
-     * @param playerName The unique identifier of the player attempting to buy the tile
-     */
-    @Override
     public boolean buyTile(int x, int y, String playerName) {
-        Tile tile = gameState.getBoard().getTileByCoordinates(x, y);
-        if (tile == null || tile.isPurchased()) {
-            System.out.println(tile == null ? "Tile not found" : "Tile is already purchased");
-            return false;
-        }
-        //todo: later implement check: can only purchase max. 3 tiles per turn
-        Player player = findPlayerByName(playerName);
-        if (player == null || player.getRunes() < tile.getPrice()) {
-            System.out.println(player == null ? "Player not found" : "Not enough runes");
-            return false;
-        }
-
-        player.removeRunes(tile.getPrice());
-        tile.setPurchased(true);
-        player.addOwnedTile(tile);
-        System.out.println("Tile purchased");
-        return true;
-    }
-
-    public boolean buyStructure(int structureID, String playerName) {
-        //todo: change later: for demo purposes only
-        Structure demo = new Structure(structureID, "Mimisbrunnr", "...", "gift", 15);
-        for(Player player : gameState.getPlayerList()) {
-            //another check if structure exists in shop here?
-            if (player.getName().equals(playerName)) {
-                //this would be for proper implementation
-//                for (Structure structure : player.getOwnedStructures()) {
-//                    if (structure.getStructureID() == structureID) {
-//                        System.out.println("structure already owned");
-//                        return false;
-//                    }
-//                }
-                if(player.getRunes() < demo.getPrice()) {
-                    System.out.println("not enough runes");
-                    return false;
-                }
-                player.removeRunes(demo.getPrice());
-                player.addOwnedStructure(demo);
-                System.out.println("Structure purchased");
-                return true;
-            }
-        }
-        return false;
+        return tileActionHandler.buyTile(x, y, playerName);
     }
 
     /**
-     * Handles a player's request to place a structure at the specified coordinates.
-     * This method verifies the placement is valid according to game rules,
-     * deducts the required resources, and updates the game state with the new structure.
-     *
-     * @param x The x-coordinate where the structure will be placed
-     * @param y The y-coordinate where the structure will be placed
-     * @param structureID The identifier of the structure to place
-     * @param playerName The unique identifier of the player placing the structure
+     * Buy a structure
      */
-    @Override
-    public boolean placeStructure(int x, int y, int structureID, String playerName) {
-        Player player = findPlayerByName(playerName);
-        if (player == null) {
-            System.out.println("Player not found");
-            return false;
-        }
-        Structure structure = player.getOwnedStructures().stream()
-                .filter(s -> s.getStructureID() == structureID)
-                .findFirst()
-                .orElse(null);
-        if (structure == null) {
-            System.out.println("Structure not found");
-            return false;
-        }
-        Tile tile = gameState.getBoard().getTileByCoordinates(x, y);
-        if (tile == null || tile.isPurchased()) {
-            System.out.println(tile == null ? "Tile not found" : "Tile is already purchased");
-            return false;
-        }
-        if (tile.getHasStructure()) {
-            System.out.println("Tile already has structure");
-            return false;
-        }
-
-        player.removeOwnedStructure(structure);
-        tile.setStructure(structure);
-        tile.setHasStructure(true);
-        return true;
-
+    public boolean buyStructure(String structureId, String playerName) {
+        return structureActionHandler.buyStructure(structureId, playerName);
     }
 
     /**
-     * Processes a player's request to use a structure at the specified coordinates.
-     * This method validates the action, applies the structure's effects based on the use type,
-     * and updates the game state accordingly.
-     *
-     * @param x The x-coordinate of the structure to use
-     * @param y The y-coordinate of the structure to use
-     * @param structureID The identifier of the structure to use
-     * @param useType The specific way the structure should be used
-     * @param playerName The unique identifier of the player using the structure
+     * Place a structure on the board
      */
-    @Override
-    public boolean useStructure(int x, int y, int structureID, String useType, String playerName) {
-        Player player = findPlayerByName(playerName);
-        if (player == null) {
-            System.out.println("Player not found");
-            return false;
-        }
-        Structure structure = player.getOwnedStructures().stream()
-                .filter(s -> s.getStructureID() == structureID)
-                .findFirst()
-                .orElse(null);
-
-        if(structure == null) {
-            System.out.println("Structure not found");
-            return false;
-        }
-
-        //todo: later implement 1 time use per turn
-        //todo: later implement structure use
-        return true;
+    public boolean placeStructure(int x, int y, int structureId, String playerName) {
+        return structureActionHandler.placeStructure(x, y, structureId, playerName);
     }
 
     /**
-     * Handles a player's request to upgrade a statue at the specified coordinates.
-     * This method verifies the upgrade is valid, deducts the required resources,
-     * and enhances the statue's capabilities.
-     *
-     * @param x The x-coordinate of the statue to upgrade
-     * @param y The y-coordinate of the statue to upgrade
-     * @param statueID The identifier of the statue to upgrade
-     * @param playerName The unique identifier of the player upgrading the statue
+     * Use a structure on the board
      */
-    @Override
-    public boolean upgradeStatue(int x, int y, String statueID, String playerName) {
-        Player player = findPlayerByName(playerName);
-        if (player == null || !player.getStatue().getName().equals(statueID)) {
-            System.out.println(player == null ? "Player not found" : "Player does not own the statue");
-            return false;
-        }
-
-        Statue statue = player.getStatue();
-        if (player.getRunes() < statue.getPrice()) {
-            System.out.println("Not enough runes");
-            return false;
-        }
-
-        player.removeRunes(statue.getUpgradePrice());
-        boolean upgraded = statue.upgrade();
-        System.out.println(upgraded ? "Upgraded statue" : "Upgrade failed");
-        return upgraded;
-
+    public boolean useStructure(int x, int y, int structureId, String useType, String playerName) {
+        return structureActionHandler.useStructure(x, y, structureId, useType, playerName);
     }
 
     /**
-     * Processes a player's request to use a statue at the specified coordinates.
-     * This method validates the action, applies the statue's effects based on the use type,
-     * and updates the game state accordingly.
-     *
-     * @param x The x-coordinate of the statue to use
-     * @param y The y-coordinate of the statue to use
-     * @param statueID The identifier of the statue to use
-     * @param useType The specific way the statue should be used
-     * @param playerName The unique identifier of the player using the statue
+     * Buy a statue
      */
-    @Override
-    public boolean useStatue(int x, int y, int statueID, String useType, String playerName) {
-        Player player = findPlayerByName(playerName);
-        if (player == null) {
-            System.out.println("Player not found");
-            return false;
-        }
-        Statue statue = player.getStatue();
-        if (statue == null || statue.getStatueID() != statueID) {
-            System.out.println(statue == null ? "Statue not found" : "Player does not own statue");
-            return false;
-        }
-        statue.use();
-        return true;
+    public boolean buyStatue(String statueId, String playerName) {
+        return statueActionHandler.buyStatue(statueId, playerName);
     }
 
     /**
-     * Handles the activation of an artifact that affects the game field.
-     * This method applies the artifact's effects to the specified location
-     * and updates the game state accordingly.
-     *
-     * @param x The x-coordinate where the field artifact will be used
-     * @param y The y-coordinate where the field artifact will be used
-     * @param artifactID The identifier of the artifact to use
+     * Upgrade a statue
      */
-    @Override
-    public boolean useFieldArtifact(int x, int y, int artifactID, String useType, String playerName) {
-        for (Player player : gameState.getPlayerList()) {
-            if (player.getName().equals(playerName)) {
-                for (Artefact artefact : player.getArtifacts()) {
-                    if (artefact.getArtifactID() == artifactID) {
-                        if (gameState.getBoard().getTileByCoordinates(x, y) == null) {
-                            System.out.println("Tile not found");
-                            return false;
-                        }
-                        //todo: implement artifact effect
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+    public boolean upgradeStatue(int x, int y, String statueId, String playerName) {
+        return statueActionHandler.upgradeStatue(x, y, statueId, playerName);
     }
 
     /**
-     * Processes the activation of an artifact that directly affects a player.
-     * This method applies the artifact's effects to the specified player
-     * and updates the game state accordingly.
-     *
-     * @param artifactID The identifier of the artifact to use
-     * @param playerName The unique identifier of the player who will be affected
-     *
-     * @return true if action is valid, else false
+     * Use a statue
      */
-    @Override
-    public boolean usePlayerArtifact(int artifactID, String playerAimedAt, String useType, String playerName) {
-        for (Player player : gameState.getPlayerList()) {
-            if (player.getName().equals(playerName)) {
-                for (Artefact artefact : player.getArtifacts()) {
-                    if (artefact.getArtifactID() == artifactID) {
-                        //player owns the artifact
-                        //todo: change later: for demo purpose only
-                        //player.addRunes((int)artefact.getEffect());
-                        player.addRunes(2);
-                        for (Player otherPlayer : gameState.getPlayerList()) {
-                            if (otherPlayer.getName().equals(playerName)) {
-                                //todo: later implement use of player artifact
-                            }
-                        }
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+    public boolean useStatue(int x, int y, int statueId, String useType, String playerName) {
+        return statueActionHandler.useStatue(x, y, statueId, useType, playerName);
     }
 
     /**
-     * Processes a player's request to buy a statue.
-     * This method verifies the purchase is valid, deducts the required resources,
-     * and assigns the statue to the player.
-     *
-     * @param statueID The identifier of the statue to buy
-     * @param playerName The unique identifier of the player buying the statue
+     * Use a field artifact
      */
-    @Override
-    public boolean buyStatue(String statueID, String playerName) {
-        Player targetPlayer = null;
-        for (Player player : gameState.getPlayerList()) {
-            if (player.getName().equals(playerName)) {
-                targetPlayer = player;
-                break;
-            }
-        }
-        if (targetPlayer == null) {
-            System.out.println("Player not found.");
-            return false;
-        }
-
-        if (targetPlayer.getStatue() != null) {
-            System.out.println("Player already owns a statue.");
-            return false;
-        }
-
-        try {
-            int id = Integer.parseInt(statueID);
-            Shop shop = targetPlayer.getShop();
-            Statue targetStatue = null;
-
-            for (Statue statue : shop.getBuyableStatues()) {
-                if (statue.getStatueID() == id) {
-                    targetStatue = statue;
-                    break;
-                }
-            }
-
-            if (targetStatue == null) {
-                System.out.println("Statue not found in shop.");
-                return false;
-            }
-
-            int cost = targetStatue.getPrice();
-            if (targetPlayer.getRunes() >= cost) {
-                targetPlayer.removeRunes(cost);
-                targetPlayer.setStatue(targetStatue);
-                shop.blockStatue();
-                System.out.println("Statue purchased successfully.");
-                return true;
-            } else {
-                System.out.println("Insufficient runes to buy statue.");
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid statue ID provided.");
-        }
-        return false;
+    public boolean useFieldArtifact(int x, int y, int artifactId, String useType, String playerName) {
+        return artifactActionHandler.useFieldArtifact(x, y, artifactId, useType, playerName);
     }
 
     /**
-     * Processes a player's request to buy a structure.
-     * This method verifies the purchase is valid, deducts the required resources,
-     * and assigns the structure to the player.
-     *
-     * @param structureID The identifier of the structure to buy
-     * @param playerName The unique identifier of the player buying the structure
+     * Use a player artifact
      */
-    public boolean buyStructure(String structureID, String playerName) {
-        Player player = null;
-        for (Player p : gameState.getPlayerList()) {
-            if (p.getName().equals(playerName)) {
-                player = p;
-                break;
-            }
-        }
-
-        if (player == null) {
-            System.out.println("Player not found.");
-            return false;
-        }
-
-        int id;
-        try {
-            id = Integer.parseInt(structureID);
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid structure ID provided.");
-            return false;
-        }
-
-        Shop shop = player.getShop();
-        Structure targetStructure = null;
-
-        for (Structure structure : shop.getBuyableStructures()) {
-            if (structure.getStructureID() == id) {
-                targetStructure = structure;
-                break;
-            }
-        }
-
-        if (targetStructure == null) {
-            System.out.println("Structure not found in shop.");
-            return false;
-        }
-
-        // Check if player has enough runes
-        int price = targetStructure.getPrice();
-        if (player.getRunes() >= price) {
-            player.removeRunes(price);
-            player.addOwnedStructure(targetStructure);
-            shop.removeStructure(targetStructure);
-            System.out.println("Structure purchased successfully.");
-            return true;
-        } else {
-            System.out.println("Insufficient runes to buy structure.");
-        }
-        return false;
+    public boolean usePlayerArtifact(int artifactId, String targetPlayer, String useType, String playerName) {
+        return artifactActionHandler.usePlayerArtifact(artifactId, targetPlayer, useType, playerName);
     }
-
-    /**
-     * Gets the player Object by looking for the name.
-     *
-     * @param name the player's name
-     * @return the Player Object corresponding to the name
-     */
-    private Player findPlayerByName(String name) {
-        return gameState.getPlayerList().stream().filter(p -> p.getName().equals(name)).findFirst().orElse(null);
-    }
-
 }

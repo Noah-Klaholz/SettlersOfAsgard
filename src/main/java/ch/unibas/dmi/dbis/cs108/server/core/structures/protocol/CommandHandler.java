@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.core.structures.protocol;
 
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
-import ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic;
+import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.core.State.GameState;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;

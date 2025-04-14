@@ -1,6 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.server.core.events;
 
-import ch.unibas.dmi.dbis.cs108.client.core.entities.Artefact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Artefact;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 
 /**

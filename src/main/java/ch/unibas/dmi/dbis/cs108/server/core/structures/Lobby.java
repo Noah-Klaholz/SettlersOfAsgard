@@ -1,6 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.server.core.structures;
 
-import ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic;
+import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 
 import java.util.List;
