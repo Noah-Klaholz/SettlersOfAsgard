@@ -68,10 +68,7 @@ public class TurnManager {
 
             distributeResources(gameState.findPlayerByName(playerTurn));
 
-            // Notify clients about turn change
-            if (communicationApi != null) {
-                communicationApi.sendMessage("TURN$" + playerTurn);
-            }
+
         } finally {
             gameState.getStateLock().writeLock().unlock();
         }
@@ -86,10 +83,6 @@ public class TurnManager {
         // Initial resources for first player
         distributeResources(firstPlayer);
 
-        // Notify about first turn
-        if (communicationApi != null) {
-            communicationApi.sendMessage("GAME_START$First turn: " + firstPlayer.getName());
-        }
     }
 
     public boolean endTurn(String playerName) {
