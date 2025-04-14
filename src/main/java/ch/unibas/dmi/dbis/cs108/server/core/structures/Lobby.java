@@ -40,6 +40,10 @@ public class Lobby {
      * The number of maximal Players allowed (currently always 4).
      */
     private final int maxPlayers;
+
+    /**
+     * The status of the Lobby (In lobby, in game or game ended).
+     */
     private LobbyStatus status;
     private GameLogic gameLogic;
     private ScheduledExecutorService turnScheduler; // For automatic turns
