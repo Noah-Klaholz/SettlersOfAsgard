@@ -125,7 +125,8 @@ public class GameLogic implements GameLogicInterface {
     }
 
     /**
-     * Creates the final score message
+     * Creates the final score message.
+     * @return the final score message as a String.
      */
     public String createFinalScoreMessage() {
         List<Player> players = gameState.getPlayerManager().getPlayers();
