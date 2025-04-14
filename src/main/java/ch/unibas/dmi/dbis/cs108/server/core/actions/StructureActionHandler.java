@@ -23,7 +23,7 @@ public class StructureActionHandler {
         return false;
     }
 
-    public boolean useStructure(int x, int y, int structureID, String useType, String playerName) {
+    public boolean useStructure(int x, int y, int structureID, String playerName) {
         // Implementation will be added later
         return false;
     }

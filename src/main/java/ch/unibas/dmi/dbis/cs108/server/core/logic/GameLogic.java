@@ -169,8 +169,8 @@ public class GameLogic implements GameLogicInterface {
      * Use a structure on the board.
      * @return if the action was successful.
      */
-    public boolean useStructure(int x, int y, int structureId, String useType, String playerName) {
-        return structureActionHandler.useStructure(x, y, structureId, useType, playerName);
+    public boolean useStructure(int x, int y, int structureId, String playerName) {
+        return structureActionHandler.useStructure(x, y, structureId, playerName);
     }
 
     /**
@@ -193,24 +193,24 @@ public class GameLogic implements GameLogicInterface {
      * Use a statue.
      * @return if the action was successful.
      */
-    public boolean useStatue(int x, int y, int statueId, String useType, String playerName) {
-        return statueActionHandler.useStatue(x, y, statueId, useType, playerName);
+    public boolean useStatue(int x, int y, int statueId, String playerName) {
+        return statueActionHandler.useStatue(x, y, statueId, playerName);
     }
 
     /**
      * Use a field artifact
      * @return if the action was successful.
      */
-    public boolean useFieldArtifact(int x, int y, int artifactId, String useType, String playerName) {
-        return artifactActionHandler.useFieldArtifact(x, y, artifactId, useType, playerName);
+    public boolean useFieldArtifact(int x, int y, int artifactId, String playerName) {
+        return artifactActionHandler.useFieldArtifact(x, y, artifactId, playerName);
     }
 
     /**
      * Use a player artifact.
      * @return if the action was successful.
      */
-    public boolean usePlayerArtifact(int artifactId, String targetPlayer, String useType, String playerName) {
-        return artifactActionHandler.usePlayerArtifact(artifactId, targetPlayer, useType, playerName);
+    public boolean usePlayerArtifact(int artifactId, String targetPlayer, String playerName) {
+        return artifactActionHandler.usePlayerArtifact(artifactId, targetPlayer, playerName);
     }
 
     /**
