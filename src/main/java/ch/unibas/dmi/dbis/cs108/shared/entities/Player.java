@@ -291,7 +291,6 @@ public class Player {
      * @return String including name, runes and energy
      */
     @Override
-
     public String toString() {
         return "Player{" +
                 "name='" + name + '\'' +

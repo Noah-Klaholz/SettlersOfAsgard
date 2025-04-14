@@ -7,6 +7,7 @@ public class StructureData {
     private String description;
     private String useType;
     private int cost;
+    private int ressourceValue;
 
     public int getId() {
         return id;
@@ -30,5 +31,9 @@ public class StructureData {
 
     public int getCost() {
         return cost;
+    }
+
+    public int getRessourceValue() {
+        return ressourceValue;
     }
 }
