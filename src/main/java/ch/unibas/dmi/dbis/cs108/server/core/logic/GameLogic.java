@@ -2,6 +2,7 @@ package ch.unibas.dmi.dbis.cs108.server.core.logic;
 
 import ch.unibas.dmi.dbis.cs108.server.core.model.PlayerManager;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
+import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.ArtifactActionHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.StatueActionHandler;
@@ -27,6 +28,7 @@ public class GameLogic implements GameLogicInterface {
     // Thread safety mechanism
     private final ReadWriteLock gameLock = new ReentrantReadWriteLock();
 
+    private final Lobby lobby;
     private final GameState gameState;
     private final CommandProcessor commandProcessor;
     private final TurnManager turnManager;
@@ -36,12 +38,11 @@ public class GameLogic implements GameLogicInterface {
     private final StatueActionHandler statueActionHandler;
     private final ArtifactActionHandler artifactActionHandler;
 
-    private CommunicationAPI communicationApi;
-
     /**
      * Constructor initializes game with proper components
      */
-    public GameLogic() {
+    public GameLogic(Lobby lobby) {
+        this.lobby = lobby;
         this.gameState = new GameState();
         this.resourceManager = new ResourceManager();
         this.turnManager = gameState.getTurnManager();
@@ -65,13 +66,6 @@ public class GameLogic implements GameLogicInterface {
         }
     }
 
-    /**
-     * Set the communication API for notifying clients
-     */
-    public void setCommunicationApi(CommunicationAPI communicationApi) {
-        this.communicationApi = communicationApi;
-        this.turnManager.setCommunicationApi(communicationApi);
-    }
 
     /**
      * Starts the game.
@@ -98,8 +92,8 @@ public class GameLogic implements GameLogicInterface {
     public void processCommand(Command command) {
         if (command != null) {
             String response = commandProcessor.processCommand(command);
-            if (communicationApi != null && response != null) {
-                communicationApi.sendMessage(response);
+            if (lobby != null && response != null) {
+                lobby.broadcastMessage(response);
             }
         }
     }
@@ -112,8 +106,9 @@ public class GameLogic implements GameLogicInterface {
         gameLock.writeLock().lock();
         try {
             gameState.reset();
-            if (communicationApi != null) {
-                communicationApi.sendMessage("GAME_ENDED");
+            if (lobby != null) {
+                lobby.broadcastMessage("GAME_ENDED");
+                lobby.endGame();
             }
         } finally {
             gameLock.writeLock().unlock();

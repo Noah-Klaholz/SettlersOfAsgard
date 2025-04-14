@@ -139,7 +139,7 @@ public class CommandProcessor {
 
             boolean success = gameLogic.buyTile(x, y, playerName);
             return success ?
-                    formatSuccess("OK$" + Commands.BUYTILE.getCommand() + "$" + x + "$" + y + "$" + playerName) :
+                    formatSuccess(Commands.BUYTILE.getCommand() + "$" + x + "$" + y + "$" + playerName) :
                     formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$BUYTILE");
         } catch (NumberFormatException e) {
             return formatError(ErrorsAPI.Errors.INVALID_PARAMETERS.getError() + "$BUYTILE");
@@ -164,7 +164,7 @@ public class CommandProcessor {
 
             boolean success = gameLogic.buyStructure(structureId, playerName);
             return success ?
-                    formatSuccess("OK$" + Commands.BUYSTRUCTURE.getCommand() + "$" + structureId) :
+                    formatSuccess(Commands.BUYSTRUCTURE.getCommand() + "$" + structureId) :
                     formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$BUYSTRUCTURE");
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error buying structure", e);
@@ -189,7 +189,7 @@ public class CommandProcessor {
 
             boolean success = gameLogic.placeStructure(x, y, structureId, playerName);
             return success ?
-                    formatSuccess("OK$" + Commands.PLACESTRUCTURE.getCommand() + "$" + x + "$" + y + "$"  + structureId) :
+                    formatSuccess(Commands.PLACESTRUCTURE.getCommand() + "$" + x + "$" + y + "$"  + structureId) :
                     formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$PLACESTRUCTURE");
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error placing structure", e);
@@ -204,7 +204,7 @@ public class CommandProcessor {
         try {
             String[] parts = cmd.getArgs();
             if (parts.length != 3) {
-                return formatError("Invalid parameters for USESTRUCTURE");
+                return formatError(ErrorsAPI.Errors.INVALID_PARAMETERS.getError() + "$USESTRUCTURE");
             }
 
             int x = Integer.parseInt(parts[0]);
@@ -213,7 +213,8 @@ public class CommandProcessor {
             String playerName = cmd.getPlayer().getName();
 
             boolean success = gameLogic.useStructure(x, y, structureId, playerName);
-            return success ? formatSuccess("Structure used") : formatError("Failed to use structure");
+            return success ? formatSuccess("Structure used") :
+                    formatError("Failed to use structure");
         } catch (NumberFormatException e) {
             return formatError("Invalid coordinates or structure ID");
         } catch (Exception e) {
@@ -352,13 +353,13 @@ public class CommandProcessor {
      * Helper method to format success responses
      */
     private String formatSuccess(String message) {
-        return Commands.OK.getCommand() + ":" + message;
+        return Commands.OK.getCommand() + "$" + message;
     }
 
     /**
      * Helper method to format error responses
      */
     private String formatError(String message) {
-        return Commands.ERROR.getCommand() + ":" + message;
+        return Commands.ERROR.getCommand() + "$" + message;
     }
 }

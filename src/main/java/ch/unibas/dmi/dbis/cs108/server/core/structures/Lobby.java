@@ -113,7 +113,7 @@ public class Lobby {
                 .map(ClientHandler::getPlayerName)
                 .toArray(String[]::new);
 
-        this.gameLogic = new GameLogic();
+        this.gameLogic = new GameLogic(this);
         gameLogic.startGame(playerNames);
 
         // Start automatic turn scheduler (runs every minute)

@@ -50,7 +50,7 @@ Dieser Befehl bedeutet, dass Spieler PL01 eine Struktur vom Typ "Castle" auf das
 | `BUYT` | **C→S**  | Kauft ein Feld an Koordinaten x,y                       | `X$Y`                             | `BUYT$1$2`                  |
 | `BYSR` | **C→S**  | Kauft eine Struktur                                     | `StrukturID`                      | `BYSR$1`                    |
 | `PLST` | **C→S**  | Baut Struktur an Koordinaten x,y                        | `X$Y$StrukturID`                  | `PLST$1$2$1`                |
-| `USSR` | **C→S**  | Eine Struktur verwenden                                 | `X$Y$StrukturID$UseType`          | `USSR$1$2$1$Runes`          |
+| `USSR` | **C→S**  | Eine Struktur verwenden                                 | `X$Y$StrukturID$ `                | `USSR$1$2$1 `               |
 | `BYST` | **C→S**  | Kaufen einer Statue                                     | `StatueID`                        | `BYST$1`                    |
 | `UPST` | **C→S**  | Aufwerten einer Statue                                  | `X$Y$StatueID`                    | `UPST$1$2$1`                |
 | `USTA` | **C→S**  | Benutzen einer Statue                                   | `X$Y$StatueID$UseType`            | `USTA$1$2$Freyr$Runes"`     |
