@@ -3,52 +3,85 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<VBox xmlns:fx="http://javafx.com/fxml/1"
-      xmlns="http://javafx.com/javafx/17"
-      fx:controller="ch.unibas.dmi.dbis.cs108.client.ui.controllers.MainMenuController"
-      alignment="CENTER" spacing="20.0" styleClass="main-menu"
-      prefHeight="600.0" prefWidth="800.0">
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ch.unibas.dmi.dbis.cs108.client.ui.controllers.MainMenuController"
+            styleClass="main-menu-background"
+            stylesheets="/css/main-menu.css">
 
-    <padding>
-        <Insets top="30.0" right="30.0" bottom="30.0" left="30.0"/>
-    </padding>
+    <center>
+        <VBox alignment="CENTER" spacing="20.0">
+            <padding>
+                <Insets top="30.0" right="30.0" bottom="30.0" left="30.0"/>
+            </padding>
 
-    <!-- Game Logo/Title -->
-    <ImageView fx:id="gameLogo" fitWidth="300.0" preserveRatio="true"/>
+            <!-- Game Logo/Title -->
+            <ImageView fx:id="gameLogo" fitWidth="300.0" preserveRatio="true"/>
 
-    <Label text="Mystic Realms" styleClass="game-title">
-        <font>
-            <Font name="System Bold" size="36.0"/>
-        </font>
-    </Label>
+            <Label text="Mystic Realms" styleClass="game-title">
+                <font>
+                    <Font name="System Bold" size="36.0"/>
+                </font>
+            </Label>
 
-    <!-- Menu Buttons -->
-    <VBox spacing="15.0" alignment="CENTER" maxWidth="300.0">
-        <Button text="Play Game" onAction="#handlePlayGame"
-                styleClass="menu-button" maxWidth="Infinity"/>
+            <!-- Menu Buttons -->
+            <VBox spacing="15.0" alignment="CENTER" maxWidth="300.0">
+                <Button text="Play Game" onAction="#handlePlayGame"
+                        styleClass="menu-button" maxWidth="Infinity"/>
 
-        <Button text="Join Game" onAction="#handleJoinGame"
-                styleClass="menu-button" maxWidth="Infinity"/>
+                <Button text="Join Game" onAction="#handleJoinGame"
+                        styleClass="menu-button" maxWidth="Infinity"/>
 
-        <Button text="Settings" onAction="#handleSettings"
-                styleClass="menu-button" maxWidth="Infinity"/>
+                <Button text="Settings" onAction="#handleSettings"
+                        styleClass="menu-button" maxWidth="Infinity"/>
 
-        <Button text="Leaderboard" onAction="#handleLeaderboard"
-                styleClass="menu-button" maxWidth="Infinity"/>
+                <Button text="Leaderboard" onAction="#handleLeaderboard"
+                        styleClass="menu-button" maxWidth="Infinity"/>
 
-        <Button text="About" onAction="#handleAbout"
-                styleClass="menu-button" maxWidth="Infinity"/>
+                <Button text="About" onAction="#handleAbout"
+                        styleClass="menu-button" maxWidth="Infinity"/>
 
-        <Button text="Exit" onAction="#handleExit"
-                styleClass="menu-button" maxWidth="Infinity"/>
-    </VBox>
+                <Button text="Exit" onAction="#handleExit"
+                        styleClass="menu-button" maxWidth="Infinity"/>
+            </VBox>
+        </VBox>
+    </center>
 
-    <Label fx:id="versionLabel" text="Version 1.0"
-           alignment="BOTTOM_RIGHT" translateY="30.0"/>
+    <!-- Global Chat Panel -->
+    <right>
+        <VBox spacing="10" styleClass="chat-panel" prefWidth="300.0">
+            <padding>
+                <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
+            </padding>
 
-    <stylesheets>
-        <String fx:value="/css/main-menu.css"/>
-    </stylesheets>
-</VBox>
+            <Label text="Global Chat" styleClass="section-header"/>
+
+            <ListView fx:id="globalChatMessages" VBox.vgrow="ALWAYS" styleClass="chat-list"/>
+
+            <HBox spacing="8.0" alignment="CENTER">
+                <TextField fx:id="globalChatInput" promptText="Type a message..."
+                           HBox.hgrow="ALWAYS" onAction="#handleSendGlobalMessage"/>
+                <Button text="Send" onAction="#handleSendGlobalMessage"
+                        styleClass="send-button"/>
+            </HBox>
+
+            <HBox alignment="CENTER_RIGHT">
+                <Label fx:id="onlineUsersLabel" text="Online: 0" styleClass="online-users-label"/>
+            </HBox>
+        </VBox>
+    </right>
+
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" spacing="10.0" styleClass="footer">
+            <padding>
+                <Insets top="10.0" right="20.0" bottom="10.0" left="20.0"/>
+            </padding>
+            <HBox HBox.hgrow="ALWAYS">
+                <Label fx:id="connectionStatus" text="Connected" styleClass="status-label"/>
+            </HBox>
+            <Label fx:id="versionLabel" text="Version 1.0" styleClass="version-label"/>
+        </HBox>
+    </bottom>
+</BorderPane>
