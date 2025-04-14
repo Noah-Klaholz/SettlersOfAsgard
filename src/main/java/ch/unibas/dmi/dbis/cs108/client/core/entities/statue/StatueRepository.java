@@ -1,3 +1,5 @@
+package ch.unibas.dmi.dbis.cs108.client.core.entities.statue;
+
 import ch.unibas.dmi.dbis.cs108.client.core.entities.structures.Structure;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.structures.StructureData;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.structures.StructureFactory;
