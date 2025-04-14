@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.core.model;
 
 import ch.unibas.dmi.dbis.cs108.shared.entities.Player;
-import ch.unibas.dmi.dbis.cs108.shared.entities.artefacts.Artifact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.artefacts.Artefact;
 
 import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -70,8 +70,8 @@ public class GameStateSerializer {
 
                 // Add artifacts
                 status.append("artifacts[");
-                for (Artifact artifact : player.getArtifacts()) {
-                    status.append(artifact.getId()).append(",");
+                for (Artefact artifact : player.getArtifacts()) {
+                    status.append(artifact.getArtifactID()).append(",");
                 }
                 status.append("];");
             }
