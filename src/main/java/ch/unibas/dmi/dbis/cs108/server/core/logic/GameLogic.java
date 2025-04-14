@@ -249,5 +249,11 @@ public class GameLogic implements GameLogicInterface {
         return artifactActionHandler;
     }
 
-
+    /**
+     * Gets the current state of the StatueActionHandler.
+     * @return The current object of the StatueActionHandler.
+     */
+    public StatueActionHandler getStatueActionHandler() {
+        return statueActionHandler;
+    }
 }
