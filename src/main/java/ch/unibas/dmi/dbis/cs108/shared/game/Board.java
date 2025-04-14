@@ -1,4 +1,4 @@
-package ch.unibas.dmi.dbis.cs108.shared.entities;
+package ch.unibas.dmi.dbis.cs108.shared.game;
 
 /**
  * Class representing a game board.

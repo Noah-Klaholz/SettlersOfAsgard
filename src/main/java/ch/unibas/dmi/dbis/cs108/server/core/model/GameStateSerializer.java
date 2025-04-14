@@ -1,6 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.server.core.model;
 
-import ch.unibas.dmi.dbis.cs108.shared.entities.Player;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.entities.artifacts.Artifact;
 
 import java.util.List;

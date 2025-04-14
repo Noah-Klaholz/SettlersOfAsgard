@@ -2,7 +2,7 @@
 package ch.unibas.dmi.dbis.cs108.server.core.logic;
 
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Player;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 import java.util.*;
 

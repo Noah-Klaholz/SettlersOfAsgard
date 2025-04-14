@@ -2,14 +2,12 @@ package ch.unibas.dmi.dbis.cs108.server.core.logic;
 
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
-import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.ArtifactActionHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.StatueActionHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.StructureActionHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.TileActionHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Player;
-import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 
 import java.util.Comparator;
 import java.util.List;

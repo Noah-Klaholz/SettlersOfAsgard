@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.core.model;
 
-import ch.unibas.dmi.dbis.cs108.shared.entities.Board;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Tile;
+import ch.unibas.dmi.dbis.cs108.shared.game.Board;
+import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.logging.Logger;

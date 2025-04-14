@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.core.model;
 
 import ch.unibas.dmi.dbis.cs108.server.core.logic.TurnManager;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Player;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;

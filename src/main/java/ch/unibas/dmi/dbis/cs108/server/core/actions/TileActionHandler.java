@@ -1,8 +1,8 @@
 package ch.unibas.dmi.dbis.cs108.server.core.actions;
 
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Player;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Tile;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
+import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 
 import java.util.concurrent.locks.ReadWriteLock;
 

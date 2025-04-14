@@ -1,11 +1,10 @@
 package ch.unibas.dmi.dbis.cs108.client.core.commands;
 
-import ch.unibas.dmi.dbis.cs108.shared.entities.Player;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Tile;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
+import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 import ch.unibas.dmi.dbis.cs108.client.core.events.EventDispatcher;
 import ch.unibas.dmi.dbis.cs108.client.core.events.TilePurchasedEvent;
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
-import ch.unibas.dmi.dbis.cs108.client.core.commands.*;
 
 /**
  * Command to buy a tile in the game.

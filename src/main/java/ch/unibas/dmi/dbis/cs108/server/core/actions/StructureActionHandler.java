@@ -1,11 +1,10 @@
 package ch.unibas.dmi.dbis.cs108.server.core.actions;
 
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Player;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Shop;
-import ch.unibas.dmi.dbis.cs108.shared.entities.structures.Structure;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
+import ch.unibas.dmi.dbis.cs108.shared.game.Shop;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 
-import java.sql.Struct;
 import java.util.concurrent.locks.ReadWriteLock;
 
 public class StructureActionHandler {

@@ -1,11 +1,13 @@
 package ch.unibas.dmi.dbis.cs108.client.app;
 
 import ch.unibas.dmi.dbis.cs108.client.core.commands.BuyTileCommand;
-import ch.unibas.dmi.dbis.cs108.shared.entities.*;
 import ch.unibas.dmi.dbis.cs108.client.core.events.*;
 import ch.unibas.dmi.dbis.cs108.client.core.game.GameEngine;
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
 import ch.unibas.dmi.dbis.cs108.client.core.commands.*;
+import ch.unibas.dmi.dbis.cs108.shared.game.Board;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
+import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 
 import java.util.ArrayList;
 import java.util.List;

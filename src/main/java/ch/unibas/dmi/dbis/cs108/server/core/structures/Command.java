@@ -1,6 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.server.core.structures;
 
-import ch.unibas.dmi.dbis.cs108.shared.entities.Player;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.ErrorsAPI;
 
 import java.util.Arrays;

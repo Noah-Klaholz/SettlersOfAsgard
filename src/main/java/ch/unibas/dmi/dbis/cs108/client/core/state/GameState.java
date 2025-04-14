@@ -1,6 +1,8 @@
 package ch.unibas.dmi.dbis.cs108.client.core.state;
 
-import ch.unibas.dmi.dbis.cs108.shared.entities.*;
+import ch.unibas.dmi.dbis.cs108.shared.game.Board;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
+import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 
 import java.util.ArrayList;
 import java.util.List;
