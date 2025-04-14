@@ -130,11 +130,10 @@ public class Lobby {
     }
 
     /**
-     * ends the game
+     * Ends the game.
      *
-     * @return if ending the game was successful
      */
-    public boolean endGame() {
+    public void endGame() {
         if (status == LobbyStatus.IN_GAME) {
             status = LobbyStatus.GAME_ENDED;
 
@@ -149,7 +148,6 @@ public class Lobby {
                 Thread.currentThread().interrupt();
             }
         }
-        return true;
     }
 
     public void broadcastMessage(String message) {
