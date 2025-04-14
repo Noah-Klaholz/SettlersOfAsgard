@@ -1,9 +1,9 @@
-package ch.unibas.dmi.dbis.cs108.shared.entities.artefacts;
+package ch.unibas.dmi.dbis.cs108.shared.entities.artifacts;
 /**
  * Abstract class representing an artefact in the game.
  * Artefacts are items that can be found and used by players.
  */
-public class Artefact {
+public class Artifact {
 
     /**
      * The name of the artefact.
@@ -35,7 +35,7 @@ public class Artefact {
      *
      * @param data The data object containing artefact information.
      */
-    public Artefact(ArtefactData data) {
+    public Artifact(ArtifactData data) {
         this.artifactID = data.getId();
         this.name = data.getName();
         this.description = data.getDescription();
@@ -94,7 +94,7 @@ public class Artefact {
      *
      * @param data The data object containing artefact information.
      */
-    public void useArtifact(ArtefactData data) {}
+    public void useArtifact(ArtifactData data) {}
 
     /**
      * Get the effect of the artefact.

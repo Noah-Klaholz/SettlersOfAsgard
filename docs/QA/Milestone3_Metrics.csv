@@ -1060,7 +1060,7 @@ ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler,120,112,383
 ch.unibas.dmi.dbis.cs108.server.networking.GameServer,65,60,218
 ch.unibas.dmi.dbis.cs108.server.old.GameClient,50,45,157
 ch.unibas.dmi.dbis.cs108.shared.entities.ActiveTrap,10,10,18
-ch.unibas.dmi.dbis.cs108.shared.entities.ArtefactFactory,3,3,4
+ch.unibas.dmi.dbis.cs108.shared.entities.ArtifactFactory,3,3,4
 ch.unibas.dmi.dbis.cs108.shared.entities.Board,75,67,154
 ch.unibas.dmi.dbis.cs108.shared.entities.FixedStructure,46,46,72
 ch.unibas.dmi.dbis.cs108.shared.entities.GameRound,42,40,68

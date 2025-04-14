@@ -1,6 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities;
 
-import ch.unibas.dmi.dbis.cs108.shared.entities.artefacts.Artefact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.artifacts.Artifact;
 
 public class Tile {
 
@@ -11,7 +11,7 @@ public class Tile {
     private final int price;
     private Structure structure;
     private Statue statue;
-    private Artefact artefact;
+    private Artifact artefact;
     private ActiveTrap trap;
     private final String world;
     private boolean purchased;
@@ -80,11 +80,11 @@ public class Tile {
         this.statue = statue;
     }
 
-    public Artefact getArtifact() {
+    public Artifact getArtifact() {
         return artefact;
     }
 
-    public void setArtifact(Artefact artefact) {
+    public void setArtifact(Artifact artefact) {
         this.artefact = artefact;
     }
 
@@ -149,7 +149,7 @@ public class Tile {
         private int price;
         private Structure structure;
         private Statue statue;
-        private Artefact artefact;
+        private Artifact artefact;
         private ActiveTrap trap;
         private String world;
 
@@ -188,7 +188,7 @@ public class Tile {
             return this;
         }
 
-        public TileBuilder setArtifact(Artefact artefact) {
+        public TileBuilder setArtifact(Artifact artefact) {
             this.artefact = artefact;
             return this;
         }

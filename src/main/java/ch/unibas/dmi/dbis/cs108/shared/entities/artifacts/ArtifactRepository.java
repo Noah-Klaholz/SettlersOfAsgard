@@ -1,4 +1,4 @@
-package ch.unibas.dmi.dbis.cs108.shared.entities.artefacts;
+package ch.unibas.dmi.dbis.cs108.shared.entities.artifacts;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -16,15 +16,15 @@ import java.util.logging.Logger;
  * Repository class for loading artefacts from a JSON file.
  * Implements singleton pattern and caching for efficient access.
  */
-public class ArtefactRepository {
-    private static final Logger LOGGER = Logger.getLogger(ArtefactRepository.class.getName());
+public class ArtifactRepository {
+    private static final Logger LOGGER = Logger.getLogger(ArtifactRepository.class.getName());
     private static final String ARTEFACTS_PATH = "/json/artifacts.json";
-    private static ArtefactRepository instance;
+    private static ArtifactRepository instance;
 
-    private List<Artefact> cachedArtefacts;
-    private List<ArtefactData> cachedArtefactData;
+    private List<Artifact> cachedArtefacts;
+    private List<ArtifactData> cachedArtefactData;
 
-    private ArtefactRepository() {
+    private ArtifactRepository() {
         // Private constructor for singleton pattern
     }
 
@@ -33,9 +33,9 @@ public class ArtefactRepository {
      *
      * @return The ArtefactRepository instance
      */
-    public static synchronized ArtefactRepository getInstance() {
+    public static synchronized ArtifactRepository getInstance() {
         if (instance == null) {
-            instance = new ArtefactRepository();
+            instance = new ArtifactRepository();
         }
         return instance;
     }
@@ -45,7 +45,7 @@ public class ArtefactRepository {
      *
      * @return List of artefact data objects
      */
-    private List<ArtefactData> loadArtefactData() {
+    private List<ArtifactData> loadArtefactData() {
         if (cachedArtefactData != null) {
             return cachedArtefactData;
         }
@@ -59,8 +59,8 @@ public class ArtefactRepository {
 
             InputStreamReader reader = new InputStreamReader(inputStream);
             Gson gson = new Gson();
-            Type listType = new TypeToken<List<ArtefactData>>() {}.getType();
-            List<ArtefactData> dataList = gson.fromJson(reader, listType);
+            Type listType = new TypeToken<List<ArtifactData>>() {}.getType();
+            List<ArtifactData> dataList = gson.fromJson(reader, listType);
 
             if (dataList == null) {
                 LOGGER.severe("Failed to parse artefacts JSON: null result");
@@ -81,8 +81,8 @@ public class ArtefactRepository {
      * @param data The artefact data to convert
      * @return A new Artefact instance
      */
-    private Artefact createArtefact(ArtefactData data) {
-        return new Artefact(data);
+    private Artifact createArtefact(ArtifactData data) {
+        return new Artifact(data);
     }
 
     /**
@@ -91,15 +91,15 @@ public class ArtefactRepository {
      *
      * @return An unmodifiable list of Artefact objects
      */
-    public List<Artefact> loadArtefacts() {
+    public List<Artifact> loadArtefacts() {
         if (cachedArtefacts != null) {
             return cachedArtefacts;
         }
 
-        List<Artefact> artefacts = new ArrayList<>();
-        List<ArtefactData> dataList = loadArtefactData();
+        List<Artifact> artefacts = new ArrayList<>();
+        List<ArtifactData> dataList = loadArtefactData();
 
-        for (ArtefactData data : dataList) {
+        for (ArtifactData data : dataList) {
             try {
                 if (data.getName() != null) {
                     artefacts.add(createArtefact(data));
@@ -123,9 +123,9 @@ public class ArtefactRepository {
      * @param id The ID of the artefact to find
      * @return The artefact with the specified ID, or null if not found
      */
-    public Artefact getArtefactById(int id) {
-        List<Artefact> artefacts = loadArtefacts();
-        for (Artefact artefact : artefacts) {
+    public Artifact getArtefactById(int id) {
+        List<Artifact> artefacts = loadArtefacts();
+        for (Artifact artefact : artefacts) {
             if (artefact.artifactID == id) {
                 return artefact;
             }

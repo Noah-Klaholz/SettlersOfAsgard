@@ -1,10 +1,10 @@
-package ch.unibas.dmi.dbis.cs108.shared.entities.artefacts;
+package ch.unibas.dmi.dbis.cs108.shared.entities.artifacts;
 
 /**
  * Class representing artefact data.
  * This class is used to store the data of an artefact.
  */
-public class ArtefactData {
+public class ArtifactData {
     private int id;
     private String name;
     private String description;

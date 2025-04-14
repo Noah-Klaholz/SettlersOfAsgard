@@ -1,6 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities;
 
-import ch.unibas.dmi.dbis.cs108.shared.entities.artefacts.Artefact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.artifacts.Artifact;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ public class Player {
     private int runes;
     private int energy;
     private List<Tile> ownedTiles;
-    private List<Artefact> artifacts;
+    private List<Artifact> artifacts;
     private List<Structure> ownedStructures;
     private Shop shop; //saves Structures and Statue
     private Statue statue;
@@ -113,7 +113,7 @@ public class Player {
      * Setter for artifacts
      *
      */
-    public void setArtifacts(List<Artefact> artifacts) {
+    public void setArtifacts(List<Artifact> artifacts) {
         this.artifacts = artifacts;
     }
 
@@ -121,7 +121,7 @@ public class Player {
      * Getter for artifacts
      *
      */
-    public List<Artefact> getArtifacts() {
+    public List<Artifact> getArtifacts() {
         return artifacts;
     }
 
@@ -131,7 +131,7 @@ public class Player {
      * @param artifact Artefact
      */
     //should be checked in gameLogic if possible
-    public void addArtifact(Artefact artifact) {
+    public void addArtifact(Artifact artifact) {
         artifacts.add(artifact);
     }
 
@@ -140,7 +140,7 @@ public class Player {
      *
      * @param artifact Artefact
      */
-    public void removeArtifact(Artefact artifact) {
+    public void removeArtifact(Artifact artifact) {
         artifacts.remove(artifact);
     }
 

@@ -1,6 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.core.events;
 
-import ch.unibas.dmi.dbis.cs108.shared.entities.artefacts.Artefact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.artifacts.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Player;
 
 /**
@@ -9,7 +9,7 @@ import ch.unibas.dmi.dbis.cs108.shared.entities.Player;
  */
 public class ArtifactActivatedEvent implements GameEvent {
     private final Player player;
-    private final Artefact artefact;
+    private final Artifact artefact;
 
     /**
      * Constructor for ArtifactActivatedEvent.
@@ -17,7 +17,7 @@ public class ArtifactActivatedEvent implements GameEvent {
      * @param player   The player who activated the artifact.
      * @param artefact The artifact that was activated.
      */
-    public ArtifactActivatedEvent(Player player, Artefact artefact) {
+    public ArtifactActivatedEvent(Player player, Artifact artefact) {
         this.player = player;
         this.artefact = artefact;
     }
@@ -36,7 +36,7 @@ public class ArtifactActivatedEvent implements GameEvent {
      *
      * @return The artifact.
      */
-    public Artefact getArtifact() {
+    public Artifact getArtifact() {
         return artefact;
     }
 }
