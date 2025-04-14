@@ -108,4 +108,9 @@ public class Command {
         String args = String.join("$", this.args);
         return command + "$" + args;
     }
+
+    //TODO: Implement this method to show wether a command is a game command (false) or not (true)
+    public boolean isAdministrative() {
+        return true;
+    }
 }
