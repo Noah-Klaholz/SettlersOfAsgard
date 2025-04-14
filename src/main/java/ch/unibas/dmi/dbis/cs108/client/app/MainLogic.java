@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.app;
 
 import ch.unibas.dmi.dbis.cs108.client.core.commands.BuyTileCommand;
-import ch.unibas.dmi.dbis.cs108.client.core.entities.*;
+import ch.unibas.dmi.dbis.cs108.shared.entities.*;
 import ch.unibas.dmi.dbis.cs108.client.core.events.*;
 import ch.unibas.dmi.dbis.cs108.client.core.game.GameEngine;
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;

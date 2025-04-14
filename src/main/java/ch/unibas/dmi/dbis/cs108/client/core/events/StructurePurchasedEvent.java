@@ -1,8 +1,8 @@
 package ch.unibas.dmi.dbis.cs108.client.core.events;
 
-import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
-import ch.unibas.dmi.dbis.cs108.client.core.entities.Tile;
-import ch.unibas.dmi.dbis.cs108.client.core.entities.Structure;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Player;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Tile;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Structure;
 
 public class StructurePurchasedEvent implements GameEvent {
     private final Player player;

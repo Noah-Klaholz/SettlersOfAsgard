@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.networking;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
-import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Player;
 import ch.unibas.dmi.dbis.cs108.client.networking.core.NetworkClient;
 import ch.unibas.dmi.dbis.cs108.client.networking.core.SocketNetworkClient;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent;
