@@ -291,6 +291,12 @@ public class Lobby {
                 .collect(Collectors.joining(", "));
     }
 
+    /**
+     * Defines the states the lobby can be in.
+     * "IN_LOBBY" means the game has not started yet.
+     * "IN_GAME" means the game is currently being played.
+     * "GAME_ENDED" means the game has ended.
+     */
     public enum LobbyStatus {
         IN_LOBBY("In lobby"),
         IN_GAME("In-Game"),
