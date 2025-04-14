@@ -61,4 +61,9 @@ public class Structure extends PurchasableEntity {
         structure.loadFromJson(json);
         return structure;
     }
+
+    public int getRessourceValue() {
+        //TODO: calculate the amount of runes/energy is produced per turn for one player (used in server/core/logic/TurnManager.distributeResources
+        return 5; //placeholder value for testing
+    }
 }
