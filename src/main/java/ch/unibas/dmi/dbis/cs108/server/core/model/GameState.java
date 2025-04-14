@@ -37,6 +37,10 @@ public class GameState {
         return playerManager;
     }
 
+    /**
+     * Gets the current state of the StatueActionHandler.
+     * @return The current object of the StatueActionHandler.
+     */
     public BoardManager getBoardManager() {
         return boardManager;
     }
