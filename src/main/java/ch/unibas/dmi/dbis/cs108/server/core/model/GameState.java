@@ -53,6 +53,10 @@ public class GameState {
         return turnManager;
     }
 
+    /**
+     * Gets the current state of the StateLock.
+     * @return The current object of the StateLock.
+     */
     public ReadWriteLock getStateLock() {
         return stateLock;
     }
