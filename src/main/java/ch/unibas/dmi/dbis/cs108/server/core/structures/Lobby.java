@@ -8,6 +8,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -49,7 +50,7 @@ public class Lobby {
             logger.warning("Not yet in game, cannot return gameLogic from current Lobby.");
             return null;
         }
-        return this.gameLogic;
+        return gameLogic;
     }
 
     public boolean addPlayer(ClientHandler player) {
@@ -95,14 +96,15 @@ public class Lobby {
     }
 
     public boolean startGame() {
-        System.out.println("Lobby started game");
         if (status == LobbyStatus.IN_GAME) {
             logger.warning("Game is already started in lobby " + id);
             return false;
         }
 
         if (!isFull()) {
-            logger.warning("Could not start game in lobby " + id + ": " + players.size() + " players (expected " + maxPlayers + ")");
+            logger.warning(String.format(
+                    "Cannot start game in lobby %s: %d players (expected %d)",
+                    id, players.size(), maxPlayers));
             return false;
         }
 
@@ -116,37 +118,67 @@ public class Lobby {
         this.gameLogic = new GameLogic(this);
         gameLogic.startGame(playerNames);
 
-        // Start automatic turn scheduler (runs every minute)
-        turnScheduler.scheduleAtFixedRate(
-                () -> {
-                    handleAutomaticTurn();
-                    broadcastMessage("TURN$" + gameLogic.getTurnManager().getPlayerTurn());},
-                1,  // Initial delay (1 minute)
-                1,  // Period (1 minute)
-                TimeUnit.MINUTES
-        );
-
+        startTurnScheduler();
         return true;
+    }
+
+    private void startTurnScheduler() {
+        // Start automatic turn scheduler (runs every minute)
+        stopTurnScheduler();
+        turnScheduler = Executors.newSingleThreadScheduledExecutor();
+        turnScheduler.scheduleAtFixedRate(
+                this::processTurnChange,
+                1, 1, TimeUnit.MINUTES
+        );
+    }
+
+    private void stopTurnScheduler() {
+        if (turnScheduler != null) {
+            turnScheduler.shutdownNow();
+            try {
+                if (!turnScheduler.awaitTermination(1, TimeUnit.SECONDS)) {
+                    logger.warning("Turn Scheduler failed to terminate");
+                }
+            } catch (InterruptedException e) {
+                logger.warning("Interrupted while waiting for turn Scheduler to terminate");
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    private void processTurnChange() {
+        try {
+            if (status != LobbyStatus.IN_GAME) {
+                logger.warning("Turn change attempted while not in game");
+                return;
+            }
+            gameLogic.getTurnManager().nextTurn();
+            broadcastTurnUpdate();
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error while processing turn change", e);
+        }
+    }
+
+    /**
+     * Manually ends the current turn.
+     */
+    public void manualEndTurn() {
+        if (status != LobbyStatus.IN_GAME) {
+            logger.warning("Cannot end turn manually - game not in progress.");
+            return;
+        }
+
+        processTurnChange();
+        startTurnScheduler();
     }
 
     /**
      * Ends the game.
-     *
      */
     public void endGame() {
         if (status == LobbyStatus.IN_GAME) {
             status = LobbyStatus.GAME_ENDED;
-
-            // Shutdown the turn scheduler
-            turnScheduler.shutdown();
-            try {
-                if (!turnScheduler.awaitTermination(1, TimeUnit.SECONDS)) {
-                    turnScheduler.shutdownNow();
-                }
-            } catch (InterruptedException e) {
-                logger.warning("Interrupted while stopping turn scheduler: " + e.getMessage());
-                Thread.currentThread().interrupt();
-            }
+            stopTurnScheduler();
         }
     }
 
@@ -182,64 +214,10 @@ public class Lobby {
         }
     }
 
-    /**
-     * Manually ends the current turn and resets the turn timer.
-     */
-    public void manualEndTurn() {
-        if (status != LobbyStatus.IN_GAME) {
-            logger.warning("Cannot end turn manually - game not in progress.");
-            return;
-        }
-
-        // Call the method to handle turn transition
-        handleAutomaticTurn();
-
-        // Reset the scheduler for the next turn (cancel the current task)
-        resetTurnTimer();
-    }
-
-    /**
-     * Resets the turn timer, schedules the next turn after 1 minute.
-     */
-    private void resetTurnTimer() {
-        // Cancel the current scheduled task
-        turnScheduler.shutdownNow();
-        try {
-            if (!turnScheduler.awaitTermination(1, TimeUnit.SECONDS)) {
-                turnScheduler.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            logger.warning("Interrupted while stopping turn scheduler: " + e.getMessage());
-            Thread.currentThread().interrupt();
-        }
-
-        // Reinitialize the scheduler and schedule the next turn
-        turnScheduler = Executors.newSingleThreadScheduledExecutor();
-
-        // Schedule next turn (1 minute delay)
-        turnScheduler.scheduleAtFixedRate(
-                () -> {
-                    handleAutomaticTurn();
-                    broadcastMessage("TURN$" + gameLogic.getTurnManager().getPlayerTurn());},
-                1,  // Initial delay (1 minute)
-                1,  // Period (1 minute)
-                TimeUnit.MINUTES
-        );
-    }
-
-    /**
-     * Handles automatic turn progression (called by scheduler).
-     */
-    private void handleAutomaticTurn() {
-        if (status != LobbyStatus.IN_GAME) {
-            logger.warning("Cannot advance turn - game not in progress");
-            return;
-        }
-
-        try {
-            gameLogic.getTurnManager().nextTurn();
-        } catch (Exception e) {
-            logger.severe("Error during automatic turn: " + e.getMessage());
+    private void broadcastTurnUpdate() {
+        broadcastMessage("TURN$" + gameLogic.getTurnManager().getPlayerTurn());
+        if (gameLogic.getTurnManager().isGameRoundComplete()) {
+            broadcastMessage("ENDR$" + gameLogic.createFinalScoreMessage());
         }
     }
 
