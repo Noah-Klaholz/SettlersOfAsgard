@@ -1,0 +1,404 @@
+package ch.unibas.dmi.dbis.cs108.server.core.logic;
+
+import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
+import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol.Commands;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ * Thread-safe handler for command parsing and execution with the command pattern
+ */
+public class CommandProcessor {
+    private static final Logger LOGGER = Logger.getLogger(CommandProcessor.class.getName());
+    private final GameLogic gameLogic;
+    private final GameRules gameRules;
+    private final GameState gameState;
+    private final Map<Commands, Function<String, String>> commandHandlers = new ConcurrentHashMap<>();
+
+    // Use a single lock for state-changing commands to ensure consistency
+    private final Object commandExecutionLock = new Object();
+
+    public CommandProcessor(GameLogic gameLogic, GameRules gameRules) {
+        this.gameLogic = gameLogic;
+        this.gameRules = gameRules;
+        this.gameState = gameLogic.getGameState();
+        registerCommandHandlers();
+    }
+
+    private void registerCommandHandlers() {
+        commandHandlers.put(Commands.STARTTURN, this::handleStartTurn);
+        commandHandlers.put(Commands.ENDTURN, this::handleEndTurn);
+        commandHandlers.put(Commands.SYNCHRONIZE, this::handleSynchronize);
+        commandHandlers.put(Commands.GETGAMESTATUS, this::handleGetGameStatus);
+        commandHandlers.put(Commands.BUYTILE, this::handleBuyTile);
+        commandHandlers.put(Commands.BUYSTRUCTURE, this::handleBuyStructure);
+        commandHandlers.put(Commands.PLACESTRUCTURE, this::handlePlaceStructure);
+        commandHandlers.put(Commands.USESTRUCTURE, this::handleUseStructure);
+        commandHandlers.put(Commands.BUYSTATUE, this::handleBuyStatue);
+        commandHandlers.put(Commands.UPGRADESTATUE, this::handleUpgradeStatue);
+        commandHandlers.put(Commands.USESTATUE, this::handleUseStatue);
+        commandHandlers.put(Commands.USEFIELDARTIFACT, this::handleUseFieldArtifact);
+        commandHandlers.put(Commands.USEPLAYERARTIFACT, this::handleUsePlayerArtifact);
+    }
+
+    /**
+     * Process a command message and return the response
+     */
+    public String processCommand(String message) {
+        if (message == null || message.trim().isEmpty()) {
+            return formatError("NULL_MESSAGE_RECIEVED");
+        }
+
+        String[] parts = message.split(":", 2);
+        if (parts.length < 1) {
+            return formatError("Invalid command format");
+        }
+
+        String commandStr = parts[0];
+        String params = parts.length > 1 ? parts[1] : "";
+
+        Commands command;
+        try {
+            command = Commands.fromCommand(commandStr);
+        } catch (IllegalArgumentException e) {
+            return formatError("Unknown command: " + commandStr);
+        }
+
+        Function<String, String> handler = commandHandlers.get(command);
+        if (handler == null) {
+            return formatError("Unhandled command: " + command);
+        }
+
+        try {
+            if (isStateChangingCommand(command)) {
+                synchronized (commandExecutionLock) {
+                    return handler.apply(params);
+                }
+            } else {
+                return handler.apply(params);
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error processing command: " + command, e);
+            return formatError(e.getMessage());
+        }
+    }
+
+    /**
+     * Determines if a command modifies game state and requires synchronization
+     */
+    private boolean isStateChangingCommand(Commands command) {
+        return command != Commands.SYNCHRONIZE && command != Commands.GETGAMESTATUS;
+    }
+
+    /**
+     * Start a player's turn
+     */
+    private String handleStartTurn(String params) {
+        try {
+            String playerName = params;
+            if (playerName == null || playerName.isEmpty()) {
+                return formatError("Invalid player name");
+            }
+
+            // Validate turn order
+            if (!playerName.equals(gameState.getTurnManager().getPlayerTurn())) {
+                return formatError("Not your turn");
+            }
+
+            return formatSuccess("Turn started for " + playerName);
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error starting turn", e);
+            return formatError(e.getMessage());
+        }
+    }
+
+    /**
+     * End the current player's turn
+     */
+    private String handleEndTurn(String params) {
+        try {
+            String playerName = params;
+            if (playerName == null || playerName.isEmpty()) {
+                return formatError("Invalid player name");
+            }
+
+            // Validate it's this player's turn
+            if (!playerName.equals(gameState.getTurnManager().getPlayerTurn())) {
+                return formatError("Not your turn");
+            }
+
+            boolean success = gameState.getTurnManager().endTurn(playerName);
+            if (!success) {
+                return formatError("Failed to end turn");
+            }
+            return formatSuccess("Turn ended for " + playerName + ", next player: " +
+                    gameState.getTurnManager().getPlayerTurn());
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error ending turn", e);
+            return formatError(e.getMessage());
+        }
+    }
+
+    /**
+     * Synchronize game state
+     */
+    private String handleSynchronize(String params) {
+        return gameState.createStateMessage();
+    }
+
+    /**
+     * Get detailed game status
+     */
+    private String handleGetGameStatus(String params) {
+        return gameState.createDetailedStatusMessage();
+    }
+
+    /**
+     * Process buy tile command
+     */
+    private String handleBuyTile(String params) {
+        try {
+            String[] parts = params.split(",");
+            if (parts.length != 3) {
+                return formatError("Invalid parameters for BUYTILE");
+            }
+
+            int x = Integer.parseInt(parts[0]);
+            int y = Integer.parseInt(parts[1]);
+            String playerName = parts[2];
+
+            boolean success = gameLogic.buyTile(x, y, playerName);
+            return success ?
+                    formatSuccess("Tile purchased at " + x + "," + y) :
+                    formatError("Failed to buy tile");
+        } catch (NumberFormatException e) {
+            return formatError("Invalid coordinates");
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error buying tile", e);
+            return formatError(e.getMessage());
+        }
+    }
+
+    /**
+     * Process buy structure command
+     */
+    private String handleBuyStructure(String params) {
+        try {
+            String[] parts = params.split(",");
+            if (parts.length != 2) {
+                return formatError("Invalid parameters for BUYSTRUCTURE");
+            }
+
+            String structureId = parts[0];
+            String playerName = parts[1];
+
+            boolean success = gameLogic.buyStructure(structureId, playerName);
+            return success ?
+                    formatSuccess("Structure purchased: " + structureId) :
+                    formatError("Failed to buy structure");
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error buying structure", e);
+            return formatError(e.getMessage());
+        }
+    }
+
+    /**
+     * Process place structure command
+     */
+    private String handlePlaceStructure(String params) {
+        try {
+            String[] parts = params.split(",");
+            if (parts.length != 4) {
+                return formatError("Invalid parameters for PLACESTRUCTURE");
+            }
+
+            int x = Integer.parseInt(parts[0]);
+            int y = Integer.parseInt(parts[1]);
+            int structureId = Integer.parseInt(parts[2]);
+            String playerName = parts[3];
+
+            boolean success = gameLogic.placeStructure(x, y, structureId, playerName);
+            return success ?
+                    formatSuccess("Structure placed at " + x + "," + y) :
+                    formatError("Failed to place structure");
+        } catch (NumberFormatException e) {
+            return formatError("Invalid coordinates or structure ID");
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error placing structure", e);
+            return formatError(e.getMessage());
+        }
+    }
+
+    /**
+     * Process use structure command
+     */
+    private String handleUseStructure(String params) {
+        try {
+            String[] parts = params.split(",");
+            if (parts.length != 5) {
+                return formatError("Invalid parameters for USESTRUCTURE");
+            }
+
+            int x = Integer.parseInt(parts[0]);
+            int y = Integer.parseInt(parts[1]);
+            int structureId = Integer.parseInt(parts[2]);
+            String useType = parts[3];
+            String playerName = parts[4];
+
+            boolean success = gameLogic.useStructure(x, y, structureId, useType, playerName);
+            return success ? formatSuccess("Structure used") : formatError("Failed to use structure");
+        } catch (NumberFormatException e) {
+            return formatError("Invalid coordinates or structure ID");
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error using structure", e);
+            return formatError(e.getMessage());
+        }
+    }
+
+    /**
+     * Process buy statue command
+     */
+    private String handleBuyStatue(String params) {
+        try {
+            String[] parts = params.split(",");
+            if (parts.length != 2) {
+                return formatError("Invalid parameters for BUYSTATUE");
+            }
+
+            String statueId = parts[0];
+            String playerName = parts[1];
+
+            boolean success = gameLogic.buyStatue(statueId, playerName);
+            return success ?
+                    formatSuccess("Statue purchased: " + statueId) :
+                    formatError("Failed to buy statue");
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error buying statue", e);
+            return formatError(e.getMessage());
+        }
+    }
+
+    /**
+     * Process upgrade statue command
+     */
+    private String handleUpgradeStatue(String params) {
+        try {
+            String[] parts = params.split(",");
+            if (parts.length != 4) {
+                return formatError("Invalid parameters for UPGRADESTATUE");
+            }
+
+            int x = Integer.parseInt(parts[0]);
+            int y = Integer.parseInt(parts[1]);
+            String statueId = parts[2];
+            String playerName = parts[3];
+
+            boolean success = gameLogic.upgradeStatue(x, y, statueId, playerName);
+            return success ? formatSuccess("Statue upgraded") : formatError("Failed to upgrade statue");
+        } catch (NumberFormatException e) {
+            return formatError("Invalid coordinates");
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error upgrading statue", e);
+            return formatError(e.getMessage());
+        }
+    }
+
+    /**
+     * Process use statue command
+     */
+    private String handleUseStatue(String params) {
+        try {
+            String[] parts = params.split(",");
+            if (parts.length != 5) {
+                return formatError("Invalid parameters for USESTATUE");
+            }
+
+            int x = Integer.parseInt(parts[0]);
+            int y = Integer.parseInt(parts[1]);
+            int statueId = Integer.parseInt(parts[2]);
+            String useType = parts[3];
+            String playerName = parts[4];
+
+            boolean success = gameLogic.useStatue(x, y, statueId, useType, playerName);
+            return success ? formatSuccess("Statue used") : formatError("Failed to use statue");
+        } catch (NumberFormatException e) {
+            return formatError("Invalid coordinates or statue ID");
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error using statue", e);
+            return formatError(e.getMessage());
+        }
+    }
+
+    /**
+     * Process use field artifact command
+     */
+    private String handleUseFieldArtifact(String params) {
+        try {
+            String[] parts = params.split(",");
+            if (parts.length != 5) {
+                return formatError("Invalid parameters for USEFIELDARTIFACT");
+            }
+
+            int x = Integer.parseInt(parts[0]);
+            int y = Integer.parseInt(parts[1]);
+            int artifactId = Integer.parseInt(parts[2]);
+            String useType = parts[3];
+            String playerName = parts[4];
+
+            boolean success = gameLogic.useFieldArtifact(x, y, artifactId, useType, playerName);
+            return success ?
+                    formatSuccess("Field artifact used") :
+                    formatError("Failed to use field artifact");
+        } catch (NumberFormatException e) {
+            return formatError("Invalid coordinates or artifact ID");
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error using field artifact", e);
+            return formatError(e.getMessage());
+        }
+    }
+
+    /**
+     * Process use player artifact command
+     */
+    private String handleUsePlayerArtifact(String params) {
+        try {
+            String[] parts = params.split(",");
+            if (parts.length != 4) {
+                return formatError("Invalid parameters for USEPLAYERARTIFACT");
+            }
+
+            int artifactId = Integer.parseInt(parts[0]);
+            String targetPlayer = parts[1];
+            String useType = parts[2];
+            String playerName = parts[3];
+
+            boolean success = gameLogic.usePlayerArtifact(artifactId, targetPlayer, useType, playerName);
+            return success ?
+                    formatSuccess("Player artifact used") :
+                    formatError("Failed to use player artifact");
+        } catch (NumberFormatException e) {
+            return formatError("Invalid artifact ID");
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error using player artifact", e);
+            return formatError(e.getMessage());
+        }
+    }
+
+    /**
+     * Helper method to format success responses
+     */
+    private String formatSuccess(String message) {
+        return Commands.OK.getCommand() + ":" + message;
+    }
+
+    /**
+     * Helper method to format error responses
+     */
+    private String formatError(String message) {
+        return Commands.ERROR.getCommand() + ":" + message;
+    }
+}
