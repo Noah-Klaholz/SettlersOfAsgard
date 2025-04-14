@@ -218,7 +218,7 @@ public class GameLogic implements GameLogicInterface {
     }
 
     /**
-     * Gets the curent state of the CommandProcessor.
+     * Gets the current state of the CommandProcessor.
      * @return The current object of the CommandProcessor.
      */
     public CommandProcessor getCommandProcessor() {
