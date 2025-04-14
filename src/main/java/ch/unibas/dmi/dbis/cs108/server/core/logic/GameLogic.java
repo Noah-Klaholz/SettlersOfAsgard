@@ -232,4 +232,14 @@ public class GameLogic implements GameLogicInterface {
     public TileActionHandler getTileActionHandler() {
         return tileActionHandler;
     }
+
+    /**
+     * Gets the current state of the StructureActionHandler.
+     * @return The current object of the StructureActionHandler.
+     */
+    public StructureActionHandler getStructureActionHandlerActionHandler() {
+        return structureActionHandler;
+    }
+
+
 }
