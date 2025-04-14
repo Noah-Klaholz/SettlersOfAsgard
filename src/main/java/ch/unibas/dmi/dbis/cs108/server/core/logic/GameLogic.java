@@ -224,4 +224,12 @@ public class GameLogic implements GameLogicInterface {
     public CommandProcessor getCommandProcessor() {
         return commandProcessor;
     }
+
+    /**
+     * Gets the current state of the TileActionHandler.
+     * @return The current object of the TileActionHandler.
+     */
+    public TileActionHandler getTileActionHandler() {
+        return tileActionHandler;
+    }
 }
