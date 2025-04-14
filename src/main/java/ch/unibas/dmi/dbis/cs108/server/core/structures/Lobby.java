@@ -112,6 +112,11 @@ public class Lobby {
         return false;
     }
 
+    /**
+     * Removes a player from the Lobby (if the Lobby is not empty).
+     * @param player The player object to remove.
+     * @return if the action was successful.
+     */
     public boolean removePlayer(ClientHandler player) {
         if (!players.isEmpty() && players.contains(player)) {
             players.remove(player);
