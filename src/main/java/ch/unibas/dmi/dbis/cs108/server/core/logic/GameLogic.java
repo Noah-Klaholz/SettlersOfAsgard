@@ -160,7 +160,8 @@ public class GameLogic implements GameLogicInterface {
     }
 
     /**
-     * Use a structure on the board
+     * Use a structure on the board.
+     * @return if the action was successful.
      */
     public boolean useStructure(int x, int y, int structureId, String useType, String playerName) {
         return structureActionHandler.useStructure(x, y, structureId, useType, playerName);
