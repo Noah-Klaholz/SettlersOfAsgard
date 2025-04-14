@@ -19,7 +19,7 @@ public class ServerMain {
      */
     public static void main(String[] args) {
         try {
-            int port = Integer.parseInt(args[0]);
+            int port = Integer.parseInt(args[1]);
             GameServer server = new GameServer(port);
             new Thread(server::start).start();
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
