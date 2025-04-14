@@ -196,6 +196,10 @@ public class Lobby {
         return true;
     }
 
+    /**
+     * Starts the TurnScheduler by first resetting it and the calling
+     * processTurnChange once after every minute if not stopped.
+     */
     private void startTurnScheduler() {
         // Start automatic turn scheduler (runs every minute)
         stopTurnScheduler();
