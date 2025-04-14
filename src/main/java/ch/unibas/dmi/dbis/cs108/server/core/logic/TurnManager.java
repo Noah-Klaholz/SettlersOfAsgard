@@ -51,29 +51,29 @@ public class TurnManager {
     }
 
     public void nextTurn() {
-        // If first turn of game, initialize
-        if (getPlayerTurn() == null) {
-            initializeFirstTurn();
-            return;
-        }
+        gameState.getStateLock().writeLock().lock();
+        try {
+            if (getPlayerTurn() == null) {
+                initializeFirstTurn();
+                return;
+            }
 
-        int nextPosition = (getPlayerRound() + 1) % gameState.getPlayers().size();
-        boolean newRound = nextPosition == 0;
+            int nextPosition = (playerRound + 1) % gameState.getPlayers().size();
+            playerTurn = gameState.getPlayers().get(nextPosition).getName();
+            playerRound = nextPosition;
 
-        if (newRound) {
-            setGameRound(getGameRound() + 1);
-        }
+            if (nextPosition == 0) {
+                gameRound ++;
+            }
 
-        setPlayerRound(nextPosition);
-        Player nextPlayer = gameState.getPlayers().get(nextPosition);
-        setPlayerTurn(nextPlayer.getName());
+            distributeResources(gameState.findPlayerByName(playerTurn));
 
-        // Distribute resources to the player starting their turn
-        distributeResources(nextPlayer);
-
-        // Notify clients about turn change
-        if (communicationApi != null) {
-            communicationApi.sendMessage("TURN$" + nextPlayer.getName());
+            // Notify clients about turn change
+            if (communicationApi != null) {
+                communicationApi.sendMessage("TURN$" + playerTurn);
+            }
+        } finally {
+            gameState.getStateLock().writeLock().unlock();
         }
     }
 
@@ -128,5 +128,9 @@ public class TurnManager {
             }
         }
         return 0;
+    }
+
+    public boolean isGameRoundComplete() {
+        return playerRound == gameState.getPlayers().size() - 1;
     }
 }
