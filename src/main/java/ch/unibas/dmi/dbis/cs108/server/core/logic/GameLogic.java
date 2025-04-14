@@ -174,7 +174,8 @@ public class GameLogic implements GameLogicInterface {
     }
 
     /**
-     * Upgrade a statue
+     * Upgrade a statue.
+     * @return if the action was successful.
      */
     public boolean upgradeStatue(int x, int y, String statueId, String playerName) {
         return statueActionHandler.upgradeStatue(x, y, statueId, playerName);
