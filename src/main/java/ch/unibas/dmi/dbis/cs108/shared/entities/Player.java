@@ -1,6 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities;
 
-import ch.unibas.dmi.dbis.cs108.shared.entities.entities.artefacts.Artefact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.artefacts.Artefact;
 
 import java.util.ArrayList;
 import java.util.List;

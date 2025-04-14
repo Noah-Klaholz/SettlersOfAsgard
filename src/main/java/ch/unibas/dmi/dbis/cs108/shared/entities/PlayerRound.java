@@ -1,4 +1,4 @@
-package ch.unibas.dmi.dbis.cs108.shared.entities.entities;
+package ch.unibas.dmi.dbis.cs108.shared.entities;
 
 import ch.unibas.dmi.dbis.cs108.client.core.commands.Command;
 import ch.unibas.dmi.dbis.cs108.client.core.events.EventDispatcher;

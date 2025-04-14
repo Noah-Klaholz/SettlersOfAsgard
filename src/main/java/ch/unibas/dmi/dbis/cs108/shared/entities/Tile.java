@@ -1,6 +1,5 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities;
 
-import ch.unibas.dmi.dbis.cs108.shared.entities.entities.*;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.artefacts.Artefact;
 
 public class Tile {
