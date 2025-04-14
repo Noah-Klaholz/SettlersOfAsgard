@@ -1,5 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.core.structures;
 
+import ch.unibas.dmi.dbis.cs108.shared.protocol.ErrorsAPI;
+
 import java.util.Arrays;
 import java.util.logging.Logger;
 
@@ -24,14 +26,22 @@ public class Command {
      */
     public Command(String message) {
         logger.setFilter(new PingFilter());
-        String[] parts = message.split("\\$");
-        if (parts.length == 0) {
-            System.err.println("Trying to create invalid command: " + message);
-            return;
+        if (message == null || message.trim().isEmpty()) {
+            logger.warning(ErrorsAPI.Errors.NULL_MESSAGE_RECIEVED.getError());
+        } else {
+            String[] parts = message.split("//$", 2);
+            if (parts.length < 1) {
+                logger.warning(ErrorsAPI.Errors.INVALID_COMMAND.getError());
+            }
+
+            this.command = parts[0];
+            try {
+                this.commandType = Commands.fromCommand(command);
+            } catch (IllegalArgumentException e) {
+                logger.warning(ErrorsAPI.Errors.UNKNOWN_COMMAND.getError() + " : " + command);
+            }
+            this.args = Arrays.copyOfRange(parts, 1, parts.length);
         }
-        this.command = parts[0];
-        this.commandType = Commands.fromCommand(command);
-        this.args = Arrays.copyOfRange(parts, 1, parts.length);
     }
 
     /**
@@ -90,6 +100,15 @@ public class Command {
     }
 
     /**
+     * Gets the command type
+     *
+     * @return the command type
+     */
+    public Commands getCommandType() {
+        return commandType;
+    }
+
+    /**
      * Gets the arguments
      *
      * @return the arguments as a String Array
@@ -118,5 +137,12 @@ public class Command {
                 yield false;
             }
         };
+    }
+
+    /**
+     * Helper method to format error responses
+     */
+    private String formatError(String message) {
+        return Commands.ERROR.getCommand() + ":" + message;
     }
 }

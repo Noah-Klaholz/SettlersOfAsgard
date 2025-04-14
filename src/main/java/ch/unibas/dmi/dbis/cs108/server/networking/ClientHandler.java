@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 /**
@@ -285,8 +286,8 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         if (cmd.isValid()) {
             if (cmd.isAdministrative()) {
                 processAdminCommand(cmd);
-            } else if (ch.getGameLogic() != null) {
-                ch.getGameLogic().processMessage(received);
+            } else if (Objects.equals(currentLobby.getStatus(), Lobby.LobbyStatus.IN_GAME.getStatus()) && ch.getGameLogic() != null) {
+                ch.getGameLogic().processCommand(cmd, localPlayer);
             } else {
                 sendMessage("ERR$106$NOT_IN_LOBBY");
             }

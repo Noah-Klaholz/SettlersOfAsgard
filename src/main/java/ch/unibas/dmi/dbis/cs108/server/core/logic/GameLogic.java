@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.core.logic;
 
 import ch.unibas.dmi.dbis.cs108.server.core.model.PlayerManager;
+import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.ArtifactActionHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.StatueActionHandler;
@@ -94,9 +95,9 @@ public class GameLogic implements GameLogicInterface {
      * Process incoming message by delegating to CommandProcessor
      */
     @Override
-    public void processMessage(String message) {
-        if (message != null && !message.isEmpty()) {
-            String response = commandProcessor.processCommand(message);
+    public void processCommand(Command command, Player player) {
+        if (command != null) {
+            String response = commandProcessor.processCommand(command, player);
             if (communicationApi != null && response != null) {
                 communicationApi.sendMessage(response);
             }

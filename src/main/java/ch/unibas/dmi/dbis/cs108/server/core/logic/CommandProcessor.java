@@ -1,9 +1,13 @@
 package ch.unibas.dmi.dbis.cs108.server.core.logic;
 
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
+import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Player;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol.Commands;
+import ch.unibas.dmi.dbis.cs108.shared.protocol.ErrorsAPI;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -17,7 +21,7 @@ public class CommandProcessor {
     private final GameLogic gameLogic;
     private final GameRules gameRules;
     private final GameState gameState;
-    private final Map<Commands, Function<String, String>> commandHandlers = new ConcurrentHashMap<>();
+    private final Map<Commands, Function<String[], String>> commandHandlers = new ConcurrentHashMap<>();
 
     // Use a single lock for state-changing commands to ensure consistency
     private final Object commandExecutionLock = new Object();
@@ -48,38 +52,23 @@ public class CommandProcessor {
     /**
      * Process a command message and return the response
      */
-    public String processCommand(String message) {
-        if (message == null || message.trim().isEmpty()) {
-            return formatError("NULL_MESSAGE_RECIEVED");
-        }
+    public String processCommand(Command command, Player player) {
 
-        String[] parts = message.split(":", 2);
-        if (parts.length < 1) {
-            return formatError("Invalid command format");
-        }
-
-        String commandStr = parts[0];
-        String params = parts.length > 1 ? parts[1] : "";
-
-        Commands command;
-        try {
-            command = Commands.fromCommand(commandStr);
-        } catch (IllegalArgumentException e) {
-            return formatError("Unknown command: " + commandStr);
-        }
-
-        Function<String, String> handler = commandHandlers.get(command);
+        Function<String[], String> handler = commandHandlers.get(command.getCommandType());
         if (handler == null) {
-            return formatError("Unhandled command: " + command);
+            return formatError(ErrorsAPI.Errors.UNHANDLED_COMMAND.getError() + command);
         }
 
         try {
-            if (isStateChangingCommand(command)) {
+            if (isStateChangingCommand(command.getCommandType())) {
                 synchronized (commandExecutionLock) {
-                    return handler.apply(params);
+                    if (!gameLogic.getTurnManager().getPlayerTurn().equals(player.getName())) {
+                        return formatError(ErrorsAPI.Errors.NOT_PLAYER_TURN.getError());
+                    }
+                    return handler.apply(command.getArgs());
                 }
             } else {
-                return handler.apply(params);
+                return handler.apply(command.getArgs());
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error processing command: " + command, e);
@@ -97,9 +86,9 @@ public class CommandProcessor {
     /**
      * Start a player's turn
      */
-    private String handleStartTurn(String params) {
+    private String handleStartTurn(String[] params) {
         try {
-            String playerName = params;
+            String playerName = params[0];
             if (playerName == null || playerName.isEmpty()) {
                 return formatError("Invalid player name");
             }
@@ -119,9 +108,9 @@ public class CommandProcessor {
     /**
      * End the current player's turn
      */
-    private String handleEndTurn(String params) {
+    private String handleEndTurn(String[] params) {
         try {
-            String playerName = params;
+            String playerName = params[0];
             if (playerName == null || playerName.isEmpty()) {
                 return formatError("Invalid player name");
             }
@@ -146,21 +135,21 @@ public class CommandProcessor {
     /**
      * Synchronize game state
      */
-    private String handleSynchronize(String params) {
+    private String handleSynchronize(String[] params) {
         return gameState.createStateMessage();
     }
 
     /**
      * Get detailed game status
      */
-    private String handleGetGameStatus(String params) {
+    private String handleGetGameStatus(String[] params) {
         return gameState.createDetailedStatusMessage();
     }
 
     /**
      * Process buy tile command
      */
-    private String handleBuyTile(String params) {
+    private String handleBuyTile(String[] params) {
         try {
             String[] parts = params.split(",");
             if (parts.length != 3) {
@@ -186,7 +175,7 @@ public class CommandProcessor {
     /**
      * Process buy structure command
      */
-    private String handleBuyStructure(String params) {
+    private String handleBuyStructure(String[] params) {
         try {
             String[] parts = params.split(",");
             if (parts.length != 2) {
@@ -209,7 +198,7 @@ public class CommandProcessor {
     /**
      * Process place structure command
      */
-    private String handlePlaceStructure(String params) {
+    private String handlePlaceStructure(String[] params) {
         try {
             String[] parts = params.split(",");
             if (parts.length != 4) {
@@ -236,7 +225,7 @@ public class CommandProcessor {
     /**
      * Process use structure command
      */
-    private String handleUseStructure(String params) {
+    private String handleUseStructure(String[] params) {
         try {
             String[] parts = params.split(",");
             if (parts.length != 5) {
@@ -246,10 +235,9 @@ public class CommandProcessor {
             int x = Integer.parseInt(parts[0]);
             int y = Integer.parseInt(parts[1]);
             int structureId = Integer.parseInt(parts[2]);
-            String useType = parts[3];
-            String playerName = parts[4];
+            String playerName = parts[3];
 
-            boolean success = gameLogic.useStructure(x, y, structureId, useType, playerName);
+            boolean success = gameLogic.useStructure(x, y, structureId, playerName);
             return success ? formatSuccess("Structure used") : formatError("Failed to use structure");
         } catch (NumberFormatException e) {
             return formatError("Invalid coordinates or structure ID");
@@ -262,7 +250,7 @@ public class CommandProcessor {
     /**
      * Process buy statue command
      */
-    private String handleBuyStatue(String params) {
+    private String handleBuyStatue(String[] params) {
         try {
             String[] parts = params.split(",");
             if (parts.length != 2) {
@@ -285,7 +273,7 @@ public class CommandProcessor {
     /**
      * Process upgrade statue command
      */
-    private String handleUpgradeStatue(String params) {
+    private String handleUpgradeStatue(String[] params) {
         try {
             String[] parts = params.split(",");
             if (parts.length != 4) {
@@ -310,7 +298,7 @@ public class CommandProcessor {
     /**
      * Process use statue command
      */
-    private String handleUseStatue(String params) {
+    private String handleUseStatue(String[] params) {
         try {
             String[] parts = params.split(",");
             if (parts.length != 5) {
@@ -320,10 +308,9 @@ public class CommandProcessor {
             int x = Integer.parseInt(parts[0]);
             int y = Integer.parseInt(parts[1]);
             int statueId = Integer.parseInt(parts[2]);
-            String useType = parts[3];
-            String playerName = parts[4];
+            String playerName = parts[3];
 
-            boolean success = gameLogic.useStatue(x, y, statueId, useType, playerName);
+            boolean success = gameLogic.useStatue(x, y, statueId, playerName);
             return success ? formatSuccess("Statue used") : formatError("Failed to use statue");
         } catch (NumberFormatException e) {
             return formatError("Invalid coordinates or statue ID");
@@ -336,7 +323,7 @@ public class CommandProcessor {
     /**
      * Process use field artifact command
      */
-    private String handleUseFieldArtifact(String params) {
+    private String handleUseFieldArtifact(String[] params) {
         try {
             String[] parts = params.split(",");
             if (parts.length != 5) {
@@ -346,10 +333,9 @@ public class CommandProcessor {
             int x = Integer.parseInt(parts[0]);
             int y = Integer.parseInt(parts[1]);
             int artifactId = Integer.parseInt(parts[2]);
-            String useType = parts[3];
-            String playerName = parts[4];
+            String playerName = parts[3];
 
-            boolean success = gameLogic.useFieldArtifact(x, y, artifactId, useType, playerName);
+            boolean success = gameLogic.useFieldArtifact(x, y, artifactId, playerName);
             return success ?
                     formatSuccess("Field artifact used") :
                     formatError("Failed to use field artifact");
@@ -364,7 +350,7 @@ public class CommandProcessor {
     /**
      * Process use player artifact command
      */
-    private String handleUsePlayerArtifact(String params) {
+    private String handleUsePlayerArtifact(String[] params) {
         try {
             String[] parts = params.split(",");
             if (parts.length != 4) {
@@ -373,10 +359,9 @@ public class CommandProcessor {
 
             int artifactId = Integer.parseInt(parts[0]);
             String targetPlayer = parts[1];
-            String useType = parts[2];
-            String playerName = parts[3];
+            String playerName = parts[2];
 
-            boolean success = gameLogic.usePlayerArtifact(artifactId, targetPlayer, useType, playerName);
+            boolean success = gameLogic.usePlayerArtifact(artifactId, targetPlayer, playerName);
             return success ?
                     formatSuccess("Player artifact used") :
                     formatError("Failed to use player artifact");
