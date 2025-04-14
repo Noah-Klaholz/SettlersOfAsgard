@@ -19,16 +19,14 @@ import java.util.logging.Logger;
 public class CommandProcessor {
     private static final Logger LOGGER = Logger.getLogger(CommandProcessor.class.getName());
     private final GameLogic gameLogic;
-    private final GameRules gameRules;
     private final GameState gameState;
     private final Map<Commands, Function<Command, String>> commandHandlers = new ConcurrentHashMap<>();
 
     // Use a single lock for state-changing commands to ensure consistency
     private final Object commandExecutionLock = new Object();
 
-    public CommandProcessor(GameLogic gameLogic, GameRules gameRules) {
+    public CommandProcessor(GameLogic gameLogic) {
         this.gameLogic = gameLogic;
-        this.gameRules = gameRules;
         this.gameState = gameLogic.getGameState();
         registerCommandHandlers();
     }
@@ -162,7 +160,7 @@ public class CommandProcessor {
             String structureId = parts[0];
             String playerName = cmd.getPlayer().getName();
 
-            boolean success = gameLogic.buyStructure(structureId, playerName);
+            boolean success = gameLogic.buyStructure(structureId, playerName); //TODO this is currently a String, but it would make more sense to be an int
             return success ?
                     formatSuccess(Commands.BUYSTRUCTURE.getCommand() + "$" + structureId + "$" + playerName) :
                     formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$BUYSTRUCTURE");

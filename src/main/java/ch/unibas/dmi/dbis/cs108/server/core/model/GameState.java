@@ -1,8 +1,8 @@
 package ch.unibas.dmi.dbis.cs108.server.core.model;
 
-import ch.unibas.dmi.dbis.cs108.server.core.logic.ResourceManager;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.TurnManager;
-
+import ch.unibas.dmi.dbis.cs108.shared.entities.Player;
+import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Logger;
@@ -14,27 +14,46 @@ public class GameState {
     private static final Logger LOGGER = Logger.getLogger(GameState.class.getName());
 
     private final ReadWriteLock stateLock = new ReentrantReadWriteLock();
-    private final PlayerManager playerManager;
     private final BoardManager boardManager;
     private final TurnManager turnManager;
-    private final StateObserverManager observerManager;
+    private final List<Player> players = new ArrayList<>();
 
     public GameState() {
-        this.observerManager = new StateObserverManager();
-        this.playerManager = new PlayerManager(stateLock, observerManager);
-        this.boardManager = new BoardManager(stateLock, observerManager);
-
-        // Create ResourceManager first, then pass it with 'this' to TurnManager
-        ResourceManager resourceManager = new ResourceManager();
-        this.turnManager = new TurnManager(this, resourceManager);
+        this.boardManager = new BoardManager(stateLock);
+        this.turnManager = new TurnManager(this);
     }
 
-    /**
-     * Gets the current state of the PlayerManager.
-     * @return The current object of the PlayerManager.
-     */
-    public PlayerManager getPlayerManager() {
-        return playerManager;
+    public void setPlayers(String[] playerNames) {
+        stateLock.writeLock().lock();
+        try {
+            players.clear();
+            for (String name : playerNames) {
+                players.add(new Player(name));
+            }
+        } finally {
+            stateLock.writeLock().unlock();
+        }
+    }
+
+    public List<Player> getPlayers() {
+        stateLock.readLock().lock();
+        try {
+            return Collections.unmodifiableList(players);
+        } finally {
+            stateLock.readLock().unlock();
+        }
+    }
+
+    public Player findPlayerByName(String name) {
+        stateLock.readLock().lock();
+        try {
+            return players.stream()
+                    .filter(p -> p.getName().equals(name))
+                    .findFirst()
+                    .orElse(null);
+        } finally {
+            stateLock.readLock().unlock();
+        }
     }
 
     /**
@@ -67,10 +86,9 @@ public class GameState {
     public void reset() {
         stateLock.writeLock().lock();
         try {
-            playerManager.reset();
+            players.forEach(Player::reset);
             boardManager.reset();
             turnManager.reset();
-            observerManager.notifyObservers(null);
         } finally {
             stateLock.writeLock().unlock();
         }

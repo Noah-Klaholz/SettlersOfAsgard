@@ -13,12 +13,10 @@ public class BoardManager {
     private static final Logger LOGGER = Logger.getLogger(BoardManager.class.getName());
 
     private final ReadWriteLock stateLock;
-    private final StateObserverManager observerManager;
     private final Board board;
 
-    public BoardManager(ReadWriteLock stateLock, StateObserverManager observerManager) {
+    public BoardManager(ReadWriteLock stateLock) {
         this.stateLock = stateLock;
-        this.observerManager = observerManager;
         this.board = new Board();
     }
 
@@ -36,7 +34,6 @@ public class BoardManager {
         stateLock.writeLock().lock();
         try {
             board.initBoard(width, height);
-            observerManager.notifyObservers(null);
         } finally {
             stateLock.writeLock().unlock();
         }
@@ -66,7 +63,6 @@ public class BoardManager {
             }
 
             board.setTileByCoordinates(x, y, tile);
-            observerManager.notifyObservers(null);
             return true;
         } finally {
             stateLock.writeLock().unlock();

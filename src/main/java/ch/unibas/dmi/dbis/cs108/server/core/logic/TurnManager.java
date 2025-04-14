@@ -4,20 +4,17 @@ package ch.unibas.dmi.dbis.cs108.server.core.logic;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Player;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
+import java.util.*;
 
 public class TurnManager {
     private final GameState gameState;
-    private final ResourceManager resourceManager;
     private CommunicationAPI communicationApi;
-
-    // Add properties for turn management
     private String playerTurn;
     private int playerRound;
     private int gameRound;
 
-    public TurnManager(GameState gameState, ResourceManager resourceManager) {
+    public TurnManager(GameState gameState) {
         this.gameState = gameState;
-        this.resourceManager = resourceManager;
         this.communicationApi = null;
         this.gameRound = 0;
         this.playerRound = 0;
@@ -60,7 +57,7 @@ public class TurnManager {
             return;
         }
 
-        int nextPosition = (getPlayerRound() + 1) % gameState.getPlayerManager().getPlayers().size();
+        int nextPosition = (getPlayerRound() + 1) % gameState.getPlayers().size();
         boolean newRound = nextPosition == 0;
 
         if (newRound) {
@@ -68,11 +65,11 @@ public class TurnManager {
         }
 
         setPlayerRound(nextPosition);
-        Player nextPlayer = gameState.getPlayerManager().getPlayers().get(nextPosition);
+        Player nextPlayer = gameState.getPlayers().get(nextPosition);
         setPlayerTurn(nextPlayer.getName());
 
         // Distribute resources to the player starting their turn
-        resourceManager.distributeResources(nextPlayer);
+        distributeResources(nextPlayer);
 
         // Notify clients about turn change
         if (communicationApi != null) {
@@ -83,11 +80,11 @@ public class TurnManager {
     private void initializeFirstTurn() {
         // Start with a random player
         setPlayerRound(0);
-        Player firstPlayer = gameState.getPlayerManager().getPlayers().get(0);
+        Player firstPlayer = gameState.getPlayers().get(0);
         setPlayerTurn(firstPlayer.getName());
 
         // Initial resources for first player
-        resourceManager.distributeResources(firstPlayer);
+        distributeResources(firstPlayer);
 
         // Notify about first turn
         if (communicationApi != null) {
@@ -108,5 +105,28 @@ public class TurnManager {
         gameRound = 0;
         playerRound = 0;
         playerTurn = null;
+    }
+
+    private void distributeResources(Player player) {
+        // Tile income
+        player.getOwnedTiles().forEach(tile ->
+                player.addRunes(tile.getResourceValue())
+        );
+        // Structure income
+        player.getOwnedStructures().forEach(structure -> {
+            int value = structure.getResourceValue(); //TODO wtf is this
+            if (value <= 4) player.addEnergy(value);
+            else player.addRunes(value);
+        });
+    }
+
+    private int indexOfCurrentPlayer() {
+        List<Player> players = gameState.getPlayers();
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(i).getName().equals(playerTurn)) {
+                return i;
+            }
+        }
+        return 0;
     }
 }

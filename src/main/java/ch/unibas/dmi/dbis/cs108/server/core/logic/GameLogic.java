@@ -1,6 +1,5 @@
 package ch.unibas.dmi.dbis.cs108.server.core.logic;
 
-import ch.unibas.dmi.dbis.cs108.server.core.model.PlayerManager;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
@@ -32,7 +31,6 @@ public class GameLogic implements GameLogicInterface {
     private final GameState gameState;
     private final CommandProcessor commandProcessor;
     private final TurnManager turnManager;
-    private final ResourceManager resourceManager;
     private final TileActionHandler tileActionHandler;
     private final StructureActionHandler structureActionHandler;
     private final StatueActionHandler statueActionHandler;
@@ -44,13 +42,12 @@ public class GameLogic implements GameLogicInterface {
     public GameLogic(Lobby lobby) {
         this.lobby = lobby;
         this.gameState = new GameState();
-        this.resourceManager = new ResourceManager();
         this.turnManager = gameState.getTurnManager();
         this.tileActionHandler = new TileActionHandler(gameState, gameLock);
         this.structureActionHandler = new StructureActionHandler(gameState, gameLock);
         this.statueActionHandler = new StatueActionHandler(gameState, gameLock);
         this.artifactActionHandler = new ArtifactActionHandler(gameState, gameLock);
-        this.commandProcessor = new CommandProcessor(this, new GameRules(gameState));
+        this.commandProcessor = new CommandProcessor(this);
     }
 
     /**
@@ -75,7 +72,7 @@ public class GameLogic implements GameLogicInterface {
     public void startGame(String[] players) {
         gameLock.writeLock().lock();
         try {
-            gameState.getPlayerManager().setPlayers(players);
+            gameState.setPlayers(players);
             gameState.getBoardManager().initializeBoard(10, 10);
             gameState.getTurnManager().setGameRound(0);
             gameState.getTurnManager().nextTurn();
@@ -127,7 +124,7 @@ public class GameLogic implements GameLogicInterface {
      * @return the final score message as a String.
      */
     public String createFinalScoreMessage() {
-        List<Player> players = gameState.getPlayerManager().getPlayers();
+        List<Player> players = gameState.getPlayers();
         sortPlayersByScore(players);
 
         StringBuilder result = new StringBuilder("FINAL_SCORE$");
@@ -215,14 +212,6 @@ public class GameLogic implements GameLogicInterface {
      */
     public TurnManager getTurnManager() {
         return turnManager;
-    }
-
-    /**
-     * Gets the current state of the ResourceManager.
-     * @return The current ResourceManager object.
-     */
-    public ResourceManager getResourceManager() {
-        return resourceManager;
     }
 
     /**
