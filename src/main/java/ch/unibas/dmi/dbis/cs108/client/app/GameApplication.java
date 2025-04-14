@@ -108,7 +108,7 @@ public class GameApplication extends Application {
         primaryStage.setMinHeight(600);
 
         // Start with MAIN_MENU instead of directly GAME for proper initialization
-        sceneManager.switchToScene(SceneManager.SceneType.LOBBY);
+        sceneManager.switchToScene(SceneManager.SceneType.MAIN_MENU);
         primaryStage.show();
     }
 
