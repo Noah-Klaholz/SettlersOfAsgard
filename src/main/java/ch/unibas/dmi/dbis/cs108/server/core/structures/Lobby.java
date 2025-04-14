@@ -97,8 +97,13 @@ public class Lobby {
         return gameLogic;
     }
 
+    /**
+     * Adds a player to the Lobby (if the Lobby is not full).
+     * @param player The player object to add.
+     * @return if the action was successful.
+     */
     public boolean addPlayer(ClientHandler player) {
-        if (players.size() < maxPlayers && status == LobbyStatus.IN_LOBBY) {
+        if (!isFull()) {
             players.add(player);
             logger.info(player.toString() + " has joined Lobby: " + id);
             return true;
