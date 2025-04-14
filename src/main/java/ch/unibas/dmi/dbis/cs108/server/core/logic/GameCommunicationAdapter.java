@@ -1,6 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.server.core.logic;
 
-import ch.unibas.dmi.dbis.cs108.server.core.ClientHandler;
+import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 
 import java.util.List;
