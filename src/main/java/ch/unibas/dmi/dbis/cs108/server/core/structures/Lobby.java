@@ -45,6 +45,10 @@ public class Lobby {
      * The status of the Lobby (In lobby, in game or game ended).
      */
     private LobbyStatus status;
+
+    /**
+     * The GameLogic corresponding to the game ongoing in the Lobby (only initialized when game starts).
+     */
     private GameLogic gameLogic;
     private ScheduledExecutorService turnScheduler; // For automatic turns
 
