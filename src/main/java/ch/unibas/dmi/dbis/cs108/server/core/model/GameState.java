@@ -29,6 +29,10 @@ public class GameState {
         this.turnManager = new TurnManager(this, resourceManager);
     }
 
+    /**
+     * Gets the current state of the PlayerManager.
+     * @return The current object of the PlayerManager.
+     */
     public PlayerManager getPlayerManager() {
         return playerManager;
     }
