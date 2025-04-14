@@ -56,6 +56,11 @@ public class Lobby {
      */
     private ScheduledExecutorService turnScheduler; // For automatic turns
 
+    /**
+     * Creates the Lobby object and instantiates fields.
+     * @param id The name of the Lobby as a String.
+     * @param maxPlayers The number of maximum players as an Integer.
+     */
     public Lobby(String id, int maxPlayers) {
         this.id = id;
         this.maxPlayers = maxPlayers;
