@@ -277,6 +277,10 @@ public class Lobby {
         }
     }
 
+    /**
+     * Lists the players as a String.
+     * @return The String of all players.
+     */
     public String listPlayers() {
         if (players.isEmpty()) {
             return "No available players";
