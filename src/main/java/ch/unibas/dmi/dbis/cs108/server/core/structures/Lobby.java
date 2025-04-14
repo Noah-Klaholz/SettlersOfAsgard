@@ -21,6 +21,9 @@ import java.util.stream.Collectors;
  */
 public class Lobby {
 
+    /**
+     * Logger to log logging.
+     */
     private static final Logger logger = Logger.getLogger(Lobby.class.getName());
     private final String id;
     private final List<ClientHandler> players;
