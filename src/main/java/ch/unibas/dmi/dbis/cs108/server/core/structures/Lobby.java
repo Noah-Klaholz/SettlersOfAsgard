@@ -165,6 +165,10 @@ public class Lobby {
                 '}';
     }
 
+    /**
+     * Checks for starting conditions and starts a game.
+     * @return if the game was started correctly.
+     */
     public boolean startGame() {
         if (status == LobbyStatus.IN_GAME) {
             logger.warning("Game is already started in lobby " + id);
