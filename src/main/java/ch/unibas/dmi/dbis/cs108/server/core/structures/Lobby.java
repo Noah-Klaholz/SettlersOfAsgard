@@ -227,6 +227,10 @@ public class Lobby {
         }
     }
 
+    /**
+     * Handles the request to start a new turn. Calls the GameLogic.TurnManager.nextTurn()
+     * method and broadcasts a message to the players.
+     */
     private void processTurnChange() {
         try {
             if (status != LobbyStatus.IN_GAME) {
