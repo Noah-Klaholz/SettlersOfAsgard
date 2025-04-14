@@ -69,6 +69,10 @@ public class Lobby {
         this.turnScheduler = Executors.newSingleThreadScheduledExecutor();
     }
 
+    /**
+     * Gets the ID of the Lobby.
+     * @return the current ID of the Lobby.
+     */
     public String getId() {
         return id;
     }
