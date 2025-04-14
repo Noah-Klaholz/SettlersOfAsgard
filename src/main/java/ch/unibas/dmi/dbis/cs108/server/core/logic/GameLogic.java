@@ -167,7 +167,8 @@ public class GameLogic implements GameLogicInterface {
     }
 
     /**
-     * Buy a statue
+     * Buy a statue.
+     * @return if the action was successful.
      */
     public boolean buyStatue(String statueId, String playerName) {
         return statueActionHandler.buyStatue(statueId, playerName);
