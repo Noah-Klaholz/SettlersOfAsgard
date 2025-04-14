@@ -143,6 +143,10 @@ public class Lobby {
         return players.size() == maxPlayers;
     }
 
+    /**
+     * Checks if the Lobby is empty.
+     * @return if the Lobby is empty.
+     */
     public boolean isEmpty() {
         return players.isEmpty();
     }
