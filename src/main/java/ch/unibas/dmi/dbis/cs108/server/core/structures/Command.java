@@ -108,4 +108,15 @@ public class Command {
         String args = String.join("$", this.args);
         return command + "$" + args;
     }
+
+    public boolean isAdministrative() {
+        return switch (commandType) {
+            case LISTLOBBIES, START, SHUTDOWN, SYNCHRONIZE, REGISTER, LEAVE, CHANGENAME, PING, EXIT, JOIN, CHATGLOBAL, CHATLOBBY, CHATPRIVATE, CREATELOBBY, LISTPLAYERS -> true;
+            case BUYSTRUCTURE, BUYSTATUE, GETGAMESTATUS, GETPRICES, STARTTURN, ENDTURN, BUYTILE, PLACESTRUCTURE, USEPLAYERARTIFACT, UPGRADESTATUE, USESTATUE, USESTRUCTURE, USEFIELDARTIFACT  -> false;
+            default -> {
+                logger.warning("Invalid Command " + command + " " + Arrays.toString(args));
+                yield false;
+            }
+        };
+    }
 }
