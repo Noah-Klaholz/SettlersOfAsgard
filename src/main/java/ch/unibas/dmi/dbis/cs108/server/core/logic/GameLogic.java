@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.server.core.logic;
 
+import ch.unibas.dmi.dbis.cs108.server.core.model.PlayerManager;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.ArtifactActionHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.StatueActionHandler;
@@ -214,5 +215,13 @@ public class GameLogic implements GameLogicInterface {
      */
     public ResourceManager getResourceManager() {
         return resourceManager;
+    }
+
+    /**
+     * Gets the curent state of the CommandProcessor.
+     * @return The current object of the CommandProcessor.
+     */
+    public CommandProcessor getCommandProcessor() {
+        return commandProcessor;
     }
 }
