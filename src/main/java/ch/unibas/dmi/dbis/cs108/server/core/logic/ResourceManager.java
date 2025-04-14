@@ -2,7 +2,7 @@ package ch.unibas.dmi.dbis.cs108.server.core.logic;
 
 import ch.unibas.dmi.dbis.cs108.shared.entities.Player;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Tile;
-import ch.unibas.dmi.dbis.cs108.shared.entities.structures.Structure;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Structure;
 
 public class ResourceManager {
 
