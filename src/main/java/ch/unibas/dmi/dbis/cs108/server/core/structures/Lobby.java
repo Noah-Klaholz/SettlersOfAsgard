@@ -85,6 +85,10 @@ public class Lobby {
         return players;
     }
 
+    /**
+     * Gets the GameLogic object in this Lobby. Only valid if the Game has started already.
+     * @return The GameLogic object in this Lobby.
+     */
     public GameLogic getGameLogic() {
         if (status != LobbyStatus.IN_GAME) {
             logger.warning("Not yet in game, cannot return gameLogic from current Lobby.");
