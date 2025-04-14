@@ -199,4 +199,12 @@ public class GameLogic implements GameLogicInterface {
     public boolean usePlayerArtifact(int artifactId, String targetPlayer, String useType, String playerName) {
         return artifactActionHandler.usePlayerArtifact(artifactId, targetPlayer, useType, playerName);
     }
+
+    /**
+     * Gets the current state of the TurnManager.
+     * @return The current TurnManager object.
+     */
+    public TurnManager getTurnManager() {
+        return turnManager;
+    }
 }
