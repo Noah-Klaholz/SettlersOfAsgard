@@ -1,4 +1,4 @@
-package ch.unibas.dmi.dbis.cs108.shared.behavior;
+package ch.unibas.dmi.dbis.cs108.shared.entities;
 
 import java.util.HashMap;
 import java.util.Map;
