@@ -1,7 +1,11 @@
 package ch.unibas.dmi.dbis.cs108.server.core.actions;
 
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Player;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Shop;
+import ch.unibas.dmi.dbis.cs108.shared.entities.structures.Structure;
 
+import java.sql.Struct;
 import java.util.concurrent.locks.ReadWriteLock;
 
 public class StructureActionHandler {
@@ -13,8 +17,19 @@ public class StructureActionHandler {
         this.gameLock = gameLock;
     }
 
-    public boolean buyStructure(String structureID, String playerName) {
-        // Implementation will be added later
+    public boolean buyStructure(int structureID, String playerName) {
+        Player player = gameState.getPlayerManager().findPlayerByName(playerName);
+        Shop shop = player.getShop();
+        Structure targetstructure;
+        for (Structure s : shop.getBuyableStructures()) {
+
+        }
+
+
+
+
+
+
         return false;
     }
 
