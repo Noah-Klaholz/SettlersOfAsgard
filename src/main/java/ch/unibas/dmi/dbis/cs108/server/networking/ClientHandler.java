@@ -23,53 +23,35 @@ import java.util.logging.Logger;
  * It also implements the CommunicationAPI interface to allow for communication with the server.
  */
 public class ClientHandler implements Runnable, CommunicationAPI {
+    /** Logger to log logging */
     private static final Logger logger = Logger.getLogger(ClientHandler.class.getName());
 
-    /**
-     * Reference to a CommandHandler
-     */
+    /** Reference to a CommandHandler */
     private final CommandHandler ch;
 
-    /**
-     * Reference to the GameServer
-     */
+    /** Reference to the GameServer */
     protected GameServer server;
 
-    /**
-     * Reference to the current lobby of the client
-     */
+    /** Reference to the current lobby of the client */
     protected Lobby currentLobby = null;
 
-    /**
-     * Reference to the local player of the client
-     */
+    /** Reference to the local player of the client */
     protected Player localPlayer = null;
 
-    /**
-     * The socket for the client connection
-     */
+    /** The socket for the client connection */
     private Socket socket;
 
-    /**
-     * PrintWriter for sending messages to the client
-     */
+    /** PrintWriter for sending messages to the client */
     private PrintWriter out;
 
-    /**
-     * BufferedReader for receiving messages from the client
-     */
+    /** BufferedReader for receiving messages from the client */
     private BufferedReader in;
 
-    /**
-     * Last time a ping was sent
-     */
+    /** Last time a ping was sent */
     private long lastPingTime = System.currentTimeMillis();
 
-    /**
-     * Flag to indicate if the client handler is running
-     */
+    /** Flag to indicate if the client handler is running */
     private boolean running;
-
 
     /**
      * Constructor for the ClientHandler class.
@@ -301,6 +283,11 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         }
     }
 
+    /**
+     * Handles all administrative commands (not game-related).
+     *
+     * @param cmd The command received from the client.
+     */
     private void processAdminCommand(Command cmd) {
         logger.info("Server processing " + cmd);
 
