@@ -79,6 +79,14 @@ public class Lobby implements GameEventNotifier {
     }
 
     /**
+     * Gets the number of maximum players.
+     * @return the number of maximum players.
+     */
+    public int getMaxPlayers() {
+        return maxPlayers;
+    }
+
+    /**
      * Gets the players as a List of ClientHandlers.
      * @return the current players in the Lobby.
      */
