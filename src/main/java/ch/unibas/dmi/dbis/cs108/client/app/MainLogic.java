@@ -1,3 +1,4 @@
+/**
 package ch.unibas.dmi.dbis.cs108.client.app;
 
 import ch.unibas.dmi.dbis.cs108.client.core.commands.BuyTileCommand;
@@ -75,4 +76,4 @@ public class MainLogic {
             System.out.println(player);
         }
     }
-}
+}*/

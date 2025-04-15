@@ -1,6 +1,9 @@
 package ch.unibas.dmi.dbis.cs108.shared.game;
 
-import ch.unibas.dmi.dbis.cs108.shared.entities.artifacts.Artifact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Trap;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 
 public class Tile {
 
@@ -12,7 +15,7 @@ public class Tile {
     private Structure structure;
     private Statue statue;
     private Artifact artefact;
-    private ActiveTrap trap;
+    private Trap trap;
     private final String world;
     private boolean purchased;
     private int resourceValue; //Runes: bei spezifischen sind es energy: dort vermerkt
@@ -88,11 +91,11 @@ public class Tile {
         this.artefact = artefact;
     }
 
-    public ActiveTrap getTrap() {
+    public Trap getTrap() {
         return trap;
     }
 
-    public void setTrap(ActiveTrap trap) {
+    public void setTrap(Trap trap) {
         this.trap = trap;
     }
 
@@ -150,7 +153,7 @@ public class Tile {
         private Structure structure;
         private Statue statue;
         private Artifact artefact;
-        private ActiveTrap trap;
+        private Trap trap;
         private String world;
 
         public TileBuilder setX(int x) {
@@ -193,7 +196,7 @@ public class Tile {
             return this;
         }
 
-        public TileBuilder setTrap(ActiveTrap trap) {
+        public TileBuilder setTrap(Trap trap) {
             this.trap = trap;
             return this;
         }

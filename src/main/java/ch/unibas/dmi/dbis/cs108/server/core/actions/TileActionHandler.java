@@ -38,7 +38,7 @@ public class TileActionHandler {
     }
 
     private Player findPlayerByName(String playerName) {
-        for (Player p : gameState.getPlayerManager().getPlayers()) {
+        for (Player p : gameState.getPlayers()) {
             if (p.getName().equals(playerName)) {
                 return p;
             }

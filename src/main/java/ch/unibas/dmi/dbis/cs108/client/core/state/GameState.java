@@ -7,6 +7,7 @@ import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
 public class GameState {
 
     private GameRound gameRound;
@@ -41,6 +42,7 @@ public class GameState {
         this.board = board;
     }
 
+
     public int getCurrentGameRoundNumber() {
         return gameRound.getNumber();
     }
@@ -64,6 +66,7 @@ public class GameState {
     public void setCurrentPlayerRoundNumber(int number) {
         playerRound.setNumber(number);
     }
+
 
     public void nextTurn(){
         if (playerRound.getNumber() >= players.size()) {
@@ -110,4 +113,4 @@ public class GameState {
     public void setPlayerRound(PlayerRound playerRound) {
         this.playerRound = playerRound;
     }
-}
+}*/

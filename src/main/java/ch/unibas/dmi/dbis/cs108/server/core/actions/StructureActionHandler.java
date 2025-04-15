@@ -17,7 +17,7 @@ public class StructureActionHandler {
     }
 
     public boolean buyStructure(int structureID, String playerName) {
-        Player player = gameState.getPlayerManager().findPlayerByName(playerName);
+        Player player = gameState.findPlayerByName(playerName);
         Shop shop = player.getShop();
         Structure targetstructure;
         for (Structure s : shop.getBuyableStructures()) {
