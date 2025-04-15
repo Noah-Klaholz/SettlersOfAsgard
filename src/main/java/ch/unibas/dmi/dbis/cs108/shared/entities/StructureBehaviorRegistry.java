@@ -26,6 +26,9 @@ public class StructureBehaviorRegistry {
 
     private void initializeBehaviors() {
         registerBehavior("Rune Table", (structure, gameLogic, player) -> {
+            if (player.getEnergy() < 4) {
+                return false;
+            }
             player.addEnergy((int)structure.getParams().get(0).getValue());
             player.addRunes((int)structure.getParams().get(1).getValue());
             return true;

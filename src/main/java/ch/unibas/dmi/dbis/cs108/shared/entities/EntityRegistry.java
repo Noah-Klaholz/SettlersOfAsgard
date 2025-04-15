@@ -102,7 +102,7 @@ public class EntityRegistry {
         for (JsonElement elem : elements) {
             if (elem.isJsonObject()) {
                 JsonObject obj = elem.getAsJsonObject();
-                if (obj.has("name")) {
+                if (obj.has("id")) {
                     Statue statue = Statue.fromJson(obj);
                     statues.put(statue.getId(), statue);
                 }

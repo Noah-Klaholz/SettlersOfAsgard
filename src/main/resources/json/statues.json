@@ -1,18 +1,10 @@
 [
   {
-    "_comment": "Here are descriptions for useTypes",
-    "Player": "Effect on another Player",
-    "Tile": "Affects a Tile in possession",
-    "Smeltery": "Affects the Smeltery",
-    "mix": "Affects multiple things"
-  },
-  {
     "name": "Jörmungandr",
     "deal": "Destroys 1 random structure of a chosen player: sacrifices 1 structure of your own",
     "blessing": "-",
     "curse": "-",
     "description": "",
-    "useType": "Player",
     "id": 30,
     "price": 0,
     "upgradePrice": 0

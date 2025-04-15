@@ -9,11 +9,6 @@ import com.google.gson.JsonObject;
  */
 public class Statue extends PurchasableEntity {
     /**
-     * The type of functionality this statue provides when used.
-     */
-    private String useType;
-
-    /**
      * The cost to upgrade this statue to the next level.
      */
     private int upgradePrice;
@@ -34,19 +29,10 @@ public class Statue extends PurchasableEntity {
      * @param id The unique identifier for this statue
      * @param name The name of this statue
      * @param description The description of this statue
-     * @param useType The type of functionality this statue provides
      */
-    public Statue(int id, String name, String description, String useType) {
+    public Statue(int id, String name, String description) {
         super(id, name, description, 0); // Price from JSON
-        this.useType = useType;
     }
-
-    /**
-     * Returns the use type of this statue.
-     *
-     * @return The use type identifier
-     */
-    public String getUseType() { return useType; }
 
     /**
      * Returns the cost to upgrade this statue.
@@ -76,7 +62,6 @@ public class Statue extends PurchasableEntity {
     @Override
     protected void loadFromJson(JsonObject json) {
         super.loadFromJson(json);
-        this.useType = json.get("useType").getAsString();
         this.upgradePrice = json.get("upgradePrice").getAsInt();
     }
 
