@@ -6,18 +6,11 @@ package ch.unibas.dmi.dbis.cs108.shared.game;
  * Each tile can contain various entities such as players, artefacts, etc.
  */
 public class Board {
-    private Tile[][] tiles;
 
     /**
-     * Constructor for Board class
-     * Initializes the board with a 2D array of tiles.
-     * The size of the board is currently set to 7 rows and 8 columns.
-     * This can be changed later if needed or changed in initBoard method.
+     * Two-dimensional array of Tiles. Represents the entire board. The first dimension is x.
      */
-    public Board() {
-        tiles = new Tile[7][8]; // 7 rows and 8 columns
-        initBoard(7, 8);
-    }
+    private Tile[][] tiles;
 
     /**
      * Initialize board with a specified number of tiles
@@ -27,7 +20,7 @@ public class Board {
      * @param y The number of columns in the board.
      */
     public void initBoard(int x, int y) {
-        //tiles = new Tile[x][y];
+        tiles = new Tile[x][y];
         Tile.TileBuilder tilebuilder = new Tile.TileBuilder();
         tilebuilder.setPrice(10);
         for (int i=0; i<x; i++){
