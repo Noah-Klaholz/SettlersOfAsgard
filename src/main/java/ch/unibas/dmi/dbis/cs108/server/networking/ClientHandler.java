@@ -243,7 +243,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      * @return the name of the current localPlayer
      */
     public String getPlayerName() {
-        return localPlayer.getName();
+        return localPlayer == null ? null : localPlayer.getName();
     }
 
     /**
