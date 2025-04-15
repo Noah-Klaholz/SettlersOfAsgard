@@ -321,6 +321,14 @@ public class Lobby implements GameEventNotifier {
     }
 
     /**
+     * Sets the gameLogic field.
+     * @param gameLogic the object to set.
+     */
+    public void setGameLogic(GameLogic gameLogic) {
+        this.gameLogic = gameLogic;
+    }
+
+    /**
      * Sends a message to all clients when called. It sends:
      * TURN$... when a player begins his turn.
      * ENDR$... when a gameRound ends.
