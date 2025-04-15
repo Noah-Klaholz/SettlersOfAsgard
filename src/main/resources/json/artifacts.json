@@ -26,10 +26,10 @@
   {
     "name": "Fragment of Mjölnir",
     "description": "",
-    "useType": "Field",
+    "useType": "Player",
     "id": 13,
     "chance": 0.3,
-    "effect": 0
+    "effect": 2.0
   },
   {
     "name": "Fenrir's Bones",

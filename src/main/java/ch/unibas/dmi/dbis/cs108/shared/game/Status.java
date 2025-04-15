@@ -10,7 +10,8 @@ public class Status {
         RUNE_GENERATION,
         ENERGY_GENERATION,
         RIVER_RUNE_GENERATION,
-        SHOP_PRICE
+        SHOP_PRICE,
+        ARTIFACT_CHANCE
         // Add more buff types as needed
     }
 
@@ -30,6 +31,10 @@ public class Status {
      * This value determines the efficiency of shop prices.
      */
     private double shopPriceEfficiency;
+    /**
+     * This value determines the artifact chance.
+     */
+    private double artifactChance;
 
     /**
      * Constructor for Status class.
@@ -40,6 +45,7 @@ public class Status {
         this.runeEfficieny = 1.0;
         this.riverRuneEfficiency = 1.0;
         this.shopPriceEfficiency = 1.0;
+        this.artifactChance = 1.0;
     }
 
     /**
@@ -54,6 +60,7 @@ public class Status {
             case ENERGY_GENERATION -> energyEfficiency;
             case RIVER_RUNE_GENERATION -> riverRuneEfficiency;
             case SHOP_PRICE -> shopPriceEfficiency;
+            case ARTIFACT_CHANCE -> artifactChance;
             default -> throw new IllegalArgumentException("Unknown buff type: " + type);
         };
     }
@@ -78,6 +85,9 @@ public class Status {
                 break;
             case SHOP_PRICE:
                 shopPriceEfficiency += value;
+                break;
+            case ARTIFACT_CHANCE:
+                artifactChance *= value;
                 break;
         }
     }

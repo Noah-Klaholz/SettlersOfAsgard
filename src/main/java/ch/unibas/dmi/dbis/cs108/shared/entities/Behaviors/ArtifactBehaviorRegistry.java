@@ -74,6 +74,11 @@ public class ArtifactBehaviorRegistry {
             return true;
         });
 
+        registerPlayerBehavior("Fragment of Mjölnir", (artifact, gameLogic, player, targetPlayer) -> {
+            targetPlayer.addBuff(Status.BuffType.RUNE_GENERATION, (int)artifact.getEffect());
+            return true;
+        });
+
         // Field-targeting artifacts
         registerFieldBehavior("Freyja's Necklace", (artifact, gameLogic, player, x, y) -> {
             Tile tile = gameLogic.getGameState().getBoardManager().getTile(x, y);
@@ -84,17 +89,8 @@ public class ArtifactBehaviorRegistry {
 
         registerFieldBehavior("Freyr's Golden Apple", (artifact, gameLogic, player, x, y) -> {
             Tile tile = gameLogic.getGameState().getBoardManager().getTile(x, y);
-            if (tile == null) return false;
-
-            // Apply growth/prosperity effect
-            return true;
-        });
-
-        registerFieldBehavior("Fragment of Mjölnir", (artifact, gameLogic, player, x, y) -> {
-            Tile tile = gameLogic.getGameState().getBoardManager().getTile(x, y);
-            if (tile == null) return false;
-
-            // Apply lightning/power effect
+            if (tile == null || !tile.getHasEntity()) return false;
+            tile.setBuff(Status.BuffType.ENERGY_GENERATION, (int)artifact.getEffect());
             return true;
         });
 
