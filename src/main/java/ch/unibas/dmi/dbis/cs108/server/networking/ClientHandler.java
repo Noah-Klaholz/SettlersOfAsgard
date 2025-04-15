@@ -93,7 +93,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         } finally {
             closeResources();
             server.removeClient(this); // Notify the server to remove this client
-            running = false;
+            stop();
         }
     }
 
@@ -139,13 +139,14 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                 logger.warning("Error sending message to client, closing connection.");
                 closeResources();
                 server.removeClient(this);
-                running = false;
+                stop();
             }
         } else {
             logger.info("Client socket is closed. Unable to send message: " + message);
             if (running) {
-                running = false;
                 server.removeClient(this);
+                closeResources();
+                stop();
             }
         }
     }
@@ -168,7 +169,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             logger.warning("Client timed out: " + (socket != null ? socket.getRemoteSocketAddress() : "unknown"));
             closeResources();
             server.removeClient(this);
-            running = false;
+            stop();
         } else {
             sendMessage("PING$");
         }
@@ -371,7 +372,9 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             case EXIT:
                 logger.info("Client sent an exit command.");
                 worked = ch.handleLeaveLobby();
+                closeResources();
                 server.removeClient(this);
+                stop();
                 break;
             default: // Error case
                 logger.warning("Switch-Unknown command: " + cmd.getCommand());
