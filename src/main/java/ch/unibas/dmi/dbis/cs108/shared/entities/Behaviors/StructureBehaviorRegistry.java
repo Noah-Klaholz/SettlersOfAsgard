@@ -58,7 +58,26 @@ public class StructureBehaviorRegistry {
             player.addBuff(Status.BuffType.DEBUFFABLE, 0); // sets the player to non-debuffable
             return true;
         });
-        //TODO Add other behaviors here
+
+        registerBehavior("Huginn and Muninn", (structure, gameLogic, player) -> {
+            return true;
+            //TODO Add behavior for Huginn and Muninn -> how to show this in networking? -> same with odings eye artifact
+        });
+
+        registerBehavior("Ran's Hall", (structure, gameLogic, player) -> {
+            return true;
+            //TODO Add behavior for Ran's Hall -> not yet deciced
+        });
+
+        registerBehavior("Surtur's Smeltery", (structure, gameLogic, player) -> {
+            return true;
+            //TODO Add behavior for Surtur's Smeltery -> not yet explained
+        });
+
+        registerBehavior("Tree", (structure, gameLogic, player) -> {
+            player.addRunes((int)structure.getParams().get(0).getValue());
+            return true;
+        });
     }
 
     /**
