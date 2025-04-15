@@ -276,4 +276,13 @@ public class GameServer {
     public boolean isRunning() {
         return running;
     }
+
+    /**
+     * Gets the executor.
+     *
+     * @return the executor.
+     */
+    public ExecutorService getExecutor() {
+        return executor;
+    }
 }
