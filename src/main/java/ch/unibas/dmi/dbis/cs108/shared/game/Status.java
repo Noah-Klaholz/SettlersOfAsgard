@@ -11,7 +11,8 @@ public class Status {
         ENERGY_GENERATION,
         RIVER_RUNE_GENERATION,
         SHOP_PRICE,
-        ARTIFACT_CHANCE
+        ARTIFACT_CHANCE,
+        DEBUFFABLE
         // Add more buff types as needed
     }
 
@@ -35,6 +36,10 @@ public class Status {
      * This value determines the artifact chance.
      */
     private double artifactChance;
+    /**
+     * This value determines wether the player is debuffable or not.
+     */
+    private boolean debuffable;
 
     /**
      * Constructor for Status class.
@@ -46,6 +51,7 @@ public class Status {
         this.riverRuneEfficiency = 1.0;
         this.shopPriceEfficiency = 1.0;
         this.artifactChance = 1.0;
+        this.debuffable = true; // Default to debuffable
     }
 
     /**
@@ -61,6 +67,7 @@ public class Status {
             case RIVER_RUNE_GENERATION -> riverRuneEfficiency;
             case SHOP_PRICE -> shopPriceEfficiency;
             case ARTIFACT_CHANCE -> artifactChance;
+            case DEBUFFABLE -> debuffable ? 1.0 : 0.0; // Return 1.0 if debuffable, else 0.0
             default -> throw new IllegalArgumentException("Unknown buff type: " + type);
         };
     }
@@ -88,6 +95,9 @@ public class Status {
                 break;
             case ARTIFACT_CHANCE:
                 artifactChance *= value;
+                break;
+            case DEBUFFABLE:
+                debuffable = value > 0;
                 break;
         }
     }

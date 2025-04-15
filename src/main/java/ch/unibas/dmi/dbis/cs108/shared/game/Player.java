@@ -59,7 +59,14 @@ public class Player {
      * @param value the value of the buff (positive for buff, negative for debuff)
      */
     public void addBuff(Status.BuffType buff, double value) {
+        if (!isDebuffable() && value < 0) {
+            return; // Do not apply debuff if player is not debuffable
+        }
         status.buff(buff, value);
+    }
+
+    public boolean isDebuffable() {
+        return status.get(Status.BuffType.DEBUFFABLE) == 1.0;
     }
 
     /**

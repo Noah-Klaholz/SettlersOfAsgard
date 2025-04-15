@@ -1,8 +1,13 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors;
 
+import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
+import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
+import ch.unibas.dmi.dbis.cs108.shared.game.Status;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,8 +38,24 @@ public class StructureBehaviorRegistry {
             player.addRunes((int)structure.getParams().get(1).getValue());
             return true;
         });
+
+        registerBehavior("Mimisbrunnr", (structure, gameLogic, player) -> {
+            if(player.getArtifacts().size() < SETTINGS.Config.MAX_ARTIFACTS.getValue()) {
+                int randomId = (int)(Math.random() * 12) + 10;
+                Artifact artifact = EntityRegistry.getArtifact(randomId);
+                player.addArtifact(artifact);
+                return true;
+            }
+            return false;
+        });
+
         registerBehavior("ActiveTrap", (structure, gameLogic, player) -> {
             player.addRunes(-(int)structure.getParams().get(0).getValue());
+            return true;
+        });
+
+        registerBehavior("Helgrindr", (structure, gameLogic, player) -> {
+            player.addBuff(Status.BuffType.DEBUFFABLE, 0); // sets the player to non-debuffable
             return true;
         });
         //TODO Add other behaviors here
