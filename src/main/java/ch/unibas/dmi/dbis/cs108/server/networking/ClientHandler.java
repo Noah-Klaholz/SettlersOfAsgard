@@ -269,15 +269,20 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         if (cmd.isValid()) {
             if (cmd.isAdministrative()) {
                 processAdminCommand(cmd);
-            } else if (ch.getGameLogic() != null) {
-                if (Objects.equals(currentLobby.getStatus(), Lobby.LobbyStatus.IN_GAME.getStatus())) {
-                    ch.getGameLogic().processCommand(cmd);
-                } else {
-                    sendMessage("ERR$" + ErrorsAPI.Errors.NOT_IN_GAME.getError());
-                }
-            } else {
-                sendMessage("ERR$" + ErrorsAPI.Errors.NOT_IN_LOBBY.getError());
             }
+            else{
+                if (currentLobby != null) {
+                    if (Objects.equals(currentLobby.getStatus(), Lobby.LobbyStatus.IN_GAME.getStatus())) {
+                        ch.getGameLogic().processCommand(cmd);
+                    } else {
+                        sendMessage("ERR$" + ErrorsAPI.Errors.NOT_IN_GAME.getError());
+                    }
+                }
+                else {
+                    sendMessage("ERR$" + ErrorsAPI.Errors.NOT_IN_LOBBY.getError());
+                }
+            }
+
         } else {
             logger.warning("ClientHandler: Invalid command: " + cmd);
         }
