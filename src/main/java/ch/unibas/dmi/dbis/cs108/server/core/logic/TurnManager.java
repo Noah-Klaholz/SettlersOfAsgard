@@ -119,6 +119,9 @@ public class TurnManager {
                 PurchasableEntity entity = tile.getEntity();
                 int value = entity.getResourceValue(); // Either energy or runes
                 if (entity.isStatue()) {
+                    if (tile.hasRiver()) {
+                        value = (int) (value * player.getStatus().get(PlayerStatus.BuffType.RIVER_RUNE_GENERATION));
+                    }
                     value = (int) (value * player.getStatus().get(PlayerStatus.BuffType.RUNE_GENERATION));
                     player.addRunes(value);
                 } else {
