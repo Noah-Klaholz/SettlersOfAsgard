@@ -31,7 +31,7 @@ public class Statue extends PurchasableEntity {
      * @param description The description of this statue
      */
     public Statue(int id, String name, String description) {
-        super(id, name, description, 0); // Price from JSON
+        super(id, name, description, 0, 0); // Price from JSON
     }
 
     /**

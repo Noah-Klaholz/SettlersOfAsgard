@@ -5,6 +5,7 @@
     "description": "",
     "id": 1,
     "price": 15,
+    "resourceValue": 0,
     "params": [
       {
         "name": "Energy",
@@ -18,38 +19,43 @@
   },
   {
     "name": "Mimisbrunnr",
-    "usage": "Gives 1 random Artifact per Round",
+    "usage": "Gives 1 random Artifact and 1 energy per Round",
     "description": "",
     "id": 2,
-    "price": 0
+    "price": 0,
+    "resourceValue": 1
   },
   {
     "name": "Helgrindr",
     "usage": "",
-    "description": "Prevents Debuffs",
+    "description": "Prevents Debuffs and gives 1 Energy per Round",
     "id": 3,
-    "price": 0
+    "price": 0,
+    "resourceValue": 1
   },
   {
     "name": "Huginn and Muninn",
-    "usage": "Shows where 1 Artifact is on a buyable Tile",
+    "usage": "Shows where 1 Artifact is on a buyable Tile and gives 2 Energy per Round",
     "description": "",
     "id": 4,
-    "price": 0
+    "price": 0,
+    "resourceValue": 2
   },
   {
     "name": "Ran's Hall",
     "usage": "Catches mythological fish when placed on a River Tile: gives +1 Energy per Round",
     "description": "",
     "id": 5,
-    "price": 0
+    "price": 0,
+    "resourceValue": 0
   },
   {
     "name": "Surtur's Smeltery",
     "usage": "Enables the production of Artifacts",
     "description": "",
     "id": 6,
-    "price": 0
+    "price": 0,
+    "resourceValue": 0
   },
   {
     "name": "Tree",
@@ -57,6 +63,7 @@
     "description": "",
     "id": 7,
     "price": 0,
+    "resourceValue": 0,
     "params": [
       {
         "name": "Farmed Runes per round",
@@ -70,6 +77,7 @@
     "description": "",
     "id": 8,
     "price": 0,
+    "resourceValue": 0,
     "params": [
       {
         "name": "Runes Lost",

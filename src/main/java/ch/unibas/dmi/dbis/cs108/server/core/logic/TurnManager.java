@@ -117,8 +117,8 @@ public class TurnManager {
         }
         );
         // Structure income
-        player.getPurchasableEntities().forEach(structure -> {
-            int value = structure.getRessourceValue();
+        player.getPurchasableEntities().forEach(entity -> {
+            int value = entity.getResourceValue();
             if (value <= 4) player.addEnergy(value);
             else player.addRunes(value);
         });
