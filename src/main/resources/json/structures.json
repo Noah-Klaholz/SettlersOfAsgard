@@ -4,7 +4,17 @@
     "usage": "Converts 4 Energy to x Runes",
     "description": "",
     "id": 1,
-    "price": 0
+    "price": 15,
+    "params": [
+      {
+        "name": "Energy",
+        "value": 4
+      },
+      {
+        "name": "Runes",
+        "value": 20
+      }
+    ]
   },
   {
     "name": "Mimisbrunnr",

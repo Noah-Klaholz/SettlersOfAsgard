@@ -7,10 +7,6 @@ import com.google.gson.JsonObject;
  * Structures provide special functionality to players when used.
  */
 public class Structure extends PurchasableEntity {
-    /**
-     * The type of functionality this structure provides when used.
-     */
-    private String useType;
 
     /**
      * Default constructor for Structure.
@@ -23,21 +19,11 @@ public class Structure extends PurchasableEntity {
      * @param id The unique identifier for this structure
      * @param name The name of this structure
      * @param description The description of this structure
-     * @param useType The type of functionality this structure provides
      * @param price The purchase price of this structure
      */
-    public Structure(int id, String name, String description, String useType, int price) {
+    public Structure(int id, String name, String description, int price) {
         super(id, name, description, price);
-        this.useType = useType;
     }
-
-    /**
-     * Returns the use type of this structure.
-     *
-     * @return The use type identifier
-     */
-    public String getUseType() { return useType; }
-
     /**
      * Loads structure data from a JSON object.
      * Extends the parent method to also load use type data.
@@ -47,7 +33,6 @@ public class Structure extends PurchasableEntity {
     @Override
     protected void loadFromJson(JsonObject json) {
         super.loadFromJson(json);
-        this.useType = json.get("useType").getAsString();
     }
 
     /**

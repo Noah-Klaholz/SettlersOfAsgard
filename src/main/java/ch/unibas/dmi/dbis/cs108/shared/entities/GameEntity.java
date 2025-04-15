@@ -1,6 +1,11 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Base abstract class for all game entities.
@@ -22,6 +27,11 @@ public abstract class GameEntity {
      * Description of the entity.
      */
     protected String description;
+
+    /**
+     * List for storing other parameters (e.g. how strong an effect is).
+     */
+    protected List<Parameter> params = new ArrayList<>();
 
     /**
      * Default constructor for GameEntity.
@@ -62,15 +72,45 @@ public abstract class GameEntity {
      */
     public String getDescription() { return description; }
 
+
+    /**
+     * Returns the list of parameters associated with this entity.
+     *
+     * @return The list of parameters
+     */
+    public List<Parameter> getParams() { return params; }
+
     /**
      * Loads entity data from a JSON object.
-     * Populates the entity's fields with values from the provided JSON.
+     * In addition to id, name and description, it loads a list of parameters
+     * if available.
      *
-     * @param json The JSON object containing entity data
+     * Expected JSON format:
+     * {
+     *    "id": 1,
+     *    "name": "Example Entity",
+     *    "description": "Description text",
+     *    "params": [10, 20]  // list of parameters
+     * }
+     *
+     * @param json The JSON object containing entity data.
      */
     protected void loadFromJson(JsonObject json) {
         this.id = json.get("id").getAsInt();
         this.name = json.get("name").getAsString();
         this.description = json.get("description").getAsString();
+
+        if (json.has("params")) {
+            JsonArray jsonParams = json.getAsJsonArray("params");
+            for (JsonElement element : jsonParams) {
+                // Check if the element is an object containing a "value" key
+                if (element.isJsonObject() && element.getAsJsonObject().has("value")) {
+                    JsonObject paramObj = element.getAsJsonObject();
+                    String paramName = paramObj.get("name").getAsString();
+                    double paramValue = paramObj.get("value").getAsDouble();
+                    params.add(new Parameter(paramName, paramValue));
+                }
+            }
+        }
     }
 }
