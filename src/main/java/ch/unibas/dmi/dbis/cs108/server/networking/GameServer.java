@@ -267,4 +267,13 @@ public class GameServer {
                 .collect(Collectors.joining(", "));
 
     }
+
+    /**
+     * Checks if the server is running.
+     *
+     * @return true if the server is running, false otherwise.
+     */
+    public boolean isRunning() {
+        return running;
+    }
 }
