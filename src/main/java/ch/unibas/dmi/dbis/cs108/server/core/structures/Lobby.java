@@ -87,6 +87,13 @@ public class Lobby implements GameEventNotifier {
     }
 
     /**
+     * Gets the turnScheduler.
+     * @return the TurnScheduler.
+     */
+    public ScheduledExecutorService getTurnScheduler() {
+        return turnScheduler;
+    }
+    /**
      * Gets the GameLogic object in this Lobby. Only valid if the Game has started already.
      * @return The GameLogic object in this Lobby.
      */
