@@ -2,6 +2,7 @@ package ch.unibas.dmi.dbis.cs108.server.core.logic;
 
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
+import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol.Commands;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.ErrorsAPI;
 
@@ -18,6 +19,7 @@ public class CommandProcessor {
     private static final Logger LOGGER = Logger.getLogger(CommandProcessor.class.getName());
     private final GameLogic gameLogic;
     private final GameState gameState;
+    private final Lobby lobby;
     private final Map<Commands, Function<Command, String>> commandHandlers = new ConcurrentHashMap<>();
 
     // Use a single lock for state-changing commands to ensure consistency
@@ -26,6 +28,7 @@ public class CommandProcessor {
     public CommandProcessor(GameLogic gameLogic) {
         this.gameLogic = gameLogic;
         this.gameState = gameLogic.getGameState();
+        this.lobby = gameLogic.getLobby();
         registerCommandHandlers();
     }
 
@@ -93,7 +96,7 @@ public class CommandProcessor {
                 return formatError(ErrorsAPI.Errors.NOT_PLAYER_TURN.getError());
             }
 
-            boolean success = gameState.getTurnManager().endTurn(playerName);
+            boolean success = lobby.manualEndTurn();
             if (!success) {
                 return formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError());
             }

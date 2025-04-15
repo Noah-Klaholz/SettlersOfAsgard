@@ -77,7 +77,7 @@ public class EntityRegistry {
         for (JsonElement elem : elements) {
             if (elem.isJsonObject()) {
                 JsonObject obj = elem.getAsJsonObject();
-                if (obj.has("name")) {
+                if (obj.has("id")) {
                     Structure structure = Structure.fromJson(obj);
                     structures.put(structure.getId(), structure);
                 }

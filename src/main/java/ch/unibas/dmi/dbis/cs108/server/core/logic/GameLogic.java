@@ -61,6 +61,20 @@ public class GameLogic implements GameLogicInterface {
         }
     }
 
+    /**
+     * Gets the current  Lobby.
+     *
+     * @return the current object of the Lobby.
+     */
+    public Lobby getLobby() {
+        gameLock.readLock().lock();
+        try {
+            return lobby;
+        } finally {
+            gameLock.readLock().unlock();
+        }
+    }
+
 
     /**
      * Starts the game.

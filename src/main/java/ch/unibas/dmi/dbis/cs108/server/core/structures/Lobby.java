@@ -246,15 +246,18 @@ public class Lobby {
 
     /**
      * Manually ends the current turn.
+     *
+     * @return true if the turn was ended successfully, false otherwise.
      */
-    public void manualEndTurn() {
+    public boolean manualEndTurn() {
         if (status != LobbyStatus.IN_GAME) {
             logger.warning("Cannot end turn manually - game not in progress.");
-            return;
+            return false;
         }
 
         processTurnChange();
         startTurnScheduler();
+        return true;
     }
 
     /**
