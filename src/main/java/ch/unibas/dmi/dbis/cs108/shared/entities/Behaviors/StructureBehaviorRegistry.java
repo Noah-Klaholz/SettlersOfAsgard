@@ -34,7 +34,7 @@ public class StructureBehaviorRegistry {
             return true;
         });
         registerBehavior("ActiveTrap", (structure, gameLogic, player) -> {
-            player.addRunes((int)structure.getParams().get(0).getValue());
+            player.addRunes(-(int)structure.getParams().get(0).getValue());
             return true;
         });
         //TODO Add other behaviors here

@@ -9,19 +9,17 @@ import com.google.gson.JsonObject;
  */
 public class Artifact extends FindableEntity {
     /**
-     * The type of functionality this artifact provides when used.
+     * The chance of finding this artifact.
+     * This value is between 0 and 1, where 1 means 100% chance to find.
      */
-    private String useType;
+    private double chanceToFind;
 
     /**
-     * Whether this artifact can be used multiple times.
+     * The effect of this artifact.
+     * This value represents the magnitude of the artifact's effect.
+     * In the case of Traps, it represents the id of the structure to place as an ActiveTrap.
      */
-    private boolean reusable;
-
-    /**
-     * The number of uses remaining (if reusable).
-     */
-    private int usesRemaining;
+    private double effect;
 
     /**
      * Default constructor for Artifact.
@@ -35,51 +33,29 @@ public class Artifact extends FindableEntity {
      * @param name The name of this artifact
      * @param description The description of this artifact
      * @param useType The type of functionality this artifact provides
-     * @param targetType The type of target this artifact affects
-     * @param reusable Whether this artifact can be used multiple times
-     * @param usesRemaining The number of uses remaining (if reusable)
      */
-    public Artifact(int id, String name, String description, String useType,
-                    String targetType, boolean reusable, int usesRemaining) {
-        super(id, name, description, targetType);
-        this.useType = useType;
-        this.reusable = reusable;
-        this.usesRemaining = usesRemaining;
+    public Artifact(int id, String name, String description, String useType, double chanceToFind, double effect) {
+        super(id, name, description, useType);
+        this.chanceToFind = chanceToFind;
+        this.effect = effect;
     }
 
     /**
-     * Returns the use type of this artifact.
+     * Gets the effect of this artifact.
      *
-     * @return The use type identifier
+     * @return The effect of this artifact
      */
-    public String getUseType() { return useType; }
+    public double getChanceToFind() {
+        return chanceToFind;
+    }
 
     /**
-     * Checks if this artifact is reusable.
+     * Gets the effect of this artifact.
      *
-     * @return true if reusable, false otherwise
+     * @return The effect of this artifact
      */
-    public boolean isReusable() { return reusable; }
-
-    /**
-     * Returns the number of uses remaining.
-     *
-     * @return Number of uses remaining
-     */
-    public int getUsesRemaining() { return usesRemaining; }
-
-    /**
-     * Records that the artifact has been used once.
-     * Decrements the uses remaining counter.
-     *
-     * @return true if the artifact can still be used again, false if it's depleted
-     */
-    public boolean use() {
-        if (usesRemaining > 0) {
-            usesRemaining--;
-            return usesRemaining > 0;
-        }
-        return false;
+    public double getEffect() {
+        return effect;
     }
 
     /**
@@ -91,9 +67,8 @@ public class Artifact extends FindableEntity {
     @Override
     protected void loadFromJson(JsonObject json) {
         super.loadFromJson(json);
-        this.useType = json.get("useType").getAsString();
-        this.reusable = json.get("reusable").getAsBoolean();
-        this.usesRemaining = json.get("usesRemaining").getAsInt();
+        this.chanceToFind = json.get("chance").getAsDouble();
+        this.effect = json.get("effect").getAsDouble();
     }
 
     /**
