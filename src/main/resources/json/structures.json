@@ -63,5 +63,18 @@
         "value": 20
       }
     ]
+  },
+  {
+    "name": "ActiveTrap",
+    "usage": "Can be placed on empty Tiles which are not yet bought. Upon buying the Tile, the Trap is activated and the Player gets a Debuff.",
+    "description": "",
+    "id": 8,
+    "price": 0,
+    "params": [
+      {
+        "name": "Runes Lost",
+        "value": 20
+      }
+    ]
   }
 ]
