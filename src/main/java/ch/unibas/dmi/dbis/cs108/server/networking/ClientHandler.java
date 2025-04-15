@@ -93,7 +93,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         } finally {
             closeResources();
             server.removeClient(this); // Notify the server to remove this client
-            running = false;
+            stop();
         }
     }
 
@@ -139,13 +139,14 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                 logger.warning("Error sending message to client, closing connection.");
                 closeResources();
                 server.removeClient(this);
-                running = false;
+                stop();
             }
         } else {
             logger.info("Client socket is closed. Unable to send message: " + message);
             if (running) {
-                running = false;
                 server.removeClient(this);
+                closeResources();
+                stop();
             }
         }
     }
@@ -168,7 +169,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             logger.warning("Client timed out: " + (socket != null ? socket.getRemoteSocketAddress() : "unknown"));
             closeResources();
             server.removeClient(this);
-            running = false;
+            stop();
         } else {
             sendMessage("PING$");
         }
@@ -243,7 +244,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      * @return the name of the current localPlayer
      */
     public String getPlayerName() {
-        return localPlayer.getName();
+        return localPlayer == null ? null : localPlayer.getName();
     }
 
     /**
@@ -269,15 +270,20 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         if (cmd.isValid()) {
             if (cmd.isAdministrative()) {
                 processAdminCommand(cmd);
-            } else if (ch.getGameLogic() != null) {
-                if (Objects.equals(currentLobby.getStatus(), Lobby.LobbyStatus.IN_GAME.getStatus())) {
-                    ch.getGameLogic().processCommand(cmd);
-                } else {
-                    sendMessage("ERR$" + ErrorsAPI.Errors.NOT_IN_GAME.getError());
-                }
-            } else {
-                sendMessage("ERR$106$NOT_IN_LOBBY");
             }
+            else{
+                if (currentLobby != null) {
+                    if (Objects.equals(currentLobby.getStatus(), Lobby.LobbyStatus.IN_GAME.getStatus())) {
+                        ch.getGameLogic().processCommand(cmd);
+                    } else {
+                        sendMessage("ERR$" + ErrorsAPI.Errors.NOT_IN_GAME.getError());
+                    }
+                }
+                else {
+                    sendMessage("ERR$" + ErrorsAPI.Errors.NOT_IN_LOBBY.getError());
+                }
+            }
+
         } else {
             logger.warning("ClientHandler: Invalid command: " + cmd);
         }
@@ -366,7 +372,9 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             case EXIT:
                 logger.info("Client sent an exit command.");
                 worked = ch.handleLeaveLobby();
+                closeResources();
                 server.removeClient(this);
+                stop();
                 break;
             default: // Error case
                 logger.warning("Switch-Unknown command: " + cmd.getCommand());
