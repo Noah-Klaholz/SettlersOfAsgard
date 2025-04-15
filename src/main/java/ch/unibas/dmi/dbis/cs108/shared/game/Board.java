@@ -148,7 +148,7 @@ public class Board {
                 if (value != null) {
                     // Reset tile properties
                     value.setPurchased(false);
-                    value.setHasStructure(false);
+                    value.setHasEntity(false);
                     value.setStructure(null);
 
                     // If there are other properties to reset, add them here

@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.shared.game;
 
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 
@@ -8,11 +9,10 @@ public class Tile {
 
     private final int x;
     private final int y;
-    private boolean hasStructure;
+    private boolean hasEntity;
     private String owner; //ownerID
     private final int price;
-    private Structure structure;
-    private Statue statue;
+    private PurchasableEntity entity;
     private Artifact artefact;
     private final String world;
     private boolean purchased;
@@ -23,11 +23,10 @@ public class Tile {
     public Tile(TileBuilder builder) {
         this.x = builder.x;
         this.y = builder.y;
-        this.hasStructure = builder.hasStructure;
+        this.hasEntity = builder.hasEntity;
         this.owner = builder.owner;
         this.price = builder.price;
-        this.structure = builder.structure;
-        this.statue = builder.statue;
+        this.entity = builder.hasEntity ? builder.entity : null;
         this.artefact = builder.artefact;
         this.world = builder.world;
         this.purchased = builder.purchased;
@@ -44,12 +43,16 @@ public class Tile {
         return y;
     }
 
-    public boolean getHasStructure() {
-        return hasStructure;
+    public boolean getHasEntity() {
+        return hasEntity;
     }
 
-    public void setHasStructure(boolean hasStructure) {
-        this.hasStructure = hasStructure;
+    public PurchasableEntity getEntity() {
+        return entity;
+    }
+
+    public void setHasEntity(boolean hasEntity) {
+        this.hasEntity = hasEntity;
     }
 
     public String getOwner() {
@@ -62,22 +65,6 @@ public class Tile {
 
     public int getPrice() {
         return price;
-    }
-
-    public Structure getStructure() {
-        return structure;
-    }
-
-    public void setStructure(Structure structure) {
-        this.structure = structure;
-    }
-
-    public Statue getStatue() {
-        return statue;
-    }
-
-    public void setStatue(Statue statue) {
-        this.statue = statue;
     }
 
     public Artifact getArtifact() {
@@ -137,11 +124,10 @@ public class Tile {
         public int tileID;
         private int x;
         private int y;
-        private boolean hasStructure;
+        private boolean hasEntity;
         private String owner;
         private int price;
-        private Structure structure;
-        private Statue statue;
+        private PurchasableEntity entity;
         private Artifact artefact;
         private String world;
 
@@ -155,8 +141,8 @@ public class Tile {
             return this;
         }
 
-        public TileBuilder setHasStructure(boolean hasStructure) {
-            this.hasStructure = hasStructure;
+        public TileBuilder setHasEntity(boolean hasEntity) {
+            this.hasEntity = hasEntity;
             return this;
         }
 
@@ -170,13 +156,9 @@ public class Tile {
             return this;
         }
 
-        public TileBuilder setStructure(Structure structure) {
-            this.structure = structure;
-            return this;
-        }
-
-        public TileBuilder setStatue(Statue statue) {
-            this.statue = statue;
+        public TileBuilder setEntity(PurchasableEntity entity) {
+            this.hasEntity = true;
+            this.entity = entity;
             return this;
         }
 

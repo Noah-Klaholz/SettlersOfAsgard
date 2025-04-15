@@ -2,6 +2,7 @@
 package ch.unibas.dmi.dbis.cs108.server.core.logic;
 
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.PlayerStatus;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
@@ -114,13 +115,17 @@ public class TurnManager {
                 runes = (int) (runes * player.getStatus().get(PlayerStatus.BuffType.RIVER_RUNE_GENERATION));
             }
             player.addRunes(runes);
-        }
-        );
-        // Structure income
-        player.getPurchasableEntities().forEach(entity -> {
-            int value = entity.getResourceValue();
-            if (value <= 4) player.addEnergy(value);
-            else player.addRunes(value);
+            if (tile.getHasEntity()) {
+                PurchasableEntity entity = tile.getEntity();
+                int value = entity.getResourceValue(); // Either energy or runes
+                if (entity.isStatue()) {
+                    value = (int) (value * player.getStatus().get(PlayerStatus.BuffType.RUNE_GENERATION));
+                    player.addRunes(value);
+                } else {
+                    value = (int) (value * player.getStatus().get(PlayerStatus.BuffType.ENERGY_GENERATION));
+                    player.addEnergy(value);
+                }
+            }
         });
     }
 

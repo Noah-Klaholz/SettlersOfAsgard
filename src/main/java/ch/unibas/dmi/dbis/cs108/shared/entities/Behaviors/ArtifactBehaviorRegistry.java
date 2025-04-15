@@ -122,14 +122,14 @@ public class ArtifactBehaviorRegistry {
         // Trap artifacts
         registerTrapBehavior("Fenrir's Chains", (artifact, gameLogic, player, x, y) -> {
             Tile tile = gameLogic.getGameState().getBoardManager().getTile(x, y);
-            if (tile == null || tile.getHasStructure()) return false;
+            if (tile == null || tile.getHasEntity()) return false;
 
             // Create a new ActiveTrap structure on the tile
             Structure trapStructure = EntityRegistry.getStructure((int)artifact.getEffect());
             if (trapStructure == null) return false;
 
             tile.setStructure(trapStructure);
-            tile.setHasStructure(true);
+            tile.setHasEntity(true);
             return true;
         });
     }
