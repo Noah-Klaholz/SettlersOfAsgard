@@ -75,7 +75,7 @@ public class ArtifactBehaviorRegistry {
         });
 
         registerPlayerBehavior("Fragment of Mjölnir", (artifact, gameLogic, player, targetPlayer) -> {
-            targetPlayer.addBuff(Status.BuffType.RUNE_GENERATION, (int)artifact.getEffect());
+            targetPlayer.addBuff(Status.BuffType.ARTIFACT_CHANCE, (int)artifact.getEffect());
             return true;
         });
 
@@ -94,27 +94,23 @@ public class ArtifactBehaviorRegistry {
             return true;
         });
 
+        //TODO find another effect for this artifact
         registerFieldBehavior("Fenrir's Bones", (artifact, gameLogic, player, x, y) -> {
             Tile tile = gameLogic.getGameState().getBoardManager().getTile(x, y);
-            if (tile == null) return false;
-
-            // Apply wolf/hunting effect
+            if (tile == null || !tile.getHasEntity()) return false;
+            tile.setBuff(Status.BuffType.RUNE_GENERATION, (int)artifact.getEffect());
             return true;
         });
 
         registerFieldBehavior("Blood of Jörmungandr", (artifact, gameLogic, player, x, y) -> {
             Tile tile = gameLogic.getGameState().getBoardManager().getTile(x, y);
-            if (tile == null) return false;
-
-            // Apply poison/corruption effect
+            if (tile == null || !tile.getHasEntity()) return false;
+            tile.setBuff(Status.BuffType.RIVER_RUNE_GENERATION, (int)artifact.getEffect());
             return true;
         });
 
         registerFieldBehavior("Odin's Eye", (artifact, gameLogic, player, x, y) -> {
-            Tile tile = gameLogic.getGameState().getBoardManager().getTile(x, y);
-            if (tile == null) return false;
-
-            // Apply wisdom/visibility effect
+            //TODO implement this artifact
             return true;
         });
 
