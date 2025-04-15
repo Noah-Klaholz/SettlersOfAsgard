@@ -227,6 +227,7 @@ public class GameServer {
      * @return true if a player with this name exists, false otherwise
      */
     public boolean containsPlayerName(String playerName) {
+        if (playerName == null) { return false; }
         for (ClientHandler client : clients) {
             if (client.getPlayer() != null) {
                 if (client.getPlayerName().equals(playerName)) {
