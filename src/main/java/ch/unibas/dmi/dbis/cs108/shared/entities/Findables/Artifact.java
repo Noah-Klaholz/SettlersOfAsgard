@@ -11,7 +11,37 @@ public class Artifact extends FindableEntity {
     /**
      * The type of functionality this artifact provides when used.
      */
-    private String useType;
+    public enum UseType {
+        /**
+         * A player-targeted artifact. Can be used on oneself or another player.
+         */
+        PLAYER("Player"),
+        /**
+         * A field-targeted artifact. Can be used on a single field.
+         */
+        FIELD("Field"),
+        /**
+         * A trap artifact. Can be used to set a trap on a non-owned empty field.
+         */
+        TRAP("Trap");
+
+        private final String type;
+
+        UseType(String type) {this.type = type;}
+
+        public String getType() {return type;}
+
+        public static UseType fromString(String type) {
+            for (UseType u : UseType.values()) {
+                if (u.type.equalsIgnoreCase(type)) {
+                    return u;
+                }
+            }
+            throw new IllegalArgumentException("Unknown use type: " + type);
+        }
+    }
+
+    private UseType useType;
 
     /**
      * Whether this artifact can be used multiple times.
@@ -42,7 +72,7 @@ public class Artifact extends FindableEntity {
     public Artifact(int id, String name, String description, String useType,
                     String targetType, boolean reusable, int usesRemaining) {
         super(id, name, description, targetType);
-        this.useType = useType;
+        this.useType = UseType.fromString(useType);
         this.reusable = reusable;
         this.usesRemaining = usesRemaining;
     }
@@ -52,7 +82,7 @@ public class Artifact extends FindableEntity {
      *
      * @return The use type identifier
      */
-    public String getUseType() { return useType; }
+    public UseType getUseType() { return useType; }
 
     /**
      * Checks if this artifact is reusable.
@@ -91,7 +121,7 @@ public class Artifact extends FindableEntity {
     @Override
     protected void loadFromJson(JsonObject json) {
         super.loadFromJson(json);
-        this.useType = json.get("useType").getAsString();
+        this.useType = UseType.fromString(json.get("useType").getAsString());
         this.reusable = json.get("reusable").getAsBoolean();
         this.usesRemaining = json.get("usesRemaining").getAsInt();
     }
