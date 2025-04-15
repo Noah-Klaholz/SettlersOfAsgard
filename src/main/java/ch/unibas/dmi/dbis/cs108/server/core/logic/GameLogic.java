@@ -1,7 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.server.core.logic;
 
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
-import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.ArtifactActionHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.StatueActionHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.StructureActionHandler;
@@ -25,7 +24,7 @@ public class GameLogic implements GameLogicInterface {
     // Thread safety mechanism
     private final ReadWriteLock gameLock = new ReentrantReadWriteLock();
 
-    private final Lobby lobby;
+    private final GameEventNotifier notifier;
     private final GameState gameState;
     private final CommandProcessor commandProcessor;
     private final TurnManager turnManager;
@@ -37,8 +36,8 @@ public class GameLogic implements GameLogicInterface {
     /**
      * Constructor initializes game with proper components
      */
-    public GameLogic(Lobby lobby) {
-        this.lobby = lobby;
+    public GameLogic(GameEventNotifier notifier) {
+        this.notifier = notifier;
         this.gameState = new GameState();
         this.turnManager = gameState.getTurnManager();
         this.tileActionHandler = new TileActionHandler(gameState, gameLock);
@@ -62,19 +61,12 @@ public class GameLogic implements GameLogicInterface {
     }
 
     /**
-     * Gets the current  Lobby.
-     *
-     * @return the current object of the Lobby.
+     * Gets the GameEventNotifier related to this GameLogic object.
+     * @return The current object implementing the GameEventNotifier interface (Lobby).
      */
-    public Lobby getLobby() {
-        gameLock.readLock().lock();
-        try {
-            return lobby;
-        } finally {
-            gameLock.readLock().unlock();
-        }
+    public GameEventNotifier getNotifier() {
+        return notifier;
     }
-
 
     /**
      * Starts the game.
@@ -101,8 +93,8 @@ public class GameLogic implements GameLogicInterface {
     public void processCommand(Command command) {
         if (command != null) {
             String response = commandProcessor.processCommand(command);
-            if (lobby != null && response != null) {
-                lobby.broadcastMessage(response);
+            if (notifier != null && response != null) {
+                notifier.broadcastMessage(response);
             }
         }
     }
@@ -115,9 +107,9 @@ public class GameLogic implements GameLogicInterface {
         gameLock.writeLock().lock();
         try {
             gameState.reset();
-            if (lobby != null) {
-                lobby.broadcastMessage("GAME_ENDED");
-                lobby.endGame();
+            if (notifier != null) {
+                notifier.broadcastMessage("GAME_ENDED");
+                notifier.endGame();
             }
         } finally {
             gameLock.writeLock().unlock();

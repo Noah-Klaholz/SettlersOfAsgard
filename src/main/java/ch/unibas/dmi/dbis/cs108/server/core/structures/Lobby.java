@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.server.core.structures;
 
+import ch.unibas.dmi.dbis.cs108.server.core.logic.GameEventNotifier;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
  * @version 1.0
  * @since 2025-03-19
  */
-public class Lobby {
+public class Lobby implements GameEventNotifier {
 
     /**
      * Logger to log logging.
@@ -249,6 +250,7 @@ public class Lobby {
      *
      * @return true if the turn was ended successfully, false otherwise.
      */
+    @Override
     public boolean manualEndTurn() {
         if (status != LobbyStatus.IN_GAME) {
             logger.warning("Cannot end turn manually - game not in progress.");
@@ -263,6 +265,7 @@ public class Lobby {
     /**
      * Ends the game.
      */
+    @Override
     public void endGame() {
         if (status == LobbyStatus.IN_GAME) {
             status = LobbyStatus.GAME_ENDED;
@@ -274,6 +277,7 @@ public class Lobby {
      * Sends a message to every player in the Lobby.
      * @param message The message to send.
      */
+    @Override
     public void broadcastMessage(String message) {
         for (ClientHandler player : players) {
             player.sendMessage(message);
