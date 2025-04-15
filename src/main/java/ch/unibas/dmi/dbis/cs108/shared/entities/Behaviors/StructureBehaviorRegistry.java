@@ -1,4 +1,4 @@
-package ch.unibas.dmi.dbis.cs108.shared.entities;
+package ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors;
 
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;

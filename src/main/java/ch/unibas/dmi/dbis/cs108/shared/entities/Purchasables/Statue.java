@@ -54,6 +54,16 @@ public class Statue extends PurchasableEntity {
     public void upgrade() { level++; }
 
     /**
+     * Enum representing the types of use for this statue.
+     * Each type corresponds to a specific behavior or effect.
+     */
+    public enum useType {
+        DEAL,
+        BLESSING,
+        CURSE;
+    }
+
+    /**
      * Loads statue data from a JSON object.
      * Extends the parent method to also load use type and upgrade price data.
      *

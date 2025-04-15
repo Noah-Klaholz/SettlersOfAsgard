@@ -1,7 +1,7 @@
 [
   {
     "name": "Rune Table",
-    "usage": "Converts 4 Energy to x Runes",
+    "usage": "Converts 4 Energy to 20 Runes",
     "description": "",
     "id": 1,
     "price": 15,
@@ -53,9 +53,15 @@
   },
   {
     "name": "Tree",
-    "usage": "Only placable on a River Tile: farms Runes",
+    "usage": "Only placeable on a River Tile: farms Runes",
     "description": "",
     "id": 7,
-    "price": 0
+    "price": 0,
+    "params": [
+      {
+        "name": "Farmed Runes per round",
+        "value": 20
+      }
+    ]
   }
 ]

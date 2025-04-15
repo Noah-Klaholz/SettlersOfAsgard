@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities;
 
+import ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors.Parameter;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
