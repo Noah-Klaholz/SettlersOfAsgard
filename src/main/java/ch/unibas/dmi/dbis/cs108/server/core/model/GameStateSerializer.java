@@ -71,7 +71,7 @@ public class GameStateSerializer {
                 // Add artifacts
                 status.append("artifacts[");
                 for (Artifact artifact : player.getArtifacts()) {
-                    status.append(artifact.getID()).append(",");
+                    status.append(artifact.getId()).append(",");
                 }
                 status.append("];");
             }
