@@ -247,7 +247,6 @@ public class LobbyTest {
         lobby.addPlayer(player2);
         lobby.startGame();
         lobby.endGame();
-
         // Verify scheduler was stopped
         assertTrue(lobby.getTurnScheduler().isShutdown());
     }
