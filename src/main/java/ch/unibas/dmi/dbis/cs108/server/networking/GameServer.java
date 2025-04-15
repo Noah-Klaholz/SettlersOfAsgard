@@ -34,6 +34,11 @@ public class GameServer {
     /** The server socket used to accept client connections */
     private ServerSocket serverSocket;
 
+    /**
+     * Constructs a new GameServer instance that will listen on the specified port.
+     *
+     * @param port The port number to listen on
+     */
     public GameServer(int port) {
         logger.setFilter(new PingFilter());
         this.port = port;
