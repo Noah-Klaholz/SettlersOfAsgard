@@ -285,4 +285,13 @@ public class GameServer {
     public ExecutorService getExecutor() {
         return executor;
     }
+
+    /**
+     * Gets the pingScheduler.
+     *
+     * @return the pingScheduler.
+     */
+    public ScheduledExecutorService getPingScheduler() {
+        return pingScheduler;
+    }
 }
