@@ -49,13 +49,12 @@ public class ArtifactBehaviorRegistry {
         // Player-targeting artifacts
         registerPlayerBehavior("Tear of Yggdrasil", (artifact, gameLogic, player, targetPlayer) -> {
             // Example: Heal target player
-            targetPlayer.addEnergy(10);
+            targetPlayer.addEnergy((int)artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Hel's Shadow", (artifact, gameLogic, player, targetPlayer) -> {
-            // Example: Apply negative effect to target player
-            targetPlayer.addEnergy(-4);
+
             return true;
         });
 
@@ -76,9 +75,6 @@ public class ArtifactBehaviorRegistry {
 
         // Field-targeting artifacts
         registerFieldBehavior("Freyja's Necklace", (artifact, gameLogic, player, x, y) -> {
-            Tile tile = gameLogic.getGameState().getBoardManager().getTile(x, y);
-            if (tile == null) return false;
-
             // Apply fertility effect
             return true;
         });

@@ -3,6 +3,7 @@ package ch.unibas.dmi.dbis.cs108.server.core.logic;
 
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
+import ch.unibas.dmi.dbis.cs108.shared.game.PlayerStatus;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 import java.util.*;
 
@@ -100,13 +101,23 @@ public class TurnManager {
         playerTurn = null;
     }
 
+    /**
+     * Distributes resources to the player based on their owned tiles and structures.
+     *
+     * @param player The player to distribute resources to.
+     */
     private void distributeResources(Player player) {
         // Tile income
-        player.getOwnedTiles().forEach(tile ->
-                player.addRunes(tile.getResourceValue())
+        player.getOwnedTiles().forEach(tile -> {
+            int runes = (int) (tile.getResourceValue() * player.getStatus().get(PlayerStatus.BuffType.RUNE_GENERATION));
+            if (tile.hasRiver()) {
+                runes = (int) (runes * player.getStatus().get(PlayerStatus.BuffType.RIVER_RUNE_GENERATION));
+            }
+            player.addRunes(runes);
+        }
         );
         // Structure income
-        player.getOwnedStructures().forEach(structure -> {
+        player.getPurchasableEntities().forEach(structure -> {
             int value = structure.getRessourceValue();
             if (value <= 4) player.addEnergy(value);
             else player.addRunes(value);

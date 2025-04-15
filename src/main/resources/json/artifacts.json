@@ -21,7 +21,7 @@
     "useType": "Player",
     "id": 12,
     "chance": 0.3,
-    "effect": 0
+    "effect": -10
   },
   {
     "name": "Fragment of Mjölnir",

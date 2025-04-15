@@ -26,7 +26,7 @@ public class StatueBehaviorRegistry {
 
     private void initializeBehaviors() {
         registerBehavior("Jörmungandr", (Statue statue, GameLogic gameLogic, Player player, Statue.useType useType) -> {
-            if(player.getOwnedStructures().isEmpty()) {
+            if(player.getPurchasableEntities().isEmpty()) {
                 return false;
             }
             return true;

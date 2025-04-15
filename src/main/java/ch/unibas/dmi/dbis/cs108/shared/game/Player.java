@@ -1,6 +1,8 @@
 package ch.unibas.dmi.dbis.cs108.shared.game;
 
+import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 
@@ -19,9 +21,9 @@ public class Player {
     private int energy;
     private List<Tile> ownedTiles;
     private List<Artifact> artifacts;
-    private List<Structure> ownedStructures;
+    private List<PurchasableEntity> purchasableEntities;
     private Shop shop; //saves Structures and Statue
-    private Statue statue;
+    private PlayerStatus status;
 
     /**
      * Constructor for Player class
@@ -33,54 +35,55 @@ public class Player {
     public Player(String name) {
         this.playerID = UUID.randomUUID();
         this.name = name;
-        runes = 20; //Startrunen
-        energy = 0;
+        runes = SETTINGS.Config.START_RUNES.getValue(); //Startrunen
+        energy = SETTINGS.Config.START_ENERGY.getValue(); //Startenergie
         ownedTiles = new ArrayList<>();
         artifacts = new ArrayList<>();
+        purchasableEntities = new ArrayList<>();
+        status = new PlayerStatus();
         shop = new Shop();
-        ownedStructures = new ArrayList<>();
-        statue = null; //no statue at the beginning
     }
 
     /**
-     * Getter for statue
+     * Getter for player status
      *
-     * @return Statue
+     * @return PlayerStatus
      */
-    public Statue getStatue() {
-        return statue;
+    public PlayerStatus getStatus() {
+        return status;
     }
 
     /**
-     * Setter for statue
+     * Add a new buff or debuff to the player
      *
-     * @param statue Statue
+     * @param buff the buff to add
+     * @param value the value of the buff (positive for buff, negative for debuff)
      */
-    public void setStatue(Statue statue) {
-        this.statue = statue;
+    public void addBuff(PlayerStatus.BuffType buff, double value) {
+        status.buff(buff, value);
     }
 
     /**
      * Getter for owned structures
      *
      */
-    public List<Structure> getOwnedStructures() {
-        return ownedStructures;
+    public List<PurchasableEntity> getPurchasableEntities() {
+        return purchasableEntities;
     }
 
     /**
      * Setter for owned structures
      *
      */
-    public void setOwnedStructures(List<Structure> ownedStructures) {
-        this.ownedStructures = ownedStructures;
+    public void setPurchasableEntities(List<PurchasableEntity> purchasableEntities) {
+        this.purchasableEntities = purchasableEntities;
     }
 
     /**
      * adds a structure to the player
      */
-    public void addOwnedStructure(Structure structure) {
-        ownedStructures.add(structure);
+    public void addPurchasableEntity(Structure structure) {
+        purchasableEntities.add(structure);
     }
 
     /**
@@ -88,8 +91,8 @@ public class Player {
      *
      * @param structure Structure
      */
-    public void removeOwnedStructure(Structure structure) {
-        ownedStructures.remove(structure);
+    public void removePurchasableEntity(Structure structure) {
+        purchasableEntities.remove(structure);
     }
 
     /**
@@ -132,9 +135,12 @@ public class Player {
      *
      * @param artifact Artefact
      */
-    //should be checked in gameLogic if possible
-    public void addArtifact(Artifact artifact) {
-        artifacts.add(artifact);
+    public boolean addArtifact(Artifact artifact) {
+        if (artifacts.size() < SETTINGS.Config.MAX_ARTIFACTS.getValue()) {
+            artifacts.add(artifact);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -145,7 +151,6 @@ public class Player {
     public void removeArtifact(Artifact artifact) {
         artifacts.remove(artifact);
     }
-
 
     /**
      *
@@ -306,9 +311,8 @@ public class Player {
      */
     public void reset() {
         this.ownedTiles.clear();
-        this.ownedStructures.clear();
+        this.purchasableEntities.clear();
         this.artifacts.clear();
-        this.statue = null;
         this.runes = 0;
         this.energy = 0;
     }

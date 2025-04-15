@@ -6,7 +6,10 @@ package ch.unibas.dmi.dbis.cs108;
 public class SETTINGS {
     public enum Config {
         PING_INTERVAL(1000),
-        TIMEOUT(2 * 1000); // Milliseconds
+        TIMEOUT(2 * 1000), // Milliseconds
+        MAX_ARTIFACTS(3),
+        START_RUNES(50),
+        START_ENERGY(4);
 
         private final int value;
 
