@@ -18,7 +18,6 @@ import java.util.logging.Logger;
 public class CommandProcessor {
     private static final Logger LOGGER = Logger.getLogger(CommandProcessor.class.getName());
     private final GameLogic gameLogic;
-    private final GameEventNotifier notifier;
     private final Map<Commands, Function<Command, String>> commandHandlers = new ConcurrentHashMap<>();
 
     // Use a single lock for state-changing commands to ensure consistency
@@ -26,7 +25,6 @@ public class CommandProcessor {
 
     public CommandProcessor(GameLogic gameLogic) {
         this.gameLogic = gameLogic;
-        this.notifier = gameLogic.getNotifier();
         registerCommandHandlers();
     }
 
@@ -94,7 +92,7 @@ public class CommandProcessor {
                 return formatError(ErrorsAPI.Errors.NOT_PLAYER_TURN.getError());
             }
 
-            boolean success = notifier.manualEndTurn();
+            boolean success = gameLogic.getNotifier().manualEndTurn();
             if (!success) {
                 return formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError());
             }
