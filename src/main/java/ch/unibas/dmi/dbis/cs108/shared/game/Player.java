@@ -3,7 +3,6 @@ package ch.unibas.dmi.dbis.cs108.shared.game;
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 
 import java.util.ArrayList;
@@ -23,7 +22,7 @@ public class Player {
     private List<Artifact> artifacts;
     private List<PurchasableEntity> purchasableEntities;
     private Shop shop; //saves Structures and Statue
-    private PlayerStatus status;
+    private Status status;
 
     /**
      * Constructor for Player class
@@ -40,16 +39,16 @@ public class Player {
         ownedTiles = new ArrayList<>();
         artifacts = new ArrayList<>();
         purchasableEntities = new ArrayList<>();
-        status = new PlayerStatus();
+        status = new Status();
         shop = new Shop();
     }
 
     /**
      * Getter for player status
      *
-     * @return PlayerStatus
+     * @return Status
      */
-    public PlayerStatus getStatus() {
+    public Status getStatus() {
         return status;
     }
 
@@ -59,7 +58,7 @@ public class Player {
      * @param buff the buff to add
      * @param value the value of the buff (positive for buff, negative for debuff)
      */
-    public void addBuff(PlayerStatus.BuffType buff, double value) {
+    public void addBuff(Status.BuffType buff, double value) {
         status.buff(buff, value);
     }
 

@@ -19,6 +19,7 @@ public class Tile {
     private int resourceValue; //Runes: bei spezifischen sind es energy: dort vermerkt
     private boolean hasRiver; //has a river = true
     private final int tileID;
+    private Status status;
 
     public Tile(TileBuilder builder) {
         this.x = builder.x;
@@ -47,6 +48,34 @@ public class Tile {
         return hasEntity;
     }
 
+    public void setEntity(PurchasableEntity entity) {
+        this.entity = entity;
+        this.hasEntity = true;
+    }
+
+    public void setBuff(Status.BuffType buffType, int effect) {
+    }
+
+    /**
+     * Getter for player status
+     *
+     * @return Status
+     */
+    public Status getStatus() {
+        return status;
+    }
+
+    /**
+     * Add a new buff or debuff to the player
+     *
+     * @param buff the buff to add
+     * @param value the value of the buff (positive for buff, negative for debuff)
+     */
+    public void addBuff(Status.BuffType buff, double value) {
+        status.buff(buff, value);
+    }
+
+
     public PurchasableEntity getEntity() {
         return entity;
     }
@@ -74,7 +103,6 @@ public class Tile {
     public void setArtifact(Artifact artefact) {
         this.artefact = artefact;
     }
-
 
     public String getWorld() {
         return world;

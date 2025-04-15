@@ -5,6 +5,7 @@ import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
+import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 
 import java.util.HashMap;
@@ -54,28 +55,30 @@ public class ArtifactBehaviorRegistry {
         });
 
         registerPlayerBehavior("Hel's Shadow", (artifact, gameLogic, player, targetPlayer) -> {
-
+            targetPlayer.addBuff(Status.BuffType.RUNE_GENERATION, (int)artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Flame of Muspelheim", (artifact, gameLogic, player, targetPlayer) -> {
-            // Apply fire/damage effect
+            targetPlayer.addBuff(Status.BuffType.SHOP_PRICE, (int)artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Ice Splinter of Niflheim", (artifact, gameLogic, player, targetPlayer) -> {
-            // Apply freezing/slowing effect
+            targetPlayer.addBuff(Status.BuffType.RUNE_GENERATION, (int)artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Ashes of Surtr", (artifact, gameLogic, player, targetPlayer) -> {
-            // Apply effect based on artifact's effect value
+            targetPlayer.addBuff(Status.BuffType.SHOP_PRICE, (int)artifact.getEffect());
             return true;
         });
 
         // Field-targeting artifacts
         registerFieldBehavior("Freyja's Necklace", (artifact, gameLogic, player, x, y) -> {
-            // Apply fertility effect
+            Tile tile = gameLogic.getGameState().getBoardManager().getTile(x, y);
+            if (tile == null || !tile.getHasEntity()) return false;
+            tile.setBuff(Status.BuffType.RUNE_GENERATION, (int)artifact.getEffect());
             return true;
         });
 
@@ -128,7 +131,7 @@ public class ArtifactBehaviorRegistry {
             Structure trapStructure = EntityRegistry.getStructure((int)artifact.getEffect());
             if (trapStructure == null) return false;
 
-            tile.setStructure(trapStructure);
+            tile.setEntity(trapStructure);
             tile.setHasEntity(true);
             return true;
         });

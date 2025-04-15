@@ -4,7 +4,7 @@ package ch.unibas.dmi.dbis.cs108.server.core.logic;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
-import ch.unibas.dmi.dbis.cs108.shared.game.PlayerStatus;
+import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 import java.util.*;
 
@@ -110,9 +110,9 @@ public class TurnManager {
     private void distributeResources(Player player) {
         // Tile income
         player.getOwnedTiles().forEach(tile -> {
-            int runes = (int) (tile.getResourceValue() * player.getStatus().get(PlayerStatus.BuffType.RUNE_GENERATION));
+            int runes = (int) (tile.getResourceValue() * player.getStatus().get(Status.BuffType.RUNE_GENERATION) * tile.getStatus().get(Status.BuffType.RUNE_GENERATION));
             if (tile.hasRiver()) {
-                runes = (int) (runes * player.getStatus().get(PlayerStatus.BuffType.RIVER_RUNE_GENERATION));
+                runes = (int) (runes * player.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION));
             }
             player.addRunes(runes);
             if (tile.getHasEntity()) {
@@ -120,12 +120,12 @@ public class TurnManager {
                 int value = entity.getResourceValue(); // Either energy or runes
                 if (entity.isStatue()) {
                     if (tile.hasRiver()) {
-                        value = (int) (value * player.getStatus().get(PlayerStatus.BuffType.RIVER_RUNE_GENERATION));
+                        value = (int) (value * player.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION));
                     }
-                    value = (int) (value * player.getStatus().get(PlayerStatus.BuffType.RUNE_GENERATION));
+                    value = (int) (value * player.getStatus().get(Status.BuffType.RUNE_GENERATION));
                     player.addRunes(value);
                 } else {
-                    value = (int) (value * player.getStatus().get(PlayerStatus.BuffType.ENERGY_GENERATION));
+                    value = (int) (value * player.getStatus().get(Status.BuffType.ENERGY_GENERATION));
                     player.addEnergy(value);
                 }
             }
