@@ -104,6 +104,10 @@ public class Lobby implements GameEventNotifier {
      * @return if the action was successful.
      */
     public boolean addPlayer(ClientHandler player) {
+        if(player == null) {
+            logger.warning("Player is null, cannot add player to lobby.");
+            return false;
+        }
         if (!isFull()) {
             players.add(player);
             logger.info(player.toString() + " has joined Lobby: " + id);
@@ -119,6 +123,10 @@ public class Lobby implements GameEventNotifier {
      * @return if the action was successful.
      */
     public boolean removePlayer(ClientHandler player) {
+        if(player == null) {
+            logger.warning("Player is null, cannot remove player from lobby.");
+            return false;
+        }
         if (!players.isEmpty() && players.contains(player)) {
             players.remove(player);
             logger.info(player.toString() + " has been removed from Lobby: " + id);
