@@ -5,15 +5,15 @@
     "useType": "Field",
     "id": 10,
     "chance": 0.3,
-    "effect": 0.2
+    "effect": 0.5
   },
   {
     "name": "Freyr's Golden Apple",
     "description": "",
-    "useType": "Field",
+    "useType": "Player",
     "id": 11,
     "chance": 0.3,
-    "effect": 2
+    "effect": 4
   },
   {
     "name": "Tear of Yggdrasil",
@@ -21,7 +21,7 @@
     "useType": "Player",
     "id": 12,
     "chance": 0.3,
-    "effect": -10
+    "effect": -4
   },
   {
     "name": "Fragment of Mjölnir",
@@ -37,7 +37,7 @@
     "useType": "Field",
     "id": 14,
     "chance": 0.3,
-    "effect": 0
+    "effect": 0.5
   },
   {
     "name": "Hel's Shadow",
@@ -45,7 +45,7 @@
     "useType": "Player",
     "id": 15,
     "chance": 0.3,
-    "effect": 0
+    "effect": -0.1
   },
   {
     "name": "Flame of Muspelheim",
@@ -53,7 +53,7 @@
     "useType": "Player",
     "id": 16,
     "chance": 0.3,
-    "effect": 0
+    "effect": -0.5
   },
   {
     "name": "Ice Splinter of Niflheim",
@@ -61,7 +61,7 @@
     "useType": "Player",
     "id": 17,
     "chance": 0.3,
-    "effect": 0
+    "effect": -0.1
   },
   {
     "name": "Blood of Jörmungandr",
