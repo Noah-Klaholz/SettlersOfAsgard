@@ -9,9 +9,62 @@ import com.google.gson.JsonObject;
  */
 public abstract class FindableEntity extends GameEntity {
     /**
-     * The type of target this entity affects (FIELD or PLAYER).
+     * The type of functionality this Entity provides when used.
      */
-    protected String targetType;
+    public enum UseType {
+        /**
+         * A player-targeted entity. Can be used on oneself or another player.
+         */
+        PLAYER("Player"),
+        /**
+         * A field-targeted entity. Can be used on a single field.
+         */
+        FIELD("Field"),
+        /**
+         * A trap entity. Can be used to set a trap on a non-owned empty field.
+         */
+        TRAP("Trap");
+
+        /**
+         *  The type of this entity.
+         */
+        private final String type;
+
+        /**
+         * Constructor for UseType.
+         *
+         * @param type The type of this entity
+         */
+        UseType(String type) {this.type = type;}
+
+        /**
+         * Returns the type of this entity.
+         *
+         * @return The type of this entity
+         */
+        public String getType() {return type;}
+
+        /**
+         * Returns the UseType corresponding to the given string.
+         *
+         * @param type The string representation of the use type
+         * @return The corresponding UseType
+         * @throws IllegalArgumentException if the type is unknown
+         */
+        public static UseType fromString(String type) {
+            for (UseType u : UseType.values()) {
+                if (u.type.equalsIgnoreCase(type)) {
+                    return u;
+                }
+            }
+            throw new IllegalArgumentException("Unknown use type: " + type);
+        }
+    }
+
+    /**
+     * The type of target this entity affects.
+     */
+    private UseType useType;
 
     /**
      * Default constructor for FindableEntity.
@@ -24,11 +77,11 @@ public abstract class FindableEntity extends GameEntity {
      * @param id The unique identifier for this entity
      * @param name The name of this entity
      * @param description The description of this entity
-     * @param targetType The type of target this entity affects
+     * @param useType The type of target this entity affects
      */
-    public FindableEntity(int id, String name, String description, String targetType) {
+    public FindableEntity(int id, String name, String description, String useType) {
         super(id, name, description);
-        this.targetType = targetType;
+        this.useType = UseType.fromString(useType);
     }
 
     /**
@@ -36,8 +89,8 @@ public abstract class FindableEntity extends GameEntity {
      *
      * @return The target type (FIELD or PLAYER)
      */
-    public String getTargetType() {
-        return targetType;
+    public UseType getUseType() {
+        return useType;
     }
 
     /**
@@ -46,7 +99,7 @@ public abstract class FindableEntity extends GameEntity {
      * @return true if this entity targets a field, false otherwise
      */
     public boolean isFieldTarget() {
-        return "FIELD".equals(targetType);
+        return useType == UseType.FIELD || useType == UseType.TRAP;
     }
 
     /**
@@ -55,7 +108,7 @@ public abstract class FindableEntity extends GameEntity {
      * @return true if this entity targets a player, false otherwise
      */
     public boolean isPlayerTarget() {
-        return "PLAYER".equals(targetType);
+        return useType == UseType.PLAYER;
     }
 
     /**
@@ -67,6 +120,10 @@ public abstract class FindableEntity extends GameEntity {
     @Override
     protected void loadFromJson(JsonObject json) {
         super.loadFromJson(json);
-        this.targetType = json.get("targetType").getAsString();
+        if (json.has("useType")) {
+            useType = UseType.fromString(json.get("useType").getAsString());
+        } else {
+            throw new IllegalArgumentException("Missing useType in JSON");
+        }
     }
 }
