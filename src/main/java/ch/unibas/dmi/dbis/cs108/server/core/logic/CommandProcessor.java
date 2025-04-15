@@ -18,8 +18,6 @@ import java.util.logging.Logger;
 public class CommandProcessor {
     private static final Logger LOGGER = Logger.getLogger(CommandProcessor.class.getName());
     private final GameLogic gameLogic;
-    private final GameState gameState;
-    private final Lobby lobby;
     private final Map<Commands, Function<Command, String>> commandHandlers = new ConcurrentHashMap<>();
 
     // Use a single lock for state-changing commands to ensure consistency
@@ -27,8 +25,6 @@ public class CommandProcessor {
 
     public CommandProcessor(GameLogic gameLogic) {
         this.gameLogic = gameLogic;
-        this.gameState = gameLogic.getGameState();
-        this.lobby = gameLogic.getLobby();
         registerCommandHandlers();
     }
 
@@ -82,7 +78,7 @@ public class CommandProcessor {
     }
 
     /**
-     * End the current player's turn
+     * Manually end the current player's turn.
      */
     private String handleEndTurn(Command cmd) {
         try {
@@ -92,16 +88,16 @@ public class CommandProcessor {
             }
 
             // Validate it's this player's turn
-            if (!playerName.equals(gameState.getTurnManager().getPlayerTurn())) {
+            if (!playerName.equals(gameLogic.getGameState().getTurnManager().getPlayerTurn())) {
                 return formatError(ErrorsAPI.Errors.NOT_PLAYER_TURN.getError());
             }
 
-            boolean success = lobby.manualEndTurn();
+            boolean success = gameLogic.getNotifier().manualEndTurn();
             if (!success) {
                 return formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError());
             }
             return formatSuccess(Commands.STARTTURN.getCommand() + "$" + playerName + "$" +
-                    gameState.getTurnManager().getPlayerTurn());
+                    gameLogic.getGameState().getTurnManager().getPlayerTurn());
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error ending turn", e);
             return formatError(e.getMessage());
@@ -112,14 +108,14 @@ public class CommandProcessor {
      * Synchronize game state
      */
     private String handleSynchronize(Command cmd) {
-        return gameState.createStateMessage();
+        return gameLogic.getGameState().createStateMessage();
     }
 
     /**
      * Get detailed game status
      */
     private String handleGetGameStatus(Command cmd) {
-        return gameState.createDetailedStatusMessage();
+        return gameLogic.getGameState().createDetailedStatusMessage();
     }
 
     /**
