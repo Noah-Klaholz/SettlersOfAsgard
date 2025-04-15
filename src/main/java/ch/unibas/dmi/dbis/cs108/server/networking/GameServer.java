@@ -220,6 +220,12 @@ public class GameServer {
         return null;
     }
 
+    /**
+     * Checks if a player with the given name is currently connected to the server.
+     *
+     * @param playerName The name to check for
+     * @return true if a player with this name exists, false otherwise
+     */
     public boolean containsPlayerName(String playerName) {
         for (ClientHandler client : clients) {
             if (client.getPlayer() != null) {
