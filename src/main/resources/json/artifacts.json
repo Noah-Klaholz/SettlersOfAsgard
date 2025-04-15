@@ -93,6 +93,6 @@
     "useType": "Trap",
     "id": 21,
     "chance": 0.3,
-    "effect": 0
+    "effect": 8
   }
 ]

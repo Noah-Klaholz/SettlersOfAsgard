@@ -9,6 +9,19 @@ import com.google.gson.JsonObject;
  */
 public class Artifact extends FindableEntity {
     /**
+     * The chance of finding this artifact.
+     * This value is between 0 and 1, where 1 means 100% chance to find.
+     */
+    private double chanceToFind;
+
+    /**
+     * The effect of this artifact.
+     * This value represents the magnitude of the artifact's effect.
+     * In the case of Traps, it represents the id of the structure to place as an ActiveTrap.
+     */
+    private double effect;
+
+    /**
      * Default constructor for Artifact.
      */
     public Artifact() {}
@@ -21,8 +34,28 @@ public class Artifact extends FindableEntity {
      * @param description The description of this artifact
      * @param useType The type of functionality this artifact provides
      */
-    public Artifact(int id, String name, String description, String useType) {
+    public Artifact(int id, String name, String description, String useType, double chanceToFind, double effect) {
         super(id, name, description, useType);
+        this.chanceToFind = chanceToFind;
+        this.effect = effect;
+    }
+
+    /**
+     * Gets the effect of this artifact.
+     *
+     * @return The effect of this artifact
+     */
+    public double getChanceToFind() {
+        return chanceToFind;
+    }
+
+    /**
+     * Gets the effect of this artifact.
+     *
+     * @return The effect of this artifact
+     */
+    public double getEffect() {
+        return effect;
     }
 
     /**
@@ -34,6 +67,8 @@ public class Artifact extends FindableEntity {
     @Override
     protected void loadFromJson(JsonObject json) {
         super.loadFromJson(json);
+        this.chanceToFind = json.get("chance").getAsDouble();
+        this.effect = json.get("effect").getAsDouble();
     }
 
     /**

@@ -129,7 +129,7 @@ public class ArtifactBehaviorRegistry {
             if (tile == null || tile.getHasStructure()) return false;
 
             // Create a new ActiveTrap structure on the tile
-            Structure trapStructure = EntityRegistry.getStructure(artifact());
+            Structure trapStructure = EntityRegistry.getStructure((int)artifact.getEffect());
             if (trapStructure == null) return false;
 
             tile.setStructure(trapStructure);
