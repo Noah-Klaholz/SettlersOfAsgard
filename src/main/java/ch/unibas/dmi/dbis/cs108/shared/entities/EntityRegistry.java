@@ -1,7 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities;
 
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Trap;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import com.google.gson.Gson;
@@ -38,10 +37,6 @@ public class EntityRegistry {
      */
     private static final Map<Integer, Artifact> artifacts = new HashMap<>();
 
-    /**
-     * Map of trap IDs to Trap objects.
-     */
-    private static final Map<Integer, Trap> traps = new HashMap<>();
 
     /**
      * Static initializer to load all entities when the class is first accessed.
@@ -57,7 +52,6 @@ public class EntityRegistry {
         loadStructures();
         loadStatues();
         loadArtifacts();
-        loadTraps();
     }
 
     /**
@@ -135,30 +129,6 @@ public class EntityRegistry {
         }
     }
 
-    /**
-     * Loads trap entities from the traps.json resource file.
-     */
-    private static void loadTraps() {
-        Gson gson = new Gson();
-        InputStream is = EntityRegistry.class.getResourceAsStream("/json/traps.json");
-        if (is == null) {
-            System.err.println("Could not find traps.json");
-            return;
-        }
-
-        Type listType = new TypeToken<List<JsonElement>>(){}.getType();
-        List<JsonElement> elements = gson.fromJson(new InputStreamReader(is), listType);
-
-        for (JsonElement elem : elements) {
-            if (elem.isJsonObject()) {
-                JsonObject obj = elem.getAsJsonObject();
-                if (obj.has("name")) {
-                    Trap trap = Trap.fromJson(obj);
-                    traps.put(trap.getId(), trap);
-                }
-            }
-        }
-    }
 
     /**
      * Returns a structure by its ID.
@@ -191,16 +161,6 @@ public class EntityRegistry {
     }
 
     /**
-     * Returns a trap by its ID.
-     *
-     * @param id The ID of the trap to retrieve
-     * @return The Trap object with the given ID, or null if not found
-     */
-    public static Trap getTrap(int id) {
-        return traps.get(id);
-    }
-
-    /**
      * Returns a collection of all available structures.
      *
      * @return Collection of all Structure objects
@@ -227,12 +187,4 @@ public class EntityRegistry {
         return artifacts.values();
     }
 
-    /**
-     * Returns a collection of all available traps.
-     *
-     * @return Collection of all Trap objects
-     */
-    public static Collection<Trap> getAllTraps() {
-        return traps.values();
-    }
 }

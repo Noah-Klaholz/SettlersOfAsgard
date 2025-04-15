@@ -55,7 +55,7 @@ public class ArtifactBehaviorRegistry {
 
         registerPlayerBehavior("Hel's Shadow", (artifact, gameLogic, player, targetPlayer) -> {
             // Example: Apply negative effect to target player
-            targetPlayer.addEnergy(-5);
+            targetPlayer.addEnergy(-4);
             return true;
         });
 
