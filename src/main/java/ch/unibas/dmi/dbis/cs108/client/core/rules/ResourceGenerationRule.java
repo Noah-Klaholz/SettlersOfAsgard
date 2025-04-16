@@ -1,6 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.core.rules;
-import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
-import ch.unibas.dmi.dbis.cs108.client.core.rules.Rule;
+/**
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
 
 public class ResourceGenerationRule implements Rule {
@@ -19,4 +19,4 @@ public class ResourceGenerationRule implements Rule {
             System.out.println(player.getName() + " generated " + generatedRunes + " runes.");
         }
     }
-}
+}*/

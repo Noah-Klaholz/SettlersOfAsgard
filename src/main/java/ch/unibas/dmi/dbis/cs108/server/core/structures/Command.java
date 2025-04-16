@@ -1,5 +1,8 @@
 package ch.unibas.dmi.dbis.cs108.server.core.structures;
 
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
+import ch.unibas.dmi.dbis.cs108.shared.protocol.ErrorsAPI;
+
 import java.util.Arrays;
 import java.util.logging.Logger;
 
@@ -14,6 +17,7 @@ public class Command {
     private String command;
     private Commands commandType;
     private String[] args;
+    private Player player;
 
     /**
      * Creates a new command
@@ -21,17 +25,27 @@ public class Command {
      * @param message the String message
      *                Prints out error Message in case of wrong formatting of message
      *                Correct formatting: commandName$arg1$arg2$arg3
+     * @param player  the player who sent the command
      */
-    public Command(String message) {
+    public Command(String message, Player player) {
         logger.setFilter(new PingFilter());
-        String[] parts = message.split("\\$");
-        if (parts.length == 0) {
-            System.err.println("Trying to create invalid command: " + message);
-            return;
+        if (message == null || message.trim().isEmpty()) {
+            logger.warning(ErrorsAPI.Errors.NULL_MESSAGE_RECIEVED.getError());
+        } else {
+            String[] parts = message.split("[$]");
+            if (parts.length < 1) {
+                logger.warning(ErrorsAPI.Errors.INVALID_COMMAND.getError());
+            }
+
+            this.command = parts[0];
+            this.player = player;
+            try {
+                this.commandType = Commands.fromCommand(command);
+            } catch (IllegalArgumentException e) {
+                logger.warning(ErrorsAPI.Errors.UNKNOWN_COMMAND.getError() + " : " + command);
+            }
+            this.args = Arrays.copyOfRange(parts, 1, parts.length);
         }
-        this.command = parts[0];
-        this.commandType = Commands.fromCommand(command);
-        this.args = Arrays.copyOfRange(parts, 1, parts.length);
     }
 
     /**
@@ -90,12 +104,30 @@ public class Command {
     }
 
     /**
+     * Gets the command type
+     *
+     * @return the command type
+     */
+    public Commands getCommandType() {
+        return commandType;
+    }
+
+    /**
      * Gets the arguments
      *
      * @return the arguments as a String Array
      */
     public String[] getArgs() {
         return args;
+    }
+
+    /**
+     * Gets the player
+     *
+     * @return the player
+     */
+    public Player getPlayer() {
+        return player;
     }
 
     /**
@@ -107,5 +139,23 @@ public class Command {
     public String toString() {
         String args = String.join("$", this.args);
         return command + "$" + args;
+    }
+
+    public boolean isAdministrative() {
+        return switch (commandType) {
+            case LISTLOBBIES, START, SHUTDOWN, SYNCHRONIZE, REGISTER, LEAVE, CHANGENAME, PING, EXIT, JOIN, CHATGLOBAL, CHATLOBBY, CHATPRIVATE, CREATELOBBY, LISTPLAYERS -> true;
+            case BUYSTRUCTURE, BUYSTATUE, GETGAMESTATUS, GETPRICES, STARTTURN, ENDTURN, BUYTILE, PLACESTRUCTURE, USEPLAYERARTIFACT, UPGRADESTATUE, USESTATUE, USESTRUCTURE, USEFIELDARTIFACT  -> false;
+            default -> {
+                logger.warning("Invalid Command " + command + " " + Arrays.toString(args));
+                yield false;
+            }
+        };
+    }
+
+    /**
+     * Helper method to format error responses
+     */
+    private String formatError(String message) {
+        return Commands.ERROR.getCommand() + ":" + message;
     }
 }

@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.core.structures;
 
-import ch.unibas.dmi.dbis.cs108.server.core.Logic.GameLogic;
+import ch.unibas.dmi.dbis.cs108.server.core.logic.GameEventNotifier;
+import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -18,16 +20,48 @@ import java.util.stream.Collectors;
  * @version 1.0
  * @since 2025-03-19
  */
-public class Lobby {
+public class Lobby implements GameEventNotifier {
 
+    /**
+     * Logger to log logging.
+     */
     private static final Logger logger = Logger.getLogger(Lobby.class.getName());
+
+    /**
+     * Name of the Lobby (unique), serves as an ID.
+     */
     private final String id;
+
+    /**
+     * The players, stored in a List of ClientHandlers.
+     */
     private final List<ClientHandler> players;
+
+    /**
+     * The number of maximal Players allowed (currently always 4).
+     */
     private final int maxPlayers;
+
+    /**
+     * The status of the Lobby (In lobby, in game or game ended).
+     */
     private LobbyStatus status;
+
+    /**
+     * The GameLogic corresponding to the game ongoing in the Lobby (only initialized when game starts).
+     */
     private GameLogic gameLogic;
+
+    /**
+     * The turnScheduler responsible for automatically calling TurnManager.nextTurn() after a fixed time.
+     */
     private ScheduledExecutorService turnScheduler; // For automatic turns
 
+    /**
+     * Creates the Lobby object and instantiates fields.
+     * @param id The name of the Lobby as a String.
+     * @param maxPlayers The number of maximum players as an Integer.
+     */
     public Lobby(String id, int maxPlayers) {
         this.id = id;
         this.maxPlayers = maxPlayers;
@@ -36,24 +70,60 @@ public class Lobby {
         this.turnScheduler = Executors.newSingleThreadScheduledExecutor();
     }
 
+    /**
+     * Gets the ID of the Lobby.
+     * @return the current ID of the Lobby.
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * Gets the number of maximum players.
+     * @return the number of maximum players.
+     */
+    public int getMaxPlayers() {
+        return maxPlayers;
+    }
+
+    /**
+     * Gets the players as a List of ClientHandlers.
+     * @return the current players in the Lobby.
+     */
     public List<ClientHandler> getPlayers() {
         return players;
     }
 
+    /**
+     * Gets the turnScheduler.
+     * @return the TurnScheduler.
+     */
+    public ScheduledExecutorService getTurnScheduler() {
+        return turnScheduler;
+    }
+    /**
+     * Gets the GameLogic object in this Lobby. Only valid if the Game has started already.
+     * @return The GameLogic object in this Lobby.
+     */
     public GameLogic getGameLogic() {
         if (status != LobbyStatus.IN_GAME) {
             logger.warning("Not yet in game, cannot return gameLogic from current Lobby.");
             return null;
         }
-        return this.gameLogic;
+        return gameLogic;
     }
 
+    /**
+     * Adds a player to the Lobby (if the Lobby is not full).
+     * @param player The player object to add.
+     * @return if the action was successful.
+     */
     public boolean addPlayer(ClientHandler player) {
-        if (players.size() < maxPlayers && status == LobbyStatus.IN_LOBBY) {
+        if(player == null) {
+            logger.warning("Player is null, cannot add player to lobby.");
+            return false;
+        }
+        if (!isFull()) {
             players.add(player);
             logger.info(player.toString() + " has joined Lobby: " + id);
             return true;
@@ -62,7 +132,16 @@ public class Lobby {
         return false;
     }
 
+    /**
+     * Removes a player from the Lobby (if the Lobby is not empty).
+     * @param player The player object to remove.
+     * @return if the action was successful.
+     */
     public boolean removePlayer(ClientHandler player) {
+        if(player == null) {
+            logger.warning("Player is null, cannot remove player from lobby.");
+            return false;
+        }
         if (!players.isEmpty() && players.contains(player)) {
             players.remove(player);
             logger.info(player.toString() + " has been removed from Lobby: " + id);
@@ -72,18 +151,34 @@ public class Lobby {
         return false;
     }
 
+    /**
+     * Gets the status of the Lobby.
+     * @return The status of the Lobby.
+     */
     public String getStatus() {
         return status.getStatus();
     }
 
+    /**
+     * Checks if the Lobby is full.
+     * @return if the Lobby is full.
+     */
     public boolean isFull() {
         return players.size() == maxPlayers;
     }
 
+    /**
+     * Checks if the Lobby is empty.
+     * @return if the Lobby is empty.
+     */
     public boolean isEmpty() {
         return players.isEmpty();
     }
 
+    /**
+     * Returns the state of the Lobby (id, players, maxplayers, status) as a String.
+     * @return the state of the Lobby as a String.
+     */
     @Override
     public String toString() {
         return "Lobby{" +
@@ -94,15 +189,20 @@ public class Lobby {
                 '}';
     }
 
+    /**
+     * Checks for starting conditions and starts a game.
+     * @return if the game was started correctly.
+     */
     public boolean startGame() {
-        System.out.println("Lobby started game");
         if (status == LobbyStatus.IN_GAME) {
             logger.warning("Game is already started in lobby " + id);
             return false;
         }
 
         if (!isFull()) {
-            logger.warning("Could not start game in lobby " + id + ": " + players.size() + " players (expected " + maxPlayers + ")");
+            logger.warning(String.format(
+                    "Cannot start game in lobby %s: %d players (expected %d)",
+                    id, players.size(), maxPlayers));
             return false;
         }
 
@@ -113,51 +213,104 @@ public class Lobby {
                 .map(ClientHandler::getPlayerName)
                 .toArray(String[]::new);
 
-        this.gameLogic = new GameLogic(playerNames);
-        gameLogic.nextTurn();
+        this.gameLogic = new GameLogic(this);
+        gameLogic.startGame(playerNames);
 
-        // Start automatic turn scheduler (runs every minute)
-        turnScheduler.scheduleAtFixedRate(
-                () -> {
-                    handleAutomaticTurn();
-                    broadcastMessage("TURN$" + gameLogic.getGameState().getPlayerTurn());},
-                1,  // Initial delay (1 minute)
-                1,  // Period (1 minute)
-                TimeUnit.MINUTES
-        );
-
+        startTurnScheduler();
         return true;
     }
 
     /**
-     * ends the game
-     *
-     * @return if ending the game was successful
+     * Starts the TurnScheduler by first resetting it and the calling
+     * processTurnChange once after every minute if not stopped.
      */
-    public boolean endGame() {
-        if (status == LobbyStatus.IN_GAME) {
-            status = LobbyStatus.GAME_ENDED;
+    private void startTurnScheduler() {
+        // Start automatic turn scheduler (runs every minute)
+        stopTurnScheduler();
+        turnScheduler = Executors.newSingleThreadScheduledExecutor();
+        turnScheduler.scheduleAtFixedRate(
+                this::processTurnChange,
+                1, 1, TimeUnit.MINUTES
+        );
+    }
 
-            // Shutdown the turn scheduler
-            turnScheduler.shutdown();
+    /**
+     * Stops the TurnScheduler by resetting it.
+     */
+    private void stopTurnScheduler() {
+        if (turnScheduler != null) {
+            turnScheduler.shutdownNow();
             try {
                 if (!turnScheduler.awaitTermination(1, TimeUnit.SECONDS)) {
-                    turnScheduler.shutdownNow();
+                    logger.warning("Turn Scheduler failed to terminate");
                 }
             } catch (InterruptedException e) {
-                logger.warning("Interrupted while stopping turn scheduler: " + e.getMessage());
+                logger.warning("Interrupted while waiting for turn Scheduler to terminate");
                 Thread.currentThread().interrupt();
             }
         }
+    }
+
+    /**
+     * Handles the request to start a new turn. Calls the GameLogic.TurnManager.nextTurn()
+     * method and broadcasts a message to the players.
+     */
+    private void processTurnChange() {
+        try {
+            if (status != LobbyStatus.IN_GAME) {
+                logger.warning("Turn change attempted while not in game");
+                return;
+            }
+            gameLogic.getTurnManager().nextTurn();
+            broadcastTurnUpdate();
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error while processing turn change", e);
+        }
+    }
+
+    /**
+     * Manually ends the current turn.
+     *
+     * @return true if the turn was ended successfully, false otherwise.
+     */
+    @Override
+    public boolean manualEndTurn() {
+        if (status != LobbyStatus.IN_GAME) {
+            logger.warning("Cannot end turn manually - game not in progress.");
+            return false;
+        }
+
+        processTurnChange();
+        startTurnScheduler();
         return true;
     }
 
+    /**
+     * Ends the game.
+     */
+    @Override
+    public void endGame() {
+        if (status == LobbyStatus.IN_GAME) {
+            status = LobbyStatus.GAME_ENDED;
+            stopTurnScheduler();
+        }
+    }
+
+    /**
+     * Sends a message to every player in the Lobby.
+     * @param message The message to send.
+     */
+    @Override
     public void broadcastMessage(String message) {
         for (ClientHandler player : players) {
             player.sendMessage(message);
         }
     }
 
+    /**
+     * Lists the players as a String.
+     * @return The String of all players.
+     */
     public String listPlayers() {
         if (players.isEmpty()) {
             return "No available players";
@@ -168,6 +321,12 @@ public class Lobby {
                 .collect(Collectors.joining(", "));
     }
 
+    /**
+     * Defines the states the lobby can be in.
+     * "IN_LOBBY" means the game has not started yet.
+     * "IN_GAME" means the game is currently being played.
+     * "GAME_ENDED" means the game has ended.
+     */
     public enum LobbyStatus {
         IN_LOBBY("In lobby"),
         IN_GAME("In-Game"),
@@ -185,63 +344,22 @@ public class Lobby {
     }
 
     /**
-     * Manually ends the current turn and resets the turn timer.
+     * Sets the gameLogic field.
+     * @param gameLogic the object to set.
      */
-    public void manualEndTurn() {
-        if (status != LobbyStatus.IN_GAME) {
-            logger.warning("Cannot end turn manually - game not in progress.");
-            return;
-        }
-
-        // Call the method to handle turn transition
-        handleAutomaticTurn();
-
-        // Reset the scheduler for the next turn (cancel the current task)
-        resetTurnTimer();
+    public void setGameLogic(GameLogic gameLogic) {
+        this.gameLogic = gameLogic;
     }
 
     /**
-     * Resets the turn timer, schedules the next turn after 1 minute.
+     * Sends a message to all clients when called. It sends:
+     * TURN$... when a player begins his turn.
+     * ENDR$... when a gameRound ends.
      */
-    private void resetTurnTimer() {
-        // Cancel the current scheduled task
-        turnScheduler.shutdownNow();
-        try {
-            if (!turnScheduler.awaitTermination(1, TimeUnit.SECONDS)) {
-                turnScheduler.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            logger.warning("Interrupted while stopping turn scheduler: " + e.getMessage());
-            Thread.currentThread().interrupt();
-        }
-
-        // Reinitialize the scheduler and schedule the next turn
-        turnScheduler = Executors.newSingleThreadScheduledExecutor();
-
-        // Schedule next turn (1 minute delay)
-        turnScheduler.scheduleAtFixedRate(
-                () -> {
-                    handleAutomaticTurn();
-                    broadcastMessage("TURN$" + gameLogic.getGameState().getPlayerTurn());},
-                1,  // Initial delay (1 minute)
-                1,  // Period (1 minute)
-                TimeUnit.MINUTES
-        );
-    }
-
-    /**
-     * Handles automatic turn progression (called by scheduler).
-     */
-    private void handleAutomaticTurn() {
-        if (status != LobbyStatus.IN_GAME) {
-            logger.warning("Cannot advance turn - game not in progress");
-            return;
-        }
-
-        try {
-            gameLogic.nextTurn();
-        } catch (Exception e) {
-            logger.severe("Error during automatic turn: " + e.getMessage());
+    private void broadcastTurnUpdate() {
+        broadcastMessage("TURN$" + gameLogic.getTurnManager().getPlayerTurn());
+        if (gameLogic.getTurnManager().isGameRoundComplete()) {
+            broadcastMessage("ENDR$" + gameLogic.createFinalScoreMessage());
         }
     }
 

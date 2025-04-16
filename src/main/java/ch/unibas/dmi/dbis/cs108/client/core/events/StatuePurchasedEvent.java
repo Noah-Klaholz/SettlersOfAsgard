@@ -1,8 +1,8 @@
 package ch.unibas.dmi.dbis.cs108.client.core.events;
 
-import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
-import ch.unibas.dmi.dbis.cs108.client.core.entities.Tile;
-import ch.unibas.dmi.dbis.cs108.client.core.entities.Statue;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
+import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 
 public class StatuePurchasedEvent implements GameEvent {
     private final Player player;

@@ -186,7 +186,7 @@ public interface CommunicationAPI {
             /**
              * Constructor for the enum
              *
-             * @param command
+             * @param command the command string
              */
             Commands(String command) {
                 this.command = command;

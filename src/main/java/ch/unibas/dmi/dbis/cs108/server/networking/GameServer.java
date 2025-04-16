@@ -17,16 +17,28 @@ import java.util.stream.Collectors;
  * It listens for incoming connections and creates a new ClientHandler for each client.
  */
 public class GameServer {
+    /** Logger instance for server logging */
     private static final Logger logger = Logger.getLogger(GameServer.class.getName());
-
+    /** Scheduler for periodic ping tasks to check client conncetion */
     private final ScheduledExecutorService pingScheduler = Executors.newScheduledThreadPool(1);
+    /** The port number on which the server listens for connections. */
     private final int port;
+    /** Thread pool executor for handling client connections */
     private final ExecutorService executor;
+    /** Thread-safe list of currently connected clients */
     private final List<ClientHandler> clients;
+    /** Thread-safe list of active game lobbies */
     private final List<Lobby> lobbies;
+    /** Flag indicating whether the server is currently running */
     private boolean running;
+    /** The server socket used to accept client connections */
     private ServerSocket serverSocket;
 
+    /**
+     * Constructs a new GameServer instance that will listen on the specified port.
+     *
+     * @param port The port number to listen on
+     */
     public GameServer(int port) {
         logger.setFilter(new PingFilter());
         this.port = port;
@@ -208,7 +220,14 @@ public class GameServer {
         return null;
     }
 
+    /**
+     * Checks if a player with the given name is currently connected to the server.
+     *
+     * @param playerName The name to check for
+     * @return true if a player with this name exists, false otherwise
+     */
     public boolean containsPlayerName(String playerName) {
+        if (playerName == null) { return false; }
         for (ClientHandler client : clients) {
             if (client.getPlayer() != null) {
                 if (client.getPlayerName().equals(playerName)) {
@@ -248,5 +267,32 @@ public class GameServer {
                 .map(ClientHandler::getPlayerName)
                 .collect(Collectors.joining(", "));
 
+    }
+
+    /**
+     * Checks if the server is running.
+     *
+     * @return true if the server is running, false otherwise.
+     */
+    public boolean isRunning() {
+        return running;
+    }
+
+    /**
+     * Gets the executor.
+     *
+     * @return the executor.
+     */
+    public ExecutorService getExecutor() {
+        return executor;
+    }
+
+    /**
+     * Gets the pingScheduler.
+     *
+     * @return the pingScheduler.
+     */
+    public ScheduledExecutorService getPingScheduler() {
+        return pingScheduler;
     }
 }

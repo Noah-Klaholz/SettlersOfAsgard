@@ -1,31 +1,19 @@
 [
   {
-    "_comment": "Here are descriptions for useTypes",
-    "RuneStructure": "Used on Structures that produce Runes",
-    "EnergyStructure": "Used on Structures that produce Energy",
-    "Player": "Used on another choosable Player",
-    "Tile": "Used on a free to buy Tile of choice",
-    "RandomTile": "Used on a free to buy Tile chosen by the game",
-    "Price": "Used on all Prices (Shop)",
-    "PlayerPrice": "Used on all Prices (Shop) of another choosable Player",
-    "RiverStructure": "Used on Structures on a River Field",
-    "Trap": "Trap"
-  },
-  {
     "name": "Freyja's Necklace",
     "description": "",
-    "useType": "RuneStructure",
+    "useType": "Field",
     "id": 10,
     "chance": 0.3,
-    "effect": 0.2
+    "effect": 0.5
   },
   {
     "name": "Freyr's Golden Apple",
     "description": "",
-    "useType": "EnergyStructure",
+    "useType": "Player",
     "id": 11,
     "chance": 0.3,
-    "effect": 2
+    "effect": 4
   },
   {
     "name": "Tear of Yggdrasil",
@@ -33,23 +21,23 @@
     "useType": "Player",
     "id": 12,
     "chance": 0.3,
-    "effect": 0
+    "effect": -4
   },
   {
     "name": "Fragment of Mjölnir",
     "description": "",
-    "useType": "Tile",
+    "useType": "Player",
     "id": 13,
     "chance": 0.3,
-    "effect": 0
+    "effect": 2.0
   },
   {
     "name": "Fenrir's Bones",
     "description": "",
-    "useType": "RuneStructure",
+    "useType": "Field",
     "id": 14,
     "chance": 0.3,
-    "effect": 0
+    "effect": 0.5
   },
   {
     "name": "Hel's Shadow",
@@ -57,15 +45,15 @@
     "useType": "Player",
     "id": 15,
     "chance": 0.3,
-    "effect": 0
+    "effect": -0.1
   },
   {
     "name": "Flame of Muspelheim",
     "description": "",
-    "useType": "Price",
+    "useType": "Player",
     "id": 16,
     "chance": 0.3,
-    "effect": 0
+    "effect": 0.5
   },
   {
     "name": "Ice Splinter of Niflheim",
@@ -73,38 +61,38 @@
     "useType": "Player",
     "id": 17,
     "chance": 0.3,
-    "effect": 0
+    "effect": -0.1
   },
   {
     "name": "Blood of Jörmungandr",
     "description": "",
-    "useType": "RiverStructure",
+    "useType": "Field",
     "id": 18,
     "chance": 0.3,
-    "effect": 0
+    "effect": 0.2
   },
   {
     "name": "Ashes of Surtr",
     "description": "",
-    "useType": "PlayerPrice",
+    "useType": "Player",
     "id": 19,
     "chance": 0.3,
-    "effect": 0
+    "effect": -0.5
   },
   {
     "name": "Odin's Eye",
     "description": "",
-    "useType": "RandomTile",
+    "useType": "Field",
     "id": 20,
     "chance": 0.3,
     "effect": 0
   },
   {
     "name": "Fenrir's Chains",
-    "description": "",
+    "description": "Can be found and used to trap a field",
     "useType": "Trap",
     "id": 21,
     "chance": 0.3,
-    "effect": 0
+    "effect": 8
   }
 ]

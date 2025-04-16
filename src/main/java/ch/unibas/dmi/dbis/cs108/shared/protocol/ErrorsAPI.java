@@ -10,6 +10,10 @@ public class ErrorsAPI {
      */
     public enum Errors {
         /**
+         * Error code for failed game command execution
+         */
+        GAME_COMMAND_FAILED("106$GAME_COMMAND_FAILED"),
+        /**
          * Error code player already exists
          */
         PLAYER_ALREADY_EXISTS("106$PLAYER_ALREADY_EXISTS"),
@@ -30,6 +34,14 @@ public class ErrorsAPI {
          */
         NOT_IN_LOBBY("106$NOT_IN_LOBBY"),
         /**
+         * Error code for not in game
+         */
+        NOT_IN_GAME("106$NOT_IN_GAME"),
+        /**
+         * Error code not your turn
+         */
+        NOT_PLAYER_TURN("106$NOT_PLAYER_TURN"),
+        /**
          * Error code join lobby failed
          */
         JOIN_LOBBY_FAILED("106$JOIN_LOBBY_FAILED"),
@@ -40,7 +52,23 @@ public class ErrorsAPI {
         /**
          * Error code NullPointer
          */
-        NULL_MESSAGE_RECIEVED("103$Null");
+        NULL_MESSAGE_RECIEVED("103$NULL_MESSAGE_RECIEVED"),
+        /**
+         * Error message for unhandled command
+         */
+        UNHANDLED_COMMAND("106$UNHANDLED_COMMAND"),
+        /**
+         * Error code for invalid parameters -> append commandname to the error message
+         */
+        INVALID_PARAMETERS("106$INVALID_PARAMETERS"),
+        /**
+         * Error code for invalid commands
+         */
+        INVALID_COMMAND("106$INVALID_COMMAND"),
+        /**
+         * Error message for unknown command
+         */
+        UNKNOWN_COMMAND("106$UNKNOWN_COMMAND");
 
         private final String error;
 

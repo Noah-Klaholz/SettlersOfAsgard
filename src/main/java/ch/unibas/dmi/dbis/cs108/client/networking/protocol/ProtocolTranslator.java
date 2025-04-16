@@ -50,7 +50,7 @@ public class ProtocolTranslator {
 
     public void processTurnMessage(String message) {
         String[] parts = message.split("\\$", 2);
-        if (parts.length > 1) {
+        if (parts.length > 2) {
             eventDispatcher.dispatchEvent(new ReceiveCommandEvent(message, Commands.STARTTURN));
         }
     }
@@ -214,7 +214,7 @@ public class ProtocolTranslator {
     }
 
     public String formatPong(String playerName) {
-        return "OK$PING$" + playerName;
+        return Commands.PING.getCommand();
     }
 
     public String formatChangeName(String newName) {
@@ -230,19 +230,23 @@ public class ProtocolTranslator {
     }
 
     public String formatEndTurn() {
-        return "TURN$";
+        return "ENDT$";
     }
 
     public String formatBuyTile(int x, int y) {
         return "BUYT$" + x + "$" + y;
     }
 
+    public String formatBuyStructure(int structureID) {
+        return "BYST$" + structureID;
+    }
+
     public String formatPlaceStructure(int x, int y, int structureID) {
         return "PLST$" + x + "$" + y + "$" + structureID;
     }
 
-    public String formatUseStructure(int x, int y, int structureID, String useType) {
-        return "USSR$" + x + "$" + y + "$" + structureID + "$" + useType;
+    public String formatUseStructure(int x, int y, int structureID) {
+        return "USST$" + x + "$" + y + "$" + structureID;
     }
 
     public String formatBuyStatue(int statueID) {
@@ -253,16 +257,16 @@ public class ProtocolTranslator {
         return "UPST$" + x + "$" + y + "$" + statueID;
     }
 
-    public String formatUseStatue(int x, int y, int statueID, String useType) {
-        return "USTA$" + x + "$" + y + "$" + statueID + "$" + useType;
+    public String formatUseStatue(int x, int y, int statueID, String params) {
+        return StatueCommandBuilder.useStatue(x,y,statueID, params);
     }
 
-    public String formatUsePlayerArtifact(int artifactId, String useType, String playerAimedAt) {
-        return "USPA$" + artifactId + "$" + useType + "$" + playerAimedAt;
+    public String formatUsePlayerArtifact(int artifactId, String playerAimedAt) {
+        return "USPA$" + artifactId + "$" + playerAimedAt;
     }
 
-    public String formatUseFieldArtifact(int x, int y, int artifactId, String useType) {
-        return "USFA$" + artifactId + "$" + useType;
+    public String formatUseFieldArtifact(int x, int y, int artifactId) {
+        return "USFA$" + artifactId + "$" + x + "$" + y;
     }
 
     // Temporäre Methode für terminal feedback zum GameState

@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.core.events;
 
-import ch.unibas.dmi.dbis.cs108.client.core.entities.Artefact;
-import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 
 /**
  * Event representing the acquisition of an artifact by a player.
@@ -9,7 +9,7 @@ import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
  */
 public class ArtifactAcquiredEvent implements GameEvent {
     private final Player player;
-    private final Artefact artefact;
+    private final Artifact artefact;
 
     /**
      * Constructor for ArtifactAcquiredEvent.
@@ -17,7 +17,7 @@ public class ArtifactAcquiredEvent implements GameEvent {
      * @param player   The player who acquired the artifact.
      * @param artefact The artifact that was acquired.
      */
-    public ArtifactAcquiredEvent(Player player, Artefact artefact) {
+    public ArtifactAcquiredEvent(Player player, Artifact artefact) {
         this.player = player;
         this.artefact = artefact;
     }
@@ -36,7 +36,7 @@ public class ArtifactAcquiredEvent implements GameEvent {
      *
      * @return The artifact.
      */
-    public Artefact getArtifact() {
+    public Artifact getArtifact() {
         return artefact;
     }
 }

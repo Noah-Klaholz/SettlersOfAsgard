@@ -460,8 +460,8 @@ public class GameScreenController extends BaseController {
                         }
                         break;
                     case STARTTURN:
-                        if (args.length > 1) {
-                            chatListView.getItems().add("It is " + args[1] + "'s turn.");
+                        if (args.length > 2) {
+                            chatListView.getItems().add(args[1] + "'s turn ended. It is " + args[2] + "'s turn.");
                         }
                         break;
                     case BUYTILE:

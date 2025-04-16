@@ -1,5 +1,5 @@
 package ch.unibas.dmi.dbis.cs108.client.core.rules;
-
+/**
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
 
 import java.util.ArrayList;
@@ -23,4 +23,4 @@ public class RuleProcessor {
             }
         }
     }
-}
+}*/

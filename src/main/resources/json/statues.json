@@ -1,20 +1,14 @@
 [
   {
-    "_comment": "Here are descriptions for useTypes",
-    "Player": "Effect on another Player",
-    "Tile": "Affects a Tile in possession",
-    "Smeltery": "Affects the Smeltery",
-    "mix": "Affects multiple things"
-  },
-  {
     "name": "Jörmungandr",
     "deal": "Destroys 1 random structure of a chosen player: sacrifices 1 structure of your own",
     "blessing": "-",
     "curse": "-",
     "description": "",
-    "useType": "Player",
+    "useType": "Player, Tile",
     "id": 30,
-    "cost": 0
+    "price": 0,
+    "upgradePrice": 0
   },
   {
     "name": "Freyr",
@@ -24,7 +18,8 @@
     "description": "",
     "useType": "Tile",
     "id": 31,
-    "cost": 0
+    "price": 0,
+    "upgradePrice": 0
   },
   {
     "name": "Dwarf",
@@ -34,7 +29,8 @@
     "description": "",
     "useType": "Smeltery",
     "id": 32,
-    "cost": 0
+    "price": 0,
+    "upgradePrice": 0
   },
   {
     "name": "Freyja",
@@ -44,7 +40,8 @@
     "description": "",
     "useType": "mix",
     "id": 33,
-    "cost": 0
+    "price": 0,
+    "upgradePrice": 0
   },
   {
     "name": "Hel",
@@ -54,7 +51,8 @@
     "description": "",
     "useType": "Player",
     "id": 34,
-    "cost": 0
+    "price": 0,
+    "upgradePrice": 0
   },
   {
     "name": "Nidhöggr",
@@ -64,7 +62,8 @@
     "description": "",
     "useType": "Tile",
     "id": 35,
-    "cost": 0
+    "price": 0,
+    "upgradePrice": 0
   },
   {
     "name": "Loki",
@@ -74,7 +73,8 @@
     "description": "",
     "useType": "Player",
     "id": 36,
-    "cost": 0
+    "price": 0,
+    "upgradePrice": 0
   },
   {
     "name": "Surtr",
@@ -84,6 +84,7 @@
     "description": "",
     "useType": "Player",
     "id": 37,
-    "cost": 0
+    "price": 0,
+    "upgradePrice": 0
   }
 ]

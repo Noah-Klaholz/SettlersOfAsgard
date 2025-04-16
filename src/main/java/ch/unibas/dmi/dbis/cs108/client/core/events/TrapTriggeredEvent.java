@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.core.events;
 
-import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
-import ch.unibas.dmi.dbis.cs108.client.core.entities.Tile;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
+import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 
 public class TrapTriggeredEvent implements GameEvent {
     private final Player triggeredPlayer;
