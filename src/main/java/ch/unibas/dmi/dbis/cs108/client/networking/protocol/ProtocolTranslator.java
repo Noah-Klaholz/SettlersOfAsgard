@@ -238,7 +238,7 @@ public class ProtocolTranslator {
     }
 
     public String formatBuyStructure(int structureID) {
-        return "BYST$" + "$" + structureID;
+        return "BYST$" + structureID;
     }
 
     public String formatPlaceStructure(int x, int y, int structureID) {
@@ -246,7 +246,7 @@ public class ProtocolTranslator {
     }
 
     public String formatUseStructure(int x, int y, int structureID) {
-        return StatueCommandBuilder.useStatue(x,y,structureID);
+        return "USST$" + x + "$" + y + "$" + structureID;
     }
 
     public String formatBuyStatue(int statueID) {
@@ -266,7 +266,7 @@ public class ProtocolTranslator {
     }
 
     public String formatUseFieldArtifact(int x, int y, int artifactId) {
-        return "USFA$" + artifactId;
+        return "USFA$" + artifactId + "$" + x + "$" + y;
     }
 
     // Temporäre Methode für terminal feedback zum GameState
