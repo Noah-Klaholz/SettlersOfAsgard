@@ -16,33 +16,20 @@ import java.util.stream.Collectors;
  * It processes the commands and interacts with the server and game logic.
  */
 public class CommandHandler {
-    /**
-     * The ClientHandler instance that this CommandHandler is associated with.
-     */
+
+    /** The ClientHandler instance that this CommandHandler is associated with. */
     private final ClientHandler ch;
-    /**
-     * The GameServer instance that this CommandHandler is associated with.
-     */
+    /** The GameServer instance that this CommandHandler is associated with. */
     private final GameServer server;
-    /**
-     * The logger for this class.
-     */
+    /** The logger for this class. */
     Logger logger = Logger.getLogger(CommandHandler.class.getName());
-    /**
-     * The GameLogic instance that this CommandHandler is associated with.
-     */
+    /** The GameLogic instance that this CommandHandler is associated with. */
     private GameLogic gameLogic;
-    /**
-     * The current Lobby that this CommandHandler is associated with.
-     */
+    /** The current Lobby that this CommandHandler is associated with. */
     private Lobby currentLobby;
-    /**
-     * The local player that this CommandHandler is associated with.
-     */
+    /** The local player that this CommandHandler is associated with. */
     private Player localPlayer;
-    /**
-     * The name of the player that this CommandHandler is associated with.
-     */
+    /** The name of the player that this CommandHandler is associated with. */
     private String playerName;
 
     /**
