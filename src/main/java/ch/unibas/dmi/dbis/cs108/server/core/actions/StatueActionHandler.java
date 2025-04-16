@@ -18,6 +18,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 public class StatueActionHandler {
     private final GameState gameState;
     private final ReadWriteLock gameLock;
+    private final StatueBehaviorRegistry registry = new StatueBehaviorRegistry();
 
     public StatueActionHandler(GameState gameState, ReadWriteLock gameLock) {
         this.gameState = gameState;
@@ -107,7 +108,6 @@ public class StatueActionHandler {
             StatueParameters statueParams = parseParameters(params);
 
             // Execute the statue effect using the StatueBehaviorRegistry
-            StatueBehaviorRegistry registry = gameState.getStatueBehaviorRegistry();
             return registry.executeStatue(statue, gameState, player, statueParams);
         } finally {
             gameLock.writeLock().unlock();
@@ -140,7 +140,7 @@ public class StatueActionHandler {
 
             switch (key) {
                 case "PLAYER":
-                    Player targetPlayer = gameState.getPlayerByName(value);
+                    Player targetPlayer = gameState.findPlayerByName(value);
                     if (targetPlayer != null) {
                         builder.withPlayer(targetPlayer);
                     }
@@ -183,17 +183,6 @@ public class StatueActionHandler {
         }
 
         return builder.build();
-    }
-
-    /**
-     * Calculates the cost to upgrade a statue.
-     *
-     * @param statue The statue to upgrade
-     * @return The upgrade cost in runes
-     */
-    private int calculateUpgradeCost(Statue statue) {
-        // This logic might need adjustment based on your game's rules
-        return statue.getPrice() * statue.getLevel();
     }
 
     /**
