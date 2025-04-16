@@ -226,7 +226,7 @@ public class CommandProcessor {
                 return formatError(ErrorsAPI.Errors.INVALID_PARAMETERS.getError() + "$BUYSTATUE");
             }
 
-            String statueId = parts[0];
+            int statueId = Integer.parseInt(parts[0]);
             String playerName = cmd.getPlayer().getName();
 
             boolean success = gameLogic.buyStatue(statueId, playerName);
@@ -251,7 +251,7 @@ public class CommandProcessor {
 
             int x = Integer.parseInt(parts[0]);
             int y = Integer.parseInt(parts[1]);
-            String statueId = parts[2];
+            int statueId = Integer.parseInt(parts[2]);
             String playerName = cmd.getPlayer().getName();
 
             boolean success = gameLogic.upgradeStatue(x, y, statueId, playerName);

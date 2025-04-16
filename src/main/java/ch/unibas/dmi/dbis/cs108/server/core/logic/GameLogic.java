@@ -182,7 +182,7 @@ public class GameLogic implements GameLogicInterface {
      * Buy a statue.
      * @return if the action was successful.
      */
-    public boolean buyStatue(String statueId, String playerName) {
+    public boolean buyStatue(int statueId, String playerName) {
         return statueActionHandler.buyStatue(statueId, playerName);
     }
 
@@ -190,7 +190,7 @@ public class GameLogic implements GameLogicInterface {
      * Upgrade a statue.
      * @return if the action was successful.
      */
-    public boolean upgradeStatue(int x, int y, String statueId, String playerName) {
+    public boolean upgradeStatue(int x, int y, int statueId, String playerName) {
         return statueActionHandler.upgradeStatue(x, y, statueId, playerName);
     }
 
