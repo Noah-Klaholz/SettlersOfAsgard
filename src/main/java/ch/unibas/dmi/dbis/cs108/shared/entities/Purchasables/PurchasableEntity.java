@@ -20,6 +20,11 @@ public abstract class PurchasableEntity extends GameEntity {
     protected int resourceValue;
 
     /**
+     * Indicates whether this entity has already been activated this turn.
+     */
+    protected boolean activated = false;
+
+    /**
      * Default constructor for PurchasableEntity.
      */
     public PurchasableEntity() {}
@@ -75,5 +80,13 @@ public abstract class PurchasableEntity extends GameEntity {
         super.loadFromJson(json);
         this.price = json.get("price").getAsInt();
         this.resourceValue = json.get("resourceValue").getAsInt();
+    }
+
+    public boolean isActivated() {
+        return activated;
+    }
+
+    public void setActivated(boolean b) {
+        this.activated = b;
     }
 }
