@@ -87,21 +87,21 @@ public class ArtifactBehaviorRegistry {
         // Field-targeting artifacts
         registerFieldBehavior("Freyja's Necklace", (artifact, gameLogic, player, x, y) -> {
             Tile tile = gameLogic.getGameState().getBoardManager().getTile(x, y);
-            if (tile == null || !tile.getHasEntity()) return false;
+            if (tile == null || !tile.hasEntity()) return false;
             tile.setBuff(Status.BuffType.RUNE_GENERATION, (int)artifact.getEffect());
             return true;
         });
 
         registerFieldBehavior("Fenrir's Bones", (artifact, gameLogic, player, x, y) -> {
             Tile tile = gameLogic.getGameState().getBoardManager().getTile(x, y);
-            if (tile == null || !tile.getHasEntity()) return false;
+            if (tile == null || !tile.hasEntity()) return false;
             tile.setBuff(Status.BuffType.ENERGY_GENERATION, (int)artifact.getEffect());
             return true;
         });
 
         registerFieldBehavior("Blood of Jörmungandr", (artifact, gameLogic, player, x, y) -> {
             Tile tile = gameLogic.getGameState().getBoardManager().getTile(x, y);
-            if (tile == null || !tile.getHasEntity()) return false;
+            if (tile == null || !tile.hasEntity()) return false;
             tile.setBuff(Status.BuffType.RIVER_RUNE_GENERATION, (int)artifact.getEffect());
             return true;
         });
@@ -114,7 +114,7 @@ public class ArtifactBehaviorRegistry {
         // Trap artifacts
         registerTrapBehavior("Fenrir's Chains", (artifact, gameLogic, player, x, y) -> {
             Tile tile = gameLogic.getGameState().getBoardManager().getTile(x, y);
-            if (tile == null || tile.getHasEntity()) return false;
+            if (tile == null || tile.hasEntity()) return false;
 
             // Create a new ActiveTrap structure on the tile
             Structure trapStructure = EntityRegistry.getStructure((int)artifact.getEffect());

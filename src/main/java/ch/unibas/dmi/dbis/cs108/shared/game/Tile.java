@@ -42,6 +42,10 @@ public class Tile {
         return y;
     }
 
+    public boolean hasEntity() {
+        return this.entity != null;
+    }
+
     public boolean getHasEntity() {
         return hasEntity;
     }
