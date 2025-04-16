@@ -2,6 +2,7 @@ package ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
+import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.*;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
@@ -44,12 +45,12 @@ public class StatueBehaviorRegistry {
          * Executes the statue effect.
          *
          * @param statue The statue being used
-         * @param gameLogic The current game logic
+         * @param gameState The current game state
          * @param player The player using the statue
          * @param params Parameters for the effect
          * @return true if execution was successful, false otherwise
          */
-        boolean execute(Statue statue, GameLogic gameLogic, Player player, StatueParameters params);
+        boolean execute(Statue statue, GameState gameState, Player player, StatueParameters params);
     }
 
     // Map: Statue Name -> (Map: Effect Type -> Behavior)
@@ -112,12 +113,12 @@ public class StatueBehaviorRegistry {
      * Executes a statue's effect with the provided parameters.
      *
      * @param statue The statue being used
-     * @param gameLogic The current game logic
+     * @param gameState The current game state
      * @param player The player using the statue
      * @param params The parameters for the effect
      * @return true if execution was successful, false otherwise
      */
-    public boolean executeStatue(Statue statue, GameLogic gameLogic, Player player, StatueParameters params) {
+    public boolean executeStatue(Statue statue, GameState gameState, Player player, StatueParameters params) {
         String statueName = statue.getName();
         StatueEffectType effectType = determineEffectType(statue);
 
@@ -147,7 +148,7 @@ public class StatueBehaviorRegistry {
         }
 
         // Execute the behavior
-        return behavior.execute(statue, gameLogic, player, params);
+        return behavior.execute(statue, gameState, player, params);
     }
 
     /**
@@ -168,7 +169,7 @@ public class StatueBehaviorRegistry {
     private void initializeDefaultBehaviors() {
         // Jörmungandr
         registerBehavior("Jörmungandr", StatueEffectType.DEAL,
-                (statue, gameLogic, player, params) -> {
+                (statue, gameState, player, params) -> {
                     // Destroys 1 random structure of a chosen player: sacrifices 1 structure of your own
                     Player targetPlayer = params.getTargetPlayer();
                     if (targetPlayer == null) return false;
@@ -181,7 +182,7 @@ public class StatueBehaviorRegistry {
 
         // Freyr
         registerBehavior("Freyr", StatueEffectType.DEAL,
-                (statue, gameLogic, player, params) -> {
+                (statue, gameState, player, params) -> {
                     // Grows 1 Tree on a River Tile: costs all available Energy (min 1 Energy)
                     if (!params.hasTileCoordinates()) return false;
 
@@ -192,7 +193,7 @@ public class StatueBehaviorRegistry {
         );
 
         registerBehavior("Freyr", StatueEffectType.BLESSING,
-                (statue, gameLogic, player, params) -> {
+                (statue, gameState, player, params) -> {
                     // Grows Trees on all River Tiles
                     return true;
                 },
@@ -200,7 +201,7 @@ public class StatueBehaviorRegistry {
         );
 
         registerBehavior("Freyr", StatueEffectType.CURSE,
-                (statue, gameLogic, player, params) -> {
+                (statue, gameState, player, params) -> {
                     // Overgrows 1 random Statue so it cannot be used anymore and blocks the tile
                     return true;
                 },
@@ -209,7 +210,7 @@ public class StatueBehaviorRegistry {
 
         // Dwarf
         registerBehavior("Dwarf", StatueEffectType.DEAL,
-                (statue, gameLogic, player, params) -> {
+                (statue, gameState, player, params) -> {
                     // Smeltery: produces +1 Artifact next Round: 1 random Structure does not produce Runes next round
                     Structure structure = params.getStructure();
                     if (structure == null || !"Smeltery".equals(structure.getName())) return false;
@@ -221,7 +222,7 @@ public class StatueBehaviorRegistry {
         );
 
         registerBehavior("Dwarf", StatueEffectType.BLESSING,
-                (statue, gameLogic, player, params) -> {
+                (statue, gameState, player, params) -> {
                     // Next Artifact from Smeltery debuffs all Players
                     return true;
                 },
@@ -229,7 +230,7 @@ public class StatueBehaviorRegistry {
         );
 
         registerBehavior("Dwarf", StatueEffectType.CURSE,
-                (statue, gameLogic, player, params) -> {
+                (statue, gameState, player, params) -> {
                     // Destroys the Smeltery
                     return true;
                 },
@@ -238,7 +239,7 @@ public class StatueBehaviorRegistry {
 
         // Freyja
         registerBehavior("Freyja", StatueEffectType.DEAL,
-                (statue, gameLogic, player, params) -> {
+                (statue, gameState, player, params) -> {
                     // Finds 1 random Artifact: costs (a lot of) Runes
                     return true;
                 },
@@ -246,7 +247,7 @@ public class StatueBehaviorRegistry {
         );
 
         registerBehavior("Freyja", StatueEffectType.BLESSING,
-                (statue, gameLogic, player, params) -> {
+                (statue, gameState, player, params) -> {
                     // 1 Tile of choice for free
                     if (!params.hasTileCoordinates()) return false;
 
@@ -257,7 +258,7 @@ public class StatueBehaviorRegistry {
         );
 
         registerBehavior("Freyja", StatueEffectType.CURSE,
-                (statue, gameLogic, player, params) -> {
+                (statue, gameState, player, params) -> {
                     // Conquers a Tile in possession and makes it unusable
                     if (!params.hasTileCoordinates()) return false;
 
@@ -269,7 +270,7 @@ public class StatueBehaviorRegistry {
 
         // Hel
         registerBehavior("Hel", StatueEffectType.DEAL,
-                (statue, gameLogic, player, params) -> {
+                (statue, gameState, player, params) -> {
                     // Blocks the Statue of a chosen Player next Round: blocks a random Structure of your own next Round
                     Player targetPlayer = params.getTargetPlayer();
                     if (targetPlayer == null) return false;
@@ -281,7 +282,7 @@ public class StatueBehaviorRegistry {
         );
 
         registerBehavior("Hel", StatueEffectType.BLESSING,
-                (statue, gameLogic, player, params) -> {
+                (statue, gameState, player, params) -> {
                     // Destroys the statue of a random Player
                     return true;
                 },
@@ -289,7 +290,7 @@ public class StatueBehaviorRegistry {
         );
 
         registerBehavior("Hel", StatueEffectType.CURSE,
-                (statue, gameLogic, player, params) -> {
+                (statue, gameState, player, params) -> {
                     // Goes back to Helheim and the Statue gets destroyed
                     return true;
                 },
@@ -298,7 +299,7 @@ public class StatueBehaviorRegistry {
 
         // Nidhöggr
         registerBehavior("Nidhöggr", StatueEffectType.DEAL,
-                (statue, gameLogic, player, params) -> {
+                (statue, gameState, player, params) -> {
                     // Devours a random Tree on the Board: needs to be fed 2 Artifacts
                     if (params.getArtifact() == null) return false;
 
@@ -309,7 +310,7 @@ public class StatueBehaviorRegistry {
         );
 
         registerBehavior("Nidhöggr", StatueEffectType.BLESSING,
-                (statue, gameLogic, player, params) -> {
+                (statue, gameState, player, params) -> {
                     // Devours all Trees on the Board
                     return true;
                 },
@@ -317,7 +318,7 @@ public class StatueBehaviorRegistry {
         );
 
         registerBehavior("Nidhöggr", StatueEffectType.CURSE,
-                (statue, gameLogic, player, params) -> {
+                (statue, gameState, player, params) -> {
                     // Devours 2 of your own Structures
                     return true;
                 },
@@ -326,7 +327,7 @@ public class StatueBehaviorRegistry {
 
         // Loki
         registerBehavior("Loki", StatueEffectType.DEAL,
-                (statue, gameLogic, player, params) -> {
+                (statue, gameState, player, params) -> {
                     // Sets 1 Trap for a chosen Player: steals 1 Artefact in return
                     Player targetPlayer = params.getTargetPlayer();
                     if (targetPlayer == null) return false;
@@ -342,7 +343,7 @@ public class StatueBehaviorRegistry {
         );
 
         registerBehavior("Loki", StatueEffectType.BLESSING,
-                (statue, gameLogic, player, params) -> {
+                (statue, gameState, player, params) -> {
                     // Steals a set amount of Runes from a random Player and gives them to you
                     return true;
                 },
@@ -350,7 +351,7 @@ public class StatueBehaviorRegistry {
         );
 
         registerBehavior("Loki", StatueEffectType.CURSE,
-                (statue, gameLogic, player, params) -> {
+                (statue, gameState, player, params) -> {
                     // Sets 2 Traps for yourself
                     return true;
                 },
@@ -359,7 +360,7 @@ public class StatueBehaviorRegistry {
 
         // Surtr
         registerBehavior("Surtr", StatueEffectType.DEAL,
-                (statue, gameLogic, player, params) -> {
+                (statue, gameState, player, params) -> {
                     // Destroys 1 random Structure or Statue of a chosen Player: consumes the Flaming Sword Structure
                     Player targetPlayer = params.getTargetPlayer();
                     if (targetPlayer == null) return false;
@@ -371,7 +372,7 @@ public class StatueBehaviorRegistry {
         );
 
         registerBehavior("Surtr", StatueEffectType.BLESSING,
-                (statue, gameLogic, player, params) -> {
+                (statue, gameState, player, params) -> {
                     // Gifts 2 Tiles of Muspelheim for free
                     return true;
                 },
@@ -379,7 +380,7 @@ public class StatueBehaviorRegistry {
         );
 
         registerBehavior("Surtr", StatueEffectType.CURSE,
-                (statue, gameLogic, player, params) -> {
+                (statue, gameState, player, params) -> {
                     // Destroys 1 random Structure or Statue of your own
                     return true;
                 },
