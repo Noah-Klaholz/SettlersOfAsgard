@@ -34,6 +34,7 @@ public class ProtocolTranslator {
         commandHandlers.put("CHAN", this::processNameChangeMessage);
         commandHandlers.put("TURN", this::processTurnMessage);
         commandHandlers.put("STRT", this::processStartGameMessage);
+        commandHandlers.put("SYNC", this::processSyncMessage);
     }
 
     public void processIncomingMessage(String message) {
@@ -45,6 +46,13 @@ public class ProtocolTranslator {
             handler.accept(message);
         } else {
             LOGGER.warning("Unknown message type: " + message);
+        }
+    }
+
+    public void processSyncMessage(String message) {
+        String[] parts = message.split("\\$", 2);
+        if (parts.length == 2) {
+            eventDispatcher.dispatchEvent(new ReceiveCommandEvent(message, Commands.SYNCHRONIZE));
         }
     }
 
