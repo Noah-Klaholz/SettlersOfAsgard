@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.server.core.actions;
 
+import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors.StatueBehaviorRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
@@ -47,10 +48,11 @@ public class StatueActionHandler {
 
             // Check if the statue on the tile matches the requested statue ID
             PurchasableEntity entity = tile.getEntity();
+            Statue statue;
             if (!(entity instanceof Statue) || entity.getId() != statueId) {
                 return false;
             } else {
-                Statue statue = (Statue) statue;
+                statue = (Statue) entity;
             }
 
             // Check if statue can be upgraded (max level is 3)
@@ -59,7 +61,7 @@ public class StatueActionHandler {
             }
 
             // Calculate upgrade cost
-            int upgradeCost = calculateUpgradeCost(statue);
+            int upgradeCost = statue.getUpgradePrice();
 
             // Check if player can afford the upgrade
             if (player.getRunes() < upgradeCost) {
@@ -80,7 +82,7 @@ public class StatueActionHandler {
         gameLock.writeLock().lock();
         try {
             // Get the player
-            Player player = gameState.getPlayerByName(playerName);
+            Player player = gameState.findPlayerByName(playerName);
             if (player == null) {
                 return false;
             }
@@ -88,14 +90,17 @@ public class StatueActionHandler {
             // Find the statue on the board at the given coordinates
             BoardManager boardManager = gameState.getBoardManager();
             Tile tile = boardManager.getTile(x, y);
-            if (tile == null || !tile.hasStatue() || !tile.getOwner().getName().equals(playerName)) {
+            if (tile == null || !tile.hasEntity() || !tile.getOwner().equals(playerName)) {
                 return false;
             }
 
             // Check if the statue on the tile matches the requested statue ID
-            Statue statue = tile.getStatue();
-            if (statue == null || statue.getId() != statueId) {
+            PurchasableEntity entity = tile.getEntity();
+            Statue statue;
+            if (!(entity instanceof Statue) || entity.getId() != statueId) {
                 return false;
+            } else {
+                statue = (Statue) entity;
             }
 
             // Parse parameters and create StatueParameters object

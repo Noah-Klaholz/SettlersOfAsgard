@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors;
 
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
+import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
@@ -48,72 +49,72 @@ public class ArtifactBehaviorRegistry {
      */
     private void initializeDefaultBehaviors() {
         // Player-targeting artifacts
-        registerPlayerBehavior("Tear of Yggdrasil", (artifact, gameLogic, player, targetPlayer) -> {
+        registerPlayerBehavior("Tear of Yggdrasil", (artifact, gameState, player, targetPlayer) -> {
             // Example: Heal target player
             targetPlayer.addEnergy((int)artifact.getEffect());
             return true;
         });
 
-        registerPlayerBehavior("Hel's Shadow", (artifact, gameLogic, player, targetPlayer) -> {
+        registerPlayerBehavior("Hel's Shadow", (artifact, gameState, player, targetPlayer) -> {
             targetPlayer.addBuff(Status.BuffType.RUNE_GENERATION, (int)artifact.getEffect());
             return true;
         });
 
-        registerPlayerBehavior("Flame of Muspelheim", (artifact, gameLogic, player, targetPlayer) -> {
+        registerPlayerBehavior("Flame of Muspelheim", (artifact, gameState, player, targetPlayer) -> {
             targetPlayer.addBuff(Status.BuffType.SHOP_PRICE, (int)artifact.getEffect());
             return true;
         });
 
-        registerPlayerBehavior("Ice Splinter of Niflheim", (artifact, gameLogic, player, targetPlayer) -> {
+        registerPlayerBehavior("Ice Splinter of Niflheim", (artifact, gameState, player, targetPlayer) -> {
             targetPlayer.addBuff(Status.BuffType.ENERGY_GENERATION, (int)artifact.getEffect());
             return true;
         });
 
-        registerPlayerBehavior("Ashes of Surtr", (artifact, gameLogic, player, targetPlayer) -> {
+        registerPlayerBehavior("Ashes of Surtr", (artifact, gameState, player, targetPlayer) -> {
             targetPlayer.addBuff(Status.BuffType.SHOP_PRICE, (int)artifact.getEffect());
             return true;
         });
 
-        registerPlayerBehavior("Fragment of Mjölnir", (artifact, gameLogic, player, targetPlayer) -> {
+        registerPlayerBehavior("Fragment of Mjölnir", (artifact, gameState, player, targetPlayer) -> {
             targetPlayer.addBuff(Status.BuffType.ARTIFACT_CHANCE, (int)artifact.getEffect());
             return true;
         });
 
-        registerPlayerBehavior("Freyr's Golden Apple", (artifact, gameLogic, player, targetPlayer) -> {
+        registerPlayerBehavior("Freyr's Golden Apple", (artifact, gameState, player, targetPlayer) -> {
             targetPlayer.addEnergy((int)artifact.getEffect());
             return true;
         });
 
         // Field-targeting artifacts
-        registerFieldBehavior("Freyja's Necklace", (artifact, gameLogic, player, x, y) -> {
-            Tile tile = gameLogic.getGameState().getBoardManager().getTile(x, y);
+        registerFieldBehavior("Freyja's Necklace", (artifact, gameState, player, x, y) -> {
+            Tile tile = gameState.getBoardManager().getTile(x, y);
             if (tile == null || !tile.hasEntity()) return false;
             tile.setBuff(Status.BuffType.RUNE_GENERATION, (int)artifact.getEffect());
             return true;
         });
 
-        registerFieldBehavior("Fenrir's Bones", (artifact, gameLogic, player, x, y) -> {
-            Tile tile = gameLogic.getGameState().getBoardManager().getTile(x, y);
+        registerFieldBehavior("Fenrir's Bones", (artifact, gameState, player, x, y) -> {
+            Tile tile = gameState.getBoardManager().getTile(x, y);
             if (tile == null || !tile.hasEntity()) return false;
             tile.setBuff(Status.BuffType.ENERGY_GENERATION, (int)artifact.getEffect());
             return true;
         });
 
-        registerFieldBehavior("Blood of Jörmungandr", (artifact, gameLogic, player, x, y) -> {
-            Tile tile = gameLogic.getGameState().getBoardManager().getTile(x, y);
+        registerFieldBehavior("Blood of Jörmungandr", (artifact, gameState, player, x, y) -> {
+            Tile tile = gameState.getBoardManager().getTile(x, y);
             if (tile == null || !tile.hasEntity()) return false;
             tile.setBuff(Status.BuffType.RIVER_RUNE_GENERATION, (int)artifact.getEffect());
             return true;
         });
 
-        registerFieldBehavior("Odin's Eye", (artifact, gameLogic, player, x, y) -> {
+        registerFieldBehavior("Odin's Eye", (artifact, gameState, player, x, y) -> {
             //TODO implement this artifact
             return true;
         });
 
         // Trap artifacts
-        registerTrapBehavior("Fenrir's Chains", (artifact, gameLogic, player, x, y) -> {
-            Tile tile = gameLogic.getGameState().getBoardManager().getTile(x, y);
+        registerTrapBehavior("Fenrir's Chains", (artifact, gameState, player, x, y) -> {
+            Tile tile = gameState.getBoardManager().getTile(x, y);
             if (tile == null || tile.hasEntity()) return false;
 
             // Create a new ActiveTrap structure on the tile
@@ -160,15 +161,15 @@ public class ArtifactBehaviorRegistry {
      * Executes a player-targeting artifact behavior.
      *
      * @param artifact the artifact being used
-     * @param gameLogic the current game logic
+     * @param gameState the current game state
      * @param player the player using the artifact
      * @param targetPlayer the player being targeted
      * @return true if execution was successful, false otherwise
      */
-    public boolean executePlayerArtifact(Artifact artifact, GameLogic gameLogic, Player player, Player targetPlayer) {
+    public boolean executePlayerArtifact(Artifact artifact, GameState gameState, Player player, Player targetPlayer) {
         PlayerArtifactBehavior behavior = playerBehaviors.get(artifact.getName());
         if (behavior != null) {
-            return behavior.execute(artifact, gameLogic, player, targetPlayer);
+            return behavior.execute(artifact, gameState, player, targetPlayer);
         }
         return false;
     }
@@ -177,16 +178,16 @@ public class ArtifactBehaviorRegistry {
      * Executes a field-targeting artifact behavior.
      *
      * @param artifact the artifact being used
-     * @param gameLogic the current game logic
+     * @param gameState the current game state
      * @param player the player using the artifact
      * @param x the x-coordinate of the targeted tile
      * @param y the y-coordinate of the targeted tile
      * @return true if execution was successful, false otherwise
      */
-    public boolean executeFieldArtifact(Artifact artifact, GameLogic gameLogic, Player player, int x, int y) {
+    public boolean executeFieldArtifact(Artifact artifact, GameState gameState, Player player, int x, int y) {
         FieldArtifactBehavior behavior = fieldBehaviors.get(artifact.getName());
         if (behavior != null) {
-            return behavior.execute(artifact, gameLogic, player, x, y);
+            return behavior.execute(artifact, gameState, player, x, y);
         }
         return false;
     }
@@ -195,16 +196,16 @@ public class ArtifactBehaviorRegistry {
      * Executes a trap artifact behavior.
      *
      * @param artifact the artifact being used
-     * @param gameLogic the current game logic
+     * @param gameState the current game state
      * @param player the player using the artifact
      * @param x the x-coordinate of the targeted tile
      * @param y the y-coordinate of the targeted tile
      * @return true if execution was successful, false otherwise
      */
-    public boolean executeTrapArtifact(Artifact artifact, GameLogic gameLogic, Player player, int x, int y) {
+    public boolean executeTrapArtifact(Artifact artifact, GameState gameState, Player player, int x, int y) {
         TrapArtifactBehavior behavior = trapBehaviors.get(artifact.getName());
         if (behavior != null) {
-            return behavior.execute(artifact, gameLogic, player, x, y);
+            return behavior.execute(artifact, gameState, player, x, y);
         }
         return false;
     }
@@ -219,12 +220,12 @@ public class ArtifactBehaviorRegistry {
          * Executes the player-targeting artifact behavior.
          *
          * @param artifact the artifact being used
-         * @param gameLogic the current game logic
+         * @param gameState the current game state
          * @param player the player using the artifact
          * @param targetPlayer the player being targeted
          * @return true if execution was successful, false otherwise
          */
-        boolean execute(Artifact artifact, GameLogic gameLogic, Player player, Player targetPlayer);
+        boolean execute(Artifact artifact, GameState gameState, Player player, Player targetPlayer);
     }
 
     /**
@@ -237,13 +238,13 @@ public class ArtifactBehaviorRegistry {
          * Executes the field-targeting artifact behavior.
          *
          * @param artifact the artifact being used
-         * @param gameLogic the current game logic
+         * @param gameState the current game state
          * @param player the player using the artifact
          * @param x the x-coordinate of the targeted tile
          * @param y the y-coordinate of the targeted tile
          * @return true if execution was successful, false otherwise
          */
-        boolean execute(Artifact artifact, GameLogic gameLogic, Player player, int x, int y);
+        boolean execute(Artifact artifact, GameState gameState, Player player, int x, int y);
     }
 
     /**
@@ -256,12 +257,12 @@ public class ArtifactBehaviorRegistry {
          * Executes the trap artifact behavior.
          *
          * @param artifact the artifact being used
-         * @param gameLogic the current game logic
+         * @param gameState the current game state
          * @param player the player using the artifact
          * @param x the x-coordinate of the targeted tile
          * @param y the y-coordinate of the targeted tile
          * @return true if execution was successful, false otherwise
          */
-        boolean execute(Artifact artifact, GameLogic gameLogic, Player player, int x, int y);
+        boolean execute(Artifact artifact, GameState gameState, Player player, int x, int y);
     }
 }
