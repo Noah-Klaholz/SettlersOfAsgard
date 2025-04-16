@@ -60,6 +60,9 @@ public class TurnManager {
                 return;
             }
 
+            Player oldPlayer = gameState.findPlayerByName(playerTurn);
+            endTurn(oldPlayer);
+
             int nextPosition = (playerRound + 1) % gameState.getPlayers().size();
             playerTurn = gameState.getPlayers().get(nextPosition).getName();
             playerRound = nextPosition;
@@ -76,6 +79,19 @@ public class TurnManager {
         }
     }
 
+    /**
+     * Ends the turn for the given player by deactivating all their activated purchasable entities.
+     *
+     * @param oldPlayer The player whose turn is ending.
+     */
+    private void endTurn(Player oldPlayer) {
+        oldPlayer.getPurchasableEntities().forEach(purchasableEntity -> {
+            if (purchasableEntity.isActivated()) {
+                purchasableEntity.setActivated(false);
+            }
+        });
+    }
+
     private void initializeFirstTurn() {
         // Start with a random player
         setPlayerRound(0);
@@ -85,15 +101,6 @@ public class TurnManager {
         // Initial resources for first player
         distributeResources(firstPlayer);
 
-    }
-
-    public boolean endTurn(String playerName) {
-        if (!playerName.equals(getPlayerTurn())) {
-            return false;
-        }
-
-        nextTurn();
-        return true;
     }
 
     public void reset() {
