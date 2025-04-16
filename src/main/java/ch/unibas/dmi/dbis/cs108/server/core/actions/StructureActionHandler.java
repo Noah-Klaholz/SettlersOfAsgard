@@ -24,11 +24,6 @@ public class StructureActionHandler {
 
         }
 
-
-
-
-
-
         return false;
     }
 
