@@ -33,10 +33,9 @@ public class CommandProcessor {
         commandHandlers.put(Commands.SYNCHRONIZE, this::handleSynchronize);
         commandHandlers.put(Commands.GETGAMESTATUS, this::handleGetGameStatus);
         commandHandlers.put(Commands.BUYTILE, this::handleBuyTile);
-        commandHandlers.put(Commands.BUYSTRUCTURE, this::handleBuyStructure);
         commandHandlers.put(Commands.PLACESTRUCTURE, this::handlePlaceStructure);
         commandHandlers.put(Commands.USESTRUCTURE, this::handleUseStructure);
-        commandHandlers.put(Commands.BUYSTATUE, this::handleBuyStatue);
+        commandHandlers.put(Commands.PLACESTATUE, this::handlePlaceStatue);
         commandHandlers.put(Commands.UPGRADESTATUE, this::handleUpgradeStatue);
         commandHandlers.put(Commands.USESTATUE, this::handleUseStatue);
         commandHandlers.put(Commands.USEFIELDARTIFACT, this::handleUseFieldArtifact);
@@ -145,29 +144,6 @@ public class CommandProcessor {
     }
 
     /**
-     * Process buy structure command
-     */
-    private String handleBuyStructure(Command cmd) {
-        try {
-            String[] parts = cmd.getArgs();
-            if (parts.length != 1) {
-                return formatError(ErrorsAPI.Errors.INVALID_PARAMETERS.getError() + "$BUYSTRUCTURE");
-            }
-
-            int structureId = Integer.parseInt(parts[0]);
-            String playerName = cmd.getPlayer().getName();
-
-            boolean success = gameLogic.buyStructure(structureId, playerName);
-            return success ?
-                    formatSuccess(Commands.BUYSTRUCTURE.getCommand() + "$" + structureId + "$" + playerName) :
-                    formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$BUYSTRUCTURE");
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Error buying structure", e);
-            return formatError(e.getMessage());
-        }
-    }
-
-    /**
      * Process place structure command
      */
     private String handlePlaceStructure(Command cmd) {
@@ -217,24 +193,24 @@ public class CommandProcessor {
     }
 
     /**
-     * Process buy statue command
+     * Process place statue command
      */
     private String handlePlaceStatue(Command cmd) {
         try {
             String[] parts = cmd.getArgs();
-            if (parts.length != 1) {
-                return formatError(ErrorsAPI.Errors.INVALID_PARAMETERS.getError() + "$BUYSTATUE");
+            if (parts.length != 3) {
+                return formatError(ErrorsAPI.Errors.INVALID_PARAMETERS.getError() + "PLACESTATUE");
             }
 
-            int statueId = Integer.parseInt(parts[0]);
-            int x = Integer.parseInt(parts[1]);
-            int y = Integer.parseInt(parts[2]);
+            int x = Integer.parseInt(parts[0]);
+            int y = Integer.parseInt(parts[1]);
+            int statueId = Integer.parseInt(parts[2]);
             String playerName = cmd.getPlayer().getName();
 
             boolean success = gameLogic.placeStatue(x, y, statueId, playerName);
             return success ?
-                    formatSuccess(Commands.BUYSTATUE.getCommand() + "$" + statueId + "$" + playerName) :
-                    formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$BUYSTATUE");
+                    formatSuccess(Commands.PLACESTATUE.getCommand() + "$" + x + "$" + y + "$" + statueId + "$" + playerName) :
+                    formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$PLACESTATUE");
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error buying statue", e);
             return formatError(e.getMessage());

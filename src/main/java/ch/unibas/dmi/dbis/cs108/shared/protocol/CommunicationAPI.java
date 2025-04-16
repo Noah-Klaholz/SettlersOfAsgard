@@ -155,6 +155,10 @@ public interface CommunicationAPI {
              */
             USESTRUCTURE("USSR"),
             /**
+             * Player places a statue at coordinates
+             */
+            PLACESTATUE("PLSU"),
+            /**
              * Player upgrades a statue at coordinates
              */
             UPGRADESTATUE("UPST"),
