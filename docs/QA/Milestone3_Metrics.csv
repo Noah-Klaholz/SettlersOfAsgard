@@ -356,7 +356,7 @@ ch.unibas.dmi.dbis.cs108.client.networking.events.ReceiveCommandEvent.getMessage
 ch.unibas.dmi.dbis.cs108.client.networking.events.ReceiveCommandEvent.getTimestamp(),2,3,7,4,"21,88%"
 ch.unibas.dmi.dbis.cs108.client.networking.events.ReceiveCommandEvent.getType(),0,0,3,3,"9,38%"
 ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.ProtocolTranslator(EventDispatcher),0,0,4,4,"1,81%"
-ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatBuyStatue(int),0,0,3,3,"1,36%"
+formatPlaceStatue(int),0,0,3,3,"1,36%"
 "ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatBuyTile(int, int)",0,0,3,3,"1,36%"
 ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatChangeName(String),0,0,3,3,"1,36%"
 "ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator.formatCreateLobby(String, String)",0,0,3,3,"1,36%"

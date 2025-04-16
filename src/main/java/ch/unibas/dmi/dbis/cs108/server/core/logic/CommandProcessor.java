@@ -219,7 +219,7 @@ public class CommandProcessor {
     /**
      * Process buy statue command
      */
-    private String handleBuyStatue(Command cmd) {
+    private String handlePlaceStatue(Command cmd) {
         try {
             String[] parts = cmd.getArgs();
             if (parts.length != 1) {
@@ -227,9 +227,11 @@ public class CommandProcessor {
             }
 
             int statueId = Integer.parseInt(parts[0]);
+            int x = Integer.parseInt(parts[1]);
+            int y = Integer.parseInt(parts[2]);
             String playerName = cmd.getPlayer().getName();
 
-            boolean success = gameLogic.buyStatue(statueId, playerName);
+            boolean success = gameLogic.placeStatue(x, y, statueId, playerName);
             return success ?
                     formatSuccess(Commands.BUYSTATUE.getCommand() + "$" + statueId + "$" + playerName) :
                     formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$BUYSTATUE");

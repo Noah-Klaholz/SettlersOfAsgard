@@ -1,6 +1,5 @@
 package ch.unibas.dmi.dbis.cs108.server.core.actions;
 
-import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors.StatueBehaviorRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
@@ -26,7 +25,7 @@ public class StatueActionHandler {
     }
 
 
-    public boolean buyStatue(int statueId, String playerName) {
+    public boolean placeStatue(int x, int y,int statueId, String playerName) {
         // Will be implemented in the future when decided how to do it
         return true;
     }

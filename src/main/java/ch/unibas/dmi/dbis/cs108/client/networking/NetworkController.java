@@ -225,8 +225,8 @@ public class NetworkController {
         networkClient.send(message);
     }
 
-    public void buyStatue(int statueID) {
-        String message = translator.formatBuyStatue(statueID);
+    public void buyStatue(int x, int y, int statueID) {
+        String message = translator.formatPlaceStatue(x, y, statueID);
         networkClient.send(message);
     }
 

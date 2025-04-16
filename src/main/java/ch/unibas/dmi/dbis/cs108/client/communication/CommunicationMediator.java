@@ -212,9 +212,9 @@ public class CommunicationMediator {
                     break;
                 case BUYSTATUE:
                     if (isValidArgument(args, 2)) {
-                        networkController.buyStatue(Integer.parseInt(args[0]));
+                        networkController.buyStatue(Integer.parseInt(args[0]),Integer.parseInt(args[1]),Integer.parseInt(args[2]));
                     } else {
-                        publishInfoChatEvent("Invalid arguments, use: \n /buystatue <statueId>");
+                        publishInfoChatEvent("Invalid arguments, use: \n /buystatue <x> <y> <statueId>");
                     }
                     break;
                 case USESTATUE:

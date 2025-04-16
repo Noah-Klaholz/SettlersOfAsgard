@@ -237,10 +237,6 @@ public class ProtocolTranslator {
         return "BUYT$" + x + "$" + y;
     }
 
-    public String formatBuyStructure(int structureID) {
-        return "BYST$" + structureID;
-    }
-
     public String formatPlaceStructure(int x, int y, int structureID) {
         return "PLST$" + x + "$" + y + "$" + structureID;
     }
@@ -249,8 +245,8 @@ public class ProtocolTranslator {
         return "USST$" + x + "$" + y + "$" + structureID;
     }
 
-    public String formatBuyStatue(int statueID) {
-        return "BYST$" + statueID;
+    public String formatPlaceStatue(int x, int y, int statueID) {
+        return "PLSU$" + x + "$" + y + statueID;
     }
 
     public String formatUpgradeStatue(int x, int y, int statueID) {
