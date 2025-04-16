@@ -14,22 +14,87 @@ import ch.unibas.dmi.dbis.cs108.server.core.model.BoardManager;
 
 import java.util.concurrent.locks.ReadWriteLock;
 
+/**
+ * Handles actions related to statues in the game.
+ * This includes placing, upgrading, and using statues.
+ */
 public class StatueActionHandler {
+    /**
+     * The game state that this handler operates on.
+     */
     private final GameState gameState;
+    /**
+     * The lock used to synchronize access to the game state.
+     */
     private final ReadWriteLock gameLock;
+    /**
+     * The registry for statue behaviors.
+     */
     private final StatueBehaviorRegistry registry = new StatueBehaviorRegistry();
 
+    /**
+     * Constructor for StatueActionHandler.
+     *
+     * @param gameState The game state to operate on
+     * @param gameLock  The lock to synchronize access to the game state
+     */
     public StatueActionHandler(GameState gameState, ReadWriteLock gameLock) {
         this.gameState = gameState;
         this.gameLock = gameLock;
     }
 
 
+    /**
+     * Places a statue on the board at the specified coordinates.
+     *
+     * @param x          The x-coordinate on the board
+     * @param y          The y-coordinate on the board
+     * @param statueId   The ID of the statue to place
+     * @param playerName The name of the player placing the statue
+     * @return true if the statue was successfully placed, false otherwise
+     */
     public boolean placeStatue(int x, int y,int statueId, String playerName) {
-        // Will be implemented in the future when decided how to do it
-        return true;
+        gameLock.writeLock().lock();
+        try {
+            // Get the player
+            Player player = gameState.findPlayerByName(playerName);
+            if (player == null) {
+                return false;
+            }
+
+            // Find the tile on the board at the given coordinates and check if it's empty
+            BoardManager boardManager = gameState.getBoardManager();
+            Tile tile = boardManager.getTile(x, y);
+            if (tile == null || tile.hasEntity() || !tile.getOwner().equals(playerName)) {
+                return false;
+            }
+
+            Statue statue = EntityRegistry.getStatue(statueId);
+
+            int cost = statue.getPrice();
+
+            if (player.getRunes() < cost) {
+                return false;
+            }
+
+            player.addRunes(-cost);
+            tile.setEntity(statue);
+
+            return true;
+        } finally {
+            gameLock.writeLock().unlock();
+        }
     }
 
+    /**
+     * Upgrades a statue on the board at the specified coordinates.
+     *
+     * @param x          The x-coordinate on the board
+     * @param y          The y-coordinate on the board
+     * @param statueId   The ID of the statue to upgrade
+     * @param playerName The name of the player upgrading the statue
+     * @return true if the statue was successfully upgraded, false otherwise
+     */
     public boolean upgradeStatue(int x, int y, int statueId, String playerName) {
         gameLock.writeLock().lock();
         try {
@@ -39,7 +104,7 @@ public class StatueActionHandler {
                 return false;
             }
 
-            // Find the statue on the board at the given coordinates
+            // Find the tile on the board at the given coordinates
             BoardManager boardManager = gameState.getBoardManager();
             Tile tile = boardManager.getTile(x, y);
             if (tile == null || !tile.hasEntity() || !tile.getOwner().equals(playerName)) {
@@ -78,6 +143,16 @@ public class StatueActionHandler {
         }
     }
 
+    /**
+     * Uses a statue on the board at the specified coordinates.
+     *
+     * @param x          The x-coordinate on the board
+     * @param y          The y-coordinate on the board
+     * @param statueId   The ID of the statue to use
+     * @param playerName The name of the player using the statue
+     * @param params     Additional parameters for the statue effect
+     * @return true if the statue was successfully used, false otherwise
+     */
     public boolean useStatue(int x, int y, int statueId, String playerName, String params) {
         gameLock.writeLock().lock();
         try {
