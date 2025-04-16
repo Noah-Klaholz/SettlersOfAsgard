@@ -235,8 +235,8 @@ public class NetworkController {
         networkClient.send(message);
     }
 
-    public void useStatue(int x, int y, int statueID, String useType) {
-        String message = translator.formatUseStatue(x, y, statueID, useType);
+    public void useStatue(int x, int y, int statueID) {
+        String message = translator.formatUseStatue(x, y, statueID);
         networkClient.send(message);
     }
 
@@ -245,18 +245,18 @@ public class NetworkController {
         networkClient.send(message);
     }
 
-    public void useStructure(int x, int y, int structureID, String useType) {
-        String message = translator.formatUseStructure(x, y, structureID, useType);
+    public void useStructure(int x, int y, int structureID) {
+        String message = translator.formatUseStructure(x, y, structureID);
         networkClient.send(message);
     }
 
-    public void usePlayerArtifact(int artifactID, String useType, String playerAimedAt) {
-        String message = translator.formatUsePlayerArtifact(artifactID, useType, playerAimedAt);
+    public void usePlayerArtifact(int artifactID, String playerAimedAt) {
+        String message = translator.formatUsePlayerArtifact(artifactID, playerAimedAt);
         networkClient.send(message);
     }
 
-    public void useFieldArtifact(int x, int y, int artifactID, String useType) {
-        String message = translator.formatUseFieldArtifact(x, y, artifactID, useType);
+    public void useFieldArtifact(int x, int y, int artifactID) {
+        String message = translator.formatUseFieldArtifact(x, y, artifactID);
         networkClient.send(message);
     }
 

@@ -245,8 +245,8 @@ public class ProtocolTranslator {
         return "PLST$" + x + "$" + y + "$" + structureID;
     }
 
-    public String formatUseStructure(int x, int y, int structureID, String useType) {
-        return "USSR$" + x + "$" + y + "$" + structureID + "$" + useType;
+    public String formatUseStructure(int x, int y, int structureID) {
+        return StatueCommandBuilder.useStatue(x,y,structureID);
     }
 
     public String formatBuyStatue(int statueID) {
@@ -257,16 +257,16 @@ public class ProtocolTranslator {
         return "UPST$" + x + "$" + y + "$" + statueID;
     }
 
-    public String formatUseStatue(int x, int y, int statueID, String useType) {
-        return "USTA$" + x + "$" + y + "$" + statueID + "$" + useType;
+    public String formatUseStatue(int x, int y, int statueID) {
+        return "USTA$" + x + "$" + y + "$" + statueID;
     }
 
-    public String formatUsePlayerArtifact(int artifactId, String useType, String playerAimedAt) {
-        return "USPA$" + artifactId + "$" + useType + "$" + playerAimedAt;
+    public String formatUsePlayerArtifact(int artifactId, String playerAimedAt) {
+        return "USPA$" + artifactId + "$" + playerAimedAt;
     }
 
-    public String formatUseFieldArtifact(int x, int y, int artifactId, String useType) {
-        return "USFA$" + artifactId + "$" + useType;
+    public String formatUseFieldArtifact(int x, int y, int artifactId) {
+        return "USFA$" + artifactId;
     }
 
     // Temporäre Methode für terminal feedback zum GameState
