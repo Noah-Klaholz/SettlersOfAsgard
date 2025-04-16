@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities;
 
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;

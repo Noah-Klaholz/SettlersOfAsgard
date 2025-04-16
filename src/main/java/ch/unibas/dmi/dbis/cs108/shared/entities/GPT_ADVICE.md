@@ -139,59 +139,59 @@ public class StatueSelection {
 ```java
 package ch.unibas.dmi.dbis.cs108.shared.entities;
 
-import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.game.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class StatueBehaviorRegistry {
     private final Map<String, StatueBehavior> behaviors = new HashMap<>();
-    
+
     public StatueBehaviorRegistry() {
         initializeDefaultBehaviors();
     }
-    
+
     private void initializeDefaultBehaviors() {
         // Register behaviors for each statue
         registerBehavior("Jörmungandr", (statue, gameState, player, selection) -> {
             // Implementation for Jörmungandr
             if (selection.getPlayerName() == null) return false;
-            
+
             Player targetPlayer = gameState.getPlayerByName(selection.getPlayerName());
             if (targetPlayer == null) return false;
-            
+
             // Destroy 1 random structure of target player
             // Sacrifice 1 structure of your own
             return true;
         });
-        
+
         registerBehavior("Freyr", (statue, gameState, player, selection) -> {
             // Implementation for Freyr
             if (selection.getTileCoords() == null) return false;
-            
+
             // Parse tile coordinates
             String[] coords = selection.getTileCoords().split(",");
             int x = Integer.parseInt(coords[0]);
             int y = Integer.parseInt(coords[1]);
             Tile tile = gameState.getTileAt(x, y);
-            
+
             if (tile == null || !tile.isRiver()) return false;
-            
+
             // Grow tree implementation
             // Use player's energy
             return true;
         });
-        
+
         // Add more statue behaviors...
     }
-    
+
     public void registerBehavior(String statueName, StatueBehavior behavior) {
         behaviors.put(statueName, behavior);
     }
-    
+
     public boolean execute(Statue statue, GameState gameState, Player player, StatueSelection selection) {
         StatueBehavior behavior = behaviors.get(statue.getName());
         if (behavior != null) {
@@ -199,7 +199,7 @@ public class StatueBehaviorRegistry {
         }
         return false;
     }
-    
+
     @FunctionalInterface
     public interface StatueBehavior {
         boolean execute(Statue statue, GameState gameState, Player player, StatueSelection selection);

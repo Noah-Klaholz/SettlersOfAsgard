@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.shared.game;
 
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 
 import java.util.ArrayList;

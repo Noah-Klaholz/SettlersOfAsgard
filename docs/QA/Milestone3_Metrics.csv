@@ -755,17 +755,17 @@ ch.unibas.dmi.dbis.cs108.shared.game.Shop.getBuyableStructures(),0,0,3,3,"3,90%"
 ch.unibas.dmi.dbis.cs108.shared.game.Shop.loadStatues(),1,0,20,19,"25,97%"
 ch.unibas.dmi.dbis.cs108.shared.game.Shop.loadStructures(),0,0,19,19,"24,68%"
 ch.unibas.dmi.dbis.cs108.shared.game.Shop.removeStructure(Structure),0,0,3,3,"3,90%"
-"ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue.Statue(int, String, String, String)",1,0,9,9,"16,36%"
-ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue.getDescription(),0,0,3,3,"5,45%"
-ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue.getLevel(),0,0,3,3,"5,45%"
-ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue.getName(),0,0,3,3,"5,45%"
-ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue.getPrice(),0,0,3,3,"5,45%"
-ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue.getStatueID(),0,0,3,3,"5,45%"
-ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue.getUpgradePrice(),0,0,3,3,"5,45%"
-ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue.getUseType(),0,0,3,3,"5,45%"
-ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue.setLevel(int),0,0,3,3,"5,45%"
-ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue.upgrade(),1,0,9,9,"16,36%"
-ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue.use(),1,0,3,2,"5,45%"
+"ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue.Statue(int, String, String, String)",1,0,9,9,"16,36%"
+ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue.getDescription(),0,0,3,3,"5,45%"
+ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue.getLevel(),0,0,3,3,"5,45%"
+ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue.getName(),0,0,3,3,"5,45%"
+ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue.getPrice(),0,0,3,3,"5,45%"
+ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue.getStatueID(),0,0,3,3,"5,45%"
+ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue.getUpgradePrice(),0,0,3,3,"5,45%"
+ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue.getUseType(),0,0,3,3,"5,45%"
+ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue.setLevel(int),0,0,3,3,"5,45%"
+ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue.upgrade(),1,0,9,9,"16,36%"
+ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue.use(),1,0,3,2,"5,45%"
 "ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure.Structure(int, String, String, String, int)",1,0,9,8,"25,71%"
 ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure.getDescription(),0,0,3,3,"8,57%"
 ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure.getName(),0,0,3,3,"8,57%"
@@ -851,15 +851,15 @@ statue.ch.unibas.dmi.dbis.cs108.shared.entities.Hel.Hel(StatueData),0,0,3,3,"60,
 statue.ch.unibas.dmi.dbis.cs108.shared.entities.Joermungandr.Joermungandr(StatueData),0,0,3,3,"60,00%"
 statue.ch.unibas.dmi.dbis.cs108.shared.entities.Loki.Loki(StatueData),0,0,3,3,"60,00%"
 statue.ch.unibas.dmi.dbis.cs108.shared.entities.Nidhoeggr.Nidhoeggr(StatueData),0,0,3,3,"60,00%"
-statue.ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue.Statue(StatueData),0,0,10,10,"22,73%"
-statue.ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue.getBlessing(),0,0,3,3,"6,82%"
-statue.ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue.getCost(),0,0,3,3,"6,82%"
-statue.ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue.getCurse(),0,0,3,3,"6,82%"
-statue.ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue.getDeal(),0,0,3,3,"6,82%"
-statue.ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue.getDescription(),0,0,3,3,"6,82%"
-statue.ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue.getId(),0,0,3,3,"6,82%"
-statue.ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue.getName(),0,0,3,3,"6,82%"
-statue.ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue.getUseType(),0,0,3,3,"6,82%"
+statue.ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue.Statue(StatueData),0,0,10,10,"22,73%"
+statue.ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue.getBlessing(),0,0,3,3,"6,82%"
+statue.ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue.getCost(),0,0,3,3,"6,82%"
+statue.ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue.getCurse(),0,0,3,3,"6,82%"
+statue.ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue.getDeal(),0,0,3,3,"6,82%"
+statue.ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue.getDescription(),0,0,3,3,"6,82%"
+statue.ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue.getId(),0,0,3,3,"6,82%"
+statue.ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue.getName(),0,0,3,3,"6,82%"
+statue.ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue.getUseType(),0,0,3,3,"6,82%"
 statue.ch.unibas.dmi.dbis.cs108.shared.entities.StatueData.getBlessing(),0,0,3,3,"8,57%"
 statue.ch.unibas.dmi.dbis.cs108.shared.entities.StatueData.getCost(),0,0,3,3,"8,57%"
 statue.ch.unibas.dmi.dbis.cs108.shared.entities.StatueData.getCurse(),0,0,3,3,"8,57%"
@@ -1069,7 +1069,7 @@ ch.unibas.dmi.dbis.cs108.shared.entities.PlayerRound,1,0,37
 ch.unibas.dmi.dbis.cs108.shared.game.Shop,2,0,62
 ch.unibas.dmi.dbis.cs108.shared.game.Shop.StatueData,0,0,8
 ch.unibas.dmi.dbis.cs108.shared.game.Shop.StructureData,0,0,7
-ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue,4,0,55
+ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue,4,0,55
 ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure,1,0,35
 ch.unibas.dmi.dbis.cs108.shared.game.Tile,3,0,109
 ch.unibas.dmi.dbis.cs108.shared.game.Tile.TileBuilder,0,0,75
@@ -1088,7 +1088,7 @@ statue.ch.unibas.dmi.dbis.cs108.shared.entities.Hel,0,0,5
 statue.ch.unibas.dmi.dbis.cs108.shared.entities.Joermungandr,0,0,5
 statue.ch.unibas.dmi.dbis.cs108.shared.entities.Loki,0,0,5
 statue.ch.unibas.dmi.dbis.cs108.shared.entities.Nidhoeggr,0,0,5
-statue.ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue,0,0,44
+statue.ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue,0,0,44
 statue.ch.unibas.dmi.dbis.cs108.shared.entities.StatueData,1,0,35
 statue.ch.unibas.dmi.dbis.cs108.shared.entities.StatueFactory,0,0,15
 statue.ch.unibas.dmi.dbis.cs108.shared.entities.StatueRepository,0,0,23

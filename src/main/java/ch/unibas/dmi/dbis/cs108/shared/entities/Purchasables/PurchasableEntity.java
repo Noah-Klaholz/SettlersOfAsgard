@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables;
 
 import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import com.google.gson.JsonObject;
 
 /**

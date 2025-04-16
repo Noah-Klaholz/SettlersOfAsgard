@@ -5,6 +5,7 @@
     "blessing": "-",
     "curse": "-",
     "description": "",
+    "useType": "Player, Tile",
     "id": 30,
     "price": 0,
     "upgradePrice": 0

@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.core.events;
 
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 
 public class StatueActivatedEvent implements GameEvent {
     public enum Outcome { DEAL, BLESSING, CURSE }

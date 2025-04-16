@@ -1,5 +1,6 @@
-package ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables;
+package ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues;
 
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import com.google.gson.JsonObject;
 
 /**
@@ -54,13 +55,13 @@ public class Statue extends PurchasableEntity {
     public void upgrade() { level++; }
 
     /**
-     * Enum representing the types of use for this statue.
-     * Each type corresponds to a specific behavior or effect.
+     * Defines the types of effects a statue can have based on its level.
      */
-    public enum useType {
-        DEAL,
-        BLESSING,
-        CURSE;
+    public enum StatueEffectType {
+        NONE,      // Level 1: no effect
+        DEAL,      // Level 2: deal effect
+        BLESSING,  // Level 3: positive effect (high probability)
+        CURSE      // Level 3: negative effect (low probability)
     }
 
     /**

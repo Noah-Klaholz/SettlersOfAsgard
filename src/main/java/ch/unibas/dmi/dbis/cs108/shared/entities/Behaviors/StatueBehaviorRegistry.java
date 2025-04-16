@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors;
 
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statue;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import java.util.HashMap;
 import java.util.Map;
