@@ -54,7 +54,7 @@ public class GameStateSerializer {
         ReadWriteLock lock = gameState.getStateLock();
         lock.readLock().lock();
         try {
-            StringBuilder status = new StringBuilder("STATUS$");
+            StringBuilder status = new StringBuilder("SYNC$");
             status.append("round=").append(gameState.getTurnManager().getGameRound()).append(",");
             status.append("turn=").append(gameState.getTurnManager().getPlayerTurn()).append(",");
 
