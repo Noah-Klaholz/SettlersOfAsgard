@@ -1,6 +1,8 @@
 package ch.unibas.dmi.dbis.cs108.server.core.logic;
 
+import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
+import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol.Commands;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.ErrorsAPI;
 
@@ -15,13 +17,13 @@ import java.util.logging.Logger;
  */
 public class CommandProcessor {
     private static final Logger LOGGER = Logger.getLogger(CommandProcessor.class.getName());
-    private final GameState gameLogic;
+    private final GameLogic gameLogic;
     private final Map<Commands, Function<Command, String>> commandHandlers = new ConcurrentHashMap<>();
 
     // Use a single lock for state-changing commands to ensure consistency
     private final Object commandExecutionLock = new Object();
 
-    public CommandProcessor(GameState gameLogic) {
+    public CommandProcessor(GameLogic gameLogic) {
         this.gameLogic = gameLogic;
         registerCommandHandlers();
     }

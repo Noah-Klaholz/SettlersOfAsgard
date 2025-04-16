@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.core.structures;
 
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameEventNotifier;
-import ch.unibas.dmi.dbis.cs108.server.core.logic.GameState;
+import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 
 import java.util.List;
@@ -50,7 +50,7 @@ public class Lobby implements GameEventNotifier {
     /**
      * The GameLogic corresponding to the game ongoing in the Lobby (only initialized when game starts).
      */
-    private GameState gameLogic;
+    private GameLogic gameLogic;
 
     /**
      * The turnScheduler responsible for automatically calling TurnManager.nextTurn() after a fixed time.
@@ -105,7 +105,7 @@ public class Lobby implements GameEventNotifier {
      * Gets the GameLogic object in this Lobby. Only valid if the Game has started already.
      * @return The GameLogic object in this Lobby.
      */
-    public GameState getGameLogic() {
+    public GameLogic getGameLogic() {
         if (status != LobbyStatus.IN_GAME) {
             logger.warning("Not yet in game, cannot return gameLogic from current Lobby.");
             return null;
@@ -213,7 +213,7 @@ public class Lobby implements GameEventNotifier {
                 .map(ClientHandler::getPlayerName)
                 .toArray(String[]::new);
 
-        this.gameLogic = new GameState(this);
+        this.gameLogic = new GameLogic(this);
         gameLogic.startGame(playerNames);
 
         startTurnScheduler();
@@ -347,7 +347,7 @@ public class Lobby implements GameEventNotifier {
      * Sets the gameLogic field.
      * @param gameLogic the object to set.
      */
-    public void setGameLogic(GameState gameLogic) {
+    public void setGameLogic(GameLogic gameLogic) {
         this.gameLogic = gameLogic;
     }
 

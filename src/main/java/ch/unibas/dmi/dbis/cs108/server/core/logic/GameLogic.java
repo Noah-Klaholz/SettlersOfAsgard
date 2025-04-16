@@ -5,6 +5,7 @@ import ch.unibas.dmi.dbis.cs108.server.core.actions.ArtifactActionHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.StatueActionHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.StructureActionHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.TileActionHandler;
+import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 
 import java.util.Comparator;
@@ -17,14 +18,14 @@ import java.util.logging.Logger;
  * Implementation of the GameLogicInterface with proper concurrency control.
  * Acts as a facade coordinating specialized components.
  */
-public class GameState implements GameLogicInterface {
-    private static final Logger LOGGER = Logger.getLogger(GameState.class.getName());
+public class GameLogic implements GameLogicInterface {
+    private static final Logger LOGGER = Logger.getLogger(GameLogic.class.getName());
 
     // Thread safety mechanism
     private final ReadWriteLock gameLock = new ReentrantReadWriteLock();
 
     private final GameEventNotifier notifier;
-    private final ch.unibas.dmi.dbis.cs108.server.core.model.GameState gameState;
+    private final GameState gameState;
     private final CommandProcessor commandProcessor;
     private final TurnManager turnManager;
     private final TileActionHandler tileActionHandler;
@@ -35,9 +36,9 @@ public class GameState implements GameLogicInterface {
     /**
      * Constructor initializes game with proper components
      */
-    public GameState(GameEventNotifier notifier) {
+    public GameLogic(GameEventNotifier notifier) {
         this.notifier = notifier;
-        this.gameState = new ch.unibas.dmi.dbis.cs108.server.core.model.GameState();
+        this.gameState = new GameState();
         this.turnManager = gameState.getTurnManager();
         this.tileActionHandler = new TileActionHandler(gameState, gameLock);
         this.structureActionHandler = new StructureActionHandler(gameState, gameLock);
@@ -50,7 +51,7 @@ public class GameState implements GameLogicInterface {
      * Gets the GameState with thread-safe access.
      * @return the current object of the GameState.
      */
-    public ch.unibas.dmi.dbis.cs108.server.core.model.GameState getGameState() {
+    public GameState getGameState() {
         gameLock.readLock().lock();
         try {
             return gameState;

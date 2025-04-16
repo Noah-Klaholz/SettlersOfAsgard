@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
-import ch.unibas.dmi.dbis.cs108.server.core.logic.GameState;
+import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
@@ -30,7 +30,7 @@ public class StructureBehaviorRegistry {
     }
 
     private void initializeBehaviors() {
-        registerBehavior("Rune Table", (structure, gameState, player) -> {
+        registerBehavior("Rune Table", (structure, gameLogic, player) -> {
             if (player.getEnergy() < 4) {
                 return false;
             }
@@ -39,7 +39,7 @@ public class StructureBehaviorRegistry {
             return true;
         });
 
-        registerBehavior("Mimisbrunnr", (structure, gameState, player) -> {
+        registerBehavior("Mimisbrunnr", (structure, gameLogic, player) -> {
             if(player.getArtifacts().size() < SETTINGS.Config.MAX_ARTIFACTS.getValue()) {
                 int randomId = (int)(Math.random() * 12) + 10;
                 Artifact artifact = EntityRegistry.getArtifact(randomId);
@@ -49,32 +49,32 @@ public class StructureBehaviorRegistry {
             return false;
         });
 
-        registerBehavior("ActiveTrap", (structure, gameState, player) -> {
+        registerBehavior("ActiveTrap", (structure, gameLogic, player) -> {
             player.addRunes(-(int)structure.getParams().get(0).getValue());
             return true;
         });
 
-        registerBehavior("Helgrindr", (structure, gameState, player) -> {
+        registerBehavior("Helgrindr", (structure, gameLogic, player) -> {
             player.addBuff(Status.BuffType.DEBUFFABLE, 0); // sets the player to non-debuffable
             return true;
         });
 
-        registerBehavior("Huginn and Muninn", (structure, gameState, player) -> {
+        registerBehavior("Huginn and Muninn", (structure, gameLogic, player) -> {
             return true;
             //TODO Add behavior for Huginn and Muninn -> how to show this in networking? -> same with odings eye artifact
         });
 
-        registerBehavior("Ran's Hall", (structure, gameState, player) -> {
+        registerBehavior("Ran's Hall", (structure, gameLogic, player) -> {
             return true;
             //TODO Add behavior for Ran's Hall -> not yet deciced
         });
 
-        registerBehavior("Surtur's Smeltery", (structure, gameState, player) -> {
+        registerBehavior("Surtur's Smeltery", (structure, gameLogic, player) -> {
             return true;
             //TODO Add behavior for Surtur's Smeltery -> not yet explained
         });
 
-        registerBehavior("Tree", (structure, gameState, player) -> {
+        registerBehavior("Tree", (structure, gameLogic, player) -> {
             player.addRunes((int)structure.getParams().get(0).getValue());
             return true;
         });
@@ -94,14 +94,14 @@ public class StructureBehaviorRegistry {
      * Executes the behavior associated with the specified use type.
      *
      * @param structure the structure to execute
-     * @param gameState the current game state
+     * @param gameLogic the current game logic to modify if needed
      * @param player the player performing the action
      * @return true if execution was successful, false otherwise
      */
-    public boolean execute(Structure structure, GameState gameState, Player player) {
+    public boolean execute(Structure structure, GameLogic gameLogic, Player player) {
         StructureBehavior behavior = behaviors.get(structure.getName());
         if (behavior != null) {
-            return behavior.execute(structure, gameState, player);
+            return behavior.execute(structure, gameLogic, player);
         }
         return false;
     }
@@ -112,6 +112,6 @@ public class StructureBehaviorRegistry {
      */
     @FunctionalInterface
     public interface StructureBehavior {
-        boolean execute(Structure structure, GameState gameState, Player player);
+        boolean execute(Structure structure, GameLogic gameLogic, Player player);
     }
 }

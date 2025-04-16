@@ -495,30 +495,30 @@ ch.unibas.dmi.dbis.cs108.example.gui.javafx.Main.main(String[]),4,4,7,3,"58,33%"
 ch.unibas.dmi.dbis.cs108.example.gui.swing.SwingGUI.createAndShowGUI(),4,0,12,9,"57,14%"
 ch.unibas.dmi.dbis.cs108.example.gui.swing.SwingGUI.main(String[]),1,0,4,3,"19,05%"
 ch.unibas.dmi.dbis.cs108.server.app.ServerMain.main(String),5,6,20,14,"76,92%"
-GameState(String[]),5,6,10,4,"1,77%"
-ch.unibas.dmi.dbis.cs108.server.core.logic.GameState.PlayerActionHandler.execute(Object...),0,n/a,n/a,1,"12,50%"
-"ch.unibas.dmi.dbis.cs108.server.core.logic.GameState.buyStatue(String, String)",6,8,54,46,"9,56%"
-"ch.unibas.dmi.dbis.cs108.server.core.logic.GameState.buyStructure(String, String)",7,8,52,43,"9,20%"
-"ch.unibas.dmi.dbis.cs108.server.core.logic.GameState.buyStructure(int, String)",9,0,25,16,"4,42%"
-"ch.unibas.dmi.dbis.cs108.server.core.logic.GameState.buyTile(int, int, String)",7,9,28,18,"4,96%"
-ch.unibas.dmi.dbis.cs108.server.core.logic.GameState.endGame(),7,5,22,15,"3,89%"
-ch.unibas.dmi.dbis.cs108.server.core.logic.GameState.endTurn(),7,6,13,7,"2,30%"
-"ch.unibas.dmi.dbis.cs108.server.core.logic.GameState.executeAction(PlayerAction, Object...)",4,7,15,8,"2,65%"
-ch.unibas.dmi.dbis.cs108.server.core.logic.GameState.findPlayerByName(String),4,6,9,3,"1,59%"
-ch.unibas.dmi.dbis.cs108.server.core.logic.GameState.getGameState(),4,5,8,3,"1,42%"
-ch.unibas.dmi.dbis.cs108.server.core.logic.GameState.getPlayerByName(String),4,6,12,6,"2,12%"
-ch.unibas.dmi.dbis.cs108.server.core.logic.GameState.initializeFirstTurn(),7,6,14,7,"2,48%"
-ch.unibas.dmi.dbis.cs108.server.core.logic.GameState.nextTurn(),6,4,25,19,"4,42%"
-"ch.unibas.dmi.dbis.cs108.server.core.logic.GameState.placeStructure(int, int, int, String)",6,10,39,29,"6,90%"
-ch.unibas.dmi.dbis.cs108.server.core.logic.GameState.registerActionHandlers(),3,3,14,11,"2,48%"
-ch.unibas.dmi.dbis.cs108.server.core.logic.GameState.resourcesIncome(Player),8,7,22,13,"3,89%"
-ch.unibas.dmi.dbis.cs108.server.core.logic.GameState.sortPlayersByScore(List<Player>),5,6,9,3,"1,59%"
-ch.unibas.dmi.dbis.cs108.server.core.logic.GameState.startGame(String[]),6,7,12,5,"2,12%"
-"ch.unibas.dmi.dbis.cs108.server.core.logic.GameState.upgradeStatue(int, int, String, String)",6,10,27,17,"4,78%"
-"ch.unibas.dmi.dbis.cs108.server.core.logic.GameState.useFieldArtifact(int, int, int, String, String)",7,9,27,17,"4,78%"
-"ch.unibas.dmi.dbis.cs108.server.core.logic.GameState.usePlayerArtifact(int, String, String, String)",10,10,32,18,"5,66%"
-"ch.unibas.dmi.dbis.cs108.server.core.logic.GameState.useStatue(int, int, int, String, String)",6,11,26,15,"4,60%"
-"ch.unibas.dmi.dbis.cs108.server.core.logic.GameState.useStructure(int, int, int, String, String)",8,11,30,17,"5,31%"
+ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.GameLogic(String[]),5,6,10,4,"1,77%"
+ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.PlayerActionHandler.execute(Object...),0,n/a,n/a,1,"12,50%"
+"ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.buyStatue(String, String)",6,8,54,46,"9,56%"
+"ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.buyStructure(String, String)",7,8,52,43,"9,20%"
+"ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.buyStructure(int, String)",9,0,25,16,"4,42%"
+"ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.buyTile(int, int, String)",7,9,28,18,"4,96%"
+ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.endGame(),7,5,22,15,"3,89%"
+ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.endTurn(),7,6,13,7,"2,30%"
+"ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.executeAction(PlayerAction, Object...)",4,7,15,8,"2,65%"
+ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.findPlayerByName(String),4,6,9,3,"1,59%"
+ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.getGameState(),4,5,8,3,"1,42%"
+ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.getPlayerByName(String),4,6,12,6,"2,12%"
+ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.initializeFirstTurn(),7,6,14,7,"2,48%"
+ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.nextTurn(),6,4,25,19,"4,42%"
+"ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.placeStructure(int, int, int, String)",6,10,39,29,"6,90%"
+ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.registerActionHandlers(),3,3,14,11,"2,48%"
+ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.resourcesIncome(Player),8,7,22,13,"3,89%"
+ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.sortPlayersByScore(List<Player>),5,6,9,3,"1,59%"
+ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.startGame(String[]),6,7,12,5,"2,12%"
+"ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.upgradeStatue(int, int, String, String)",6,10,27,17,"4,78%"
+"ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.useFieldArtifact(int, int, int, String, String)",7,9,27,17,"4,78%"
+"ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.usePlayerArtifact(int, String, String, String)",10,10,32,18,"5,66%"
+"ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.useStatue(int, int, int, String, String)",6,11,26,15,"4,60%"
+"ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.useStructure(int, int, int, String, String)",8,11,30,17,"5,31%"
 "ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogicInterface.buyStatue(String, String)",4,n/a,n/a,1,"6,48%"
 "ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogicInterface.buyStructure(String, String)",4,n/a,n/a,1,"6,48%"
 "ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogicInterface.buyTile(int, int, String)",4,n/a,n/a,1,"8,33%"
@@ -1038,8 +1038,8 @@ ch.unibas.dmi.dbis.cs108.example.gui.javafx.GUI,7,7,21
 ch.unibas.dmi.dbis.cs108.example.gui.javafx.Main,7,7,12
 ch.unibas.dmi.dbis.cs108.example.gui.swing.SwingGUI,8,3,21
 ch.unibas.dmi.dbis.cs108.server.app.ServerMain,9,9,26
-ch.unibas.dmi.dbis.cs108.server.core.logic.GameState,198,172,542
-ch.unibas.dmi.dbis.cs108.server.core.logic.GameState.PlayerAction,4,4,15
+ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic,198,172,542
+ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.PlayerAction,4,4,15
 ch.unibas.dmi.dbis.cs108.server.core.State.GameState,155,148,457
 ch.unibas.dmi.dbis.cs108.server.core.events.ArtifactAcquiredEvent,20,20,34
 ch.unibas.dmi.dbis.cs108.server.core.events.ArtifactActivatedEvent,20,20,34
@@ -1120,7 +1120,7 @@ ch.unibas.dmi.dbis.cs108.client.networking.core.NetworkClient.MessageHandler,3,3
 ch.unibas.dmi.dbis.cs108.client.networking.events.Event,8,8,11,3
 ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher.EventListener,15,15,19,5
 ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus.EventListener,0,0,3,4
-ch.unibas.dmi.dbis.cs108.server.core.logic.GameState.PlayerActionHandler,4,4,8,4
+ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic.PlayerActionHandler,4,4,8,4
 ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogicInterface,93,93,108,15
 ch.unibas.dmi.dbis.cs108.server.core.events.GameEvent,4,4,5,1
 behaviors.artefacts.ch.unibas.dmi.dbis.cs108.shared.entities.ArtefactBehavior,9,9,12,3

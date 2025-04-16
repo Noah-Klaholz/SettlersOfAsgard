@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.core.actions;
 
-import ch.unibas.dmi.dbis.cs108.server.core.logic.GameState;
+import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
+import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors.StatueBehaviorRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
