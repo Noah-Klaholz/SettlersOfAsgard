@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors;
 
+import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.*;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
@@ -83,8 +84,7 @@ public class StatueBehaviorRegistry {
         } else if (level == 2) {
             return StatueEffectType.DEAL;
         } else if (level == 3) {
-            // 80% chance of blessing, 20% chance of curse
-            return random.nextDouble() < 0.8 ? StatueEffectType.BLESSING : StatueEffectType.CURSE;
+            return random.nextDouble() < (1 - (double) SETTINGS.Config.CHANCE_FOR_CURSE.getValue() / 100) ? StatueEffectType.BLESSING : StatueEffectType.CURSE;
         }
 
         return StatueEffectType.NONE;
