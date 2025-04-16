@@ -9,13 +9,14 @@ import java.util.logging.Logger;
  */
 public class ServerMain {
 
+    /** Logger to log logging */
     private static final Logger logger = Logger.getLogger(ServerMain.class.getName());
 
     /**
      * Main method for the server
      * Starts the server and adds a shutdown hook
      *
-     * @param args contains the portNr at index 0.
+     * @param args contains the portNr at index 1.
      */
     public static void main(String[] args) {
         try {
