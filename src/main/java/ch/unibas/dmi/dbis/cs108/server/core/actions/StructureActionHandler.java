@@ -16,17 +16,6 @@ public class StructureActionHandler {
         this.gameLock = gameLock;
     }
 
-    public boolean buyStructure(int structureID, String playerName) {
-        Player player = gameState.findPlayerByName(playerName);
-        Shop shop = player.getShop();
-        Structure targetstructure;
-        for (Structure s : shop.getBuyableStructures()) {
-
-        }
-
-        return false;
-    }
-
     public boolean placeStructure(int x, int y, int structureID, String playerName) {
         // Implementation will be added later
         return false;

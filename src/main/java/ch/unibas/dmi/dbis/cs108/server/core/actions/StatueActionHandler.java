@@ -15,177 +15,133 @@ import ch.unibas.dmi.dbis.cs108.server.core.model.BoardManager;
 import java.util.concurrent.locks.ReadWriteLock;
 
 /**
- * Handles actions related to statues in the game.
- * This includes placing, upgrading, and using statues.
+ * Handles all statue-related actions in the game.
+ * <p>
+ * This class is responsible for managing statue placement, upgrades, and use of
+ * statue abilities. It ensures proper validation of all actions and coordinates with
+ * the StatueBehaviorRegistry to execute statue effects.
+ * </p>
+ * <p>
+ * All methods use thread-safe locking to ensure data consistency during game state changes.
+ * </p>
  */
 public class StatueActionHandler {
-    /**
-     * The game state that this handler operates on.
-     */
     private final GameState gameState;
-    /**
-     * The lock used to synchronize access to the game state.
-     */
     private final ReadWriteLock gameLock;
-    /**
-     * The registry for statue behaviors.
-     */
     private final StatueBehaviorRegistry registry = new StatueBehaviorRegistry();
 
     /**
-     * Constructor for StatueActionHandler.
+     * Creates a new StatueActionHandler with the specified game state and lock.
      *
-     * @param gameState The game state to operate on
-     * @param gameLock  The lock to synchronize access to the game state
+     * @param gameState The current game state
+     * @param gameLock The lock used for thread safety
      */
     public StatueActionHandler(GameState gameState, ReadWriteLock gameLock) {
         this.gameState = gameState;
         this.gameLock = gameLock;
     }
 
-
     /**
      * Places a statue on the board at the specified coordinates.
+     * <p>
+     * The statue must be placeable at the given coordinates, the player must own the tile,
+     * and the player must have enough runes to purchase the statue.
+     * </p>
      *
-     * @param x          The x-coordinate on the board
-     * @param y          The y-coordinate on the board
-     * @param statueId   The ID of the statue to place
+     * @param x The x-coordinate on the board
+     * @param y The y-coordinate on the board
+     * @param statueId The ID of the statue to place
      * @param playerName The name of the player placing the statue
      * @return true if the statue was successfully placed, false otherwise
      */
-    public boolean placeStatue(int x, int y,int statueId, String playerName) {
-        gameLock.writeLock().lock();
-        try {
-            // Get the player
-            Player player = gameState.findPlayerByName(playerName);
-            if (player == null) {
-                return false;
-            }
+    public boolean placeStatue(int x, int y, int statueId, String playerName) {
+        return executeWithLock(() -> {
+            // Validate player and tile
+            ValidationResult result = validatePlayerAndTile(x, y, playerName, true, false);
+            if (!result.isValid()) return false;
 
-            // Find the tile on the board at the given coordinates and check if it's empty
-            BoardManager boardManager = gameState.getBoardManager();
-            Tile tile = boardManager.getTile(x, y);
-            if (tile == null || tile.hasEntity() || !tile.getOwner().equals(playerName)) {
-                return false;
-            }
+            Player player = result.getPlayer();
+            Tile tile = result.getTile();
 
+            // Get statue and check if player can afford it
             Statue statue = EntityRegistry.getStatue(statueId);
+            if (statue == null) return false;
 
             int cost = statue.getPrice();
+            if (player.getRunes() < cost) return false;
 
-            if (player.getRunes() < cost) {
-                return false;
-            }
-
+            // Place statue and deduct runes
             player.addRunes(-cost);
             tile.setEntity(statue);
 
             return true;
-        } finally {
-            gameLock.writeLock().unlock();
-        }
+        });
     }
 
     /**
-     * Upgrades a statue on the board at the specified coordinates.
+     * Upgrades a statue at the specified coordinates.
+     * <p>
+     * The tile must contain a statue of the specified ID, the player must own the tile,
+     * the statue must not be at max level, and the player must have enough runes to upgrade.
+     * </p>
      *
-     * @param x          The x-coordinate on the board
-     * @param y          The y-coordinate on the board
-     * @param statueId   The ID of the statue to upgrade
+     * @param x The x-coordinate on the board
+     * @param y The y-coordinate on the board
+     * @param statueId The ID of the statue to upgrade
      * @param playerName The name of the player upgrading the statue
      * @return true if the statue was successfully upgraded, false otherwise
      */
     public boolean upgradeStatue(int x, int y, int statueId, String playerName) {
-        gameLock.writeLock().lock();
-        try {
-            // Get the player
-            Player player = gameState.findPlayerByName(playerName);
-            if (player == null) {
-                return false;
-            }
+        return executeWithLock(() -> {
+            // Validate player, tile, and get statue
+            ValidationResult result = validatePlayerAndTile(x, y, playerName, false, true);
+            if (!result.isValid()) return false;
 
-            // Find the tile on the board at the given coordinates
-            BoardManager boardManager = gameState.getBoardManager();
-            Tile tile = boardManager.getTile(x, y);
-            if (tile == null || !tile.hasEntity() || !tile.getOwner().equals(playerName)) {
-                return false;
-            }
-
-            // Check if the statue on the tile matches the requested statue ID
-            PurchasableEntity entity = tile.getEntity();
-            Statue statue;
-            if (!(entity instanceof Statue) || entity.getId() != statueId) {
-                return false;
-            } else {
-                statue = (Statue) entity;
-            }
+            Statue statue = getStatueFromTile(result.getTile(), statueId);
+            if (statue == null) return false;
 
             // Check if statue can be upgraded (max level is 3)
-            if (statue.getLevel() >= 3) {
-                return false;
-            }
+            if (statue.getLevel() >= 3) return false;
 
-            // Calculate upgrade cost
+            // Calculate upgrade cost and check if player can afford it
             int upgradeCost = statue.getUpgradePrice();
-
-            // Check if player can afford the upgrade
-            if (player.getRunes() < upgradeCost) {
-                return false;
-            }
+            if (result.getPlayer().getRunes() < upgradeCost) return false;
 
             // Deduct runes and upgrade the statue
-            player.addRunes(-upgradeCost);
+            result.getPlayer().addRunes(-upgradeCost);
             statue.upgrade();
 
             return true;
-        } finally {
-            gameLock.writeLock().unlock();
-        }
+        });
     }
 
     /**
-     * Uses a statue on the board at the specified coordinates.
+     * Uses a statue's ability at the specified coordinates.
+     * <p>
+     * The tile must contain a statue of the specified ID, the player must own the tile,
+     * and the statue's effect will be executed with the provided parameters.
+     * </p>
      *
-     * @param x          The x-coordinate on the board
-     * @param y          The y-coordinate on the board
-     * @param statueId   The ID of the statue to use
+     * @param x The x-coordinate on the board
+     * @param y The y-coordinate on the board
+     * @param statueId The ID of the statue to use
      * @param playerName The name of the player using the statue
-     * @param params     Additional parameters for the statue effect
-     * @return true if the statue was successfully used, false otherwise
+     * @param params Parameter string in format "KEY1:VALUE1;KEY2:VALUE2;..."
+     * @return true if the statue effect was successfully executed, false otherwise
      */
     public boolean useStatue(int x, int y, int statueId, String playerName, String params) {
-        gameLock.writeLock().lock();
-        try {
-            // Get the player
-            Player player = gameState.findPlayerByName(playerName);
-            if (player == null) {
-                return false;
-            }
+        return executeWithLock(() -> {
+            // Validate player, tile, and get statue
+            ValidationResult result = validatePlayerAndTile(x, y, playerName, false, true);
+            if (!result.isValid()) return false;
 
-            // Find the statue on the board at the given coordinates
-            BoardManager boardManager = gameState.getBoardManager();
-            Tile tile = boardManager.getTile(x, y);
-            if (tile == null || !tile.hasEntity() || !tile.getOwner().equals(playerName)) {
-                return false;
-            }
+            Statue statue = getStatueFromTile(result.getTile(), statueId);
+            if (statue == null) return false;
 
-            // Check if the statue on the tile matches the requested statue ID
-            PurchasableEntity entity = tile.getEntity();
-            Statue statue;
-            if (!(entity instanceof Statue) || entity.getId() != statueId) {
-                return false;
-            } else {
-                statue = (Statue) entity;
-            }
-
-            // Parse parameters and create StatueParameters object
+            // Parse parameters and execute statue effect
             StatueParameters statueParams = parseParameters(params);
-
-            // Execute the statue effect using the StatueBehaviorRegistry
-            return registry.executeStatue(statue, gameState, player, statueParams);
-        } finally {
-            gameLock.writeLock().unlock();
-        }
+            return registry.executeStatue(statue, gameState, result.getPlayer(), statueParams);
+        });
     }
 
     /**
@@ -266,7 +222,6 @@ public class StatueActionHandler {
      * @return The structure or null if not found
      */
     private Structure findStructureById(int structureId) {
-        // Implementation depends on how structures are stored in your game state
         return EntityRegistry.getStructure(structureId);
     }
 
@@ -277,7 +232,97 @@ public class StatueActionHandler {
      * @return The artifact or null if not found
      */
     private Artifact findArtifactById(int artifactId) {
-        // Implementation depends on how artifacts are stored in your game state
         return EntityRegistry.getArtifact(artifactId);
+    }
+
+    /**
+     * Helper class to store validation results.
+     */
+    private static class ValidationResult {
+        private final boolean valid;
+        private final Player player;
+        private final Tile tile;
+
+        public ValidationResult(boolean valid, Player player, Tile tile) {
+            this.valid = valid;
+            this.player = player;
+            this.tile = tile;
+        }
+
+        public boolean isValid() { return valid; }
+        public Player getPlayer() { return player; }
+        public Tile getTile() { return tile; }
+    }
+
+    /**
+     * Validates player and tile for an action.
+     *
+     * @param x The x-coordinate
+     * @param y The y-coordinate
+     * @param playerName The player's name
+     * @param requireEmptyTile Whether the tile should be empty
+     * @param requireEntityOnTile Whether the tile should have an entity
+     * @return A ValidationResult with the player and tile if valid
+     */
+    private ValidationResult validatePlayerAndTile(int x, int y, String playerName,
+                                                   boolean requireEmptyTile,
+                                                   boolean requireEntityOnTile) {
+        // Get the player
+        Player player = gameState.findPlayerByName(playerName);
+        if (player == null) {
+            return new ValidationResult(false, null, null);
+        }
+
+        // Find the tile on the board
+        BoardManager boardManager = gameState.getBoardManager();
+        Tile tile = boardManager.getTile(x, y);
+
+        // Validate tile state
+        if (tile == null ||
+                !tile.getOwner().equals(playerName) ||
+                (requireEmptyTile && tile.hasEntity()) ||
+                (requireEntityOnTile && !tile.hasEntity())) {
+            return new ValidationResult(false, player, null);
+        }
+
+        return new ValidationResult(true, player, tile);
+    }
+
+    /**
+     * Gets a statue from a tile if it matches the specified ID.
+     *
+     * @param tile The tile containing the entity
+     * @param statueId The expected statue ID
+     * @return The statue if found and ID matches, null otherwise
+     */
+    private Statue getStatueFromTile(Tile tile, int statueId) {
+        PurchasableEntity entity = tile.getEntity();
+        if (!(entity instanceof Statue) || entity.getId() != statueId) {
+            return null;
+        }
+        return (Statue) entity;
+    }
+
+    /**
+     * Executes an action with proper locking.
+     *
+     * @param action The action to execute
+     * @return The result of the action
+     */
+    private boolean executeWithLock(ActionWithResult action) {
+        gameLock.writeLock().lock();
+        try {
+            return action.execute();
+        } finally {
+            gameLock.writeLock().unlock();
+        }
+    }
+
+    /**
+     * Functional interface for actions that return a boolean result.
+     */
+    @FunctionalInterface
+    private interface ActionWithResult {
+        boolean execute();
     }
 }
