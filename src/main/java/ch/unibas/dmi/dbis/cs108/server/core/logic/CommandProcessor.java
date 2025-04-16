@@ -269,17 +269,18 @@ public class CommandProcessor {
     private String handleUseStatue(Command cmd) {
         try {
             String[] parts = cmd.getArgs();
-            if (parts.length != 3) {
+            if (parts.length != 4) {
                 return formatError(ErrorsAPI.Errors.INVALID_PARAMETERS + "$USESTATUE");
             }
 
             int x = Integer.parseInt(parts[0]);
             int y = Integer.parseInt(parts[1]);
             int statueId = Integer.parseInt(parts[2]);
+            String params = parts[3];
             String playerName = cmd.getPlayer().getName();
 
-            boolean success = gameLogic.useStatue(x, y, statueId, playerName);
-            return success ? formatSuccess(Commands.USESTATUE.getCommand() + "$" + x + "$" + y + "$" + statueId + "$" + playerName) :
+            boolean success = gameLogic.useStatue(x, y, statueId, playerName, params);
+            return success ? formatSuccess(Commands.USESTATUE.getCommand() + "$" + x + "$" + y + "$" + statueId + "$" + params + "$" + playerName) :
                     formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$USESTATUE");
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error using statue", e);

@@ -12,7 +12,7 @@ public class StatueCommandBuilder {
      * Creates a command to use a statue with complex parameters.
      */
     private static String useStatueComplex(int statueId, int x, int y, Map<String, String> params) {
-        StringBuilder cmd = new StringBuilder("USTA$" + x + "$" + y  + "$" + statueId);
+        StringBuilder cmd = new StringBuilder("USTA$" + x + "$" + y  + "$" + statueId + "$");
         for (Map.Entry<String, String> param : params.entrySet()) {
             cmd.append(";").append(param.getKey()).append(":").append(param.getValue());
         }
