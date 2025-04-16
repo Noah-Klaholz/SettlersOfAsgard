@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
-import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
+import ch.unibas.dmi.dbis.cs108.server.core.logic.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.*;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
@@ -49,7 +49,7 @@ public class StatueBehaviorRegistry {
          * @param params Parameters for the effect
          * @return true if execution was successful, false otherwise
          */
-        boolean execute(Statue statue, GameLogic gameLogic, Player player, StatueParameters params);
+        boolean execute(Statue statue, GameState gameLogic, Player player, StatueParameters params);
     }
 
     // Map: Statue Name -> (Map: Effect Type -> Behavior)
@@ -117,7 +117,7 @@ public class StatueBehaviorRegistry {
      * @param params The parameters for the effect
      * @return true if execution was successful, false otherwise
      */
-    public boolean executeStatue(Statue statue, GameLogic gameLogic, Player player, StatueParameters params) {
+    public boolean executeStatue(Statue statue, GameState gameLogic, Player player, StatueParameters params) {
         String statueName = statue.getName();
         StatueEffectType effectType = determineEffectType(statue);
 

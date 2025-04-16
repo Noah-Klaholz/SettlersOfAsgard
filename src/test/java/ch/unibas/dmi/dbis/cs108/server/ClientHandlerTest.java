@@ -1,6 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.server;
 
-import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
+import ch.unibas.dmi.dbis.cs108.server.core.logic.GameState;
 import ch.unibas.dmi.dbis.cs108.server.networking.GameServer;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
@@ -306,7 +306,7 @@ public class ClientHandlerTest {
     @Test
     void testProcessMessageNotInGame() {
         clientHandler.setCurrentLobby(mockLobby);
-        mockLobby.setGameLogic(mock(GameLogic.class));
+        mockLobby.setGameLogic(mock(GameState.class));
         when(mockLobby.getStatus()).thenReturn("In lobby");
 
         clientHandler.processMessage("BUYT$1$1");

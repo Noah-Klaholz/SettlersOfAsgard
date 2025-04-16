@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.core.structures.protocol;
 
+import ch.unibas.dmi.dbis.cs108.server.core.logic.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
-import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
@@ -24,7 +24,7 @@ public class CommandHandler {
     /** The logger for this class. */
     Logger logger = Logger.getLogger(CommandHandler.class.getName());
     /** The GameLogic instance that this CommandHandler is associated with. */
-    private GameLogic gameLogic;
+    private GameState gameLogic;
     /** The current Lobby that this CommandHandler is associated with. */
     private Lobby currentLobby;
     /** The local player that this CommandHandler is associated with. */
@@ -369,7 +369,7 @@ public class CommandHandler {
      *
      * @return the current game logic
      */
-    public GameLogic getGameLogic() {
+    public GameState getGameLogic() {
         // Refresh gameLogic if it's null but the lobby has one
         if (gameLogic == null && currentLobby != null) {
             gameLogic = currentLobby.getGameLogic();

@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server;
 
+import ch.unibas.dmi.dbis.cs108.server.core.logic.GameState;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
-import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.TurnManager;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 import org.junit.jupiter.api.BeforeEach;
@@ -89,7 +89,7 @@ public class LobbyTest {
     @Test
     void testManualEndTurn_Success() {
         // Setup mocks only for this test
-        GameLogic mockGameLogic = mock(GameLogic.class);
+        GameState mockGameLogic = mock(GameState.class);
         TurnManager mockTurnManager = mock(TurnManager.class);
         when(mockGameLogic.getTurnManager()).thenReturn(mockTurnManager);
         when(player1.getPlayerName()).thenReturn("Player1"); // Stub only when needed
