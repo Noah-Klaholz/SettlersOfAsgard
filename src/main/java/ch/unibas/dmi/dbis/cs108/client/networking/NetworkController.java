@@ -235,8 +235,8 @@ public class NetworkController {
         networkClient.send(message);
     }
 
-    public void useStatue(int x, int y, int statueID) {
-        String message = translator.formatUseStatue(x, y, statueID);
+    public void useStatue(int x, int y, int statueID, String params) {
+        String message = translator.formatUseStatue(x, y, statueID, params);
         networkClient.send(message);
     }
 

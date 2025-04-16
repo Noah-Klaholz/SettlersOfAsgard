@@ -257,8 +257,8 @@ public class ProtocolTranslator {
         return "UPST$" + x + "$" + y + "$" + statueID;
     }
 
-    public String formatUseStatue(int x, int y, int statueID) {
-        return "USTA$" + x + "$" + y + "$" + statueID;
+    public String formatUseStatue(int x, int y, int statueID, String params) {
+        return StatueCommandBuilder.useStatue(x,y,statueID, params);
     }
 
     public String formatUsePlayerArtifact(int artifactId, String playerAimedAt) {

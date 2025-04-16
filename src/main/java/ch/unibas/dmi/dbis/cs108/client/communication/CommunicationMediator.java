@@ -218,8 +218,8 @@ public class CommunicationMediator {
                     }
                     break;
                 case USESTATUE:
-                    if (isValidArgument(args, 2)) {
-                        networkController.useStatue(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+                    if (isValidArgument(args, 3)) {
+                        networkController.useStatue(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]), args[3]);
                     } else {
                         publishInfoChatEvent("Invalid arguments, use: \n /usestatue <x> <y> <statueId> <playerName>");
                     }
