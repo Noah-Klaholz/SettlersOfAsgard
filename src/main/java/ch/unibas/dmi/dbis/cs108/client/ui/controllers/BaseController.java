@@ -15,7 +15,7 @@ public abstract class BaseController {
     protected final ResourceLoader resourceLoader;
 
     /**
-     * Event bus for handling events
+     * UIEvent bus for handling events
      */
     protected final UIEventBus eventBus;
 
