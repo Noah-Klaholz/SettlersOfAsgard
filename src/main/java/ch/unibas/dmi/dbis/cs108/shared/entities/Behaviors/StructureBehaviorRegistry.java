@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
-import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
+import ch.unibas.dmi.dbis.cs108.server.core.model.BoardManager;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
@@ -61,18 +61,26 @@ public class StructureBehaviorRegistry {
         });
 
         registerBehavior("Huginn and Muninn", (structure, gameState, player) -> {
+            // TODO: Add behavior for Huginn and Muninn
             return true;
-            //TODO Add behavior for Huginn and Muninn -> how to show this in networking? -> same with odings eye artifact
         });
 
         registerBehavior("Ran's Hall", (structure, gameState, player) -> {
+            player.addEnergy((int)structure.getParams().get(0).getValue());
             return true;
-            //TODO Add behavior for Ran's Hall -> not yet deciced
         });
 
         registerBehavior("Surtur's Smeltery", (structure, gameState, player) -> {
+            Status.BuffType[] buffTypes = {
+                    Status.BuffType.RUNE_GENERATION,
+                    Status.BuffType.ENERGY_GENERATION,
+                    Status.BuffType.RIVER_RUNE_GENERATION,
+                    Status.BuffType.SHOP_PRICE,
+                    Status.BuffType.ARTIFACT_CHANCE
+            };
+            int random = (int)Math.ceil(Math.random() * buffTypes.length);
+            player.addBuff(buffTypes[random],(int)structure.getParams().get(random).getValue());
             return true;
-            //TODO Add behavior for Surtur's Smeltery -> not yet explained
         });
 
         registerBehavior("Tree", (structure, gameState, player) -> {

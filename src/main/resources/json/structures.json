@@ -47,7 +47,13 @@
     "description": "",
     "id": 5,
     "price": 0,
-    "resourceValue": 0
+    "resourceValue": 0,
+    "params": [
+      {
+        "name": "Energy",
+        "value": 2
+      }
+    ]
   },
   {
     "name": "Surtur's Smeltery",
@@ -55,7 +61,29 @@
     "description": "",
     "id": 6,
     "price": 0,
-    "resourceValue": 0
+    "resourceValue": 0,
+    "params": [
+      {
+        "name": "Rune generation",
+        "value": 0.1
+      },
+      {
+        "name": "Energy generation",
+        "value": 0.1
+      },
+      {
+        "name": "River rune generation",
+        "value": 0.1
+      },
+      {
+        "name": "Shop price",
+        "value": 0.05
+      },
+      {
+        "name": "Artifact Chance",
+        "value": 0.05
+      }
+    ]
   },
   {
     "name": "Tree",

@@ -54,7 +54,7 @@ hochlevelbar: (teuer)
 | Helgrindr         | Verhindert Debuffs                                                                       |             |                  |                          | (bsp. verhindert nur 1 Debuff pro Runde von Artefakt)          |
 | Huginn und Muninn | Zeigt 1 Feld mit Artefakt                                                                |             |                  |                          | Kann auch ein bereits belegtes Feld sein (?)                   |
 | Rans Halle        | "Fängt mythische Fische" (Design/ Beschreibung, nicht code relevant) -> + Energie (flat) |             |                  |                          | Braucht Fluss                                                  |
-| Surturs Schmiede  | Ermöglicht Herstellung Artefakte (limited Auswahl)                                       |             |                  |                          | Nur auf Steinboden (Welt der Zwerge: Svartalfheim) platzierbar |
+| Surturs Schmiede  | Gibt jede Runde einen kleinen zufälligen buff für den Spieler (permanent)                |             |                  |                          | Nur auf Steinboden (Welt der Zwerge: Svartalfheim) platzierbar |
 Aktiv: Spieler muss auf Structure klicken
 Passiv: jede Runde ohne nötige Aktion
 

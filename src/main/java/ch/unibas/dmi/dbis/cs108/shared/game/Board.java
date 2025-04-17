@@ -1,6 +1,11 @@
 package ch.unibas.dmi.dbis.cs108.shared.game;
 
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Class representing a game board.
