@@ -48,7 +48,7 @@ public class TileActionHandler {
 
             // Players always have a chance to randomly find an artifact when they buy a tile based on their artifact chance
             if (tile.getArtifact() == null && RandomGenerator.chance((int) player.getStatus().get(Status.BuffType.ARTIFACT_CHANCE))) {
-                Artifact artifact = EntityRegistry.getArtifact(RandomGenerator.randomIntInRange(10,21));
+                Artifact artifact = EntityRegistry.getRandomArtifact();
                 tile.setArtifact(artifact);
             }
 

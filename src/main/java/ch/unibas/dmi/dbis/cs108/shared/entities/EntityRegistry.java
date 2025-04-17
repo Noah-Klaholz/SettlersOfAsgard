@@ -4,6 +4,7 @@ import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
+import ch.unibas.dmi.dbis.cs108.shared.utils.RandomGenerator;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -203,4 +204,12 @@ public class EntityRegistry {
         return artifacts.values();
     }
 
+    /**
+     * Returns a random artifact from the registry.
+     *
+     * @return A random Artifact object
+     */
+    public static Artifact getRandomArtifact() {
+        return getArtifact(RandomGenerator.randomIntInRange(10,21));
+    }
 }
