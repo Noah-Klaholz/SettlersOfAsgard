@@ -12,10 +12,16 @@ import java.util.logging.Logger;
  * Responsible for serializing game state for network transmission
  */
 public class GameStateSerializer {
+    /** Logger to log logging */
     private static final Logger LOGGER = Logger.getLogger(GameStateSerializer.class.getName());
-
+    /** The gameState object related to this */
     private final GameState gameState;
 
+    /**
+     * Creates a new GameStateSerializer Object.
+     *
+     * @param gameState the gameState object related to this GameStateSerializer
+     */
     public GameStateSerializer(GameState gameState) {
         this.gameState = gameState;
     }
