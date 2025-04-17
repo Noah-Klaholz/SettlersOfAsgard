@@ -37,6 +37,15 @@ public class GameState {
     }
 
     /**
+     * Sets the playerTurn
+     *
+     * @param playerTurn the playerTurn to set
+     */
+    public void setPlayerTurn(String playerTurn) {
+        this.playerTurn = playerTurn;
+    }
+
+    /**
      * Sets the playerRound
      *
      * @param playerRound the playerRound to set
