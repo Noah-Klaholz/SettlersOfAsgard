@@ -435,31 +435,31 @@ ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController.initializeGa
 ch.unibas.dmi.dbis.cs108.client.ui.controllers.MainMenuController.MainMenuController(),0,0,3,3,"20,00%"
 ch.unibas.dmi.dbis.cs108.client.ui.controllers.MainMenuController.handlePlayGame(),0,0,5,5,"33,33%"
 ch.unibas.dmi.dbis.cs108.client.ui.controllers.MainMenuController.initialize(),0,0,4,4,"26,67%"
-"ch.unibas.dmi.dbis.cs108.client.ui.events.ChatMessageEvent.ChatMessageEvent(String, ChatType)",4,6,10,4,"31,25%"
-ch.unibas.dmi.dbis.cs108.client.ui.events.ChatMessageEvent.getMessage(),3,4,7,3,"21,88%"
-ch.unibas.dmi.dbis.cs108.client.ui.events.ChatMessageEvent.getType(),3,4,7,3,"21,88%"
-"ch.unibas.dmi.dbis.cs108.client.ui.events.ConnectionStatusEvent.ConnectionStatusEvent(ConnectionState, String)",4,6,10,4,"30,30%"
-ch.unibas.dmi.dbis.cs108.client.ui.events.ConnectionStatusEvent.getMessage(),4,5,8,3,"24,24%"
-ch.unibas.dmi.dbis.cs108.client.ui.events.ConnectionStatusEvent.getStatus(),4,5,8,3,"24,24%"
+"GlobalChatMessageEvent(String, ChatType)",4,6,10,4,"31,25%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent.getMessage(),3,4,7,3,"21,88%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent.getType(),3,4,7,3,"21,88%"
+"ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent.ConnectionStatusEvent(ConnectionState, String)",4,6,10,4,"30,30%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent.getMessage(),4,5,8,3,"24,24%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent.getStatus(),4,5,8,3,"24,24%"
 "ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent.ErrorEvent(String, String, ErrorSeverity)",4,7,12,5,"22,22%"
 ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent.getErrorCode(),4,5,8,3,"14,81%"
 ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent.getErrorMessage(),4,5,8,3,"14,81%"
 ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent.getSeverity(),4,5,8,3,"14,81%"
 ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent.getTimestamp(),4,5,8,3,"14,81%"
-ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeRequestEvent.NameChangeRequestEvent(String),0,0,3,3,"33,33%"
-ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeRequestEvent.getNewName(),0,0,3,3,"33,33%"
-"ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeResponseEvent.NameChangeResponseEvent(boolean, String, String)",0,0,5,5,"26,32%"
-ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeResponseEvent.getMessage(),0,0,3,3,"15,79%"
-ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeResponseEvent.getNewName(),0,0,3,3,"15,79%"
-ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeResponseEvent.isSuccess(),0,0,3,3,"15,79%"
-ch.unibas.dmi.dbis.cs108.client.ui.events.ReceiveCommandEvent.ReceiveCommandEvent(String),1,0,5,4,"26,32%"
-ch.unibas.dmi.dbis.cs108.client.ui.events.ReceiveCommandEvent.getMessage(),0,0,3,3,"15,79%"
-ch.unibas.dmi.dbis.cs108.client.ui.events.ReceiveCommandEvent.getType(),0,0,3,3,"15,79%"
-"ch.unibas.dmi.dbis.cs108.client.ui.events.SendChatEvent.SendChatEvent(String, ChatType)",0,0,3,3,"12,00%"
-"ch.unibas.dmi.dbis.cs108.client.ui.events.SendChatEvent.SendChatEvent(String, ChatType, String)",0,0,5,5,"20,00%"
-ch.unibas.dmi.dbis.cs108.client.ui.events.SendChatEvent.getMessage(),0,0,3,3,"12,00%"
-ch.unibas.dmi.dbis.cs108.client.ui.events.SendChatEvent.getRecipient(),0,0,3,3,"12,00%"
-ch.unibas.dmi.dbis.cs108.client.ui.events.SendChatEvent.getType(),0,0,3,3,"12,00%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeRequestEvent.NameChangeRequestEvent(String),0,0,3,3,"33,33%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeRequestEvent.getNewName(),0,0,3,3,"33,33%"
+"ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent.NameChangeResponseEvent(boolean, String, String)",0,0,5,5,"26,32%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent.getMessage(),0,0,3,3,"15,79%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent.getNewName(),0,0,3,3,"15,79%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent.isSuccess(),0,0,3,3,"15,79%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ReceiveCommandEvent.ReceiveCommandEvent(String),1,0,5,4,"26,32%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ReceiveCommandEvent.getMessage(),0,0,3,3,"15,79%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ReceiveCommandEvent.getType(),0,0,3,3,"15,79%"
+"ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent.SendChatEvent(String, ChatType)",0,0,3,3,"12,00%"
+"ChatMessageEvent(String, ChatType, String)",0,0,5,5,"20,00%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent.getMessage(),0,0,3,3,"12,00%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent.getRecipient(),0,0,3,3,"12,00%"
+ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent.getType(),0,0,3,3,"12,00%"
 ch.unibas.dmi.dbis.cs108.client.ui.events.SendCommandEvent.CommandType.CommandType(String),0,0,3,3,"7,14%"
 ch.unibas.dmi.dbis.cs108.client.ui.events.SendCommandEvent.CommandType.fromCommand(String),0,0,8,8,"19,05%"
 ch.unibas.dmi.dbis.cs108.client.ui.events.SendCommandEvent.CommandType.getCommand(),0,0,3,3,"7,14%"
@@ -1015,14 +1015,14 @@ ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController,167,102,529
 ch.unibas.dmi.dbis.cs108.client.ui.controllers.LobbyScreenController,0,0,2
 ch.unibas.dmi.dbis.cs108.client.ui.controllers.MainMenuController,0,0,15
 ch.unibas.dmi.dbis.cs108.client.ui.controllers.SettingsController,0,0,2
-ch.unibas.dmi.dbis.cs108.client.ui.events.ChatMessageEvent,18,18,32
-ch.unibas.dmi.dbis.cs108.client.ui.events.ConnectionStatusEvent,19,19,33
+ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent,18,18,32
+ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent,19,19,33
 ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent,31,31,54
-ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeRequestEvent,0,0,9
-ch.unibas.dmi.dbis.cs108.client.ui.events.NameChangeResponseEvent,0,0,19
-ch.unibas.dmi.dbis.cs108.client.ui.events.ReceiveCommandEvent,5,4,19
-ch.unibas.dmi.dbis.cs108.client.ui.events.SendChatEvent,1,0,22
-ch.unibas.dmi.dbis.cs108.client.ui.events.SendChatEvent.ChatType,0,0,3
+ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeRequestEvent,0,0,9
+ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent,0,0,19
+ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ReceiveCommandEvent,5,4,19
+ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent,1,0,22
+ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent.ChatType,0,0,3
 ch.unibas.dmi.dbis.cs108.client.ui.events.SendCommandEvent,0,0,14
 ch.unibas.dmi.dbis.cs108.client.ui.events.SendCommandEvent.CommandType,1,0,42
 ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus,0,0,31
