@@ -4,7 +4,6 @@ package ch.unibas.dmi.dbis.cs108.client.app;
 import ch.unibas.dmi.dbis.cs108.client.communication.CommunicationMediator;
 import ch.unibas.dmi.dbis.cs108.client.core.Game;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
-import ch.unibas.dmi.dbis.cs108.shared.game.Shop;
 import ch.unibas.dmi.dbis.cs108.client.networking.NetworkController;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
@@ -67,8 +66,7 @@ public class GameApplication extends Application {
         }
 
         localPlayer = new Player(username);
-        Shop shop = new Shop();
-        Game game = new Game(localPlayer, shop);
+        Game game = new Game(localPlayer);
 
         // Extract server ip and port from the second argument.
         if (params.size() >= 2) {

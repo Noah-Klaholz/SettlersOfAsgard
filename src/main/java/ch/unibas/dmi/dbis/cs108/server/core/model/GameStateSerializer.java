@@ -77,13 +77,8 @@ public class GameStateSerializer {
                 if (!p.getPurchasableEntities().isEmpty()) sb.deleteCharAt(sb.length()-1);
                 sb.append("],");
 
-                // Shop
-                sb.append("S:{")
-                        .append("SU:").append(p.getShop().isStatueInUse() ? 1 : 0)
-                        .append("},")
-
-                        // Status
-                        .append("ST:{")
+                // Status
+                sb.append("ST:{")
                         .append("RG:").append(p.getStatus().get(Status.BuffType.RUNE_GENERATION)).append(",")
                         .append("EG:").append(p.getStatus().get(Status.BuffType.ENERGY_GENERATION)).append(",")
                         .append("RR:").append(p.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION)).append(",")

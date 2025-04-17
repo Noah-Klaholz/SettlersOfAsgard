@@ -22,7 +22,6 @@ public class Player {
     private List<Tile> ownedTiles;
     private List<Artifact> artifacts;
     private List<PurchasableEntity> purchasableEntities;
-    private Shop shop; //saves Structures and Statue
     private Status status;
 
     /**
@@ -41,7 +40,6 @@ public class Player {
         artifacts = new ArrayList<>();
         purchasableEntities = new ArrayList<>();
         status = new Status();
-        shop = new Shop();
     }
 
     /**
@@ -126,25 +124,6 @@ public class Player {
     public void removePurchasableEntity(Structure structure) {
         purchasableEntities.remove(structure);
     }
-
-    /**
-     * Getter for shop
-     *
-     * @return Shop
-     */
-    public Shop getShop() {
-        return shop;
-    }
-
-    /**
-     * Setter for shop
-     *
-     * @param shop Shop
-     */
-    public void setShop(Shop shop) {
-        this.shop = shop;
-    }
-
 
     /**
      * Setter for artifacts

@@ -164,12 +164,6 @@ public class GameStateManager {
                         }
                         player.setPurchasableEntities(entities);
                         break;
-                    case "S":
-                        // Shop status
-                        if (keyValue[1].contains("SU:1")) {
-                            player.getShop().blockStatue();
-                        }
-                        break;
                     case "ST":
                         // Status buffs
                         String[] buffs = keyValue[1].substring(1, keyValue[1].length()-1).split(",");

@@ -2,7 +2,6 @@ package ch.unibas.dmi.dbis.cs108.client.core;
 
 import ch.unibas.dmi.dbis.cs108.shared.game.Board;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
-import ch.unibas.dmi.dbis.cs108.shared.game.Shop;
 
 import java.util.ArrayList;
 
@@ -17,10 +16,6 @@ public class Game {
      */
     private final Player player;
     /**
-     * The shop associated with this game instance.
-     */
-    private final Shop shop;
-    /**
      * The board associated with this game instance.
      */
     private final Board board;
@@ -33,11 +28,9 @@ public class Game {
      * Constructor for the Game class.
      *
      * @param player The player associated with this game instance.
-     * @param shop   The shop associated with this game instance.
      */
-    public Game(Player player, Shop shop) {
+    public Game(Player player) {
         this.player = player;
-        this.shop = shop;
         this.board = new Board();
         this.players = new ArrayList<>();
         //todo: get players from lobby from server
@@ -51,13 +44,6 @@ public class Game {
         return player;
     }
 
-    /**
-     * Returns the Shop object associated with this game instance.
-     * @return The Shop object.
-     */
-    public Shop getShop() {
-        return shop;
-    }
 
     /**
      * Returns the board in the game.
