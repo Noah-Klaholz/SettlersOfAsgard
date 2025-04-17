@@ -30,7 +30,7 @@ public class MainLogic {
         engine.getEventDispatcher().register(event -> {
             if (event instanceof TilePurchasedEvent) {
                 TilePurchasedEvent fpe = (TilePurchasedEvent) event;
-                System.out.println("Event: " + fpe.getPlayer().getName() +
+                System.out.println("UIEvent: " + fpe.getPlayer().getName() +
                         " purchased tile " + fpe.getTile().getTileID());
             }
         });
