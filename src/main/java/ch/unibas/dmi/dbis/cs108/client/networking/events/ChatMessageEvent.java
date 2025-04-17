@@ -13,7 +13,7 @@ public class ChatMessageEvent implements Event {
     private final ChatType type;
 
     /**
-     * Constructor for ChatMessageEvent.
+     * Constructor for GlobalChatEvent.
      *
      * @param sender The sender of the chat message.
      * @param content The content of the chat message.
