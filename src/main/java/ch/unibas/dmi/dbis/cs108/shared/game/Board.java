@@ -1,11 +1,15 @@
 package ch.unibas.dmi.dbis.cs108.shared.game;
 
+import ch.unibas.dmi.dbis.cs108.SETTINGS;
+import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
+import ch.unibas.dmi.dbis.cs108.shared.utils.RandomGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Class representing a game board.
@@ -32,6 +36,12 @@ public class Board {
         tilebuilder.setPrice(10);
         for (int i=0; i<x; i++){
             for (int j=0; j<y; j++){
+                if (RandomGenerator.chance(SETTINGS.Config.ARTIFACT_CHANCE.getValue())) {
+                    tilebuilder.setArtifact(EntityRegistry.getArtifact(RandomGenerator.randomIntInRange(10,21)));
+                } else {
+                    tilebuilder.setArtifact(null);
+                }
+                tilebuilder.setResourceValue(RandomGenerator.randomIntInRange(SETTINGS.Config.MIN_RESSOURCE_VALUE.getValue(), SETTINGS.Config.MAX_RESOURCE_VALUE.getValue()));
                 tilebuilder.setX(i).setY(j);
                 tiles[i][j] = new Tile(tilebuilder);
             }
