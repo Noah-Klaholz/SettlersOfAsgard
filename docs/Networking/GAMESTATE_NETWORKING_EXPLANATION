@@ -1,0 +1,70 @@
+# GAMESTATE_NETWORKING_EXPLANATION
+
+## This file explains the creation and parsing of the SYNC command.
+The String is created in server.core.model.GameStateSerializer.createDetailedStatusMessage().
+It contains:
+- Meta Data (GameRound, PlayerRound, PlayerTurn)
+- Player Information (resource inventory, ownedTiles etc)
+- Board Information (Tiles with their respective prices, owners, etc)
+
+## EXAMPLE
+
+SNYC$META:3,1,player2|PLAYERS:
+550e8400-e29b-41d4-a716-446655440000{
+  N:player1,
+  R:12,
+  E:3,
+  T:[101,102],
+  A:[ART001,ART003],
+  PE:[PE123,PE456],
+  S:{SU:0},
+  ST:{RG:1.2,EG:1.0,RR:1.5,SP:0.9,AC:1.1,DB:1.0}
+}|BOARD:
+0,0{
+  HE:1,
+  O:player1,
+  P:10,
+  AR:ART001,
+  W:midgard,
+  PU:1,
+  RV:3,
+  HR:0,
+  ID:101,
+  ST:{RG:1.0,EG:1.0,RR:1.0,SP:1.0,AC:1.0,DB:1.0}
+};
+
+Breakdown:
+Meta Section:
+Game round: 3
+Player round: 1
+Current player: "player2"
+
+Player 1:
+UUID: 550e8400-e29b-41d4-a716-446655440000
+Name: "player1"
+Runes: 12
+Energy: 3
+Owned tiles: [101, 102]
+Artifacts: ["ART001", "ART003"]
+Purchasable entities: ["PE123", "PE456"]
+Shop: statue not in use (SU:0)
+Status buffs:
+Rune generation: 1.2x
+Energy generation: 1.0x
+River rune: 1.5x
+Shop price: 0.9x (discount)
+Artifact chance: 1.1x
+Debuffable: true (1.0)
+
+Tile 1 (0,0):
+Coordinates: (0,0)
+Has entity: true
+Owner: "player1"
+Price: 10
+Artifact: "ART001"
+World: "midgard"
+Purchased: true
+Resource value: 3
+Has river: false
+ID: 101
+Status: default buffs
