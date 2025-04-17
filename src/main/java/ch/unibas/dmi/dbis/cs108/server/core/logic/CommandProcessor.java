@@ -30,7 +30,6 @@ public class CommandProcessor {
 
     private void registerCommandHandlers() {
         commandHandlers.put(Commands.ENDTURN, this::handleEndTurn);
-        commandHandlers.put(Commands.SYNCHRONIZE, this::handleSynchronize);
         commandHandlers.put(Commands.GETGAMESTATUS, this::handleGetGameStatus);
         commandHandlers.put(Commands.BUYTILE, this::handleBuyTile);
         commandHandlers.put(Commands.PLACESTRUCTURE, this::handlePlaceStructure);
@@ -101,13 +100,6 @@ public class CommandProcessor {
             LOGGER.log(Level.WARNING, "Error ending turn", e);
             return formatError(e.getMessage());
         }
-    }
-
-    /**
-     * Synchronize game state
-     */
-    private String handleSynchronize(Command cmd) {
-        return gameLogic.getGameState().createStateMessage();
     }
 
     /**
