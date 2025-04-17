@@ -8,8 +8,6 @@ import ch.unibas.dmi.dbis.cs108.client.core.entities.Shop;
 import ch.unibas.dmi.dbis.cs108.client.networking.NetworkController;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.SendChatEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.SendCommandEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -115,7 +113,7 @@ public class GameApplication extends Application {
     /** Unnecessary for now, but can be used for future UI event handling
     private void setupUIEventHandlers() {
         // Subscribe to Chat events
-        uiEventBus.subscribe(SendChatEvent.class, event -> {
+        uiEventBus.subscribe(GlobalChatEvent.class, event -> {
             switch (event.getType()) {
                 case GLOBAL:
                     networkController.sendGlobalChat(event.getMessage());
