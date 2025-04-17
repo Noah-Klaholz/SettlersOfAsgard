@@ -95,7 +95,9 @@ public class GameState {
     }
 
     /**
-     * Convenience method for backward compatibility
+     * create a detailed status message containing all info
+     *
+     * @return a String of the status message
      */
     public String createDetailedStatusMessage() {
         return new GameStateSerializer(this).createDetailedStatusMessage();
