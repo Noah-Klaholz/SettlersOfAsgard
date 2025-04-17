@@ -61,6 +61,10 @@ public class LobbyScreenController extends BaseController {
     private ListView<String> chatMessages;
     @FXML
     private TextField chatInput;
+    @FXML
+    private ToggleButton globalChatButton;
+    @FXML
+    private ToggleButton lobbyChatButton;
 
     // State
     private String currentLobbyId;
@@ -112,6 +116,10 @@ public class LobbyScreenController extends BaseController {
     private void setupChat() {
         chatMessages.setItems(messages);
         chatInput.setOnAction(event -> handleSendChatMessage());
+        
+        // Set global chat as default
+        globalChatButton.setSelected(true);
+        lobbyChatButton.setSelected(false);
     }
 
     private void setupPlayerList() {
@@ -167,7 +175,7 @@ public class LobbyScreenController extends BaseController {
             // Leave current lobby first
             eventBus.publish(new LeaveLobbyRequestEvent(currentLobbyId));
         }
-        sceneManager.loadScene(SceneManager.SceneType.MAIN_MENU);
+        sceneManager.switchToScene(SceneManager.SceneType.MAIN_MENU);
     }
 
     @FXML
@@ -213,12 +221,26 @@ public class LobbyScreenController extends BaseController {
     @FXML
     private void handleSendChatMessage() {
         String message = chatInput.getText().trim();
-        if (message.isEmpty() || currentLobbyId == null) {
+        if (message.isEmpty()) {
             return;
         }
 
-        // Send chat message event
-        eventBus.publish(new LobbyChatEvent(currentLobbyId, playerName, message));
+        // Determine chat type and send appropriate message
+        if (globalChatButton.isSelected()) {
+            // Send global chat message
+            eventBus.publish(new GlobalChatEvent(message, GlobalChatEvent.ChatType.GLOBAL));
+        } else if (lobbyChatButton.isSelected()) {
+            // Send lobby chat message if in a lobby
+            if (currentLobbyId != null && !currentLobbyId.isEmpty()) {
+                eventBus.publish(new LobbyChatEvent(currentLobbyId, playerName, message));
+            } else {
+                addSystemMessage("Cannot send lobby message: You're not in a lobby.");
+            }
+        } else {
+            // Default to global chat if neither is selected
+            LOGGER.warning("No chat type selected, defaulting to GLOBAL");
+            eventBus.publish(new GlobalChatEvent(message, GlobalChatEvent.ChatType.GLOBAL));
+        }
 
         // Clear the input field
         chatInput.clear();
@@ -234,6 +256,25 @@ public class LobbyScreenController extends BaseController {
 
             // Send start game request
             eventBus.publish(new StartGameRequestEvent(currentLobbyId));
+        }
+    }
+
+    @FXML
+    private void handleGlobalChatSelect() {
+        LOGGER.info("Global chat selected");
+        globalChatButton.setSelected(true);
+        lobbyChatButton.setSelected(false);
+    }
+
+    @FXML
+    private void handleLobbyChatSelect() {
+        LOGGER.info("Lobby chat selected");
+        globalChatButton.setSelected(false);
+        lobbyChatButton.setSelected(true);
+        
+        // If no lobby is joined, inform the user
+        if (currentLobbyId == null || currentLobbyId.isEmpty()) {
+            addSystemMessage("You are not in a lobby. Messages will not be sent until you join one.");
         }
     }
 
@@ -325,7 +366,7 @@ public class LobbyScreenController extends BaseController {
     private void handleGameStarted(GameStartedEvent event) {
         Platform.runLater(() -> {
             // Transition to game screen
-            sceneManager.loadScene(SceneManager.SceneType.GAME);
+            sceneManager.switchToScene(SceneManager.SceneType.GAME);
         });
     }
 

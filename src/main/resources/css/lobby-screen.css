@@ -218,6 +218,29 @@
     -fx-background-color: rgba(101, 149, 228, 0.5);
 }
 
+/* Chat toggle buttons */
+.chat-selector {
+    -fx-padding: 0 0 5 0;
+}
+
+.chat-toggle-button {
+    -fx-background-color: rgba(44, 51, 71, 0.7);
+    -fx-text-fill: #e8e8e8;
+    -fx-border-color: rgba(228, 192, 101, 0.3);
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+}
+
+.chat-toggle-button:selected {
+    -fx-background-color: rgba(228, 192, 101, 0.3);
+    -fx-text-fill: #e4c065;
+    -fx-border-color: #e4c065;
+}
+
+.chat-toggle-button:hover {
+    -fx-background-color: rgba(228, 192, 101, 0.2);
+}
+
 /* Players section */
 .players-section {
     -fx-background-color: rgba(44, 51, 71, 0.3);

@@ -73,7 +73,16 @@
                         <Insets top="15.0" right="15.0" bottom="15.0" left="15.0"/>
                     </padding>
 
-                    <Label text="Lobby Chat" styleClass="section-header"/>
+                    <Label text="Chat" styleClass="section-header"/>
+                    
+                    <HBox spacing="5" styleClass="chat-selector">
+                        <ToggleButton fx:id="globalChatButton" text="Global"
+                                  onAction="#handleGlobalChatSelect" styleClass="chat-toggle-button" minWidth="70"/>
+                        <ToggleButton fx:id="lobbyChatButton" text="Lobby"
+                                  onAction="#handleLobbyChatSelect" styleClass="chat-toggle-button" minWidth="70"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                    
                     <ListView fx:id="chatMessages" VBox.vgrow="ALWAYS" styleClass="chat-list"/>
 
                     <HBox spacing="8.0" alignment="CENTER">
