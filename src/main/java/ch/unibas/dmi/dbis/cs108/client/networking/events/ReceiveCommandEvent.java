@@ -5,7 +5,7 @@ import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol
 import java.time.Instant;
 
 /**
- * Event representing a command received from the server.
+ * UIEvent representing a command received from the server.
  * Uses the shared CommunicationAPI to define the command types.
  */
 public class ReceiveCommandEvent implements Event {
