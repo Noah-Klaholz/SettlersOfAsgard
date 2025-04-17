@@ -44,20 +44,30 @@ public class SceneManager {
 
     public void switchToScene(SceneType sceneType) {
         SceneHolder holder = sceneCache.computeIfAbsent(sceneType, this::loadScene);
-        Parent root = holder.getScene().getRoot();
-        FadeTransition fadeTransition = new FadeTransition(Duration.millis(500), root);
+        Parent newRoot = holder.getScene().getRoot(); // The root is loaded within loadScene
+
+        // Apply fade transition to the new root
+        FadeTransition fadeTransition = new FadeTransition(Duration.millis(500), newRoot);
         fadeTransition.setFromValue(0.0);
         fadeTransition.setToValue(1.0);
         fadeTransition.play();
 
-        primaryStage.setScene(holder.getScene());
-        LOGGER.info("Switched to scene: " + sceneType);
-
-        // Automatically register the scene for theme management.
-        ThemeManager.getInstance().registerScene(holder.getScene());
+        Scene currentScene = primaryStage.getScene();
+        if (currentScene == null) {
+            // First time setting a scene
+            primaryStage.setScene(holder.getScene());
+            LOGGER.info("Set initial scene: " + sceneType);
+            // Automatically register the scene for theme management.
+            ThemeManager.getInstance().registerScene(holder.getScene());
+        } else {
+            // Reuse existing scene, just change the root
+            currentScene.setRoot(newRoot);
+            LOGGER.info("Switched scene root to: " + sceneType);
+            // ThemeManager should already be aware of the scene, no need to re-register
+        }
     }
 
-    private SceneHolder loadScene(SceneType sceneType) {
+    public SceneHolder loadScene(SceneType sceneType) {
         URL fxmlUrl = getClass().getResource(sceneType.getPath());
         if (fxmlUrl == null) {
             throw new RuntimeException("FXML resource not found: " + sceneType.getPath());
