@@ -3,6 +3,7 @@ package ch.unibas.dmi.dbis.cs108.shared.game;
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 
 import java.util.ArrayList;
@@ -321,5 +322,14 @@ public class Player {
         this.artifacts.clear();
         this.runes = 0;
         this.energy = 0;
+    }
+
+    public boolean hasStatue() {
+        for (PurchasableEntity purchasableEntity : purchasableEntities) {
+            if (purchasableEntity instanceof Statue) {
+                return true;
+            }
+        }
+        return false;
     }
 }

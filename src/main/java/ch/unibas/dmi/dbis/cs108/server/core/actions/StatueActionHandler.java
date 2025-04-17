@@ -63,10 +63,11 @@ public class StatueActionHandler {
             Player player = result.getPlayer();
             Tile tile = result.getTile();
 
-            // Get statue and check if player can afford it
+            // Get statue and check if player already has one
             Statue statue = EntityRegistry.getStatue(statueId);
-            if (statue == null) return false;
+            if (statue == null || player.hasStatue()) return false;
 
+            // Check if player can afford the statue
             int cost = statue.getPrice();
             if (player.getRunes() < cost) return false;
 
