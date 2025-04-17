@@ -6,11 +6,13 @@ import javafx.scene.text.Font;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ThemeManager {
+    private static final Logger LOGGER = Logger.getLogger(ThemeManager.class.getName());
     private static ThemeManager instance;
     private final List<Scene> registeredScenes = new ArrayList<>();
-    //    private final List<String> commonStylesheets = List.of("/css/common.css");
     private Theme currentTheme = Theme.DEFAULT;
 
     private ThemeManager() {
@@ -51,9 +53,14 @@ public class ThemeManager {
         // Apply the theme stylesheet
         URL themeUrl = getClass().getResource(currentTheme.getPath());
         if (themeUrl != null) {
-            scene.getStylesheets().add(themeUrl.toExternalForm());
+            try {
+                scene.getStylesheets().add(themeUrl.toExternalForm());
+                LOGGER.info("Applied theme " + currentTheme + " to scene: " + themeUrl.toExternalForm());
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Error applying theme stylesheet " + currentTheme.getPath() + ": " + e.getMessage(), e);
+            }
         } else {
-            System.err.println("Theme stylesheet " + currentTheme.getPath() + " not found.");
+            LOGGER.warning("Theme stylesheet resource not found: " + currentTheme.getPath());
         }
     }
 
@@ -80,25 +87,27 @@ public class ThemeManager {
             boolean cinzelInSystem = Font.getFamilies().contains("Cinzel");
             boolean robotoInSystem = Font.getFamilies().contains("Roboto");
 
-            System.out.println("Font loading status:");
-            System.out.println("- Cinzel: " + (cinzelLoaded ? "Loaded" : "Failed") +
+            LOGGER.info("Font loading status:");
+            LOGGER.info("- Cinzel: " + (cinzelLoaded ? "Loaded" : "Failed") +
                     ", In system: " + cinzelInSystem);
-            System.out.println("- Roboto: " + (robotoLoaded ? "Loaded" : "Failed") +
+            LOGGER.info("- Roboto: " + (robotoLoaded ? "Loaded" : "Failed") +
                     ", In system: " + robotoInSystem);
 
             if (cinzelLoaded && robotoLoaded) {
-                System.out.println("Fonts loaded successfully");
+                LOGGER.info("Fonts loaded successfully");
             } else {
-                System.err.println("Some fonts failed to load");
+                LOGGER.warning("Some fonts failed to load");
             }
         } catch (Exception e) {
-            System.err.println("Error loading fonts: " + e.getMessage());
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error loading fonts: " + e.getMessage(), e);
         }
     }
 
     public enum Theme {
-        DEFAULT("/css/game-screen.css");
+        // Use paths from ResourceLoader for consistency
+        DEFAULT(ResourceLoader.DEFAULT_THEME_CSS), // Assuming lobby-screen is default
+        DARK(ResourceLoader.DARK_THEME_CSS); // Assuming main-menu is dark
+        // Consider adding GAME(ResourceLoader.COMMON_CSS) if needed
 
         private final String cssPath;
 
