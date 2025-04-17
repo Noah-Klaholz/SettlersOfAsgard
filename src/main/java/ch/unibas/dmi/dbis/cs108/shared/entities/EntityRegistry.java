@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities;
 
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import com.google.gson.Gson;
@@ -127,6 +128,21 @@ public class EntityRegistry {
                 }
             }
         }
+    }
+
+
+    /**
+     * Returns a PurchasableEntity by its ID.
+     *
+     * @param id The ID of the entity to retrieve
+     * @return The PurchasableEntity object with the given ID, or null if not found
+     */
+    public static PurchasableEntity getPurchasableEntity(int id) {
+        PurchasableEntity entity = structures.get(id);
+        if (entity == null) {
+            entity = statues.get(id);
+        }
+        return entity;
     }
 
 
