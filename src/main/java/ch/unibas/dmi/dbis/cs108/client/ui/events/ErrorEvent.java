@@ -4,10 +4,10 @@ import java.time.Instant;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.ErrorEvent.ErrorSeverity;
 
 /**
- * Event representing an error in the application.
+ * UIEvent representing an error in the application.
  * This event is triggered when an error occurs, providing details about the error.
  */
-public class ErrorEvent {
+public class ErrorEvent implements UIEvent {
     private final Instant timestamp = Instant.now();
     private final String errorCode;
     private final String errorMessage;
@@ -15,7 +15,7 @@ public class ErrorEvent {
 
     /**
      * Constructor for ErrorEvent.
-     *
+     *.
      * @param errorCode    The code representing the error.
      * @param errorMessage A message describing the error.
      * @param severity     The severity of the error.
@@ -60,5 +60,10 @@ public class ErrorEvent {
      */
     public ErrorSeverity getSeverity() {
         return severity;
+    }
+
+    @Override
+    public String getType() {
+        return "ERROR";
     }
 }
