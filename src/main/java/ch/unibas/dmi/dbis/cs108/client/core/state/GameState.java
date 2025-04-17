@@ -64,6 +64,15 @@ public class GameState {
     }
 
     /**
+     * Gets the playerTurn
+     *
+     * @return the playerTurn
+     */
+    public String getPlayerTurn() {
+        return playerTurn;
+    }
+
+    /**
      * Gets the playerRound
      *
      * @return the playerRound
