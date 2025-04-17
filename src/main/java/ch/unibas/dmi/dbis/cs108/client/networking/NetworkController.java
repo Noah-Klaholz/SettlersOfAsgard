@@ -269,4 +269,13 @@ public class NetworkController {
         String message = translator.formatGetGameStatus();
         networkClient.send(message);
     }
+    
+    /**
+     * Requests leaderboard data from the server.
+     * The server will respond with a message containing player rankings and scores.
+     */
+    public void getLeaderboard() {
+        String message = translator.formatGetLeaderboard();
+        networkClient.send(message);
+    }
 }
