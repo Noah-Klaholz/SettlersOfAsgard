@@ -74,8 +74,12 @@ public class CommunicationMediator {
 
     private void registerUIListeners() {
         // Chat Events
-        UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent.class, event ->
-                networkController.sendGlobalChat(event.getContent()));
+        UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent.class, event -> {
+            // Only send if the sender is null, indicating it's a user-initiated message, not one received from the network.
+            if (event.getSender() == null) {
+                networkController.sendGlobalChat(event.getContent());
+            }
+        });
 
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.chat.LobbyChatEvent.class, event ->
                 networkController.sendLobbyChat(event.getMessage()));
@@ -147,14 +151,24 @@ public class CommunicationMediator {
         EventDispatcher.getInstance().registerListener(ChatMessageEvent.class, new EventDispatcher.EventListener<ChatMessageEvent>() {
             @Override
             public void onEvent(ChatMessageEvent event) {
-                // Convert network ChatType to UI ChatType
-                ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent.ChatType uiChatType =
-                        (event.getType() == ChatMessageEvent.ChatType.GLOBAL) ?
-                                ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent.ChatType.GLOBAL :
-                                ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent.ChatType.SYSTEM;
+                ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent.ChatType uiChatType;
 
-                UIEventBus.getInstance().publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent(
-                        event.getContent(), event.getSender(), uiChatType));
+                switch (event.getType()) {
+                    case INFO:
+                        uiChatType = ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent.ChatType.SYSTEM;
+                        UIEventBus.getInstance().publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent(event.getContent(), event.getSender(), uiChatType));
+                        break;
+                    case LOBBY:
+                        UIEventBus.getInstance().publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.chat.LobbyChatEvent(event.getSender(), event.getSender()));
+                        break;
+                    case PRIVATE:
+                        //ToDo: Handle private chat messages
+                        UIEventBus.getInstance().publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.chat.WhisperChatEvent(event.getSender(), null, event.getContent()));
+                        break;
+                    default:
+                        uiChatType = ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent.ChatType.GLOBAL;
+                        UIEventBus.getInstance().publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent(event.getContent(), event.getSender(), uiChatType));
+                }
             }
 
             @Override
