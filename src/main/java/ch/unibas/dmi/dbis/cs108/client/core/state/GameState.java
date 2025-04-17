@@ -1,6 +1,5 @@
 package ch.unibas.dmi.dbis.cs108.client.core.state;
 
-import ch.unibas.dmi.dbis.cs108.server.core.logic.TurnManager;
 import ch.unibas.dmi.dbis.cs108.server.core.model.BoardManager;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import java.util.*;
