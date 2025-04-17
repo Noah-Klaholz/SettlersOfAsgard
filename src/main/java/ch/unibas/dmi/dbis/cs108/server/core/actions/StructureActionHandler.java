@@ -57,11 +57,9 @@ public class StructureActionHandler {
             Structure structure = EntityRegistry.getStructure(structureID);
             if (structure == null) return false;
 
-            int cost = structure.getPrice();
-            if (player.getRunes() < cost) return false;
+            // Check if player can afford the structure
+            if(!player.buy(structure.getPrice())) return false;
 
-            // Place structure and deduct runes
-            player.addRunes(-cost);
             tile.setEntity(structure);
 
             return true;

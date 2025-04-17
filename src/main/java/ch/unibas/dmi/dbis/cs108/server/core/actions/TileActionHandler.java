@@ -38,11 +38,10 @@ public class TileActionHandler {
             }
 
             Player player = findPlayerByName(playerName);
-            if (player == null || player.getRunes() < tile.getPrice()) {
+            if (player == null || !player.buy(tile.getPrice())) {
                 return false;
             }
 
-            player.removeRunes(tile.getPrice());
             tile.setPurchased(true);
             player.addOwnedTile(tile);
 

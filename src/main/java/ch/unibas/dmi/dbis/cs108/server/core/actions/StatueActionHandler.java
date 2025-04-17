@@ -68,11 +68,8 @@ public class StatueActionHandler {
             if (statue == null || player.hasStatue()) return false;
 
             // Check if player can afford the statue
-            int cost = statue.getPrice();
-            if (player.getRunes() < cost) return false;
+            if (!player.buy(statue.getPrice())) return false;
 
-            // Place statue and deduct runes
-            player.addRunes(-cost);
             tile.setEntity(statue);
 
             return true;
@@ -101,15 +98,12 @@ public class StatueActionHandler {
             Statue statue = getStatueFromTile(result.getTile(), statueId);
             if (statue == null) return false;
 
+            Player player = result.getPlayer();
             // Check if statue can be upgraded (max level is 3)
             if (statue.getLevel() >= 3) return false;
 
             // Calculate upgrade cost and check if player can afford it
-            int upgradeCost = statue.getUpgradePrice();
-            if (result.getPlayer().getRunes() < upgradeCost) return false;
-
-            // Deduct runes and upgrade the statue
-            result.getPlayer().addRunes(-upgradeCost);
+            if (!player.buy(statue.getUpgradePrice())) return false;
             statue.upgrade();
 
             return true;

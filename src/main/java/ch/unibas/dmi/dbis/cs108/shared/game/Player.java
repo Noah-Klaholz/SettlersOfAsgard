@@ -45,6 +45,31 @@ public class Player {
     }
 
     /**
+     * Method for buying anything
+     * Removes runes from the player according to given price and taking into account the buffs
+     *
+     * @param price int
+     * @return boolean
+     */
+    public boolean buy(int price) {
+        if (price < 0) {
+            return false;
+        }
+
+        double priceModifier = status.get(Status.BuffType.SHOP_PRICE);
+        double adjusted = price / Math.max(priceModifier, 0); // Prevent divide-by-zero or negative scaling
+        int adjustedPrice = Math.max(0, (int) Math.round(adjusted)); // Ensure price is never negative
+
+        if (runes >= adjustedPrice) {
+            runes -= adjustedPrice;
+            return true;
+        }
+
+        return false;
+    }
+
+
+    /**
      * Getter for player status
      *
      * @return Status
