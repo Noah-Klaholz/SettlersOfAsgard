@@ -80,4 +80,21 @@ public class BoardManager {
             stateLock.writeLock().unlock();
         }
     }
+
+    /**
+     * Get adjacent tiles for a specific tile
+     *
+     * @param x The x-coordinate of the tile
+     * @param y The y-coordinate of the tile
+     *
+     * @return An array of adjacent tiles
+     */
+    public Tile[] getAdjacentTiles(int x, int y) {
+        stateLock.readLock().lock();
+        try {
+            return board.getAdjacentTiles(x, y);
+        } finally {
+            stateLock.readLock().unlock();
+        }
+    }
 }

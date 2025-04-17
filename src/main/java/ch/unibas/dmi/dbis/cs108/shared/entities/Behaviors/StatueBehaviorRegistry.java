@@ -173,8 +173,6 @@ public class StatueBehaviorRegistry {
                     // Destroys 1 random structure of a chosen player: sacrifices 1 structure of your own
                     Player targetPlayer = params.getTargetPlayer();
                     if (targetPlayer == null) return false;
-
-                    // Implementation of effect
                     return true;
                 },
                 new StatueParameterRequirement(StatueParameterRequirement.StatueParameterType.PLAYER)

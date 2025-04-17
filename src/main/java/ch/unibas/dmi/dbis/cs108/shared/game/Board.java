@@ -1,5 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.shared.game;
 
+import java.util.List;
+
 /**
  * Class representing a game board.
  * The board is represented as a 2D array of tiles.
@@ -156,5 +158,39 @@ public class Board {
                 }
             }
         }
+    }
+
+    /**
+     * Gets the adjacent tiles for a given tile.
+     *
+     * @param x The x-coordinate of the tile.
+     * @param y The y-coordinate of the tile.
+     * @return An array of adjacent tiles.
+     */
+    public Tile[] getAdjacentTiles(int x, int y) {
+        Tile[] adjacentTiles = new Tile[4]; // Up, Down, Left, Right
+        int index = 0;
+
+        // Up
+        if (x > 0) {
+            adjacentTiles[index++] = tiles[x - 1][y];
+        }
+        // Down
+        if (x < tiles.length - 1) {
+            adjacentTiles[index++] = tiles[x + 1][y];
+        }
+        // Left
+        if (y > 0) {
+            adjacentTiles[index++] = tiles[x][y - 1];
+        }
+        // Right
+        if (y < tiles[0].length - 1) {
+            adjacentTiles[index++] = tiles[x][y + 1];
+        }
+
+        // Resize the array to fit the number of adjacent tiles found
+        Tile[] result = new Tile[index];
+        System.arraycopy(adjacentTiles, 0, result, 0, index);
+        return result;
     }
 }

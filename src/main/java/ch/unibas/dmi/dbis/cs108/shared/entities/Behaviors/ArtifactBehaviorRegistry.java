@@ -4,6 +4,7 @@ import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
@@ -117,7 +118,14 @@ public class ArtifactBehaviorRegistry {
         });
 
         registerFieldBehavior("Odin's Eye", (artifact, gameState, player, x, y) -> {
-            //TODO implement this artifact
+            // Checks a tile and all adjacent tiles for traps and notifies the user if found
+            for (Tile tile : gameState.getBoardManager().getAdjacentTiles(x, y)) {
+                if (tile == null || !tile.hasEntity()) continue;
+                PurchasableEntity entity = tile.getEntity();
+                if (entity != null && entity.getName().equals("ActiveTrap")) {
+                    gameState.sendNotification("20$" + tile.getX() + "$" + tile.getY());
+                }
+            }
             return true;
         });
 

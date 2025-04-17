@@ -125,4 +125,7 @@ public class GameState {
     public String createDetailedStatusMessage() {
         return new GameStateSerializer(this).createDetailedStatusMessage();
     }
+
+    public void sendNotification(String s) {
+    }
 }
