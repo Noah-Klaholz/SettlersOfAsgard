@@ -21,33 +21,6 @@ public class GameStateSerializer {
     }
 
     /**
-     * Create a serialized state message for network transmission
-     */
-    public String createStateMessage() {
-        ReadWriteLock lock = gameState.getStateLock();
-        lock.readLock().lock();
-        try {
-            StringBuilder state = new StringBuilder("STATE$");
-            state.append("round=").append(gameState.getTurnManager().getGameRound()).append(",");
-            state.append("player_round=").append(gameState.getTurnManager().getPlayerRound()).append(",");
-            state.append("current_player=").append(gameState.getTurnManager().getPlayerTurn()).append(",");
-
-            // Add player basic info
-            List<Player> players = gameState.getPlayers();
-            for (Player player : players) {
-                state.append("player=").append(player.getName()).append(",");
-            }
-
-            return state.toString();
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error creating state message", e);
-            return "ERROR$Failed to create state";
-        } finally {
-            lock.readLock().unlock();
-        }
-    }
-
-    /**
      * Create a detailed status message with complete state information
      */
     public String createDetailedStatusMessage() {
@@ -55,8 +28,8 @@ public class GameStateSerializer {
         lock.readLock().lock();
         try {
             StringBuilder status = new StringBuilder("SYNC$");
-            status.append("round=").append(gameState.getTurnManager().getGameRound()).append(",");
-            status.append("turn=").append(gameState.getTurnManager().getPlayerTurn()).append(",");
+            status.append("gameRound=").append(gameState.getTurnManager().getGameRound()).append(",");
+            status.append("playerRound=").append(gameState.getTurnManager().getPlayerTurn()).append(",");
 
             // Add player details
             List<Player> players = gameState.getPlayers();
