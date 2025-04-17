@@ -56,8 +56,8 @@ public class GameEngine {
      */
     public void processTurn(List<Command> commands) {
         for (Command command : commands) {
-            //todo:fix this weird error message
-            //command.execute(gameState, eventDispatcher);
+            // Execute the command, passing the current game state and event dispatcher.
+            command.execute(gameState, eventDispatcher);
         }
         ruleProcessor.processRules(gameState);
         gameState.nextTurn();
