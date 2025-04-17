@@ -1,116 +1,146 @@
 package ch.unibas.dmi.dbis.cs108.client.core.state;
 
-import ch.unibas.dmi.dbis.cs108.shared.game.Board;
+import ch.unibas.dmi.dbis.cs108.server.core.logic.TurnManager;
+import ch.unibas.dmi.dbis.cs108.server.core.model.BoardManager;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
-import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
+import java.util.*;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.logging.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/**
 public class GameState {
+    /** Logger to log logging */
+    private static final Logger LOGGER = Logger.getLogger(ch.unibas.dmi.dbis.cs108.client.core.state.GameState.class.getName());
+    /** State Lock for Thread safe handling */
+    private final ReadWriteLock stateLock = new ReentrantReadWriteLock();
+    /** BoardManager that contains all info about the board & tiles */
+    private final BoardManager boardManager;
+    /** List of players in the game (stored as player objects) */
+    private final List<Player> players = new ArrayList<>();
+    /** The index of the player whose turn it is (0 to 3) */
+    private int playerRound;
+    /** The gameRound (0 to 4) */
+    private int gameRound;
 
-    private GameRound gameRound;
-    private PlayerRound playerRound;
-    private List<Player> players;
-    private Board board;
-
-    public GameState(){
-        this.gameRound = new GameRound();
-        this.playerRound = new PlayerRound();
-        players = new ArrayList<Player>();
-        board = new Board();
+    /**
+     * Creates a new GameState. Initializes the BoardManager.
+     */
+    public GameState() {
+        this.boardManager = new BoardManager(stateLock);
     }
 
-    public void addPlayer(Player player) {
-        players.add(player);
-    }
-
-    public void removePlayer(Player player) {
-        players.remove(player);
-    }
-
-    public List<Player> getPlayers() {
-        return players;
-    }
-
-    public Board getBoard() {
-        return board;
-    }
-
-    public void setBoard(Board board) {
-        this.board = board;
-    }
-
-
-    public int getCurrentGameRoundNumber() {
-        return gameRound.getNumber();
-    }
-
-    public int getCurrentPlayerRoundNumber() {
-        return playerRound.getNumber();
-    }
-
-    public GameRound getCurrentGameRound() {
-        return gameRound;
-    }
-
-    public PlayerRound getCurrentPlayerRound() {
-        return playerRound;
-    }
-
-    public void setCurrentGameRoundNumber(int number) {
-        gameRound.setNumber(number);
-    }
-
-    public void setCurrentPlayerRoundNumber(int number) {
-        playerRound.setNumber(number);
-    }
-
-
-    public void nextTurn(){
-        if (playerRound.getNumber() >= players.size()) {
-            playerRound.setNumber(0);
-            if(gameRound.getNumber() < 5){
-                gameRound.nextRound();
-            }
-            else{
-                System.out.println("Game Over");
-                //todo: end game
-            }
-        }
-        else {
-            playerRound.nextRound();
-        }
-    }
-
-    //todo: change so that GameRound has a list of PlayerRounds
-    public void buyTile(Player player, Tile tile) {
-        if(tile.isPurchased()){
-            System.out.println("Tile already purchased");
-        } else {
-            if(player.getRunes() >= tile.getPrice()){
-                player.setRunes(player.getRunes() - tile.getPrice());
-                tile.setPurchased(true);
-                player.addOwnedTile(tile);
-                System.out.println("Player " + player.getPlayerID() + " purchased tile " + tile.getTileID());
-            } else {
-                System.out.println("Not enough runes");
-            }
-        }
-
-    }
-
-    public GameRound getGameRound() {
-        return gameRound;
-    }
-    public PlayerRound getPlayerRound() {
-        return playerRound;
-    }
-    public void setGameRound(GameRound gameRound) {
-        this.gameRound = gameRound;
-    }
-    public void setPlayerRound(PlayerRound playerRound) {
+    /**
+     * Sets the playerRound
+     *
+     * @param playerRound the playerRound to set
+     */
+    public void setPlayerRound(int playerRound) {
         this.playerRound = playerRound;
     }
-}*/
+
+    /**
+     * Sets the gameRound
+     *
+     * @param gameRound the gameRound to set
+     */
+    public void setGameRound(int gameRound) {
+        this.gameRound = gameRound;
+    }
+
+    /**
+     * Gets the playerRound
+     *
+     * @return the playerRound
+     */
+    public int getPlayerRound() {
+        return playerRound;
+    }
+
+    /**
+     * Gets the gameRound
+     *
+     * @return the gameRound
+     */
+    public int getGameRound() {
+        return gameRound;
+    }
+
+    /**
+     * Sets the list of players
+     *
+     * @param playerNames the players to set
+     */
+    public void setPlayers(String[] playerNames) {
+        stateLock.writeLock().lock();
+        try {
+            players.clear();
+            for (String name : playerNames) {
+                players.add(new Player(name));
+            }
+        } finally {
+            stateLock.writeLock().unlock();
+        }
+    }
+
+    /**
+     * Gets the list of players
+     *
+     * @return the players
+     */
+    public List<Player> getPlayers() {
+        stateLock.readLock().lock();
+        try {
+            return Collections.unmodifiableList(players);
+        } finally {
+            stateLock.readLock().unlock();
+        }
+    }
+
+    /**
+     * Finds the player with a given name
+     *
+     * @param name the name of the player
+     * @return the player object
+     */
+    public Player findPlayerByName(String name) {
+        stateLock.readLock().lock();
+        try {
+            return players.stream()
+                    .filter(p -> p.getName().equals(name))
+                    .findFirst()
+                    .orElse(null);
+        } finally {
+            stateLock.readLock().unlock();
+        }
+    }
+
+    /**
+     * Gets the current state of the BoardManager.
+     * @return The current object of the BoardManager.
+     */
+    public BoardManager getBoardManager() {
+        return boardManager;
+    }
+
+    /**
+     * Gets the current state of the StateLock.
+     * @return The current object of the StateLock.
+     */
+    public ReadWriteLock getStateLock() {
+        return stateLock;
+    }
+
+    /**
+     * Reset the entire game state
+     */
+    public void reset() {
+        stateLock.writeLock().lock();
+        try {
+            players.forEach(Player::reset);
+            boardManager.reset();
+        } finally {
+            stateLock.writeLock().unlock();
+        }
+    }
+
+}
