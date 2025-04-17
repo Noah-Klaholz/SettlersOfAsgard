@@ -68,3 +68,10 @@ Resource value: 3
 Has river: false
 ID: 101
 Status: default buffs
+
+## NOTES
+
+1. ALL UUIDs / IDs follow their respective formats (UUID v4 for players, custom IDs for artifacts/entities).
+2. Status values use multipliers (1.0 = normal).
+3. Empty lists are represented as [].
+4. Null values are explicitly written as "nulL".
