@@ -26,6 +26,8 @@ public class GameState {
     private int playerRound;
     /** The gameRound (0 to 4) */
     private int gameRound;
+    /** The name of the players whose turn it is */
+    private String playerTurn;
 
     /**
      * Creates a new GameState. Initializes the BoardManager.
