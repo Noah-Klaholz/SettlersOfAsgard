@@ -50,43 +50,50 @@ public class ArtifactBehaviorRegistry {
     private void initializeDefaultBehaviors() {
         // Player-targeting artifacts
         registerPlayerBehavior("Tear of Yggdrasil", (artifact, gameState, player, targetPlayer) -> {
-            // Example: Heal target player
+            // Remove energy from other player
             targetPlayer.addEnergy((int)artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Hel's Shadow", (artifact, gameState, player, targetPlayer) -> {
+            // Remove rune efficiency from other player
             targetPlayer.addBuff(Status.BuffType.RUNE_GENERATION, (int)artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Flame of Muspelheim", (artifact, gameState, player, targetPlayer) -> {
+            // Give shop discount to player
             targetPlayer.addBuff(Status.BuffType.SHOP_PRICE, (int)artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Ice Splinter of Niflheim", (artifact, gameState, player, targetPlayer) -> {
+            // Remove energy generation efficiency from other player
             targetPlayer.addBuff(Status.BuffType.ENERGY_GENERATION, (int)artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Ashes of Surtr", (artifact, gameState, player, targetPlayer) -> {
+            // Give higher prices in shop to other player
             targetPlayer.addBuff(Status.BuffType.SHOP_PRICE, (int)artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Fragment of Mjölnir", (artifact, gameState, player, targetPlayer) -> {
+            // Give higher chance of artifacts to player
             targetPlayer.addBuff(Status.BuffType.ARTIFACT_CHANCE, (int)artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Freyr's Golden Apple", (artifact, gameState, player, targetPlayer) -> {
+            // Gives energy to player
             targetPlayer.addEnergy((int)artifact.getEffect());
             return true;
         });
 
         // Field-targeting artifacts
         registerFieldBehavior("Freyja's Necklace", (artifact, gameState, player, x, y) -> {
+            // Give a major rune generation buff to the tile
             Tile tile = gameState.getBoardManager().getTile(x, y);
             if (tile == null || !tile.hasEntity()) return false;
             tile.setBuff(Status.BuffType.RUNE_GENERATION, (int)artifact.getEffect());
@@ -94,6 +101,7 @@ public class ArtifactBehaviorRegistry {
         });
 
         registerFieldBehavior("Fenrir's Bones", (artifact, gameState, player, x, y) -> {
+            // Give a major energy generation buff to the tile
             Tile tile = gameState.getBoardManager().getTile(x, y);
             if (tile == null || !tile.hasEntity()) return false;
             tile.setBuff(Status.BuffType.ENERGY_GENERATION, (int)artifact.getEffect());
@@ -101,6 +109,7 @@ public class ArtifactBehaviorRegistry {
         });
 
         registerFieldBehavior("Blood of Jörmungandr", (artifact, gameState, player, x, y) -> {
+            // Give a huge rune generation buff to the river-tile
             Tile tile = gameState.getBoardManager().getTile(x, y);
             if (tile == null || !tile.hasEntity()) return false;
             tile.setBuff(Status.BuffType.RIVER_RUNE_GENERATION, (int)artifact.getEffect());
@@ -114,6 +123,7 @@ public class ArtifactBehaviorRegistry {
 
         // Trap artifacts
         registerTrapBehavior("Fenrir's Chains", (artifact, gameState, player, x, y) -> {
+            // Places an active trap on the tile
             Tile tile = gameState.getBoardManager().getTile(x, y);
             if (tile == null || tile.hasEntity()) return false;
 

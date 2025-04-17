@@ -45,7 +45,7 @@ hochlevelbar: (teuer)
 
 ### Spezifische Structures
 | **Struktur**      | **Nutzen**                                                                               | **Numbers** | **lvl 2**        | **lvl 3**                | **Beschränkung**                                               |
-| ----------------- | ---------------------------------------------------------------------------------------- | ----------- | ---------------- | ------------------------ | -------------------------------------------------------------- |
+| ----------------- |------------------------------------------------------------------------------------------| ----------- | ---------------- | ------------------------ |----------------------------------------------------------------|
 | Runentisch        | Aktiv: Wandelt Energie in Runen um                                                       |             |                  |                          |                                                                |
 | Statue            | Aktiv: Siehe Statuen                                                                     |             | Möglichkeit Deal | Möglichkeit Segen/ Fluch | 1x Nutzen pro Runde                                            |
 |                   |                                                                                          |             |                  |                          |                                                                |
@@ -72,8 +72,9 @@ Passiv: jede Runde ohne nötige Aktion
 | Thor        |                                                                                                                      |                                                                            |                           | Asgard                     |
 Thor muss noch designed werden (gerne Ideen her)
 Jörmungandr hat nur einen Deal
+
 ## Artefakt
-kann gefunden werden beim Kauf eines Feldes
+Kann gefunden werden beim Kauf eines Feldes
 Wird wenn gefunden in den 3 freien Slots auf der Hand des Spielers gespeichert und kann dann genutzt werden 
 PlayerArtifact -> Beeinflusst Spieler direkt
 FieldArtifact -> Beeinflusst Feld (oder Structure) direkt
@@ -81,21 +82,19 @@ Ein spezifisches Artefakt kann mehrfach gefunden werden (keine Begrenzung)
 
 ### Spezifische Artefakte
 | **Artefakt**             | **Effekt**                                                    | **Numbers** |
-| ------------------------ | ------------------------------------------------------------- | ----------- |
-| Freyas Holzamulett       | + Effizienz Farmen                                            |             |
+|--------------------------|---------------------------------------------------------------| ----------- |
+| Freyas Holzamulett       | + Effizienz Runen-Farmen auf einem Feld                       |             |
 | Freyrs Goldener Apfel    | + Energie (flat)                                              |             |
 | Träne von Yggdrasil      | Anderer Spieler - Energie (flat)                              |             |
 | Mjölnir-Fragment         | + Chance auf Artefakte                                        |             |
-| Fenrirs Klochen          | + Effizienz Farmen                                            |             |
+| Fenrirs Knochen          | + Effizienz Energy generation auf einem Feld                  |             |
 | Schatten von Hel         | Andere Spieler - Effizienz Farmen                             |             |
 | Flamme von Muspelheim    | + Preissenkung kaufbares für nächste Runde                    |             |
 | Eissplitter von Nilfheim | Andere Spieler - Effizienz Farmen                             |             |
 | Blut von Jörmungandr     | + Effizienz Farmen am Fluss                                   |             |
 | Asche von Surtur         | Andere Spieler - Preissteigerung kaufbares für nächste Runde  |             |
 | Odins Auge               | + deckt eine Falle auf für einen Moment (oder für eine Runde) |             |
-Effizienz Farmen: kann bspw. auf eine einzige (random oder gewählt?) Structure bezogen werden
-Chance auf Artefakte: kann vllt. auch auf eine oder mehrere noch nicht gekaufte Tiles angewendet werden
-Keine Einschränkungen beim Nutzen
+Chance auf Artefakte: Genereller buff für den Spieler 
 
 
 ## Falle
@@ -104,5 +103,6 @@ Nutzung: FieldArtifact -> Wird auf ein von niemandem gekauftes Feld gesetzt (än
 **ActiveTrap:** Sobald Feld mit einer ActiveTrap gekauft wird, verliert der Spieler, der das Feld kauft Runen
 
 ## Feld
-farmt Runen jede Runde -> jedes Feld hat eine eigene resourceValue (anzahl an Runen die gefarmt werden) -> wenn ein Feld eine hohe resourceValue hat, haben anliegende Felder das auch (änderbar, vielleicht schwer zu implementieren?)
+Farmt Runen jede Runde -> jedes Feld hat eine eigene resourceValue (Anzahl an Runen die gefarmt werden) -> wenn ein Feld eine hohe resourceValue hat, haben anliegende Felder das auch (änderbar, vielleicht schwer zu implementieren?)
 Falls nicht geändert: sobald gekauft, zeigt es den anderen Spielern den resourceValue: fördert das strategische Element
+-> Nein, das ist schwer zu implementieren und macht das Spiel zu kompliziert.

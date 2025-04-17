@@ -5,7 +5,7 @@
     "useType": "Field",
     "id": 10,
     "chance": 0.3,
-    "effect": 0.5
+    "effect": 1.0
   },
   {
     "name": "Freyr's Golden Apple",
@@ -61,7 +61,7 @@
     "useType": "Player",
     "id": 17,
     "chance": 0.3,
-    "effect": -0.1
+    "effect": -0.5
   },
   {
     "name": "Blood of Jörmungandr",
