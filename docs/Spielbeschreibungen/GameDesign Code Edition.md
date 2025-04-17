@@ -32,7 +32,7 @@ Farmen jede Runde Runen
 Nicht direkt nutzbar
 ### Baum
 (Unterart der Structure)
-Kann nicht gekauft werden, sondern nur von eine bestimmten Statue geschaffen werden. Es kann mehrere Bäume geben und sie können nur auf Tiles platziert werden, auf denen auch der Fluss ist (RiverTile true)
+Kann nicht gekauft werden, sondern nur von einer bestimmten Statue geschaffen werden. Es kann mehrere Bäume geben und sie können nur auf Tiles platziert werden, auf denen auch der Fluss ist (RiverTile true)
 
 ### Statue
 (Ansehbar als Variante der Structure mit besonderen Regeln/ Nutzen)

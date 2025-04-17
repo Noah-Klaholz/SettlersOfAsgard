@@ -14,7 +14,7 @@ import java.util.Random;
 /**
  * Class representing a game board.
  * The board is represented as a 2D array of tiles.
- * Each tile can contain various entities such as players, artefacts, etc.
+ * Each tile can contain various entities such as players, artifacts, etc.
  */
 public class Board {
 
@@ -34,10 +34,10 @@ public class Board {
         tiles = new Tile[x][y];
         Tile.TileBuilder tilebuilder = new Tile.TileBuilder();
         tilebuilder.setPrice(10);
-        for (int i=0; i<x; i++){
-            for (int j=0; j<y; j++){
+        for (int i = 0; i < x; i++) {
+            for (int j = 0; j < y; j++) {
                 if (RandomGenerator.chance(SETTINGS.Config.ARTIFACT_CHANCE.getValue())) {
-                    tilebuilder.setArtifact(EntityRegistry.getArtifact(RandomGenerator.randomIntInRange(10,21)));
+                    tilebuilder.setArtifact(EntityRegistry.getRandomArtifact());
                 } else {
                     tilebuilder.setArtifact(null);
                 }
@@ -120,10 +120,10 @@ public class Board {
     }
 
     /**
-    * Getter for all tiles
-    *
-    * @return Tile[][]
-    */
+     * Getter for all tiles
+     *
+     * @return Tile[][]
+     */
     public Tile[][] getTiles() {
         return tiles;
     }
@@ -167,6 +167,11 @@ public class Board {
                     value.setPurchased(false);
                     value.setHasEntity(false);
                     value.setEntity(null);
+                    value.setOwner(null);
+                    value.setArtifact(null); // Some tiles start with an artifact but upon reset they should be null
+                    value.setResourceValue(RandomGenerator.randomIntInRange(SETTINGS.Config.MIN_RESSOURCE_VALUE.getValue(), SETTINGS.Config.MAX_RESOURCE_VALUE.getValue()));
+                    value.setHasRiver(false);
+                    value.getStatus().reset(); // Reset price to default value
 
                     // If there are other properties to reset, add them here
                     // tiles[i][j].setSomeOtherProperty(defaultValue);

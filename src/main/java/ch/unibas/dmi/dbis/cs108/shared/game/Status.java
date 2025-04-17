@@ -101,4 +101,16 @@ public class Status {
                 break;
         }
     }
+
+    /**
+     * Resets the status to default values.
+     */
+    public void reset() {
+        this.energyEfficiency = 1.0;
+        this.runeEfficieny = 1.0;
+        this.riverRuneEfficiency = 1.0;
+        this.shopPriceEfficiency = 1.0;
+        this.artifactChance = 1.0;
+        this.debuffable = true; // Default to debuffable
+    }
 }

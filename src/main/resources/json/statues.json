@@ -8,7 +8,8 @@
     "useType": "Player, Tile",
     "id": 30,
     "price": 0,
-    "upgradePrice": 0
+    "upgradePrice": 0,
+    "resourceValue": 0
   },
   {
     "name": "Freyr",
@@ -19,7 +20,8 @@
     "useType": "Tile",
     "id": 31,
     "price": 0,
-    "upgradePrice": 0
+    "upgradePrice": 0,
+    "resourceValue": 0
   },
   {
     "name": "Dwarf",
@@ -30,7 +32,8 @@
     "useType": "Smeltery",
     "id": 32,
     "price": 0,
-    "upgradePrice": 0
+    "upgradePrice": 0,
+    "resourceValue": 0
   },
   {
     "name": "Freyja",
@@ -41,7 +44,8 @@
     "useType": "mix",
     "id": 33,
     "price": 0,
-    "upgradePrice": 0
+    "upgradePrice": 0,
+    "resourceValue": 0
   },
   {
     "name": "Hel",
@@ -52,7 +56,8 @@
     "useType": "Player",
     "id": 34,
     "price": 0,
-    "upgradePrice": 0
+    "upgradePrice": 0,
+    "resourceValue": 0
   },
   {
     "name": "Nidhöggr",
@@ -63,7 +68,8 @@
     "useType": "Tile",
     "id": 35,
     "price": 0,
-    "upgradePrice": 0
+    "upgradePrice": 0,
+    "resourceValue": 0
   },
   {
     "name": "Loki",
@@ -74,7 +80,8 @@
     "useType": "Player",
     "id": 36,
     "price": 0,
-    "upgradePrice": 0
+    "upgradePrice": 0,
+    "resourceValue": 0
   },
   {
     "name": "Surtr",
@@ -85,6 +92,7 @@
     "useType": "Player",
     "id": 37,
     "price": 0,
-    "upgradePrice": 0
+    "upgradePrice": 0,
+    "resourceValue": 0
   }
 ]

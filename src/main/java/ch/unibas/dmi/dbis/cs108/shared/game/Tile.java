@@ -32,6 +32,7 @@ public class Tile {
         this.resourceValue = builder.resourceValue;
         this.hasRiver = builder.hasRiver;
         this.tileID = builder.tileID;
+        status = new Status();
     }
 
     public int getX() {
@@ -56,6 +57,7 @@ public class Tile {
     }
 
     public void setBuff(Status.BuffType buffType, int effect) {
+        status.buff(buffType, effect);
     }
 
     /**
@@ -147,6 +149,22 @@ public class Tile {
                 '}';
     }
 
+    /**
+     * Removes the entity from the tile and returns it.
+     * This method sets the entity to null and updates the hasEntity flag.
+     *
+     * @return The removed entity, or null if no entity was present.
+     */
+    public PurchasableEntity removeEntity() {
+        PurchasableEntity entity = this.entity;
+        this.entity = null;
+        this.hasEntity = false;
+        return entity;
+    }
+
+    /**
+     * Builder class for creating Tile instances.
+     */
     public static class TileBuilder {
         public boolean purchased;
         public int resourceValue;
