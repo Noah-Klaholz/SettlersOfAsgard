@@ -112,17 +112,17 @@ public class Player {
     /**
      * adds a structure to the player
      */
-    public void addPurchasableEntity(Structure structure) {
-        purchasableEntities.add(structure);
+    public void addPurchasableEntity(PurchasableEntity entity) {
+        purchasableEntities.add(entity);
     }
 
     /**
      * removes a structure from the player
      *
-     * @param structure Structure
+     * @param entity Structure
      */
-    public void removePurchasableEntity(Structure structure) {
-        purchasableEntities.remove(structure);
+    public void removePurchasableEntity(PurchasableEntity entity) {
+        purchasableEntities.remove(entity);
     }
 
     /**
@@ -280,7 +280,10 @@ public class Player {
     }
 
     /**
-     * Adds energy to the player
+     * Adds energy to the player.
+     * Negative values are allowed to remove energy.
+     * If the energy exceeds 4, it is capped at 4.
+     * If the energy goes below 0, it is capped at 0.
      *
      * @param amount int
      */
@@ -288,17 +291,21 @@ public class Player {
         if(energy + amount > 4){
             energy = 4;
             return;
+        } else if (energy + amount < 0) {
+            energy = 0;
+            return;
         }
         this.energy += amount;
     }
 
     /**
-     * adds a tile to the player
+     * Adds a tile to the player
+     * Tile is only added if it is not already owned and not null
      *
      * @param tile Tile
      */
     public void addOwnedTile(Tile tile) {
-        ownedTiles.add(tile);
+        if (!ownedTiles.contains(tile) && tile != null) ownedTiles.add(tile);
     }
 
     /**
@@ -335,5 +342,14 @@ public class Player {
             }
         }
         return false;
+    }
+
+    public void removeOwnedTile(Tile removeTile) {
+        for (Tile tile : ownedTiles) {
+            if (tile.getX() == removeTile.getX() && tile.getY() == removeTile.getY()) {
+                ownedTiles.remove(tile);
+                break;
+            }
+        }
     }
 }
