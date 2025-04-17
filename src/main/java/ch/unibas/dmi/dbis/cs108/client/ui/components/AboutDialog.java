@@ -54,26 +54,33 @@ public class AboutDialog extends UIComponent<StackPane> {
             } else {
                 LOGGER.warning("Could not find CSS resource: " + cssPath);
                 // Apply fallback styling directly
-                this.view.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7); -fx-alignment: center;");
+                this.view.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);");
             }
         } catch (Exception e) {
             LOGGER.warning("Error loading CSS for AboutDialog: " + e.getMessage());
             // Apply fallback styling directly
-            this.view.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7); -fx-alignment: center;");
+            this.view.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);");
         }
         
-        // Set alignment for the StackPane to center its children
+        // Important: Set explicit alignment and positioning
         this.view.setAlignment(Pos.CENTER);
         
         // Create dialog content
         dialogContent = createDialogContent();
         
-        // Add content to view and ensure proper centering
+        // Add content to view with explicit center alignment
         StackPane.setAlignment(dialogContent, Pos.CENTER);
         this.view.getChildren().add(dialogContent);
         
         // Make the dialog take the full size of its parent
+        this.view.setPrefSize(Double.MAX_VALUE, Double.MAX_VALUE);
         this.view.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        
+        // Apply explicit layout properties to ensure the dialog fills its parent
+        AnchorPane.setTopAnchor(this.view, 0.0);
+        AnchorPane.setRightAnchor(this.view, 0.0);
+        AnchorPane.setBottomAnchor(this.view, 0.0);
+        AnchorPane.setLeftAnchor(this.view, 0.0);
         
         // Make sure the dialog sits on top of other elements
         this.view.setViewOrder(-100);

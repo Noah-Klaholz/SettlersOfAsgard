@@ -5,21 +5,25 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.LeaderboardResponseUIEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
+import ch.unibas.dmi.dbis.cs108.client.ui.components.AboutDialog;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.geometry.Pos;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import javafx.stage.Stage;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -54,6 +58,7 @@ public class MainMenuController extends BaseController {
     private String playerName = DEFAULT_USERNAME;
     private int onlineUserCount = 0;
     private ChangeListener<Number> chatWidthListener;
+    private AboutDialog aboutDialog;
 
     public MainMenuController() {
         super(new ResourceLoader(), UIEventBus.getInstance(), SceneManager.getInstance());
@@ -86,6 +91,9 @@ public class MainMenuController extends BaseController {
 
         // Handle window resizing
         setupResizeListeners();
+        
+        // Initialize about dialog
+        aboutDialog = new AboutDialog();
     }
 
     private void configureChatListView() {
@@ -152,7 +160,6 @@ public class MainMenuController extends BaseController {
         eventBus.subscribe(ConnectionStatusEvent.class, this::handleConnectionStatus);
         eventBus.subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent.class, this::handleErrorEvent);
         eventBus.subscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
-        eventBus.subscribe(LeaderboardResponseUIEvent.class, this::handleLeaderboardUIResponse);
 
         // Setup input field handler
         globalChatInput.setOnAction(event -> handleSendGlobalMessage());
@@ -237,35 +244,41 @@ public class MainMenuController extends BaseController {
     }
 
     @FXML
-    private void handleLeaderboard() {
-        // ToDo: Implement leaderboard dialog
-    }
-
-    @FXML
     private void handleAbout() {
         LOGGER.info("About button clicked");
-
-        // Create and show the about dialog
-        ch.unibas.dmi.dbis.cs108.client.ui.components.AboutDialog aboutDialog = new ch.unibas.dmi.dbis.cs108.client.ui.components.AboutDialog();
-
-        // Clear any existing dialog
-        mainMenuRoot.getChildren().removeIf(node -> node.getId() != null && node.getId().equals("about-overlay"));
         
-        // Set up the StackPane.alignment property to center the dialog
+        // First, ensure the dialog isn't already showing
+        if (aboutDialog.getView().getParent() == mainMenuRoot) {
+            return;
+        }
+        
+        // Remove previous positioning approach that was causing layout issues
+        // Instead, properly set it as the CENTER element of the BorderPane with full coverage
+        
+        // Store the current center content so we can restore it later
+        Node currentCenter = mainMenuRoot.getCenter();
+        
+        // Create a new StackPane that will hold both the current center and our dialog
+        StackPane dialogContainer = new StackPane();
+        if (currentCenter != null) {
+            dialogContainer.getChildren().add(currentCenter);
+        }
+        
+        // Add the dialog to the stack pane on top
+        dialogContainer.getChildren().add(aboutDialog.getView());
+        
+        // Ensure the dialog is centered and uses the full space
         StackPane.setAlignment(aboutDialog.getView(), Pos.CENTER);
         
-        // Make sure dialog takes the full size of the parent
-        aboutDialog.getView().prefWidthProperty().bind(mainMenuRoot.widthProperty());
-        aboutDialog.getView().prefHeightProperty().bind(mainMenuRoot.heightProperty());
+        // Set the container as the new center
+        mainMenuRoot.setCenter(dialogContainer);
         
-        // Add the dialog as a direct child of the BorderPane
-        mainMenuRoot.getChildren().add(aboutDialog.getView());
-        
-        // Set the dialog to be removed when closed
+        // Set a close handler to restore the original center when dialog is closed
         aboutDialog.setOnCloseAction(() -> {
-            mainMenuRoot.getChildren().remove(aboutDialog.getView());
+            // When dialog closes, restore the original center
+            mainMenuRoot.setCenter(currentCenter);
         });
-
+        
         // Show the dialog
         aboutDialog.show();
     }
@@ -326,16 +339,6 @@ public class MainMenuController extends BaseController {
                 addSystemMessage("Failed to change name: " + event.getMessage());
             }
         });
-    }
-
-    /**
-     * Handles leaderboard response events from the server.
-     * Updates the leaderboard dialog with the received data.
-     *
-     * @param event The leaderboard response event
-     */
-    private void handleLeaderboardUIResponse(LeaderboardResponseUIEvent event) {
-        // ToDo: Implement leaderboard response handling
     }
 
     private void addChatMessage(String message) {
@@ -409,11 +412,15 @@ public class MainMenuController extends BaseController {
         eventBus.unsubscribe(ConnectionStatusEvent.class, this::handleConnectionStatus);
         eventBus.unsubscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent.class, this::handleErrorEvent);
         eventBus.unsubscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
-        eventBus.unsubscribe(LeaderboardResponseUIEvent.class, this::handleLeaderboardUIResponse);
 
         // Remove property listeners
         if (chatWidthListener != null) {
             globalChatMessages.widthProperty().removeListener(chatWidthListener);
+        }
+        
+        // Make sure to clean up the dialog and restore any layout changes
+        if (aboutDialog != null) {
+            aboutDialog.close();
         }
 
         LOGGER.info("MainMenuController resources cleaned up");

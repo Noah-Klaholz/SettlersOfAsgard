@@ -213,3 +213,36 @@
     -fx-background-color: rgba(44, 51, 71, 0.4);
     -fx-background-radius: 2px;
 }
+
+/* Style for the JavaFX built-in dialog */
+.about-dialog-pane {
+    -fx-background-color: #2a2a2a;
+}
+
+.about-dialog-pane > *.header-panel {
+    -fx-background-color: #1a2133;
+}
+
+.about-dialog-pane > *.header-panel *.header-text {
+    -fx-font-family: "Cinzel", serif;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-accent-gold;
+}
+
+.about-dialog-pane:header .header-panel .label {
+    -fx-text-fill: -color-accent-gold;
+}
+
+.about-dialog-pane .button {
+    -fx-background-color: rgba(44, 51, 71, 0.8);
+    -fx-text-fill: -color-accent-gold;
+    -fx-border-color: -color-accent-gold;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
+.about-dialog-pane .button:hover {
+    -fx-background-color: rgba(228, 192, 101, 0.3);
+}
