@@ -1,0 +1,30 @@
+/* Styling for the About Dialog */
+
+#about-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.7);
+    -fx-alignment: center;
+    -fx-min-width: 100%;
+    -fx-min-height: 100%;
+    -fx-max-width: 100%;
+    -fx-max-height: 100%;
+    -fx-pref-width: 100%;
+    -fx-pref-height: 100%;
+}
+
+.menu-button {
+    -fx-background-color: #4a3f35;
+    -fx-text-fill: #e8e8e8;
+    -fx-font-family: "Cinzel";
+    -fx-font-size: 14px;
+    -fx-padding: 8 16;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+}
+
+.menu-button:hover {
+    -fx-background-color: #5a4f45;
+}
+
+.menu-button:pressed {
+    -fx-background-color: #3a2f25;
+}
