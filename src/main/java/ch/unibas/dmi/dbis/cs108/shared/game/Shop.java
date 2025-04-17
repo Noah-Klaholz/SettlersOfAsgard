@@ -36,6 +36,15 @@ public class Shop {
     }
 
     /**
+     * Gets if a statue is currently in use
+     *
+     * @return the value of statueInUse
+     */
+    public boolean isStatueInUse() {
+        return statueInUse;
+    }
+
+    /**
      * Gets all statues available for purchase.
      * If a statue is already in use, returns an empty list.
      *
