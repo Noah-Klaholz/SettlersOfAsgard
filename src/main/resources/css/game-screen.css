@@ -1,281 +1,364 @@
-/* Norse Mythology Theme for JavaFX - Optimized */
+/* ===== Game Screen - Modern Norse Theme ===== */
 
-/* ========== Global Styles ========== */
+/* Color variables */
 .root {
-    -fx-background-color: #1a2133;
-    -fx-font-family: "Roboto", sans-serif;
-    -fx-font-size: 14px;
+    /* Main colors */
+    -color-background-primary: #1a2133;
+    -color-background-secondary: #2c3347;
+    -color-background-tertiary: #383f54;
+
+    /* Accent colors */
+    -color-accent-primary: #e4c065; /* Gold */
+    -color-accent-secondary: #6595e4; /* Blue */
+    -color-accent-tertiary: #d16565; /* Red */
+    -color-accent-success: #4eb34e; /* Green */
+
+    /* Text colors */
+    -color-text-primary: #e8e8e8;
+    -color-text-secondary: #9a9a9a;
+    -color-text-accent: #e4c065;
+
+    /* Base JavaFX properties */
+    -fx-base: -color-background-primary;
+    -fx-background: -color-background-primary;
+    -fx-control-inner-background: -color-background-secondary;
+    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 }
 
-/* ========== Typography ========== */
-.label {
-    -fx-text-fill: #e8e8e8;
-    -fx-font-weight: normal;
+/* Main layout components */
+.side-panel, .chat-panel, .card-shop-panel {
+    -fx-background-color: -color-background-secondary;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0, 0, 4);
+    -fx-border-color: rgba(228, 192, 101, 0.3);
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
 }
 
-.label.title {
-    -fx-font-family: "Cinzel", serif;
-    -fx-font-size: 18px;
+.game-board-container {
+    -fx-background-color: -color-background-primary;
+    -fx-background-radius: 8px;
+    -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0, 0, 2);
+}
+
+/* Titles and headers */
+.section-title, .panel-title, .card-category {
+    -fx-font-family: "Cinzel", "Segoe UI", serif;
     -fx-font-weight: bold;
-    -fx-text-fill: #e4c065;
+    -fx-text-fill: -color-accent-primary;
 }
 
-.section-label {
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #e4c065;
+.section-title {
+    -fx-font-size: 16px;
     -fx-padding: 0 0 5 0;
 }
 
-/* ========== Layout Components ========== */
-.vbox, .hbox {
-    -fx-spacing: 10px;
+.panel-title {
+    -fx-font-size: 18px;
 }
 
-.header, .navbar {
-    -fx-background-color: linear-gradient(to bottom, #2a2f40, #1a2133);
-    -fx-padding: 12px 20px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 8, 0, 0, 3);
-    -fx-border-width: 0 0 2px 0;
-    -fx-border-color: #e4c065;
+.card-category {
+    -fx-font-size: 14px;
+    -fx-padding: 0 0 5 0;
 }
 
-.header-title, .navbar-title {
-    -fx-font-family: "Cinzel", serif;
-    -fx-font-size: 28px;
+/* Connection status */
+.connection-status-container {
+    -fx-padding: 5px;
+    -fx-background-color: rgba(44, 51, 71, 0.6);
+    -fx-background-radius: 4px;
+    -fx-border-color: rgba(228, 192, 101, 0.2);
+    -fx-border-radius: 4px;
+}
+
+.connection-indicator {
+    -fx-fill: #4eb34e; /* Connected by default */
+}
+
+.connection-indicator.disconnected {
+    -fx-fill: #d16565;
+}
+
+.connection-indicator.reconnecting {
+    -fx-fill: #e4c065;
+}
+
+.connection-status-text {
+    -fx-text-fill: -color-accent-primary;
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-text-fill: #e4c065;
 }
 
-/* ========== Controls ========== */
-/* Button Styles */
-.button {
-    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #3a3a45, #2a2a35);
-    -fx-text-fill: #e4c065;
-    -fx-padding: 10px 20px;
-    -fx-background-radius: 3px;
-    -fx-border-radius: 3px;
+/* Resource components */
+.resource-section {
+    -fx-background-color: rgba(44, 51, 71, 0.6);
+    -fx-background-radius: 6px;
+    -fx-padding: 10px;
+    -fx-border-color: rgba(228, 192, 101, 0.2);
+    -fx-border-radius: 6px;
+}
+
+.energy-bar {
+    -fx-accent: -color-accent-primary;
+    -fx-background-color: rgba(44, 51, 71, 0.8);
+    -fx-background-insets: 0;
+    -fx-background-radius: 4;
+    -fx-padding: 0;
+    -fx-min-height: 20;
+}
+
+.energy-bar .track {
+    -fx-background-color: rgba(44, 51, 71, 0.8);
+    -fx-background-radius: 4;
+    -fx-border-color: rgba(228, 192, 101, 0.3);
+    -fx-border-radius: 4;
+    -fx-border-width: 1;
+}
+
+.energy-bar .bar {
+    -fx-background-color: linear-gradient(to right, #6595e4, #4eb34e);
+    -fx-background-radius: 4;
+    -fx-padding: 0;
+}
+
+.resource-value {
+    -fx-text-fill: -color-accent-primary;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.runes-container {
+    -fx-padding: 5 0 5 0;
+}
+
+/* Players list */
+.players-section {
+    -fx-background-color: rgba(44, 51, 71, 0.6);
+    -fx-background-radius: 6px;
+    -fx-border-color: rgba(228, 192, 101, 0.2);
+    -fx-border-radius: 6px;
+    -fx-padding: 10px;
+}
+
+.players-list {
+    -fx-background-color: rgba(26, 33, 51, 0.7);
+    -fx-background-radius: 4px;
+}
+
+.players-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-text-primary;
+    -fx-padding: 6px 8px;
+}
+
+.players-list .list-cell.current-player {
+    -fx-background-color: rgba(78, 179, 78, 0.3);
+    -fx-text-fill: #e8e8e8;
+    -fx-font-weight: bold;
+}
+
+.players-list .list-cell.next-player {
+    -fx-background-color: rgba(228, 192, 101, 0.2);
+}
+
+/* Buttons */
+.action-button, .send-button, .chat-toggle-button, .collapse-button {
+    -fx-background-color: rgba(44, 51, 71, 0.8);
+    -fx-text-fill: -color-accent-primary;
+    -fx-border-color: -color-accent-primary;
     -fx-border-width: 1px;
-    -fx-border-color: #e4c065;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 12px;
+}
+
+.action-button:hover, .send-button:hover, .chat-toggle-button:hover, .collapse-button:hover {
+    -fx-background-color: rgba(228, 192, 101, 0.2);
     -fx-cursor: hand;
-    -fx-font-weight: bold;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 5, 0, 0, 1);
 }
 
-.button:hover {
-    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #4a4a55, #3a3a45);
-    -fx-effect: dropshadow(three-pass-box, rgba(228, 192, 101, 0.4), 8, 0, 0, 0);
+.action-button:pressed, .send-button:pressed, .chat-toggle-button:pressed, .collapse-button:pressed {
+    -fx-background-color: rgba(228, 192, 101, 0.4);
+    -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.2), 2, 0, 0, 1);
 }
 
-.button:pressed {
-    -fx-background-color: #2a2a35;
-    -fx-effect: innershadow(three-pass-box, rgba(0, 0, 0, 0.4), 4, 0, 0, 1);
+.chat-toggle-button:selected {
+    -fx-background-color: rgba(228, 192, 101, 0.4);
+    -fx-text-fill: -color-text-primary;
 }
 
-/* Input Fields */
-.text-field {
-    -fx-background-color: #2c3347;
-    -fx-border-color: #4c5366;
-    -fx-border-width: 1px;
-    -fx-border-radius: 3px;
-    -fx-background-radius: 3px;
-    -fx-padding: 8px;
-    -fx-text-fill: #e8e8e8;
+.send-button {
+    -fx-background-color: rgba(101, 149, 228, 0.3);
+    -fx-border-color: -color-accent-secondary;
+    -fx-padding: 6px 12px;
 }
 
-.text-field:focused {
-    -fx-border-color: #e4c065;
-    -fx-effect: dropshadow(three-pass-box, rgba(228, 192, 101, 0.3), 6, 0, 0, 0);
+.send-button:hover {
+    -fx-background-color: rgba(101, 149, 228, 0.5);
 }
 
-/* List Views */
-.list-view {
-    -fx-background-color: #2c3347;
-    -fx-border-color: #4c5366;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
-    -fx-padding: 2px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 5, 0, 0, 1);
+/* Chat components */
+.chat-selector {
+    -fx-padding: 0 0 5 0;
 }
 
-.list-cell {
-    -fx-background-color: #2c3347;
-    -fx-text-fill: #e8e8e8;
-    -fx-padding: 8px;
-    -fx-border-width: 0 0 1px 0;
-    -fx-border-color: #3c4357;
+.whisper-selector {
+    -fx-padding: 0 0 5 0;
 }
 
-.list-cell:odd {
-    -fx-background-color: #293040;
+.whisper-label {
+    -fx-text-fill: -color-text-secondary;
+    -fx-alignment: center-left;
+    -fx-padding: 4px 0;
 }
 
-.list-cell:selected {
-    -fx-background-color: #3d4b69;
-    -fx-text-fill: #e4c065;
-    -fx-border-width: 0 0 1px 3px;
-    -fx-border-color: #3c4357 #3c4357 #3c4357 #e4c065;
+.whisper-combo {
+    -fx-background-color: rgba(44, 51, 71, 0.7);
+    -fx-text-fill: -color-text-primary;
+    -fx-prompt-text-fill: -color-text-secondary;
 }
 
-/* Scroll Bars and Panes */
-.scroll-bar {
-    -fx-background-color: #1a2133;
+.chat-list {
+    -fx-background-color: rgba(44, 51, 71, 0.9);
+    -fx-background-radius: 4px;
+    -fx-border-color: rgba(228, 192, 101, 0.5);
+    -fx-border-radius: 4px;
 }
 
-.scroll-bar .thumb {
-    -fx-background-color: #4c5366;
-    -fx-background-radius: 3px;
+.chat-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-text-primary;
+    -fx-padding: 6px 8px;
 }
 
-.scroll-bar .thumb:hover {
-    -fx-background-color: #e4c065;
+.chat-list .list-cell:odd {
+    -fx-background-color: rgba(44, 51, 71, 0.3);
 }
 
-.scroll-pane {
-    -fx-background: #1a2133;
-    -fx-background-color: #1a2133;
-    -fx-border-color: #4c5366;
+.chat-input {
+    -fx-background-color: rgba(44, 51, 71, 0.7);
+    -fx-text-fill: -color-text-primary;
+    -fx-prompt-text-fill: -color-text-secondary;
+    -fx-border-color: rgba(76, 83, 102, 0.5);
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-padding: 6px 10px;
 }
 
-.scroll-pane > .viewport {
-    -fx-background-color: #1a2133;
+/* Card shop styling */
+.card-shop-panel {
+    -fx-background-color: -color-background-secondary;
 }
 
-.scroll-pane > .corner {
-    -fx-background-color: #1a2133;
+.shop-scroll {
+    -fx-background-color: transparent;
+    -fx-padding: 5px;
 }
 
-/* ========== Game Components ========== */
-/* Canvas */
-.canvas {
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 8, 0, 0, 3);
-    -fx-background-color: #2c3347;
-}
-
-/* Panel styling */
-.panel {
-    -fx-background-color: rgba(26, 33, 51, 0.8);
-    -fx-border-color: #4c5366;
-    -fx-border-width: 1px;
-    -fx-border-radius: 5px;
-}
-
-/* ========== Card Styles ========== */
-.card {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #3c4357, #2c3347);
-    -fx-border-width: 2px;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.5), 5, 0, 0, 2);
-}
-
-.artifact-card {
-    -fx-border-color: #e4c065;
-}
-
-.structure-card {
-    -fx-border-color: #6595e4;
-}
-
-.shop-card {
-    -fx-spacing: 0;
+.shop-scroll .viewport {
     -fx-background-color: transparent;
 }
 
-.card-price-container {
-    -fx-padding: 5px 0;
-    -fx-background-color: rgba(44, 49, 67, 0.8);
-    -fx-border-color: #e4c065;
-    -fx-border-width: 1px 0 0 0;
+.card-section {
+    -fx-padding: 5px 10px;
 }
 
-.card-price {
-    -fx-text-fill: #e4c065;
-    -fx-font-weight: bold;
+.section-divider {
+    -fx-background-color: rgba(228, 192, 101, 0.3);
+    -fx-padding: 0 1px;
+    -fx-pref-width: 1px;
+}
+
+.card {
+    -fx-background-color: rgba(44, 51, 71, 0.7);
+    -fx-background-radius: 6px;
+    -fx-border-color: rgba(76, 83, 102, 0.7);
+    -fx-border-radius: 6px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 3, 0, 0, 1);
+}
+
+.artifact-card {
+    -fx-border-color: rgba(101, 149, 228, 0.7);
+}
+
+.structure-card {
+    -fx-border-color: rgba(228, 192, 101, 0.7);
+}
+
+.shop-card {
+    -fx-padding: 0 0 8 0;
+}
+
+.shop-card:hover {
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(228, 192, 101, 0.4), 8, 0, 0, 0);
 }
 
 .card-title {
     -fx-font-weight: bold;
-    -fx-text-fill: #e8e8e8;
+    -fx-text-fill: -color-text-primary;
+    -fx-padding: 8px 4px 0 4px;
+    -fx-font-size: 13px;
 }
 
-.artifact-section {
-    -fx-background-color: rgba(228, 192, 101, 0.1);
-    -fx-background-radius: 5px;
+.card-price-container {
+    -fx-padding: 5px 0 0 0;
+}
+
+.card-price {
+    -fx-text-fill: -color-accent-primary;
+    -fx-font-size: 12px;
+}
+
+/* Scrollbars */
+.scroll-bar {
+    -fx-background-color: rgba(26, 33, 51, 0.5);
+    -fx-background-radius: 2px;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: rgba(228, 192, 101, 0.3);
+    -fx-background-radius: 2px;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: rgba(228, 192, 101, 0.5);
+}
+
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+/* Resize improvements */
+.game-board-container {
+    -fx-min-width: 400;
+    -fx-min-height: 300;
+    -fx-background-color: -color-background-primary;
+}
+
+/* Collapsible card panel */
+.titled-pane {
+    -fx-text-fill: -color-accent-primary;
+    -fx-font-family: "Cinzel", "Segoe UI", serif;
+    -fx-font-weight: bold;
+}
+
+.titled-pane > .title {
+    -fx-background-color: rgba(44, 51, 71, 0.8);
     -fx-border-color: rgba(228, 192, 101, 0.3);
-    -fx-border-radius: 5px;
-    -fx-padding: 5px;
-    -fx-spacing: 5px;
 }
 
-.structure-section {
-    -fx-background-color: rgba(101, 149, 228, 0.1);
-    -fx-background-radius: 5px;
-    -fx-border-color: rgba(101, 149, 228, 0.3);
-    -fx-border-radius: 5px;
-    -fx-padding: 5px;
-    -fx-spacing: 5px;
+/* Improve card layout */
+.card-section {
+    -fx-padding: 10px;
 }
 
-.section-divider {
-    -fx-background-color: #4c5366;
-    -fx-min-width: 2px;
-    -fx-pref-width: 2px;
-    -fx-max-width: 2px;
-}
-
-/* ========== Chat Components ========== */
-.chat-list {
-    -fx-wrap-text: true;
-}
-
-.chat-list .list-cell {
-    -fx-wrap-text: true;
-    -fx-text-overrun: word-ellipsis;
-    -fx-content-display: graphic-only;
-}
-
-/* ========== Energy Components ========== */
-.energy-bar-background {
-    -fx-fill: #2c3347;
-    -fx-stroke: #4c5366;
-    -fx-stroke-width: 2;
-    -fx-arc-width: 20;
-    -fx-arc-height: 20;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 5, 0, 0, 1);
-}
-
-.energy-bar-fill {
-    -fx-fill: linear-gradient(to right, #984c12, #e4c065);
-    -fx-arc-width: 20;
-    -fx-arc-height: 20;
-    -fx-effect: innershadow(three-pass-box, rgba(255, 255, 255, 0.3), 3, 0, 0, 0);
-}
-
-.energy-value {
-    -fx-font-weight: bold;
-    -fx-text-fill: #e4c065;
-    -fx-font-size: 14px;
-}
-
-.energy-marker {
-    -fx-stroke: rgba(255, 249, 224, 0.5);
-    -fx-stroke-width: 1;
-    -fx-stroke-dash-array: 2 1;
-}
-
-/* ========== Runes Components ========== */
-.runes-container {
-    -fx-background-color: #2c3347;
-    -fx-background-radius: 15;
-    -fx-border-radius: 15;
-    -fx-border-color: #e4c065;
-    -fx-border-width: 2;
-    -fx-padding: 5 15;
-}
-
-.runes-value {
-    -fx-text-fill: #e4c065;
-    -fx-font-size: 18;
-    -fx-font-weight: bold;
+/* FlowPane for structures to wrap properly */
+.flow-pane {
+    -fx-hgap: 8;
+    -fx-vgap: 8;
+    -fx-max-width: infinity;
 }
