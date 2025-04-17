@@ -123,7 +123,7 @@ public class ArtifactBehaviorRegistry {
                 if (tile == null || !tile.hasEntity()) continue;
                 PurchasableEntity entity = tile.getEntity();
                 if (entity != null && entity.getName().equals("ActiveTrap")) {
-                    gameState.sendNotification("20$" + tile.getX() + "$" + tile.getY());
+                    gameState.sendNotification(player.getName(),"20$" + tile.getX() + "$" + tile.getY());
                 }
             }
             return true;

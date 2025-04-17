@@ -38,7 +38,7 @@ public class GameLogic implements GameLogicInterface {
      */
     public GameLogic(GameEventNotifier notifier) {
         this.notifier = notifier;
-        this.gameState = new GameState();
+        this.gameState = new GameState(notifier);
         this.turnManager = gameState.getTurnManager();
         this.tileActionHandler = new TileActionHandler(gameState, gameLock);
         this.structureActionHandler = new StructureActionHandler(gameState, gameLock);

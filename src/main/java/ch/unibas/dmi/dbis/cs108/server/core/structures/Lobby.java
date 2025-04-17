@@ -286,6 +286,23 @@ public class Lobby implements GameEventNotifier {
     }
 
     /**
+     * Sends a message to a specific player.
+     *
+     * @param player  The player to send the message to.
+     * @param message The message to send.
+     */
+    @Override
+    public void sendMessageToPlayer(String player, String message) {
+        for (ClientHandler client : players) {
+            if (client.getPlayerName().equals(player)) {
+                client.sendMessage(message);
+                return;
+            }
+        }
+        logger.warning("Player " + player + " not found in lobby " + id);
+    }
+
+    /**
      * Ends the game.
      */
     @Override

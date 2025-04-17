@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.server.core.model;
 
+import ch.unibas.dmi.dbis.cs108.server.core.logic.GameEventNotifier;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.TurnManager;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import java.util.*;
@@ -21,13 +22,16 @@ public class GameState {
     private final TurnManager turnManager;
     /** List of players in the game (stored as player objects) */
     private final List<Player> players = new ArrayList<>();
+    /** GameEventNotifier to notify the game about events */
+    private final GameEventNotifier notifier;
 
     /**
      * Creates a new gameState object. Initializes the Board- and TurnManager.
      */
-    public GameState() {
+    public GameState(GameEventNotifier notifier) {
         this.boardManager = new BoardManager(stateLock);
         this.turnManager = new TurnManager(this);
+        this.notifier = notifier;
     }
 
     /**
@@ -126,6 +130,7 @@ public class GameState {
         return new GameStateSerializer(this).createDetailedStatusMessage();
     }
 
-    public void sendNotification(String s) {
+    public void sendNotification(String player, String s) {
+        notifier.sendMessageToPlayer(player, s);
     }
 }

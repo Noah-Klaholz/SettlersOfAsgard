@@ -21,4 +21,11 @@ public interface GameEventNotifier {
      * @return true if the action was successful.
      */
     boolean manualEndTurn();
+
+    /**
+     * Sends a message to a specific player.
+     * @param player The player to send the message to.
+     * @param message The message to send.
+     */
+    void sendMessageToPlayer(String player, String message);
 }
