@@ -7,6 +7,12 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Logger;
 
+/**
+ * This class saves the current state of the game. It contains:
+ * 1. A list of player objects (that contain player information)
+ * 2. A BoardManager (that contains board and tile information)
+ * It gets updated after every action by the GameStateManager.
+ */
 public class GameState {
     /** Logger to log logging */
     private static final Logger LOGGER = Logger.getLogger(ch.unibas.dmi.dbis.cs108.client.core.state.GameState.class.getName());
