@@ -17,6 +17,11 @@ public abstract class UIComponent<T extends Node> {
     protected T view;
 
     public UIComponent(String fxmlPath) {
+        if (fxmlPath == null || fxmlPath.isEmpty()) {
+            // No FXML to load, view will be created programmatically by subclass
+            return;
+        }
+        
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             loader.setController(this);
