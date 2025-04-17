@@ -1,13 +1,16 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
-import ch.unibas.dmi.dbis.cs108.client.networking.events.LobbyListEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.*;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.LobbyChatEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -19,10 +22,12 @@ import java.util.logging.Logger;
 public class LobbyScreenController extends BaseController {
     private static final Logger LOGGER = Logger.getLogger(LobbyScreenController.class.getName());
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+
     // Data models
-    private final ObservableList<GameLobby> lobbies = FXCollections.observableArrayList();
+    private final ObservableList<GameLobby> allLobbies = FXCollections.observableArrayList();
     private final ObservableList<String> players = FXCollections.observableArrayList();
     private final ObservableList<String> messages = FXCollections.observableArrayList();
+    private FilteredList<GameLobby> filteredLobbies;
     // Lobby management
     @FXML
     private Label playerNameLabel;
@@ -42,6 +47,7 @@ public class LobbyScreenController extends BaseController {
     private TextField lobbyNameField;
     @FXML
     private Label errorMessage;
+
     // Player management
     @FXML
     private ListView<String> playerList;
@@ -49,11 +55,13 @@ public class LobbyScreenController extends BaseController {
     private VBox hostControlsPanel;
     @FXML
     private ComboBox<Integer> maxPlayersCombo;
+
     // Chat components
     @FXML
     private ListView<String> chatMessages;
     @FXML
     private TextField chatInput;
+
     // State
     private String currentLobbyId;
     private boolean isHost = false;
@@ -73,7 +81,7 @@ public class LobbyScreenController extends BaseController {
         setupSearchField();
         setupEventHandlers();
 
-        // Set player name
+        // Set player name (Consider fetching actual player name if available)
         playerNameLabel.setText("Player: " + playerName);
 
         // Request lobby data from server
@@ -81,16 +89,23 @@ public class LobbyScreenController extends BaseController {
     }
 
     private void setupTableView() {
-        nameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getName()));
-        playersColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getPlayerCount()));
-        statusColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getStatus()));
-        hostColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getHostName()));
+        nameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
+        playersColumn.setCellValueFactory(cellData -> cellData.getValue().playerCountProperty());
+        statusColumn.setCellValueFactory(cellData -> cellData.getValue().statusProperty());
+        hostColumn.setCellValueFactory(cellData -> cellData.getValue().hostProperty());
 
-        lobbyTable.setItems(lobbies);
-        lobbyTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                clearErrorMessage();
-            }
+        filteredLobbies = new FilteredList<>(allLobbies, p -> true);
+        lobbyTable.setItems(filteredLobbies);
+
+        // Double-click to join lobby
+        lobbyTable.setRowFactory(tv -> {
+            TableRow<GameLobby> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    handleJoinLobby();
+                }
+            });
+            return row;
         });
     }
 
@@ -104,57 +119,55 @@ public class LobbyScreenController extends BaseController {
     }
 
     private void setupComboBoxes() {
-        maxPlayersCombo.setItems(FXCollections.observableArrayList(2, 3, 4, 5, 6));
-        maxPlayersCombo.getSelectionModel().select(Integer.valueOf(4)); // Default to 4 players
+        maxPlayersCombo.setItems(FXCollections.observableArrayList(2, 3, 4, 5, 6, 8));
+        maxPlayersCombo.getSelectionModel().select(Integer.valueOf(4)); // Default 4 players
+
+        maxPlayersCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null && isHost && currentLobbyId != null) {
+                // Send update to server
+                eventBus.publish(new UpdateLobbySettingsEvent(currentLobbyId, "maxPlayers", newVal.toString()));
+            }
+        });
     }
 
     private void setupSearchField() {
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-            filterLobbies(newValue);
+            filteredLobbies.setPredicate(lobby -> {
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+
+                String lowerCaseFilter = newValue.toLowerCase();
+                if (lobby.getName().toLowerCase().contains(lowerCaseFilter)) {
+                    return true;
+                }
+                return lobby.getHost().toLowerCase().contains(lowerCaseFilter);
+            });
         });
     }
 
     private void setupEventHandlers() {
-        // Use type-safe event subscriptions
-        eventBus.subscribe(LobbyListEvent.class, this::handleLobbyList);
-        eventBus.subscribe(LobbyJoinEvent.class, this::handleLobbyJoin);
-        eventBus.subscribe(ChatMessageEvent.class, this::handleChatMessage);
-        eventBus.subscribe(PlayerJoinedEvent.class, this::handlePlayerJoined);
-        eventBus.subscribe(PlayerLeftEvent.class, this::handlePlayerLeft);
+        // Subscribe to UI Events (not networking events directly)
+        eventBus.subscribe(LobbyListResponseEvent.class, this::handleLobbyListResponse);
+        eventBus.subscribe(LobbyJoinedEvent.class, this::handleLobbyJoined);
+        eventBus.subscribe(GlobalChatEvent.class, this::handleGlobalChatMessage);
+        eventBus.subscribe(LobbyChatEvent.class, this::handleLobbyChatMessage);
+        eventBus.subscribe(PlayerJoinedLobbyEvent.class, this::handlePlayerJoinedLobby);
+        eventBus.subscribe(LobbyLeftEvent.class, this::handleLobbyLeft);
         eventBus.subscribe(ErrorEvent.class, this::handleError);
+        eventBus.subscribe(LeaveLobbyRequestEvent.class, this::handleLeaveLobby);
+        eventBus.subscribe(GameStartedEvent.class, this::handleGameStarted);
     }
 
-    private void handleLobbyList(LobbyListEvent event) {
-        Platform.runLater(() -> updateLobbies(event.getLobbies()));
-    }
-
-    private void handleLobbyJoin(LobbyJoinEvent event) {
-        Platform.runLater(() -> handleSuccessfulJoin(event.getLobbyData()));
-    }
-
-    private void handleChatMessage(ChatMessageEvent event) {
-        Platform.runLater(() -> addChatMessage(event.getMessage()));
-    }
-
-    private void handlePlayerJoined(PlayerJoinedEvent event) {
-        Platform.runLater(() -> addPlayer(event.getPlayerName()));
-    }
-
-    private void handlePlayerLeft(PlayerLeftEvent event) {
-        Platform.runLater(() -> removePlayer(event.getPlayerName()));
-    }
-
-    private void handleError(ErrorEvent event) {
-        Platform.runLater(() -> showErrorMessage(event.getErrorMessage()));
-    }
+    // UI Action Handlers
 
     @FXML
     private void handleBackToMainMenu() {
         if (currentLobbyId != null) {
-            // Send leave lobby request to server
-            sendLeaveLobbyRequest();
+            // Leave current lobby first
+            eventBus.publish(new LeaveLobbyRequestEvent(currentLobbyId));
         }
-        sceneManager.switchToScene(SceneManager.SceneType.MAIN_MENU);
+        sceneManager.loadScene(SceneManager.SceneType.MAIN_MENU);
     }
 
     @FXML
@@ -165,248 +178,192 @@ public class LobbyScreenController extends BaseController {
     @FXML
     private void handleCreateLobby() {
         String lobbyName = lobbyNameField.getText().trim();
-
         if (lobbyName.isEmpty()) {
-            showErrorMessage("Please enter a lobby name.");
+            showError("Please enter a lobby name");
             return;
         }
 
-        // Send create lobby request to server
-        sendCreateLobbyRequest(lobbyName);
-        clearErrorMessage();
+        // Clear any previous errors
+        clearError();
+
+        // Send create lobby request
+        eventBus.publish(new CreateLobbyRequestEvent(lobbyName, playerName));
     }
 
     @FXML
     private void handleJoinLobby() {
         GameLobby selectedLobby = lobbyTable.getSelectionModel().getSelectedItem();
-
         if (selectedLobby == null) {
-            showErrorMessage("Please select a lobby to join.");
+            showError("Please select a lobby to join");
             return;
         }
 
-        if ("Full".equals(selectedLobby.getStatus()) || "In Progress".equals(selectedLobby.getStatus())) {
-            showErrorMessage("Cannot join this lobby. It is either full or in progress.");
+        if ("In Progress".equals(selectedLobby.getStatus())) {
+            showError("Cannot join a game in progress");
             return;
         }
 
-        // Send join lobby request to server
-        sendJoinLobbyRequest(selectedLobby.getId());
-        clearErrorMessage();
+        // Clear any previous errors
+        clearError();
+
+        // Send join lobby request
+        eventBus.publish(new JoinLobbyRequestEvent(selectedLobby.getId(), playerName));
     }
 
     @FXML
     private void handleSendChatMessage() {
         String message = chatInput.getText().trim();
-
         if (message.isEmpty() || currentLobbyId == null) {
             return;
         }
 
-        // Send chat message to server
-        sendChatMessage(message);
+        // Send chat message event
+        eventBus.publish(new LobbyChatEvent(currentLobbyId, playerName, message));
+
+        // Clear the input field
         chatInput.clear();
     }
 
     @FXML
     private void handleStartGame() {
-        if (!isHost || currentLobbyId == null) {
-            return;
-        }
+        if (isHost && currentLobbyId != null) {
+            if (players.size() < 2) {
+                showError("Need at least 2 players to start");
+                return;
+            }
 
-        if (players.size() < 2) {
-            showErrorMessage("At least 2 players are needed to start the game.");
-            return;
-        }
-
-        // Send start game request to server
-        sendStartGameRequest();
-    }
-
-    // Server communication methods
-    private void requestLobbies() {
-        // Mock implementation - in a real app, this would communicate with the server
-        LOGGER.info("Requesting lobbies from server");
-
-        // Clear existing lobbies for refresh
-        lobbies.clear();
-
-        // Add mock data (would be replaced with actual server data)
-        lobbies.addAll(
-                new GameLobby("lobby1", "Thor's Arena", "2/4", "Open", "Thor"),
-                new GameLobby("lobby2", "Odin's Hall", "4/4", "Full", "Odin"),
-                new GameLobby("lobby3", "Loki's Game", "1/6", "Open", "Loki"),
-                new GameLobby("lobby4", "Valkyrie Battle", "2/2", "In Progress", "Freya")
-        );
-    }
-
-    private void sendCreateLobbyRequest(String name) {
-        LOGGER.info("Creating lobby: " + name);
-        // In real implementation: send request to server
-
-        // Mock behavior - simulate success
-        currentLobbyId = "new_lobby_" + System.currentTimeMillis();
-        isHost = true;
-
-        // Clear and setup the lobby UI
-        messages.clear();
-        players.clear();
-
-        // Show host controls
-        hostControlsPanel.setVisible(true);
-        hostControlsPanel.setManaged(true);
-
-        // Add self as player
-        addPlayer(playerName + " (Host)");
-
-        // Add welcome message
-        addSystemMessage("Lobby created successfully. Waiting for players to join.");
-    }
-
-    private void sendJoinLobbyRequest(String lobbyId) {
-        LOGGER.info("Joining lobby: " + lobbyId);
-        // In real implementation: send request to server
-
-        // Mock behavior - simulate success
-        GameLobby selectedLobby = lobbyTable.getSelectionModel().getSelectedItem();
-        if (selectedLobby != null) {
-            currentLobbyId = lobbyId;
-            isHost = false;
-
-            // Clear and setup the lobby UI
-            messages.clear();
-            players.clear();
-
-            // Hide host controls
-            hostControlsPanel.setVisible(false);
-            hostControlsPanel.setManaged(false);
-
-            // Add players (mock)
-            addPlayer(selectedLobby.getHostName() + " (Host)");
-            addPlayer(playerName);
-
-            // Add welcome message
-            addSystemMessage("You've joined " + selectedLobby.getName() + ". Welcome!");
+            // Send start game request
+            eventBus.publish(new StartGameRequestEvent(currentLobbyId));
         }
     }
 
-    private void sendLeaveLobbyRequest() {
-        LOGGER.info("Leaving lobby: " + currentLobbyId);
-        // In real implementation: send request to server
+    // UIEvent Bus Handlers
 
-        currentLobbyId = null;
-        isHost = false;
-    }
-
-    private void sendChatMessage(String message) {
-        LOGGER.info("Sending chat message in lobby " + currentLobbyId);
-        // In real implementation: send to server
-
-        // For demo purposes, add the message directly
-        String formattedMessage = getCurrentTime() + " " + playerName + ": " + message;
-        messages.add(formattedMessage);
-        scrollToBottom(chatMessages);
-    }
-
-    private void sendStartGameRequest() {
-        LOGGER.info("Starting game in lobby " + currentLobbyId);
-        // In real implementation: send to server
-
-        // For demo, just switch to the game scene
-        sceneManager.switchToScene(SceneManager.SceneType.GAME);
-    }
-
-    // UI update methods
-    private void handleSuccessfulJoin(String lobbyData) {
-        // Parse lobby data and update UI accordingly
-        LOGGER.info("Successfully joined lobby: " + lobbyData);
-    }
-
-    private void addChatMessage(String message) {
-        messages.add(message);
-        scrollToBottom(chatMessages);
-    }
-
-    private void addSystemMessage(String message) {
-        messages.add(getCurrentTime() + " System: " + message);
-        scrollToBottom(chatMessages);
-    }
-
-    private void addPlayer(String player) {
-        if (!players.contains(player)) {
-            players.add(player);
-            addSystemMessage(player + " joined the lobby");
-        }
-    }
-
-    private void removePlayer(String player) {
-        boolean removed = players.remove(player);
-        if (removed) {
-            addSystemMessage(player + " left the lobby");
-        }
-    }
-
-    private void updateLobbies(String lobbyData) {
-        // Parse lobby data and update the table
-        // In a real implementation, this would deserialize JSON/other format
-        LOGGER.info("Updating lobbies with data: " + lobbyData);
-    }
-
-    private void filterLobbies(String searchText) {
-        // In a real app, this might filter from a larger dataset
-        // For this example, we're just filtering the current observable list
-        if (searchText == null || searchText.isEmpty()) {
-            requestLobbies(); // Reset to all lobbies
-            return;
-        }
-
-        String lowerCaseSearch = searchText.toLowerCase();
-
-        ObservableList<GameLobby> filteredList = lobbies.filtered(lobby ->
-                lobby.getName().toLowerCase().contains(lowerCaseSearch) ||
-                        lobby.getHostName().toLowerCase().contains(lowerCaseSearch)
-        );
-
-        lobbyTable.setItems(filteredList);
-    }
-
-    private void showErrorMessage(String message) {
-        errorMessage.setText(message);
-        errorMessage.setVisible(true);
-    }
-
-    private void clearErrorMessage() {
-        errorMessage.setText("");
-        errorMessage.setVisible(false);
-    }
-
-    private <T> void scrollToBottom(ListView<T> listView) {
+    private void handleLobbyListResponse(LobbyListResponseEvent event) {
         Platform.runLater(() -> {
-            int size = listView.getItems().size();
-            if (size > 0) {
-                listView.scrollTo(size - 1);
+            allLobbies.clear();
+            allLobbies.addAll(event.getLobbies());
+        });
+    }
+
+    private void handleLobbyJoined(LobbyJoinedEvent event) {
+        Platform.runLater(() -> {
+            currentLobbyId = event.getLobbyId();
+            isHost = event.isHost();
+
+            // Update UI based on whether the player is host
+            hostControlsPanel.setVisible(isHost);
+            hostControlsPanel.setManaged(isHost);
+
+            // Reset displays
+            players.clear();
+            players.addAll(event.getPlayers());
+            messages.clear();
+
+            // Add system message
+            addSystemMessage("You joined the lobby");
+        });
+    }
+
+    private void handleGlobalChatMessage(GlobalChatEvent event) {
+        Platform.runLater(() -> {
+            String formattedMessage = String.format("[%s] %s: %s",
+                    TIME_FORMATTER.format(event.getTimestamp()),
+                    event.getSender(),
+                    event.getContent());
+            messages.add(formattedMessage);
+        });
+    }
+
+    private void handleLobbyChatMessage(LobbyChatEvent event) {
+        Platform.runLater(() -> {
+            String formattedMessage = String.format("[%s] %s: %s",
+                    TIME_FORMATTER.format(event.getTimestamp()),
+                    event.getSender(),
+                    event.getMessage());
+            messages.add(formattedMessage);
+        });
+    }
+
+    private void handlePlayerJoinedLobby(PlayerJoinedLobbyEvent event) {
+        Platform.runLater(() -> {
+            if (!players.contains(event.getPlayerName())) {
+                players.add(event.getPlayerName());
+                addSystemMessage(event.getPlayerName() + " joined the lobby");
             }
         });
     }
 
-    private String getCurrentTime() {
-        return "[" + LocalDateTime.now().format(TIME_FORMATTER) + "]";
+    private void handleLobbyLeft(LobbyLeftEvent event) {
+        Platform.runLater(() -> {
+            players.remove(event.getPlayerName());
+            addSystemMessage(event.getPlayerName() + " left the lobby");
+        });
     }
 
-    // Model classes
+
+    private void handleError(ErrorEvent event) {
+        Platform.runLater(() -> {
+            showError(event.getErrorMessage());
+        });
+    }
+
+    private void handleLeaveLobby(LeaveLobbyRequestEvent event) {
+        Platform.runLater(() -> {
+            currentLobbyId = null;
+            isHost = false;
+            players.clear();
+            messages.clear();
+            hostControlsPanel.setVisible(false);
+            hostControlsPanel.setManaged(false);
+
+            // Refresh lobbies list
+            requestLobbies();
+        });
+    }
+
+    private void handleGameStarted(GameStartedEvent event) {
+        Platform.runLater(() -> {
+            // Transition to game screen
+            sceneManager.loadScene(SceneManager.SceneType.GAME);
+        });
+    }
+
+    // Helper Methods
+    private void requestLobbies() {
+        eventBus.publish(new LobbyListRequestEvent());
+    }
+
+    private void showError(String message) {
+        errorMessage.setText(message);
+        errorMessage.setVisible(true);
+    }
+
+    private void clearError() {
+        errorMessage.setText("");
+        errorMessage.setVisible(false);
+    }
+
+    private void addSystemMessage(String message) {
+        String formattedMessage = String.format("[%s] %s",
+                TIME_FORMATTER.format(LocalDateTime.now()),
+                message);
+        messages.add(formattedMessage);
+    }
+
     public static class GameLobby {
         private final String id;
-        private final String name;
-        private final String playerCount;
-        private final String status;
-        private final String hostName;
+        private final javafx.beans.property.StringProperty name;
+        private final javafx.beans.property.StringProperty playerCount;
+        private final javafx.beans.property.StringProperty status;
+        private final javafx.beans.property.StringProperty host;
 
-        public GameLobby(String id, String name, String playerCount, String status, String hostName) {
+        public GameLobby(String id, String name, int currentPlayers, int maxPlayers, String status, String host) {
             this.id = id;
-            this.name = name;
-            this.playerCount = playerCount;
-            this.status = status;
-            this.hostName = hostName;
+            this.name = new javafx.beans.property.SimpleStringProperty(name);
+            this.playerCount = new javafx.beans.property.SimpleStringProperty(currentPlayers + "/" + maxPlayers);
+            this.status = new javafx.beans.property.SimpleStringProperty(status);
+            this.host = new javafx.beans.property.SimpleStringProperty(host);
         }
 
         public String getId() {
@@ -414,19 +371,35 @@ public class LobbyScreenController extends BaseController {
         }
 
         public String getName() {
+            return name.get();
+        }
+
+        public javafx.beans.property.StringProperty nameProperty() {
             return name;
         }
 
         public String getPlayerCount() {
+            return playerCount.get();
+        }
+
+        public javafx.beans.property.StringProperty playerCountProperty() {
             return playerCount;
         }
 
         public String getStatus() {
+            return status.get();
+        }
+
+        public javafx.beans.property.StringProperty statusProperty() {
             return status;
         }
 
-        public String getHostName() {
-            return hostName;
+        public String getHost() {
+            return host.get();
+        }
+
+        public javafx.beans.property.StringProperty hostProperty() {
+            return host;
         }
     }
 }
