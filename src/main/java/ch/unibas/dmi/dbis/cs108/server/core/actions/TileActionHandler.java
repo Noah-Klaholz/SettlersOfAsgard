@@ -2,11 +2,14 @@ package ch.unibas.dmi.dbis.cs108.server.core.actions;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
+import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 import ch.unibas.dmi.dbis.cs108.shared.utils.RandomGenerator;
 
+import java.util.Random;
 import java.util.concurrent.locks.ReadWriteLock;
 
 public class TileActionHandler {
@@ -43,8 +46,14 @@ public class TileActionHandler {
             tile.setPurchased(true);
             player.addOwnedTile(tile);
 
+            // Players always have a chance to randomly find an artifact when they buy a tile based on their artifact chance
+            if (tile.getArtifact() == null && RandomGenerator.chance((int) player.getStatus().get(Status.BuffType.ARTIFACT_CHANCE))) {
+                Artifact artifact = EntityRegistry.getArtifact(RandomGenerator.randomIntInRange(10,21));
+                tile.setArtifact(artifact);
+            }
+
             // Check if the Tile holds an artifact, and if so add it to the player
-            if (tile.getArtifact() != null || RandomGenerator.chance(player.getStatus().get(Status.BuffType.ARTIFACT_CHANCE))) {
+            if (tile.getArtifact() != null) {
                 player.getArtifacts().add(tile.getArtifact());
                 tile.setArtifact(null);
             }

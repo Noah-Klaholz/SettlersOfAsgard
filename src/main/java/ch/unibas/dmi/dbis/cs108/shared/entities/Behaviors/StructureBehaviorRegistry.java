@@ -61,7 +61,7 @@ public class StructureBehaviorRegistry {
         });
 
         registerBehavior("Huginn and Muninn", (structure, gameState, player) -> {
-            // TODO: Add behavior for Huginn and Muninn
+
             return true;
         });
 
