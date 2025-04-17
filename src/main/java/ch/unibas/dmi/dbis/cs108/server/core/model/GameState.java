@@ -97,13 +97,6 @@ public class GameState {
     /**
      * Convenience method for backward compatibility
      */
-    public String createStateMessage() {
-        return new GameStateSerializer(this).createStateMessage();
-    }
-
-    /**
-     * Convenience method for backward compatibility
-     */
     public String createDetailedStatusMessage() {
         return new GameStateSerializer(this).createDetailedStatusMessage();
     }
