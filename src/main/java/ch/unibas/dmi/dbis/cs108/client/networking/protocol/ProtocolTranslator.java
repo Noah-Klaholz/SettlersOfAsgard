@@ -236,7 +236,7 @@ public class ProtocolTranslator implements CommunicationAPI {
     }
 
     public String formatPong(String playerName) {
-        return "PONG" + DELIMITER + playerName; // Pong response
+        return Commands.OK.getCommand() + DELIMITER + Commands.PING.getCommand() + DELIMITER + playerName; // Pong response
     }
 
     public String formatRegister(String playerName) {
