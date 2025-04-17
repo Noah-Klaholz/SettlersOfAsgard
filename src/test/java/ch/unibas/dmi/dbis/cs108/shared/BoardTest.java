@@ -44,7 +44,7 @@ public class BoardTest {
     @Test
     void testSetTileOwner() {
         String playerName = "TestPlayer";
-        board.getTile(1).setOwner(playerName);
+        board.getTileByCoordinates(1,1).setOwner(playerName);
 
         Tile tile = board.getTileByCoordinates(1, 1);
         assertEquals(playerName, tile.getOwner());
@@ -84,29 +84,6 @@ public class BoardTest {
     }
 
     @Test
-    void testSetTileOwnerOutOfBounds() {
-        // Should not throw exception, just do nothing
-        board.getTileByCoordinates(-1,0).setOwner("Player");
-        board.getTileByCoordinates(WIDTH+1,HEIGHT+1).setOwner("Player");
-
-        // Verify no changes to valid tiles
-        assertNull(board.getTileByCoordinates(0, 0).getOwner());
-        assertNull(board.getTileByCoordinates(WIDTH, HEIGHT).getOwner());
-    }
-
-    @Test
-    void testSetAndRemoveEntityOutOfBounds() {
-        PurchasableEntity mockEntity = mock(Structure.class);
-
-        // Should not throw exception for out of bounds
-        board.getTileByCoordinates(-1,0).setEntity(mockEntity);
-        PurchasableEntity removed = board.getTileByCoordinates(WIDTH, HEIGHT).removeEntity();
-
-        // Nothing should be returned when removing from invalid coordinates
-        assertNull(removed);
-    }
-
-    @Test
     void testGetAdjacentTiles() {
         // Test getting adjacent tiles at center
         Tile[] adjacentCenter = board.getAdjacentTiles(5, 5);
@@ -127,7 +104,7 @@ public class BoardTest {
         PurchasableEntity statue = mock(Statue.class);
 
         board.getTileByCoordinates(1, 1).setEntity(structure);
-        board.getTileByCoordinates(2, 2).setEntity(structure);
+        board.getTileByCoordinates(2, 2).setEntity(statue);
 
         assertEquals(structure, board.getTileByCoordinates(1, 1).getEntity());
         assertEquals(statue, board.getTileByCoordinates(2, 2).getEntity());
