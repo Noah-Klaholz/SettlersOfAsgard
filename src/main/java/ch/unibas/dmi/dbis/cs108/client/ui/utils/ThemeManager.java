@@ -47,7 +47,8 @@ public class ThemeManager {
     }
 
     // File: src/main/java/ch/unibas/dmi/dbis/cs108/client/ui/utils/ThemeManager.java
-    private void applyThemeToScene(Scene scene) {
+    // Changed from private to public
+    public void applyThemeToScene(Scene scene) {
         scene.getStylesheets().clear();
 
         // Apply the theme stylesheet
