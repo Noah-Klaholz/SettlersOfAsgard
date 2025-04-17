@@ -3,6 +3,8 @@ package ch.unibas.dmi.dbis.cs108.server.core.model;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameEventNotifier;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.TurnManager;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
+import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
+
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -131,6 +133,6 @@ public class GameState {
     }
 
     public void sendNotification(String player, String s) {
-        notifier.sendMessageToPlayer(player, s);
+        notifier.sendMessageToPlayer(player, CommunicationAPI.NetworkProtocol.Commands.INFO.getCommand() + s);
     }
 }

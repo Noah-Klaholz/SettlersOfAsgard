@@ -174,6 +174,10 @@ public interface CommunicationAPI {
              * Player uses a field artifact
              */
             USEFIELDARTIFACT("USFA"),
+            /**
+             * Entity notifies player
+             */
+            INFO("INFO"),
 
             // Response codes
             /**
