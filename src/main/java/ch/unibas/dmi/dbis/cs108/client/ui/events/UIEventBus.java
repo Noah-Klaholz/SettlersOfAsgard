@@ -1,5 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.events;
 
+import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyLeftEvent;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
