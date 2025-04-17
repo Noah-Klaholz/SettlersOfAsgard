@@ -1,10 +1,14 @@
 package ch.unibas.dmi.dbis.cs108.server.core.model;
 
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
+import ch.unibas.dmi.dbis.cs108.shared.game.Status;
+import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 
 import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,32 +37,93 @@ public class GameStateSerializer {
         ReadWriteLock lock = gameState.getStateLock();
         lock.readLock().lock();
         try {
-            StringBuilder status = new StringBuilder("SYNC$");
-            status.append("gameRound=").append(gameState.getTurnManager().getGameRound()).append(",");
-            status.append("playerRound=").append(gameState.getTurnManager().getPlayerTurn()).append(",");
+            StringBuilder sb = new StringBuilder("SYNC$"); // CommandType = SYNCHRONIZE
 
-            // Add player details
-            List<Player> players = gameState.getPlayers();
-            status.append("players=");
-            for (Player player : players) {
-                status.append(player.getName()).append("[");
-                status.append("runes=").append(player.getRunes()).append(",");
-                status.append("energy=").append(player.getEnergy()).append(",");
-                status.append("tiles=").append(player.getOwnedTiles().size());
-                status.append("]:");
+            // 1. Game Meta
+            sb.append("META:")
+                    .append(gameState.getTurnManager().getGameRound()).append(",")
+                    .append(gameState.getTurnManager().getPlayerRound()).append(",")
+                    .append(gameState.getTurnManager().getPlayerTurn()).append("|");
 
-                // Add artifacts
-                status.append("artifacts[");
-                for (Artifact artifact : player.getArtifacts()) {
-                    status.append(artifact.getId()).append(",");
+            // 2. All Players
+            sb.append("PLAYERS:");
+            for (Player p : gameState.getPlayers()) {
+                sb.append(p.getPlayerID()).append("{")
+                        .append("N:").append(p.getName()).append(",")
+                        .append("R:").append(p.getRunes()).append(",")
+                        .append("E:").append(p.getEnergy()).append(",")
+
+                        // Owned tiles (IDs)
+                        .append("T:[");
+                for (Tile t : p.getOwnedTiles()) {
+                    sb.append(t.getTileID()).append(",");
                 }
-                status.append("];");
+                if (!p.getOwnedTiles().isEmpty()) sb.deleteCharAt(sb.length()-1);
+                sb.append("],");
+
+                // Artifacts
+                sb.append("A:[");
+                for (Artifact a : p.getArtifacts()) {
+                    sb.append(a.getId()).append(",");
+                }
+                if (!p.getArtifacts().isEmpty()) sb.deleteCharAt(sb.length()-1);
+                sb.append("],");
+
+                // Purchasable entities
+                sb.append("PE:[");
+                for (PurchasableEntity pe : p.getPurchasableEntities()) {
+                    sb.append(pe.getId()).append(",");
+                }
+                if (!p.getPurchasableEntities().isEmpty()) sb.deleteCharAt(sb.length()-1);
+                sb.append("],");
+
+                // Shop
+                sb.append("S:{")
+                        .append("SU:").append(p.getShop().isStatueInUse() ? 1 : 0)
+                        .append("},")
+
+                        // Status
+                        .append("ST:{")
+                        .append("RG:").append(p.getStatus().get(Status.BuffType.RUNE_GENERATION)).append(",")
+                        .append("EG:").append(p.getStatus().get(Status.BuffType.ENERGY_GENERATION)).append(",")
+                        .append("RR:").append(p.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION)).append(",")
+                        .append("SP:").append(p.getStatus().get(Status.BuffType.SHOP_PRICE)).append(",")
+                        .append("AC:").append(p.getStatus().get(Status.BuffType.ARTIFACT_CHANCE)).append(",")
+                        .append("DB:").append(p.getStatus().get(Status.BuffType.DEBUFFABLE))
+                        .append("}};");
+            }
+            sb.append("|");
+
+            // 3. All Tiles
+            sb.append("BOARD:");
+            Tile[][] tiles = gameState.getBoardManager().getBoard().getTiles();
+            for (int x = 0; x < tiles.length; x++) {
+                for (int y = 0; y < tiles[x].length; y++) {
+                    Tile t = tiles[x][y];
+                    sb.append(x).append(",").append(y).append("{")
+                            .append("HE:").append(t.hasEntity() ? 1 : 0).append(",")
+                            .append("O:").append(t.getOwner() != null ? t.getOwner() : "null").append(",")
+                            .append("P:").append(t.getPrice()).append(",")
+                            .append("AR:").append(t.getArtifact() != null ? t.getArtifact().getId() : "null").append(",")
+                            .append("W:").append(t.getWorld()).append(",")
+                            .append("PU:").append(t.isPurchased() ? 1 : 0).append(",")
+                            .append("RV:").append(t.getResourceValue()).append(",")
+                            .append("HR:").append(t.hasRiver() ? 1 : 0).append(",")
+                            .append("ID:").append(t.getTileID()).append(",")
+
+                            // Tile status
+                            .append("ST:{")
+                            .append("RG:").append(t.getStatus().get(Status.BuffType.RUNE_GENERATION)).append(",")
+                            .append("EG:").append(t.getStatus().get(Status.BuffType.ENERGY_GENERATION)).append(",")
+                            .append("RR:").append(t.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION)).append(",")
+                            .append("SP:").append(t.getStatus().get(Status.BuffType.SHOP_PRICE)).append(",")
+                            .append("AC:").append(t.getStatus().get(Status.BuffType.ARTIFACT_CHANCE)).append(",")
+                            .append("DB:").append(t.getStatus().get(Status.BuffType.DEBUFFABLE))
+                            .append("}};");
+                }
             }
 
-            return status.toString();
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error creating status message", e);
-            return "ERROR$Failed to create status";
+            return sb.toString();
         } finally {
             lock.readLock().unlock();
         }
