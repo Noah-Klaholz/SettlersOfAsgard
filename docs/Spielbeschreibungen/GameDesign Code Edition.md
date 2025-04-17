@@ -98,6 +98,7 @@ Chance auf Artefakte: Genereller buff für den Spieler
 
 
 ## Falle
+Fenrirs Ketten
 (Unterart von Artefakt)
 Nutzung: FieldArtifact -> Wird auf ein von niemandem gekauftes Feld gesetzt (änderbar) -> wird dort zur ActiveTrap
 **ActiveTrap:** Sobald Feld mit einer ActiveTrap gekauft wird, verliert der Spieler, der das Feld kauft Runen

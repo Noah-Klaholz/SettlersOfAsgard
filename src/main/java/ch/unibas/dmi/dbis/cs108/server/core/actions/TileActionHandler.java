@@ -3,6 +3,7 @@ package ch.unibas.dmi.dbis.cs108.server.core.actions;
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
+import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 import ch.unibas.dmi.dbis.cs108.shared.utils.RandomGenerator;
 
@@ -43,7 +44,7 @@ public class TileActionHandler {
             player.addOwnedTile(tile);
 
             // Check if the Tile holds an artifact, and if so add it to the player
-            if (tile.getArtifact() != null) {
+            if (tile.getArtifact() != null || RandomGenerator.chance(player.getStatus().get(Status.BuffType.ARTIFACT_CHANCE))) {
                 player.getArtifacts().add(tile.getArtifact());
                 tile.setArtifact(null);
             }
