@@ -45,7 +45,7 @@ hochlevelbar: (teuer)
 
 ### Spezifische Structures
 | **Struktur**      | **Nutzen**                                                                               | **Numbers** | **lvl 2**        | **lvl 3**                | **Beschränkung**                                               |
-| ----------------- |------------------------------------------------------------------------------------------| ----------- | ---------------- | ------------------------ |----------------------------------------------------------------|
+|-------------------|------------------------------------------------------------------------------------------| ----------- | ---------------- | ------------------------ |----------------------------------------------------------------|
 | Runentisch        | Aktiv: Wandelt Energie in Runen um                                                       |             |                  |                          |                                                                |
 | Statue            | Aktiv: Siehe Statuen                                                                     |             | Möglichkeit Deal | Möglichkeit Segen/ Fluch | 1x Nutzen pro Runde                                            |
 |                   |                                                                                          |             |                  |                          |                                                                |
@@ -55,8 +55,9 @@ hochlevelbar: (teuer)
 | Huginn und Muninn | Zeigt 1 Feld mit Artefakt                                                                |             |                  |                          | Kann auch ein bereits belegtes Feld sein (?)                   |
 | Rans Halle        | "Fängt mythische Fische" (Design/ Beschreibung, nicht code relevant) -> + Energie (flat) |             |                  |                          | Braucht Fluss                                                  |
 | Surturs Schmiede  | Gibt jede Runde einen kleinen zufälligen buff für den Spieler (permanent)                |             |                  |                          | Nur auf Steinboden (Welt der Zwerge: Svartalfheim) platzierbar |
+| Baum              | Gibt jede Runde eine größere Menge an Runen und + Energie (flat)                         |             |                  |                          | Nur auf Fluss platzierbar (nicht kaufbar)                      |
 Aktiv: Spieler muss auf Structure klicken
-Passiv: jede Runde ohne nötige Aktion
+Passiv: jede Runde ohne nötige Aktion (alle die nicht aktiv sind, sind passiv)
 
 ### Spezifische Statuen
 | **Statue**  | **Deal (lvl 2)**                                                                                                     | **Blessing (lvl 3)**                                                       | **Curse (lvl 3)**         | **World**                  |

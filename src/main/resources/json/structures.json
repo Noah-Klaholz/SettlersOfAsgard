@@ -1,18 +1,18 @@
 [
   {
     "name": "Rune Table",
-    "usage": "Converts 4 Energy to 20 Runes",
+    "usage": "Converts 4 Energy to 100 Runes",
     "description": "",
     "id": 1,
-    "price": 15,
-    "resourceValue": 0,
+    "price": 10,
+    "resourceValue": 5,
     "params": [
       {
-        "name": "Energy",
+        "name": "Energy exchanged",
         "value": 4
       },
       {
-        "name": "Runes",
+        "name": "Runes exchanged",
         "value": 20
       }
     ]
@@ -22,32 +22,32 @@
     "usage": "Gives 1 random Artifact and 1 energy per Round",
     "description": "",
     "id": 2,
-    "price": 0,
-    "resourceValue": 1
+    "price": 20,
+    "resourceValue": 5
   },
   {
     "name": "Helgrindr",
     "usage": "",
     "description": "Prevents Player-Debuffs and gives 1 Energy per Round",
     "id": 3,
-    "price": 0,
-    "resourceValue": 1
+    "price": 50,
+    "resourceValue": 5
   },
   {
     "name": "Huginn and Muninn",
     "usage": "Shows where 1 Artifact is on a buyable Tile and gives 2 Energy per Round",
     "description": "",
     "id": 4,
-    "price": 0,
-    "resourceValue": 2
+    "price": 30,
+    "resourceValue": 5
   },
   {
     "name": "Ran's Hall",
-    "usage": "Catches mythological fish when placed on a River Tile: gives +1 Energy per Round",
+    "usage": "Catches mythological fish when placed on a River Tile: Can be used to receive +2 Energy per Round",
     "description": "",
     "id": 5,
-    "price": 0,
-    "resourceValue": 0,
+    "price": 30,
+    "resourceValue": 5,
     "params": [
       {
         "name": "Energy",
@@ -57,11 +57,11 @@
   },
   {
     "name": "Surtur's Smeltery",
-    "usage": "Enables the production of weapons.",
+    "usage": "Player receives a small random buff each round.",
     "description": "",
     "id": 6,
-    "price": 0,
-    "resourceValue": 0,
+    "price": 30,
+    "resourceValue": 5,
     "params": [
       {
         "name": "Rune generation",
@@ -87,15 +87,15 @@
   },
   {
     "name": "Tree",
-    "usage": "Only placeable on a River Tile: can be used to receive runes",
+    "usage": "Only placeable on a River Tile. Automatically farms a lot of runes",
     "description": "",
     "id": 7,
     "price": 0,
-    "resourceValue": 0,
+    "resourceValue": 20,
     "params": [
       {
-        "name": "Farmed Runes per round",
-        "value": 20
+        "name": "Energy",
+        "value": 1
       }
     ]
   },

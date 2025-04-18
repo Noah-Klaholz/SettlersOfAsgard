@@ -61,7 +61,7 @@ public class StructureBehaviorRegistry {
         });
 
         registerBehavior("Huginn and Muninn", (structure, gameState, player) -> {
-
+            // TODO implement showing of 1 field with artifact (can be already purchased)
             return true;
         });
 
@@ -84,7 +84,7 @@ public class StructureBehaviorRegistry {
         });
 
         registerBehavior("Tree", (structure, gameState, player) -> {
-            player.addRunes((int)structure.getParams().get(0).getValue());
+            player.addEnergy((int)structure.getParams().get(0).getValue());
             return true;
         });
     }

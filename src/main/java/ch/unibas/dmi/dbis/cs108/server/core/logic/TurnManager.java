@@ -2,7 +2,9 @@
 package ch.unibas.dmi.dbis.cs108.server.core.logic;
 
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors.StructureBehaviorRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
@@ -14,6 +16,7 @@ public class TurnManager {
     private String playerTurn;
     private int playerRound;
     private int gameRound;
+    private StructureBehaviorRegistry structureBehaviorRegistry;
 
     public TurnManager(GameState gameState) {
         this.gameState = gameState;
@@ -126,15 +129,15 @@ public class TurnManager {
             if (tile.hasEntity()) {
                 PurchasableEntity entity = tile.getEntity();
                 int value = entity.getResourceValue(); // Either energy or runes
-                if (entity.isStatue()) {
+                if (entity.isStructure()) {
                     if (tile.hasRiver()) {
                         value = (int) (value * player.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION));
                     }
                     value = (int) (value * player.getStatus().get(Status.BuffType.RUNE_GENERATION));
                     player.addRunes(value);
-                } else {
-                    value = (int) (value * player.getStatus().get(Status.BuffType.ENERGY_GENERATION));
-                    player.addEnergy(value);
+                    if (!entity.getName().equals("Rune Table")) {
+                        structureBehaviorRegistry.execute((Structure)entity,gameState,player); // Do passive effects -> each structure except Rune Table has one
+                    }
                 }
             }
         });
