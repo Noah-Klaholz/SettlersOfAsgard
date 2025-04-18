@@ -18,6 +18,7 @@ import java.util.Random;
  */
 public class Board {
 
+
     /**
      * Two-dimensional array of Tiles. Represents the entire board. The first dimension is x.
      */
@@ -34,19 +35,66 @@ public class Board {
         tiles = new Tile[x][y];
         Tile.TileBuilder tilebuilder = new Tile.TileBuilder();
         tilebuilder.setPrice(10);
+
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
+                // Set world based on coordinates
+                String world = determineWorld(i, j);
+                tilebuilder.setWorld(world);
+
+                tilebuilder.setHasRiver(determineRiver(i,j));
+                // Optional artifact
                 if (RandomGenerator.chance(SETTINGS.Config.ARTIFACT_CHANCE.getValue())) {
                     tilebuilder.setArtifact(EntityRegistry.getRandomArtifact());
                 } else {
                     tilebuilder.setArtifact(null);
                 }
-                tilebuilder.setResourceValue(RandomGenerator.randomIntInRange(SETTINGS.Config.MIN_RESSOURCE_VALUE.getValue(), SETTINGS.Config.MAX_RESOURCE_VALUE.getValue()));
+
+                tilebuilder.setResourceValue(RandomGenerator.randomIntInRange(
+                        SETTINGS.Config.MIN_RESSOURCE_VALUE.getValue(),
+                        SETTINGS.Config.MAX_RESOURCE_VALUE.getValue()
+                ));
                 tilebuilder.setX(i).setY(j);
                 tiles[i][j] = new Tile(tilebuilder);
             }
         }
     }
+
+    /**
+     * Returns a String of the world (name) based on the coordinates of the Tile.
+     *
+     * @param x the x coordinate of the tile
+     * @param y the y coordinate of the tile
+     * @return name of the world
+     */
+    private String determineWorld(int x, int y) {
+        // Hardcoded mapping based on your visual map layout (hex grid)
+        if ((x <= 2 && y == 0) || (x <= 2 && y == 1)) return "Alfheim"; // Shining light
+        if ((2 < x && x < 6 && y == 0) || (1 < x && x < 6 && y == 1) || (x == 3 && y == 2)) return "Asgard"; // Big church thing
+        if ((x < 4 && (y  == 6 || y == 7))) return "Muspelheim"; // Flaming sword
+        if ((x >= 2  && x <= 4 && y <= 2)) return "Midgard"; // River green
+        if ((x == 2 && (y == 4 || y == 5)) || (x == 3 && (y >= 4 && y <= 6))) return "Vanaheim"; // lush green
+        if ((x == 5 && y <= 2) || (x == 6 && y < 2)) return "Jotunheim"; // Mountain
+        if ((x == 6 && y == 2) || (x >= 5 && y == 3) || (x >= 4 && y == 4)) return "Nilfheim"; // Ice
+        if ((x >= 4 && y == 5) || (x == 6 && y >= 6)) return "Helheim"; // Dead tree
+        if ((x == 4 || x == 5) && y >= 6) return "Svartalfheim"; // Smeltery
+        return "Unknown"; // fallback, in case something is missed
+    }
+
+    /**
+     * Determines wethere a tile has a river (true) or not (false)
+     *
+     * @param x the x coordinate of the tile
+     * @param y the y coordinate of the tile
+     * @return if tile has a river (true) or not (false)
+     */
+    private boolean determineRiver(int x, int y) {
+        if (x <= 2 && y == 2) return true;
+        if (x <= 1 && y == 3) return true;
+        if (x == 0 && y == 4) return true;
+        return false;
+    }
+
 
     /**
      * Adds a tile to the board.
