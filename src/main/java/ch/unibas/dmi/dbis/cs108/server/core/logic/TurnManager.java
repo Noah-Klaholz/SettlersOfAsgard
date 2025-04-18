@@ -121,22 +121,28 @@ public class TurnManager {
     private void distributeResources(Player player) {
         // Tile income
         player.getOwnedTiles().forEach(tile -> {
+            // Handle Tile - Rune Generation based on the Resource Value of the tile
             int runes = (int) (tile.getResourceValue() * player.getStatus().get(Status.BuffType.RUNE_GENERATION) * tile.getStatus().get(Status.BuffType.RUNE_GENERATION));
+            // Handle River Rune generation buffs
             if (tile.hasRiver()) {
                 runes = (int) (runes * player.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION) * tile.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION));
             }
             player.addRunes(runes);
+            // Handle Structure - Rune Generation based on the ressource value of the entity (currently only checks Structures since statues do not generate anything
             if (tile.hasEntity()) {
                 PurchasableEntity entity = tile.getEntity();
-                int value = entity.getResourceValue(); // Either energy or runes
-                if (entity.isStructure()) {
-                    if (tile.hasRiver()) {
-                        value = (int) (value * player.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION) * tile.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION));
-                    }
-                    value = (int) (value * player.getStatus().get(Status.BuffType.RUNE_GENERATION) * tile.getStatus().get(Status.BuffType.RUNE_GENERATION));
-                    player.addRunes(value);
-                    if (!entity.getName().equals("Rune Table")) {
-                        structureBehaviorRegistry.execute((Structure)entity,gameState,player); // Do passive effects -> each structure except Rune Table has one
+                if (entity instanceof Structure) {
+                    int value = entity.getResourceValue(); // Either energy or runes
+                    if (entity.isStructure()) {
+                        if (tile.hasRiver()) {
+                            value = (int) (value * player.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION) * tile.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION));
+                        }
+                        value = (int) (value * player.getStatus().get(Status.BuffType.RUNE_GENERATION) * tile.getStatus().get(Status.BuffType.RUNE_GENERATION));
+                        player.addRunes(value);
+                        // All structures except rune table have a passive effect which should be used
+                        if (!entity.getName().equals("Rune Table")) {
+                            structureBehaviorRegistry.execute((Structure)entity,gameState,player); // Do passive effects -> each structure except Rune Table has one
+                        }
                     }
                 }
             }
