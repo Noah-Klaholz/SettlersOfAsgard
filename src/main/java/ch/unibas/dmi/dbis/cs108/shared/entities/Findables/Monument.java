@@ -15,6 +15,14 @@ import java.util.List;
  * Monument entity which represents a fixed structure that is created upon initializing the board
  */
 public class Monument extends FindableEntity {
+    public static class Coordinates {
+        public int x;
+        public int y;
+        public Coordinates(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
     /**
      * This represents how many runes this Entity generates for its owner
      */
@@ -28,7 +36,12 @@ public class Monument extends FindableEntity {
     /**
      * A List representing the Tiles this Monument is placed upon
      */
-    private List<Tile> tiles;
+    private List<Coordinates> tiles;
+
+    /**
+     * String representaing the name of the world
+     */
+    private String world;
 
     /**
      * Default constructor for Monument.
@@ -44,11 +57,12 @@ public class Monument extends FindableEntity {
      * @param runes how many runes this entity farms each round
      * @param setBonus states wether this entity is part of a set
      */
-    public Monument(int id, String name, String description, int runes, boolean setBonus, List<Tile> tiles) {
+    public Monument(int id, String name, String description, int runes, boolean setBonus, List<Coordinates> tiles, String world) {
         super(id, name, description);
         this.runes = runes;
         this.setBonus = setBonus;
         this.tiles = tiles;
+        this.world = world;
     }
 
     /**
@@ -61,11 +75,20 @@ public class Monument extends FindableEntity {
     }
 
     /**
+     * Gets the world of this monument
+     *
+     * @return The world of this monument
+     */
+    public String getWorld() {
+        return world;
+    }
+
+    /**
      * Gets the Tiles this Monument spans over as a List
      *
      * @return tiles
      */
-    public List<Tile> getTiles() {
+    public List<Coordinates> getTiles() {
         return tiles;
     }
 
@@ -96,11 +119,13 @@ public class Monument extends FindableEntity {
     @Override
     protected void loadFromJson(JsonObject json) {
         Gson gson = new Gson();
-        Type listType = new TypeToken<List<Tile>>() {}.getType();
+        Type listType = new TypeToken<List<Coordinates>>() {}.getType();
         super.loadFromJson(json);
         this.runes = json.get("runes").getAsInt();
+        this.world = json.get("world").getAsString();
         JsonArray jArr = json.get("tiles").getAsJsonArray();
         this.tiles = gson.fromJson(jArr, listType);
+        this.setBonus = tiles.size() > 1;
     }
 
     /**
