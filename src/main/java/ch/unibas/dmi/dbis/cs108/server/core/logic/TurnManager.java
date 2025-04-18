@@ -123,7 +123,7 @@ public class TurnManager {
         player.getOwnedTiles().forEach(tile -> {
             int runes = (int) (tile.getResourceValue() * player.getStatus().get(Status.BuffType.RUNE_GENERATION) * tile.getStatus().get(Status.BuffType.RUNE_GENERATION));
             if (tile.hasRiver()) {
-                runes = (int) (runes * player.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION));
+                runes = (int) (runes * player.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION) * tile.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION));
             }
             player.addRunes(runes);
             if (tile.hasEntity()) {
@@ -131,9 +131,9 @@ public class TurnManager {
                 int value = entity.getResourceValue(); // Either energy or runes
                 if (entity.isStructure()) {
                     if (tile.hasRiver()) {
-                        value = (int) (value * player.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION));
+                        value = (int) (value * player.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION) * tile.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION));
                     }
-                    value = (int) (value * player.getStatus().get(Status.BuffType.RUNE_GENERATION));
+                    value = (int) (value * player.getStatus().get(Status.BuffType.RUNE_GENERATION) * tile.getStatus().get(Status.BuffType.RUNE_GENERATION));
                     player.addRunes(value);
                     if (!entity.getName().equals("Rune Table")) {
                         structureBehaviorRegistry.execute((Structure)entity,gameState,player); // Do passive effects -> each structure except Rune Table has one
