@@ -154,7 +154,14 @@ public class StatueBehaviorRegistry {
         }
 
         // Execute the behavior
-        return behavior.execute(statue, gameState, player, params);
+        boolean success = behavior.execute(statue, gameState, player, params);
+
+        // If the behavior is a curse, then the client should get a notification about it
+        if (success && effectType == StatueEffectType.CURSE) {
+            gameState.sendNotification(player.getName(),"CURSE$" + statueName);
+        }
+
+        return success;
     }
 
     /**

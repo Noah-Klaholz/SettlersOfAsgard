@@ -57,6 +57,7 @@ Dieser Befehl bedeutet, dass Spieler PL01 eine Struktur vom Typ "Castle" auf das
 | `USPA` | **C→S**  | Benutzen eines Spieler-Artefakts (auf Spieler anwenden) | `ArtifactID$TargetPlayer`   | `USPA$1$ThorOdninson`                   |
 | `USFA` | **C→S**  | Benutzen eines Feld-Artefakts (auf Feld anwenden)       | `X$Y$ArtifactID$UseType`    | `USFA$2$Runes`                          |
 | `ENDG` | **S→C**  | Beenden des Spiels                                      |                             | `ENDG$`                                 |
+| `INFO` | **S→C**  | Schickt eine Notifikation über GameEvents an den Client | `PARAM1$[PARAM2$]...`       | `INFO$CURSE`                            |
 
 ## 4. Fehlerbehandlung
 Eine allgemeine Fehlernachricht hat folgendes Format:  

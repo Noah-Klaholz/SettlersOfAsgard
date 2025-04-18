@@ -61,7 +61,7 @@ Passiv: jede Runde ohne nötige Aktion (alle die nicht aktiv sind, sind passiv)
 
 ### Spezifische Statuen
 | **Statue**  | **Deal (lvl 2)**                                                                                                     | **Blessing (lvl 3)**                                                       | **Curse (lvl 3)**         | **World**                  |
-| ----------- |----------------------------------------------------------------------------------------------------------------------| -------------------------------------------------------------------------- | ------------------------- | -------------------------- |
+| ----------- |:---------------------------------------------------------------------------------------------------------------------| -------------------------------------------------------------------------- | ------------------------- | -------------------------- |
 | Jörmungandr | Zerstört 1 Struktur (random) von gewähltem Spieler - braucht Opfer: 1 eigene Struktur                                | -                                                                          | -                         | Midgard (humans)           |
 | Freyr       | Lässt 1 Baum wachsen auf Feld mit Fluss - Energie = 0                                                                | Lässt Bäume wachsen auf jedem Feld mit Fluss                               | Überwuchert: - 1 Struktur | Alfheim (light, yellow)    |
 | Dwarf       | Schmiede stellt nächstes Nutzen +1 Artefakt her -1 Struktur gibt keine Runen mehr                                    | Nächstes Artefakt debuffed alle Spieler                                    | zerstört: -1 Schmiede     | Svartalfheim (bright grey) |
