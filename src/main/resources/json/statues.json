@@ -37,7 +37,7 @@
   },
   {
     "name": "Freyja",
-    "deal": "Finds 1 random Artifact: costs (a lot of) Runes",
+    "deal": "Gives 1 random Artifact: costs (a lot of) Runes",
     "blessing": "1 Tile of choice for free",
     "curse": "Conquers a Tile in possession and makes it unusable",
     "description": "",
@@ -45,7 +45,13 @@
     "id": 33,
     "price": 30,
     "upgradePrice": 50,
-    "resourceValue": 0
+    "resourceValue": 0,
+    "params": [
+      {
+        "name": "RuneCost",
+        "value": 50
+      }
+    ]
   },
   {
     "name": "Hel",

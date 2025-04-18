@@ -128,10 +128,6 @@ public class StatueParameters {
         if (requirement.requires(StatueParameterRequirement.StatueParameterType.STRUCTURE) && structure == null) {
             return false;
         }
-        if (requirement.requires(StatueParameterRequirement.StatueParameterType.SMELTERY) &&
-                (structure == null || !"Smeltery".equals(structure.getName()))) {
-            return false;
-        }
         if (requirement.requires(StatueParameterRequirement.StatueParameterType.ARTIFACT) && artifact == null) {
             return false;
         }

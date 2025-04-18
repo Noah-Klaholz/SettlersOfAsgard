@@ -17,7 +17,6 @@ public class StatueParameterRequirement {
         PLAYER,    // Target player
         TILE,      // x,y coordinates
         STRUCTURE, // Structure ID
-        SMELTERY,  // Special case of structure
         ARTIFACT   // Artifact ID
     }
 

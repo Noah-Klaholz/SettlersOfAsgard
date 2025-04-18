@@ -234,17 +234,18 @@ public class StatueBehaviorRegistry {
         registerBehavior("Freyr", StatueEffectType.CURSE,
                 (statue, gameState, player, params) -> {
                     // Overgrows the Freyr Statue so it cannot be used anymore and blocks the tile
-                    int x = params.getX();
-                    int y = params.getY();
-                    Tile tile = gameState.getBoardManager().getTile(x, y);
+                    Tile tile = player.getOwnedTiles().stream().
+                            filter(t -> t.getEntity() != null && t.getEntity().getName().equals("Freyr"))
+                            .findFirst().orElse(null); // Finds the Freyr Statue in the players Owned Tiles
 
+                    if (tile == null) return false;
                     tile.setEntity(EntityRegistry.getStructure(8));
                     tile.setResourceValue(0);
                     player.removePurchasableEntity(statue);
 
                     return true;
                 },
-                new StatueParameterRequirement(StatueParameterRequirement.StatueParameterType.TILE) // the given tile should be the tile of the Freyr Statue
+                new StatueParameterRequirement()
         );
 
         // Dwarf
@@ -263,7 +264,7 @@ public class StatueBehaviorRegistry {
                     targetStructure.setRessourceValue(0);
                     return true;
                 },
-                new StatueParameterRequirement(StatueParameterRequirement.StatueParameterType.SMELTERY)
+                new StatueParameterRequirement(StatueParameterRequirement.StatueParameterType.TILE)
         );
 
         registerBehavior("Dwarf", StatueEffectType.BLESSING,
@@ -279,16 +280,17 @@ public class StatueBehaviorRegistry {
 
                     return true;
                 },
-                new StatueParameterRequirement()
+                new StatueParameterRequirement(StatueParameterRequirement.StatueParameterType.TILE)
         );
 
         registerBehavior("Dwarf", StatueEffectType.CURSE,
                 (statue, gameState, player, params) -> {
                     // Destroys the Smeltery
-                    int x = params.getX();
-                    int y = params.getY();
-                    Tile tile = gameState.getBoardManager().getTile(x, y);
-                    if (!player.getOwnedTiles().contains(tile)) return false;
+                    Tile tile = player.getOwnedTiles().stream().
+                            filter(t -> t.getEntity() != null && t.getEntity().getName().equals("Surtur's Smeltery"))
+                            .findFirst().orElse(null); // Finds the Freyr Statue in the players Owned Tiles
+
+                    if (!player.getOwnedTiles().contains(tile) || tile == null) return false;
                     Structure structure = (Structure) tile.getEntity();
                     if (structure == null || !"Surtur's Smeltery".equals(structure.getName())) return false;
 
@@ -303,6 +305,7 @@ public class StatueBehaviorRegistry {
         registerBehavior("Freyja", StatueEffectType.DEAL,
                 (statue, gameState, player, params) -> {
                     // Finds 1 random Artifact: costs (a lot of) Runes
+
                     return true;
                 },
                 new StatueParameterRequirement()
