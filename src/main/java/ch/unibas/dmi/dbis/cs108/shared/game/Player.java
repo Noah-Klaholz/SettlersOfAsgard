@@ -393,7 +393,7 @@ public class Player {
     /**
      * Returns all owned structures as a list
      *
-     * @return List</Structure> the list of structures
+     * @return structures the list of structures
      */
     public List<Structure> getStructures() {
         List<Structure> structures = new ArrayList<>();
