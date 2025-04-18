@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.shared.game;
 
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 
 public class Tile {
@@ -12,6 +13,7 @@ public class Tile {
     private final int price;
     private PurchasableEntity entity;
     private Artifact artefact;
+    private Monument monument;
     private final String world;
     private boolean purchased;
     private int resourceValue; //Runes: bei spezifischen sind es energy: dort vermerkt
@@ -32,6 +34,7 @@ public class Tile {
         this.resourceValue = builder.resourceValue;
         this.hasRiver = builder.hasRiver;
         this.tileID = builder.tileID;
+        this.monument = builder.monument;
         status = new Status();
     }
 
@@ -49,6 +52,14 @@ public class Tile {
 
     public boolean getHasEntity() {
         return hasEntity;
+    }
+
+    public boolean hasMonument() {
+        return monument != null;
+    }
+
+    public Monument getMonument() {
+        return monument;
     }
 
     public void setEntity(PurchasableEntity entity) {
@@ -177,7 +188,13 @@ public class Tile {
         private int price;
         private PurchasableEntity entity;
         private Artifact artefact;
+        private Monument monument;
         private String world;
+
+        public TileBuilder setMonument(Monument monument) {
+            this.monument = monument;
+            return this;
+        }
 
         public TileBuilder setX(int x) {
             this.x = x;

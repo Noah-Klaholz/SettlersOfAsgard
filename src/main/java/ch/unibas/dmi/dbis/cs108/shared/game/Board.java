@@ -2,14 +2,10 @@ package ch.unibas.dmi.dbis.cs108.shared.game;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
 import ch.unibas.dmi.dbis.cs108.shared.utils.RandomGenerator;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Class representing a game board.
@@ -39,9 +35,10 @@ public class Board {
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
                 // Set world based on coordinates
-                String world = determineWorld(i, j);
-                tilebuilder.setWorld(world);
-
+                tilebuilder.setWorld(determineWorld(i, j));
+                // Set monument based on coordinates
+                tilebuilder.setMonument(determineMonument(i,j));
+                // Set river based on coordinates
                 tilebuilder.setHasRiver(determineRiver(i,j));
                 // Optional artifact
                 if (RandomGenerator.chance(SETTINGS.Config.ARTIFACT_CHANCE.getValue())) {
@@ -58,6 +55,23 @@ public class Board {
                 tiles[i][j] = new Tile(tilebuilder);
             }
         }
+    }
+
+    /**
+     * Returns a new Monument object based on the coordinates of the Tile
+     *
+     * @param x the x coordinate of the tile
+     * @param y the y coordinate of the tile
+     * @return the Monument
+     */
+    private Monument determineMonument(int x, int y) {
+        AtomicReference<Monument> monument = new AtomicReference<>();
+        EntityRegistry.getAllMonuments().forEach(mon -> {
+            if (mon.getTiles().contains(new Monument.Coordinates(x, y))) {
+                monument.set(mon);
+            }
+        });
+        return monument.get();
     }
 
     /**

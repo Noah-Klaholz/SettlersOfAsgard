@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities;
 
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
@@ -39,6 +40,11 @@ public class EntityRegistry {
      */
     private static final Map<Integer, Artifact> artifacts = new HashMap<>();
 
+    /**
+     * Map of monument IDs to Monument objects.
+     */
+    private static final Map<Integer, Monument> monuments = new HashMap<>();
+
 
     /**
      * Static initializer to load all entities when the class is first accessed.
@@ -54,6 +60,7 @@ public class EntityRegistry {
         loadStructures();
         loadStatues();
         loadArtifacts();
+        loadMonuments();
     }
 
     /**
@@ -131,6 +138,31 @@ public class EntityRegistry {
         }
     }
 
+    /**
+     * Loads monument entities from the monument.json resource file.
+     */
+    private static void loadMonuments() {
+        Gson gson = new Gson();
+        InputStream is = EntityRegistry.class.getResourceAsStream("/json/monuments.json");
+        if (is == null) {
+            System.err.println("Could not find monuments.json");
+            return;
+        }
+
+        Type listType = new TypeToken<List<JsonElement>>(){}.getType();
+        List<JsonElement> elements = gson.fromJson(new InputStreamReader(is), listType);
+
+        for (JsonElement elem : elements) {
+            if (elem.isJsonObject()) {
+                JsonObject obj = elem.getAsJsonObject();
+                if (obj.has("name")) {
+                    Monument monument = Monument.fromJson(obj);
+                    monuments.put(monument.getId(), monument);
+                }
+            }
+        }
+    }
+
 
     /**
      * Returns a PurchasableEntity by its ID.
@@ -178,6 +210,16 @@ public class EntityRegistry {
     }
 
     /**
+     * Returns a monument by its ID.
+     *
+     * @param id The ID of the monument to retrieve
+     * @return The Monument object with the given ID, or null if not found
+     */
+    public static Monument getMonument(int id) {
+        return monuments.get(id);
+    }
+
+    /**
      * Returns a collection of all available structures.
      *
      * @return Collection of all Structure objects
@@ -202,6 +244,15 @@ public class EntityRegistry {
      */
     public static Collection<Artifact> getAllArtifacts() {
         return artifacts.values();
+    }
+
+    /**
+     * Returns a collection of all available monuments.
+     *
+     * @return Collection of all Monument objects
+     */
+    public static Collection<Monument> getAllMonuments() {
+        return monuments.values();
     }
 
     /**
