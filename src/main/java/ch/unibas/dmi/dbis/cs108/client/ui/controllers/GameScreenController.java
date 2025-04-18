@@ -13,6 +13,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -22,6 +23,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -29,6 +31,7 @@ import javafx.util.Duration;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -390,24 +393,56 @@ public class GameScreenController extends BaseController {
     }
 
     private void setupCanvasListeners() {
+        // redraw on resize
         gameCanvas.widthProperty().addListener((o, ov, nv) -> drawMapAndGrid());
         gameCanvas.heightProperty().addListener((o, ov, nv) -> drawMapAndGrid());
-
-        gameCanvas.setOnMouseClicked(e -> {
-            gameCanvas.requestFocus();
-            int[] tile = getHexAt(e.getX(), e.getY());
-            if (tile != null) {
-                selectedRow = tile[0];
-                selectedCol = tile[1];
-                drawMapAndGrid();
-                LOGGER.info("Clicked hex at row=" + selectedRow + ", col=" + selectedCol);
-                eventBus.publish(new TileClickEvent(tile[0], tile[1]));
-            }
-        });
-
+      
+        // ensure canvas can get focus for keyboard adjustment mode
         gameCanvas.setFocusTraversable(true);
+      
+        // 1) Attach a raw pressed‐handler directly on the canvas
+        gameCanvas.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> {
+          // debug: did we even get here?
+          System.out.println("[DEBUG] canvas MOUSE_PRESSED at " + e.getX() + ", " + e.getY());
+          handleCanvasClick(e.getX(), e.getY());
+        });
+      
+        // 2) ALSO attach to the parent StackPane (in case another transparent node is intercepting)
+        if (gameCanvas.getParent() instanceof StackPane parent) {
+          parent.addEventHandler(MouseEvent.MOUSE_PRESSED, ev -> {
+            // translate scene coords into canvas‐local coords
+            Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
+            if (local.getX() >= 0 && local.getY() >= 0
+                && local.getX() <= gameCanvas.getWidth()
+                && local.getY() <= gameCanvas.getHeight()) {
+              System.out.println("[DEBUG] parent MOUSE_PRESSED -> canvas coords " 
+                                  + local.getX() + ", " + local.getY());
+              handleCanvasClick(local.getX(), local.getY());
+              ev.consume();
+            }
+          });
+        }
+      
+        // your existing key handler
         gameCanvas.setOnKeyPressed(this::handleGridAdjustmentKeys);
-    }
+      }
+    
+      private void handleCanvasClick(double px, double py) {
+        // debug what getHexAt is doing
+        System.out.println("[DEBUG] calling getHexAt(" + px + ", " + py + ")");
+        int[] tile = getHexAt(px, py);
+        System.out.println("[DEBUG] getHexAt returned: " + Arrays.toString(tile));
+      
+        if (tile != null) {
+          selectedRow = tile[0];
+          selectedCol = tile[1];
+          drawMapAndGrid();
+          // now do the real output
+          System.out.println("Clicked hex at row=" + selectedRow + ", col=" + selectedCol);
+          eventBus.publish(new TileClickEvent(selectedRow, selectedCol));
+        }
+      }
+
 
     private void handleGridAdjustmentKeys(KeyEvent e) {
         if (!gridAdjustmentModeActive && !(e.isControlDown() && e.getCode() == KeyCode.G)) return;
