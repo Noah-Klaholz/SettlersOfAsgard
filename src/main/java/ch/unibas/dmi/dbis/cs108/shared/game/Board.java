@@ -37,7 +37,7 @@ public class Board {
                 // Set world based on coordinates
                 tilebuilder.setWorld(determineWorld(i, j));
                 // Set monument based on coordinates
-                tilebuilder.setMonument(determineMonument(i,j));
+                tilebuilder.setEntity(determineMonument(i,j));
                 // Set river based on coordinates
                 tilebuilder.setHasRiver(determineRiver(i,j));
                 // Optional artifact

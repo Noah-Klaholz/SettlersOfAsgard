@@ -1,6 +1,9 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities;
 
 import ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors.Parameter;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -80,6 +83,28 @@ public abstract class GameEntity {
      * @return The list of parameters
      */
     public List<Parameter> getParams() { return params; }
+
+
+    /**
+     * Returns if this entity is a structure.
+     *
+     * @return true if it is, false otherwise
+     */
+    public boolean isStructure() { return this instanceof Structure; }
+
+    /**
+     * Returns if this entity is a statue.
+     *
+     * @return true if it is, false otherwise
+     */
+    public boolean isStatue() { return this instanceof Statue; }
+
+    /**
+     * Returns if this entity is a Monument
+     *
+     * @return true if it is, false otherwise
+     */
+    public boolean isMonument() { return this instanceof Monument; }
 
     /**
      * Sets the value of the parameter at the specified index to the given value

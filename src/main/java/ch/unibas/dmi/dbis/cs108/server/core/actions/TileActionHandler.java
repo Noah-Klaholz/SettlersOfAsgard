@@ -5,13 +5,13 @@ import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors.StructureBehaviorRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 import ch.unibas.dmi.dbis.cs108.shared.utils.RandomGenerator;
 
-import java.util.Random;
 import java.util.concurrent.locks.ReadWriteLock;
 
 public class TileActionHandler {
@@ -50,6 +50,8 @@ public class TileActionHandler {
             if (tile.hasEntity() && tile.getEntity().getName().equals("ActiveTrap")) {
                 structureBehaviorRegistry.execute((Structure)tile.getEntity(), gameState, player);
                 tile.setEntity(null);
+            } else if (tile.hasEntity() && tile.getEntity().isMonument()) {
+                player.addOwnedMonument((Monument) tile.getEntity());
             }
 
             tile.setPurchased(true);

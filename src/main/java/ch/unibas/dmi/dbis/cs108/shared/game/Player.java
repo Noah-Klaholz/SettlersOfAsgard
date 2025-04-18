@@ -2,6 +2,7 @@ package ch.unibas.dmi.dbis.cs108.shared.game;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
@@ -24,6 +25,7 @@ public class Player {
     private List<PurchasableEntity> purchasableEntities;
     private Status status;
     private int roundBoughtTiles;
+    private List<Monument> monuments;
 
     /**
      * Constructor for Player class
@@ -96,7 +98,7 @@ public class Player {
     }
 
     /**
-     * Getter for owned structures
+     * Getter for owned purchasableEntity
      *
      */
     public List<PurchasableEntity> getPurchasableEntities() {
@@ -104,7 +106,7 @@ public class Player {
     }
 
     /**
-     * Setter for owned structures
+     * Setter for owned purchasableEntity
      *
      */
     public void setPurchasableEntities(List<PurchasableEntity> purchasableEntities) {
@@ -112,7 +114,7 @@ public class Player {
     }
 
     /**
-     * adds a structure to the player
+     * adds a purchasableEntity to the player
      */
     public void addPurchasableEntity(PurchasableEntity entity) {
         purchasableEntities.add(entity);
@@ -125,6 +127,38 @@ public class Player {
      */
     public void removePurchasableEntity(PurchasableEntity entity) {
         purchasableEntities.remove(entity);
+    }
+
+
+    /**
+     * Getter for owned monument
+     *
+     */
+    public List<Monument> getMonuments() {
+        return monuments;
+    }
+
+    /**
+     * Setter for owned monument
+     */
+    public void setMonuments(List<Monument> monuments) {
+        this.monuments = monuments;
+    }
+
+    /**
+     * adds a monument to the player
+     */
+    public void addOwnedMonument(Monument monument) {
+        monuments.add(monument);
+    }
+
+    /**
+     * removes a monument from the player
+     *
+     * @param monument monument
+     */
+    public void removeMonument(Monument monument) {
+        monuments.remove(monument);
     }
 
     /**

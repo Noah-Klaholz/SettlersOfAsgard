@@ -3,6 +3,7 @@ package ch.unibas.dmi.dbis.cs108.server.core.actions;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.server.core.model.BoardManager;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors.StructureBehaviorRegistry;
+import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
@@ -159,7 +160,7 @@ public class StructureActionHandler {
      * @return The structure if found and ID matches, null otherwise
      */
     private Structure getStructureFromTile(Tile tile, int structureID) {
-        PurchasableEntity entity = tile.getEntity();
+        GameEntity entity = tile.getEntity();
         if (!(entity instanceof Structure) || entity.getId() != structureID) {
             return null;
         }

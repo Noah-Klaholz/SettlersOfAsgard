@@ -3,6 +3,7 @@ package ch.unibas.dmi.dbis.cs108.server.core.actions;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors.StatueBehaviorRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.StatueParameters;
@@ -292,7 +293,7 @@ public class StatueActionHandler {
      * @return The statue if found and ID matches, null otherwise
      */
     private Statue getStatueFromTile(Tile tile, int statueId) {
-        PurchasableEntity entity = tile.getEntity();
+        GameEntity entity = tile.getEntity();
         if (!(entity instanceof Statue) || entity.getId() != statueId) {
             return null;
         }

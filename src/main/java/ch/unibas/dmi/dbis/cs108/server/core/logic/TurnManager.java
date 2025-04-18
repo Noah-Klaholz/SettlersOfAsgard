@@ -3,6 +3,7 @@ package ch.unibas.dmi.dbis.cs108.server.core.logic;
 
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors.StructureBehaviorRegistry;
+import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
@@ -133,8 +134,9 @@ public class TurnManager {
             player.addRunes(runes);
             // Handle Structure - Rune Generation based on the ressource value of the entity (currently only checks Structures since statues do not generate anything
             if (tile.hasEntity()) {
-                PurchasableEntity entity = tile.getEntity();
-                if (entity instanceof Structure) {
+                GameEntity ent = tile.getEntity();
+                if (ent instanceof Structure) {
+                    Structure entity = (Structure) tile.getEntity();
                     int value = entity.getResourceValue();
                     if (entity.isStructure()) {
                         if (tile.hasRiver()) {

@@ -1,7 +1,9 @@
 package ch.unibas.dmi.dbis.cs108.shared.game;
 
+import ch.unibas.dmi.dbis.cs108.client.core.Game;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
+import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 
 public class Tile {
@@ -11,9 +13,8 @@ public class Tile {
     private boolean hasEntity;
     private String owner; //ownerID
     private final int price;
-    private PurchasableEntity entity;
+    private GameEntity entity;
     private Artifact artefact;
-    private Monument monument;
     private final String world;
     private boolean purchased;
     private int resourceValue; //Runes: bei spezifischen sind es energy: dort vermerkt
@@ -34,7 +35,6 @@ public class Tile {
         this.resourceValue = builder.resourceValue;
         this.hasRiver = builder.hasRiver;
         this.tileID = builder.tileID;
-        this.monument = builder.monument;
         status = new Status();
     }
 
@@ -52,14 +52,6 @@ public class Tile {
 
     public boolean getHasEntity() {
         return hasEntity;
-    }
-
-    public boolean hasMonument() {
-        return monument != null;
-    }
-
-    public Monument getMonument() {
-        return monument;
     }
 
     public void setEntity(PurchasableEntity entity) {
@@ -91,7 +83,7 @@ public class Tile {
     }
 
 
-    public PurchasableEntity getEntity() {
+    public GameEntity getEntity() {
         return entity;
     }
 
@@ -166,8 +158,8 @@ public class Tile {
      *
      * @return The removed entity, or null if no entity was present.
      */
-    public PurchasableEntity removeEntity() {
-        PurchasableEntity entity = this.entity;
+    public GameEntity removeEntity() {
+        GameEntity entity = this.entity;
         this.entity = null;
         this.hasEntity = false;
         return entity;
@@ -186,15 +178,9 @@ public class Tile {
         private boolean hasEntity;
         private String owner;
         private int price;
-        private PurchasableEntity entity;
+        private GameEntity entity;
         private Artifact artefact;
-        private Monument monument;
         private String world;
-
-        public TileBuilder setMonument(Monument monument) {
-            this.monument = monument;
-            return this;
-        }
 
         public TileBuilder setX(int x) {
             this.x = x;
@@ -221,7 +207,7 @@ public class Tile {
             return this;
         }
 
-        public TileBuilder setEntity(PurchasableEntity entity) {
+        public TileBuilder setEntity(GameEntity entity) {
             this.hasEntity = true;
             this.entity = entity;
             return this;

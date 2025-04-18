@@ -198,7 +198,7 @@ public class StatueBehaviorRegistry {
 
                     Tile targetTile = RandomGenerator.pickRandomElement(targetPlayer.getTilesWithStructures());
 
-                    targetPlayer.removePurchasableEntity(targetTile.getEntity());
+                    targetPlayer.removePurchasableEntity((PurchasableEntity) targetTile.getEntity());
                     targetTile.setEntity(null);
                     return true;
                 },
@@ -369,7 +369,8 @@ public class StatueBehaviorRegistry {
 
                     if (tile == null) return false;
 
-                    tile.getEntity().disable(1); // Block statue for the next turn
+                    Statue statue1 = (Statue) tile.getEntity();
+                    statue1.disable(1); // Block statue for the next turn
 
                     PurchasableEntity purchasableEntity = RandomGenerator.pickRandomElement(player.getPurchasableEntities());
                     purchasableEntity.disable(2); // Block random entity for current and the next turn
