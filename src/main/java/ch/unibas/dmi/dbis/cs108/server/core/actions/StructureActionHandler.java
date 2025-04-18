@@ -47,7 +47,7 @@ public class StructureActionHandler {
         return executeWithLock(() -> {
             // Validate player and tile
             ValidationResult result = validatePlayerAndTile(x, y, playerName, true, false);
-            if (!result.isValid()) return false;
+            if (!result.isValid() || structureID == 7) return false; // Make sure trees cannot be placed (id = 7)
 
             Player player = result.getPlayer();
             Tile tile = result.getTile();
