@@ -5,48 +5,103 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.LobbyChatEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.game.TileClickEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.util.Duration;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Controller for the in‑game view. Handles rendering of the map and hex grid, user interaction and event dispatching
+ * via the {@link UIEventBus}. Grid parameters can be tuned at runtime through *Grid Adjustment Mode* (toggle with
+ * <kbd>Ctrl</kbd>+<kbd>G</kbd>). Default values have been updated according to customer‑supplied measurements so the
+ * grid fits perfectly on the background image.
+ */
 public class GameScreenController extends BaseController {
+
+    /* ── Constants ─────────────────────────────────────────────────────────────────────── */
+
     private static final Logger LOGGER = Logger.getLogger(GameScreenController.class.getName());
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+
+    private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("HH:mm");
+
     private static final int HEX_ROWS = 7;
     private static final int HEX_COLS = 8;
-    private static final double HEX_SIZE = 40.0; // Base size of hexagon
-    
-    // Add fields to track the scaled dimensions
+
+    //  Custom defaults supplied by design team (do NOT change unless map artwork changes)
+    private static final double DEF_GRID_SCALE = 0.85;
+    private static final double DEF_GRID_H_OFFSET = 0.00;
+    private static final double DEF_GRID_V_OFFSET = 0.15;
+    private static final double DEF_GRID_WIDTH_PCT = 0.90;  // 90 % of map width
+    private static final double DEF_GRID_HEIGHT_PCT = 2.06; // 206 % of map height (artistic perspective)
+
+    private static final double DEF_ROTATION_DEG = 30.0;
+    private static final double DEF_H_SPACING = 1.80;
+    private static final double DEF_V_SPACING = 1.33;
+    private static final double DEF_H_SQUISH = 1.00;
+    private static final double DEF_V_SQUISH = 0.80;
+
+    /* ── State ─────────────────────────────────────────────────────────────────────────── */
+
+    private final ObservableList<String> chatMessages = FXCollections.observableArrayList();
+    private final ObservableList<String> players = FXCollections.observableArrayList();
+
     private double scaledMapWidth;
     private double scaledMapHeight;
     private double mapOffsetX;
     private double mapOffsetY;
     private double effectiveHexSize;
+    private double gridOffsetX;
+    private double gridOffsetY;
 
-    private final ObservableList<String> chatMessages = FXCollections.observableArrayList();
-    private final ObservableList<String> players = FXCollections.observableArrayList();
-    private String currentLobbyId; // To store the current lobby ID
+    //  Adjustable parameters (initialised with defaults above)
+    private double gridScaleFactor = DEF_GRID_SCALE;
+    private double gridHorizontalOffset = DEF_GRID_H_OFFSET;
+    private double gridVerticalOffset = DEF_GRID_V_OFFSET;
+    private double gridWidthPercentage = DEF_GRID_WIDTH_PCT;
+    private double gridHeightPercentage = DEF_GRID_HEIGHT_PCT;
 
-    // Game map related fields
+    private double hexRotationDegrees = DEF_ROTATION_DEG;
+    private double horizontalSpacingFactor = DEF_H_SPACING;
+    private double verticalSpacingFactor = DEF_V_SPACING;
+    private double horizontalSquishFactor = DEF_H_SQUISH;
+    private double verticalSquishFactor = DEF_V_SQUISH;
+
+    private boolean gridAdjustmentModeActive;
+    private Label adjustmentModeIndicator;
+    private Label adjustmentValuesLabel;
+
+    private int selectedRow = -1;
+    private int selectedCol = -1;
+    private String currentLobbyId;
+
     private Image mapImage;
-    private boolean isMapLoaded = false;
+    private boolean isMapLoaded;
 
-    // UI Components
+    /* ── FXML ──────────────────────────────────────────────────────────────────────────── */
+
     @FXML
     private Canvas gameCanvas;
     @FXML
@@ -70,455 +125,468 @@ public class GameScreenController extends BaseController {
     @FXML
     private Label connectionStatusLabel;
 
+    /* ── Construction ──────────────────────────────────────────────────────────────────── */
+
     public GameScreenController() {
         super(new ResourceLoader(), UIEventBus.getInstance(), SceneManager.getInstance());
     }
 
-    @FXML
-    private void initialize() {
-        LOGGER.info("Initializing game screen");
-        try {
-            setupUI();
-            setupEventHandlers();
-            loadMapImage();
-            setupCanvasListeners();
-        } catch (Exception e) {
-            LOGGER.severe("Failed to initialize game screen: " + e.getMessage());
-        }
+    /* ── Initialisation ────────────────────────────────────────────────────────────────── */
+
+    private static void scrollBottom(ListView<String> list, ObservableList<String> data) {
+        Platform.runLater(() -> {
+            if (!data.isEmpty()) list.scrollTo(data.size() - 1);
+        });
     }
 
+    @FXML
+    private void initialize() {
+        LOGGER.setLevel(Level.ALL);
+        setupUI();
+        subscribeEvents();
+        loadMapImage();
+        setupCanvasListeners();
+        createAdjustmentUI();
+    }
 
     private void setupUI() {
-        // Set up the chat list
         chatListView.setItems(chatMessages);
-
-        // Set up the players list
         playersList.setItems(players);
-
-        // Select global chat by default
         globalChatButton.setSelected(true);
-
-        // Set initial values
         energyBar.setProgress(0.5);
         runesLabel.setText("0");
         connectionStatusLabel.setText("Connected");
-
-        // Initialize canvas
         gameCanvas.widthProperty().bind(((Region) gameCanvas.getParent()).widthProperty());
         gameCanvas.heightProperty().bind(((Region) gameCanvas.getParent()).heightProperty());
-
-        // TODO: Fetch initial game state instead of using mock data
     }
 
-    private void setupEventHandlers() {
-        // TODO: Subscribe to relevant UI events (e.g., GlobalChatEvent, GameStateUpdateEvent, PlayerListUpdateEvent)
-        // TODO: Subscribe to ConnectionStatusEvent
-        // ... other events
-        eventBus.subscribe(GlobalChatEvent.class, this::handleChatMessage);
-        eventBus.subscribe(LobbyChatEvent.class, this::handleLobbyChatMessage);
-        eventBus.subscribe(ConnectionStatusEvent.class, this::handleConnectionStatus);
-        // TODO: Add subscriptions for GameStateUpdateEvent, PlayerListUpdateEvent, etc.
+    /* ── Event handlers ────────────────────────────────────────────────────────────────── */
 
-        // Setup input field handler
-        chatInputField.setOnAction(event -> handleMessageSend());
+    private void subscribeEvents() {
+        eventBus.subscribe(GlobalChatEvent.class, this::onGlobalChat);
+        eventBus.subscribe(LobbyChatEvent.class, this::onLobbyChat);
+        eventBus.subscribe(ConnectionStatusEvent.class, this::onConnectionStatus);
+        eventBus.subscribe(TileClickEvent.class, this::onTileClick);
+        chatInputField.setOnAction(e -> handleMessageSend());
     }
 
-    // --- UIEvent Handlers ---
+    private void onGlobalChat(GlobalChatEvent e) {
+        if (e == null || e.getContent() == null || e.getSender() == null) return;
+        Platform.runLater(() -> addChat(String.format("%s: %s", e.getSender(), e.getContent())));
+    }
 
-    private void handleChatMessage(GlobalChatEvent event) {
-        if (event == null || event.getContent() == null || event.getSender() == null) {
-            LOGGER.warning("Received null or incomplete UI chat message event in GameScreen");
-            return;
-        }
+    private void onLobbyChat(LobbyChatEvent e) {
+        if (e == null || e.getMessage() == null || e.getSender() == null) return;
+        Platform.runLater(() -> addChat(String.format("[Lobby] %s: %s", e.getSender(), e.getMessage())));
+    }
 
+    private void onConnectionStatus(ConnectionStatusEvent e) {
+        if (e == null) return;
         Platform.runLater(() -> {
-            // Format the message including the sender before adding
-            String messageWithSender = String.format("%s: %s", event.getSender(), event.getContent());
-            addChatMessage(messageWithSender);
+            connectionStatusLabel.setText(Optional.ofNullable(e.getStatus()).map(Object::toString).orElse("UNKNOWN"));
+            if (e.getMessage() != null && !e.getMessage().isEmpty()) addSystem(e.getMessage());
         });
     }
 
-    private void handleLobbyChatMessage(LobbyChatEvent event) {
-        if (event == null || event.getMessage() == null || event.getSender() == null) {
-            LOGGER.warning("Received null or incomplete lobby chat message event in GameScreen");
-            return;
-        }
+    /* ── Chat helpers ──────────────────────────────────────────────────────────────────── */
 
-        Platform.runLater(() -> {
-            // Format the message including the sender before adding
-            String messageWithSender = String.format("[Lobby] %s: %s", event.getSender(), event.getMessage());
-            addChatMessage(messageWithSender);
-        });
+    private void onTileClick(TileClickEvent e) {
+        LOGGER.fine(() -> String.format("Tile clicked externally (row=%d,col=%d)", e.getRow(), e.getCol()));
     }
 
-    private void handleConnectionStatus(ConnectionStatusEvent event) {
-        if (event == null) {
-            LOGGER.warning("Received null connection status event in GameScreen");
-            return;
-        }
-
-        Platform.runLater(() -> {
-            String statusText = Optional.ofNullable(event.getStatus()).map(Object::toString).orElse("UNKNOWN");
-            connectionStatusLabel.setText(statusText);
-            // TODO: Add visual indication for connection status (e.g., color change)
-
-            if (event.getMessage() != null && !event.getMessage().isEmpty()) {
-                addSystemMessage(event.getMessage());
-            }
-        });
+    private void addChat(String msg) {
+        chatMessages.add(String.format("[%s] %s", LocalDateTime.now().format(TIME_FMT), msg));
+        scrollBottom(chatListView, chatMessages);
     }
 
-    // TODO: Implement handlers for GameStateUpdateEvent, PlayerListUpdateEvent, etc.
-
-    // --- UI Update Methods ---
-
-    private void addChatMessage(String message) {
-        if (message == null || message.isEmpty()) {
-            return;
-        }
-        String formattedMessage = getCurrentTime() + " " + message;
-        chatMessages.add(formattedMessage);
-        scrollToBottom(chatListView, chatMessages);
+    private void addSystem(String msg) {
+        chatMessages.add(String.format("[%s] System: %s", LocalDateTime.now().format(TIME_FMT), msg));
+        scrollBottom(chatListView, chatMessages);
     }
 
-    private void addSystemMessage(String message) {
-        if (message == null || message.isEmpty()) {
-            return;
-        }
-        chatMessages.add(getCurrentTime() + " System: " + message);
-        scrollToBottom(chatListView, chatMessages);
-    }
-
-    private void scrollToBottom(ListView<String> listView, ObservableList<String> list) {
-        Platform.runLater(() -> {
-            int size = list.size();
-            if (size > 0) {
-                listView.scrollTo(size - 1);
-            }
-        });
-    }
-
-    private String getCurrentTime() {
-        return "[" + LocalDateTime.now().format(TIME_FORMATTER) + "]";
-    }
-
-    // --- FXML Action Handlers ---
+    /* ── FXML actions ──────────────────────────────────────────────────────────────────── */
 
     @FXML
     private void handleBackToMainMenu() {
-        LOGGER.info("Back to main menu requested");
         sceneManager.switchToScene(SceneManager.SceneType.MAIN_MENU);
     }
 
     @FXML
     private void handleSettings() {
-        LOGGER.info("Settings requested");
-        // Implementation for settings dialog
     }
 
     @FXML
     private void handleResourceOverview() {
-        LOGGER.info("Resource overview requested");
-        // Show resource overview dialog
     }
 
     @FXML
     private void handleGameRound() {
-        LOGGER.info("End turn requested");
-        // End current turn logic
     }
 
     @FXML
     private void handleLeaderboard() {
-        LOGGER.info("Leaderboard requested");
-        // Show leaderboard dialog
     }
 
     @FXML
     private void handleGlobalChatSelect() {
-        LOGGER.info("Global chat selected");
         globalChatButton.setSelected(true);
         lobbyChatButton.setSelected(false);
     }
 
     @FXML
     private void handleLobbyChatSelect() {
-        LOGGER.info("Lobby chat selected");
         globalChatButton.setSelected(false);
         lobbyChatButton.setSelected(true);
-
-        // If no lobby is joined, inform the user
-        if (currentLobbyId == null || currentLobbyId.isEmpty()) {
-            addSystemMessage("You are not in a lobby. Messages will not be sent until you join one.");
-        }
+        if (currentLobbyId == null || currentLobbyId.isEmpty()) addSystem("You are not in a lobby.");
     }
 
     @FXML
     private void handleMessageSend() {
-        String message = chatInputField.getText().trim();
-        if (!message.isEmpty()) {
-            LOGGER.info("Sending message: " + message);
-
-            if (globalChatButton.isSelected()) {
-                // Send global chat message
-                eventBus.publish(new GlobalChatEvent(message, GlobalChatEvent.ChatType.GLOBAL));
-            } else if (lobbyChatButton.isSelected()) {
-                // Send lobby chat message if in a lobby
-                if (currentLobbyId != null && !currentLobbyId.isEmpty()) {
-                    eventBus.publish(new LobbyChatEvent(currentLobbyId, null, message));
-                } else {
-                    addSystemMessage("Cannot send lobby message: You're not in a lobby.");
-                }
+        String msg = chatInputField.getText().trim();
+        if (msg.isEmpty()) return;
+        if (globalChatButton.isSelected()) {
+            eventBus.publish(new GlobalChatEvent(msg, GlobalChatEvent.ChatType.GLOBAL));
+        } else if (lobbyChatButton.isSelected()) {
+            if (currentLobbyId == null || currentLobbyId.isEmpty()) {
+                addSystem("Cannot send lobby message: You're not in a lobby.");
             } else {
-                // Default to global chat if neither is selected
-                LOGGER.warning("No chat type selected, defaulting to GLOBAL");
-                eventBus.publish(new GlobalChatEvent(message, GlobalChatEvent.ChatType.GLOBAL));
+                eventBus.publish(new LobbyChatEvent(currentLobbyId, null, msg));
             }
-
-            chatInputField.clear();
         }
+        chatInputField.clear();
     }
 
-    // Method to set the current lobby ID when joining a lobby
+    /* ── Public API ─────────────────────────────────────────────────────────────────────── */
+
+    /**
+     * Sets the lobby ID used for lobby‑chat messages.
+     */
     public void setCurrentLobbyId(String lobbyId) {
         this.currentLobbyId = lobbyId;
     }
 
-    // Add cleanup method to unsubscribe from events
+    /**
+     * Call when disposing the controller to detach from the {@link UIEventBus}.
+     */
     public void cleanup() {
-        eventBus.unsubscribe(GlobalChatEvent.class, this::handleChatMessage);
-        eventBus.unsubscribe(LobbyChatEvent.class, this::handleLobbyChatMessage);
-        eventBus.unsubscribe(ConnectionStatusEvent.class, this::handleConnectionStatus);
-        LOGGER.info("GameScreenController resources cleaned up");
+        eventBus.unsubscribe(GlobalChatEvent.class, this::onGlobalChat);
+        eventBus.unsubscribe(LobbyChatEvent.class, this::onLobbyChat);
+        eventBus.unsubscribe(ConnectionStatusEvent.class, this::onConnectionStatus);
+    }
+
+    /* ── Grid‑adjustment mode ──────────────────────────────────────────────────────────── */
+
+    public void toggleGridAdjustmentMode() {
+        setGridAdjustmentMode(!gridAdjustmentModeActive);
+    }
+
+    public void setGridAdjustmentMode(boolean active) {
+        gridAdjustmentModeActive = active;
+        adjustmentModeIndicator.setVisible(active);
+        adjustmentValuesLabel.setVisible(active);
+        if (active) {
+            gameCanvas.requestFocus();
+            updateAdjustmentFeedback();
+        }
+        drawMapAndGrid();
+    }
+
+    /* Convenience setters (validate + redraw) */
+    public void setGridScaleFactor(double f) {
+        if (f > 0.3 && f < 1.5) {
+            gridScaleFactor = f;
+            drawMapAndGrid();
+        }
+    }
+
+    public void setGridHorizontalOffset(double p) {
+        if (p >= -0.3 && p <= 0.3) {
+            gridHorizontalOffset = p;
+            drawMapAndGrid();
+        }
+    }
+
+    public void setGridVerticalOffset(double p) {
+        if (p >= -0.3 && p <= 0.3) {
+            gridVerticalOffset = p;
+            drawMapAndGrid();
+        }
+    }
+
+    public void setHexRotation(double d) {
+        hexRotationDegrees = Math.max(0, Math.min(60, d));
+        drawMapAndGrid();
+    }
+
+    public void setHorizontalSpacing(double f) {
+        if (f >= 1) {
+            horizontalSpacingFactor = f;
+            drawMapAndGrid();
+        }
+    }
+
+    public void setVerticalSpacing(double f) {
+        if (f >= 1) {
+            verticalSpacingFactor = f;
+            drawMapAndGrid();
+        }
+    }
+
+    public void setHorizontalSquish(double f) {
+        if (f >= 0.5 && f <= 2) {
+            horizontalSquishFactor = f;
+            drawMapAndGrid();
+        }
+    }
+
+    public void setVerticalSquish(double f) {
+        if (f >= 0.5 && f <= 2) {
+            verticalSquishFactor = f;
+            drawMapAndGrid();
+        }
+    }
+
+    public String getGridSettings() {
+        return String.format("Grid settings: scale=%.2f, hOffset=%.2f, vOffset=%.2f, width=%.2f%%, height=%.2f%%, rotation=%.1f°, hSpacing=%.2f, vSpacing=%.2f, hSquish=%.2f, vSquish=%.2f", gridScaleFactor, gridHorizontalOffset, gridVerticalOffset, gridWidthPercentage * 100, gridHeightPercentage * 100, hexRotationDegrees, horizontalSpacingFactor, verticalSpacingFactor, horizontalSquishFactor, verticalSquishFactor);
+    }
+
+    /* ── Keyboard (global shortcuts) ────────────────────────────────────────────────────── */
+
+    @FXML
+    private void handleKeyboardShortcut(KeyEvent e) {
+        if (e.getCode() == KeyCode.ESCAPE && gridAdjustmentModeActive) {
+            setGridAdjustmentMode(false);
+            e.consume();
+        }
+        if (e.isControlDown() && e.getCode() == KeyCode.G) {
+            toggleGridAdjustmentMode();
+            e.consume();
+        }
+    }
+
+    /* ── Internal helpers ──────────────────────────────────────────────────────────────── */
+
+    private void createAdjustmentUI() {
+        adjustmentModeIndicator = new Label("GRID ADJUSTMENT MODE (Press G to exit)");
+        adjustmentModeIndicator.setStyle("-fx-background-color: rgba(255,165,0,0.7); -fx-text-fill:white; -fx-padding:5 10; -fx-background-radius:5; -fx-font-weight:bold;");
+        adjustmentModeIndicator.setVisible(false);
+
+        adjustmentValuesLabel = new Label();
+        adjustmentValuesLabel.setStyle("-fx-background-color: rgba(0,0,0,0.7); -fx-text-fill:white; -fx-padding:5; -fx-font-size:11; -fx-background-radius:3;");
+        adjustmentValuesLabel.setVisible(false);
+
+        VBox panel = new VBox(5, adjustmentModeIndicator, adjustmentValuesLabel);
+        panel.setAlignment(Pos.TOP_CENTER);
+        panel.setPadding(new Insets(10));
+        ((StackPane) gameCanvas.getParent()).getChildren().add(panel);
+        StackPane.setAlignment(panel, Pos.TOP_CENTER);
     }
 
     private void loadMapImage() {
-        LOGGER.info("Loading map image");
-        try {
-            // Load the map image from resources
-            mapImage = resourceLoader.loadImage(ResourceLoader.MAP_IMAGE);
-
-            if (mapImage != null) {
-                isMapLoaded = true;
-                LOGGER.info("Map image loaded successfully");
-                // Initial draw of the map and grid
-                drawMapAndGrid();
-            } else {
-                LOGGER.severe("Failed to load map image");
-                isMapLoaded = false;
-            }
-        } catch (Exception e) {
-            LOGGER.severe("Error loading map image: " + e.getMessage());
-            isMapLoaded = false;
-        }
+        mapImage = resourceLoader.loadImage(ResourceLoader.MAP_IMAGE);
+        isMapLoaded = mapImage != null;
+        if (isMapLoaded) drawMapAndGrid();
+        else LOGGER.severe("Map image missing");
     }
 
     private void setupCanvasListeners() {
-        // Redraw map and grid when canvas size changes
-        gameCanvas.widthProperty().addListener((obs, oldVal, newVal) -> drawMapAndGrid());
-        gameCanvas.heightProperty().addListener((obs, oldVal, newVal) -> drawMapAndGrid());
+        gameCanvas.widthProperty().addListener((o, ov, nv) -> drawMapAndGrid());
+        gameCanvas.heightProperty().addListener((o, ov, nv) -> drawMapAndGrid());
 
-        // Add mouse event handlers for tile selection
         gameCanvas.setOnMouseClicked(e -> {
-            double x = e.getX();
-            double y = e.getY();
-            // Convert mouse position to hex grid coordinates
-            int[] hexCoords = getHexCoordinatesFromPixel(x, y);
-            if (hexCoords != null) {
-                LOGGER.info("Clicked on hex: row=" + hexCoords[0] + ", col=" + hexCoords[1]);
-                // TODO: Handle tile selection logic
+            gameCanvas.requestFocus();
+            int[] tile = getHexAt(e.getX(), e.getY());
+            if (tile != null) {
+                selectedRow = tile[0];
+                selectedCol = tile[1];
+                drawMapAndGrid();
+                LOGGER.info("Clicked hex at row=" + selectedRow + ", col=" + selectedCol);
+                eventBus.publish(new TileClickEvent(tile[0], tile[1]));
             }
         });
+
+        gameCanvas.setFocusTraversable(true);
+        gameCanvas.setOnKeyPressed(this::handleGridAdjustmentKeys);
     }
 
-    private void drawMapAndGrid() {
-        if (!isMapLoaded || gameCanvas == null) return;
-
-        double canvasWidth = gameCanvas.getWidth();
-        double canvasHeight = gameCanvas.getHeight();
-
-        if (canvasWidth <= 0 || canvasHeight <= 0) return;
-
-        GraphicsContext gc = gameCanvas.getGraphicsContext2D();
-        gc.clearRect(0, 0, canvasWidth, canvasHeight);
-
-        // Calculate image dimensions to maintain aspect ratio
-        double imageWidth = mapImage.getWidth();
-        double imageHeight = mapImage.getHeight();
-        double imageRatio = imageWidth / imageHeight;
-        double canvasRatio = canvasWidth / canvasHeight;
-
-        if (canvasRatio > imageRatio) {
-            // Canvas is wider than image ratio - height is limiting factor
-            scaledMapHeight = canvasHeight;
-            scaledMapWidth = scaledMapHeight * imageRatio;
-        } else {
-            // Canvas is taller than image ratio - width is limiting factor
-            scaledMapWidth = canvasWidth;
-            scaledMapHeight = scaledMapWidth / imageRatio;
-        }
-
-        // Calculate offsets to center the image
-        mapOffsetX = (canvasWidth - scaledMapWidth) / 2;
-        mapOffsetY = (canvasHeight - scaledMapHeight) / 2;
-
-        // Draw the map background at the calculated size and position
-        gc.drawImage(mapImage, mapOffsetX, mapOffsetY, scaledMapWidth, scaledMapHeight);
-
-        // Calculate hexagon size based on scaled map dimensions
-        double hexWidthLimit = scaledMapWidth / (HEX_COLS * 0.75 + 0.25);
-        double hexHeightLimit = scaledMapHeight / (HEX_ROWS * 0.75 + 0.25);
-        effectiveHexSize = Math.min(hexWidthLimit / 2, hexHeightLimit / 2);
-
-        // Draw hexagonal grid with proper scaling
-        drawHexGrid(gc, effectiveHexSize, scaledMapWidth, scaledMapHeight);
-    }
-
-    private void drawHexGrid(GraphicsContext gc, double hexSize, double mapWidth, double mapHeight) {
-        // Set line properties for the grid
-        gc.setStroke(Color.WHITE);
-        gc.setLineWidth(1.5);
-        gc.setGlobalAlpha(0.7); // Semi-transparent grid
-
-        // Calculate grid spacing
-        double horizontalSpacing = hexSize * Math.sqrt(3);
-        double verticalSpacing = hexSize * 1.5;
-
-        // Calculate total grid dimensions
-        double gridWidth = horizontalSpacing * HEX_COLS;
-        double gridHeight = verticalSpacing * HEX_ROWS + hexSize / 2;
-
-        // Calculate grid offset to center it on the map
-        double gridOffsetX = mapOffsetX + (mapWidth - gridWidth) / 2;
-        double gridOffsetY = mapOffsetY + (mapHeight - gridHeight) / 2;
-
-        // Draw each hexagon in the grid
-        for (int row = 0; row < HEX_ROWS; row++) {
-            for (int col = 0; col < HEX_COLS; col++) {
-                // Calculate the center of this hexagon
-                double x = gridOffsetX + col * horizontalSpacing + (row % 2) * (horizontalSpacing / 2);
-                double y = gridOffsetY + row * verticalSpacing;
-
-                // Draw the hexagon
-                drawHexagon(gc, x, y, hexSize);
+    private void handleGridAdjustmentKeys(KeyEvent e) {
+        if (!gridAdjustmentModeActive && !(e.isControlDown() && e.getCode() == KeyCode.G)) return;
+        switch (e.getCode()) {
+            case UP -> gridVerticalOffset -= 0.01;
+            case DOWN -> gridVerticalOffset += 0.01;
+            case LEFT -> gridHorizontalOffset -= 0.01;
+            case RIGHT -> gridHorizontalOffset += 0.01;
+            case PLUS, ADD -> gridScaleFactor += 0.05;
+            case MINUS, SUBTRACT -> gridScaleFactor -= 0.05;
+            case W -> gridHeightPercentage -= 0.02;
+            case S -> gridHeightPercentage += 0.02;
+            case A -> gridWidthPercentage -= 0.02;
+            case D -> gridWidthPercentage += 0.02;
+            case R -> hexRotationDegrees = (hexRotationDegrees + 10) % 60;
+            case T -> hexRotationDegrees = (hexRotationDegrees - 10 + 60) % 60;
+            case F -> horizontalSpacingFactor = Math.max(1, horizontalSpacingFactor - 0.1);
+            case G -> horizontalSpacingFactor += 0.1;
+            case V -> verticalSpacingFactor = Math.max(1, verticalSpacingFactor - 0.1);
+            case B -> verticalSpacingFactor += 0.1;
+            case H -> horizontalSquishFactor = Math.max(0.5, horizontalSquishFactor - 0.1);
+            case J -> horizontalSquishFactor = Math.min(2, horizontalSquishFactor + 0.1);
+            case K -> verticalSquishFactor = Math.max(0.5, verticalSquishFactor - 0.1);
+            case L -> verticalSquishFactor = Math.min(2, verticalSquishFactor + 0.1);
+            case BACK_SPACE -> resetDefaults();
+            case P -> LOGGER.info(getGridSettings());
+            case C -> copyGridSettingsToClipboard();
+            default -> {
+                return;
             }
         }
-
-        // Reset transparency
-        gc.setGlobalAlpha(1.0);
+        drawMapAndGrid();
+        updateAdjustmentFeedback();
+        e.consume();
     }
 
-    private void drawHexagon(GraphicsContext gc, double centerX, double centerY, double size) {
-        // Calculate the six points of the hexagon
-        double[] xPoints = new double[6];
-        double[] yPoints = new double[6];
+    private void resetDefaults() {
+        gridScaleFactor = DEF_GRID_SCALE;
+        gridHorizontalOffset = DEF_GRID_H_OFFSET;
+        gridVerticalOffset = DEF_GRID_V_OFFSET;
+        gridWidthPercentage = DEF_GRID_WIDTH_PCT;
+        gridHeightPercentage = DEF_GRID_HEIGHT_PCT;
+        hexRotationDegrees = DEF_ROTATION_DEG;
+        horizontalSpacingFactor = DEF_H_SPACING;
+        verticalSpacingFactor = DEF_V_SPACING;
+        horizontalSquishFactor = DEF_H_SQUISH;
+        verticalSquishFactor = DEF_V_SQUISH;
+    }
 
+    private void updateAdjustmentFeedback() {
+        adjustmentValuesLabel.setText(String.format("Scale: %.2f | Offset:(%.2f,%.2f) | Size: %.0f%%x%.0f%% | Rot: %.1f° | Spacing:(%.2f,%.2f) | Squish:(%.2f,%.2f)", gridScaleFactor, gridHorizontalOffset, gridVerticalOffset, gridWidthPercentage * 100, gridHeightPercentage * 100, hexRotationDegrees, horizontalSpacingFactor, verticalSpacingFactor, horizontalSquishFactor, verticalSquishFactor));
+    }
+
+    private void copyGridSettingsToClipboard() {
+        ClipboardContent c = new ClipboardContent();
+        c.putString(getGridSettings());
+        Clipboard.getSystemClipboard().setContent(c);
+        adjustmentValuesLabel.setStyle(adjustmentValuesLabel.getStyle() + "-fx-background-color:rgba(0,128,0,0.8);");
+        PauseTransition p = new PauseTransition(Duration.seconds(0.5));
+        p.setOnFinished(ev -> adjustmentValuesLabel.setStyle("-fx-background-color: rgba(0,0,0,0.7);"));
+        p.play();
+    }
+
+    /* ── Drawing ────────────────────────────────────────────────────────────────────────── */
+
+    private void drawMapAndGrid() {
+        if (!isMapLoaded) return;
+        double cW = gameCanvas.getWidth(), cH = gameCanvas.getHeight();
+        if (cW <= 0 || cH <= 0) return;
+        GraphicsContext gc = gameCanvas.getGraphicsContext2D();
+        gc.clearRect(0, 0, cW, cH);
+        double imgRatio = mapImage.getWidth() / mapImage.getHeight();
+        double canvasRatio = cW / cH;
+        if (canvasRatio > imgRatio) {
+            scaledMapHeight = cH;
+            scaledMapWidth = scaledMapHeight * imgRatio;
+        } else {
+            scaledMapWidth = cW;
+            scaledMapHeight = scaledMapWidth / imgRatio;
+        }
+        mapOffsetX = (cW - scaledMapWidth) / 2;
+        mapOffsetY = (cH - scaledMapHeight) / 2;
+        gc.drawImage(mapImage, mapOffsetX, mapOffsetY, scaledMapWidth, scaledMapHeight);
+
+        double gridW = scaledMapWidth * gridWidthPercentage;
+        double gridH = scaledMapHeight * gridHeightPercentage;
+        double hLim = gridW / ((HEX_COLS - 1) * 0.75 + 1);
+        double vLim = gridH / ((HEX_ROWS - 0.5) * 0.866 * 2);
+        effectiveHexSize = Math.min(hLim, vLim) * 0.5 * gridScaleFactor;
+        double addHX = gridHorizontalOffset * scaledMapWidth;
+        double addHY = gridVerticalOffset * scaledMapHeight;
+        drawHexGrid(gc, effectiveHexSize, gridW, gridH, addHX, addHY);
+    }
+
+    private void drawHexGrid(GraphicsContext gc, double size, double gridW, double gridH, double addHX, double addHY) {
+        gc.setStroke(Color.WHITE);
+        gc.setLineWidth(1.5);
+        gc.setGlobalAlpha(0.7);
+        double hSpacing = size * horizontalSpacingFactor;
+        double vSpacing = size * verticalSpacingFactor;
+        double totW = hSpacing * (HEX_COLS - 0.5);
+        double totH = vSpacing * HEX_ROWS;
+        double baseX = mapOffsetX + (scaledMapWidth - gridW) / 2;
+        double baseY = mapOffsetY + (scaledMapHeight - gridH) / 2;
+        gridOffsetX = baseX + (gridW - totW) / 2 + addHX;
+        gridOffsetY = baseY + (gridH - totH) / 2 + addHY;
+        for (int r = 0; r < HEX_ROWS; r++) {
+            for (int c = 0; c < HEX_COLS; c++) {
+                double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2);
+                double cy = gridOffsetY + r * vSpacing;
+                drawHex(gc, cx, cy, size, r == selectedRow && c == selectedCol);
+            }
+        }
+        gc.setGlobalAlpha(1);
+    }
+
+    private void drawHex(GraphicsContext gc, double cx, double cy, double size, boolean selected) {
+        double[] xs = new double[6];
+        double[] ys = new double[6];
+        double rot = Math.toRadians(hexRotationDegrees);
         for (int i = 0; i < 6; i++) {
-            double angle = 2 * Math.PI / 6 * i + Math.PI / 6; // Rotate 30 degrees to point up
-            xPoints[i] = centerX + size * Math.cos(angle);
-            yPoints[i] = centerY + size * Math.sin(angle);
+            double a = rot + 2 * Math.PI / 6 * i;
+            xs[i] = cx + size * Math.cos(a) * horizontalSquishFactor;
+            ys[i] = cy + size * Math.sin(a) * verticalSquishFactor;
         }
-
-        // Draw the hexagon outline
         gc.beginPath();
-        gc.moveTo(xPoints[0], yPoints[0]);
-
-        for (int i = 1; i < 6; i++) {
-            gc.lineTo(xPoints[i], yPoints[i]);
-        }
-
+        gc.moveTo(xs[0], ys[0]);
+        for (int i = 1; i < 6; i++) gc.lineTo(xs[i], ys[i]);
         gc.closePath();
+        if (selected) {
+            double oA = gc.getGlobalAlpha();
+            Paint oF = gc.getFill();
+            gc.setGlobalAlpha(0.3);
+            gc.setFill(Color.YELLOW);
+            gc.fill();
+            gc.setGlobalAlpha(oA);
+            gc.setFill(oF);
+        }
         gc.stroke();
     }
 
-    private int[] getHexCoordinatesFromPixel(double pixelX, double pixelY) {
-        // Early exit if we're outside the map area completely
-        if (pixelX < mapOffsetX || pixelX > mapOffsetX + scaledMapWidth ||
-            pixelY < mapOffsetY || pixelY > mapOffsetY + scaledMapHeight) {
-            return null;
-        }
+    /* ── Hit‑detection ─────────────────────────────────────────────────────────────────── */
 
-        // Calculate hex grid parameters using the effective hex size
-        double horizontalSpacing = effectiveHexSize * Math.sqrt(3);
-        double verticalSpacing = effectiveHexSize * 1.5;
-
-        // Calculate total grid dimensions
-        double gridWidth = horizontalSpacing * HEX_COLS;
-        double gridHeight = verticalSpacing * HEX_ROWS + effectiveHexSize / 2;
-
-        // Calculate grid offset within the map
-        double gridOffsetX = mapOffsetX + (scaledMapWidth - gridWidth) / 2;
-        double gridOffsetY = mapOffsetY + (scaledMapHeight - gridHeight) / 2;
-
-        // Adjust coordinates relative to the grid offset
-        double relX = pixelX - gridOffsetX;
-        double relY = pixelY - gridOffsetY;
-
-        // Calculate approximate row and column
-        int row = (int) Math.floor(relY / verticalSpacing);
-        int col;
-        
-        if (row % 2 == 0) { // Even rows
-            col = (int) Math.floor(relX / horizontalSpacing);
-        } else { // Odd rows with offset
-            col = (int) Math.floor((relX - horizontalSpacing/2) / horizontalSpacing);
-        }
-
-        // Fine-tune position using hex math for more accuracy
-        // This helps with the gaps between hexagons
-        double centerX = col * horizontalSpacing + (row % 2) * (horizontalSpacing / 2);
-        double centerY = row * verticalSpacing;
-        double dx = relX - centerX;
-        double dy = relY - centerY;
-        double distance = Math.sqrt(dx * dx + dy * dy);
-        
-        // Check if the point is within the hexagon's radius
-        if (distance > effectiveHexSize * 1.2) { // Allow a bit of leeway with 1.2 factor
-            // Find closest hex if we're in the gap
-            int[] closestHex = findClosestHex(relX, relY, row, col, horizontalSpacing, verticalSpacing);
-            if (closestHex != null) {
-                row = closestHex[0];
-                col = closestHex[1];
+    /**
+     * Returns the hex (row,col) at the given canvas coordinates or {@code null} if none. The algorithm mirrors the
+     * drawing logic: it iterates over every hex (there are only 56) and performs a point‑in‑polygon check against the
+     * exact polygon used for rendering. This guarantees correctness even when rotation, squish or scaling are active.
+     */
+    private int[] getHexAt(double px, double py) {
+        if (!isMapLoaded || effectiveHexSize <= 0) return null;
+        double hSpacing = effectiveHexSize * horizontalSpacingFactor;
+        double vSpacing = effectiveHexSize * verticalSpacingFactor;
+        for (int r = 0; r < HEX_ROWS; r++) {
+            for (int c = 0; c < HEX_COLS; c++) {
+                double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2);
+                double cy = gridOffsetY + r * vSpacing;
+                if (pointInHex(px, py, cx, cy, effectiveHexSize)) return new int[]{r, c};
             }
         }
-
-        // Check if the coordinates are valid
-        if (row >= 0 && row < HEX_ROWS && col >= 0 && col < HEX_COLS) {
-            return new int[]{row, col};
-        }
-
-        return null; // Outside the grid
+        return null;
     }
 
-    // Helper method to find the closest hex when clicking near borders
-    private int[] findClosestHex(double x, double y, int baseRow, int baseCol, 
-                                double horizontalSpacing, double verticalSpacing) {
-        int[] result = new int[2];
-        double closestDistance = Double.MAX_VALUE;
-        
-        // Check neighboring hexes
-        for (int r = Math.max(0, baseRow - 1); r <= Math.min(HEX_ROWS - 1, baseRow + 1); r++) {
-            for (int c = Math.max(0, baseCol - 1); c <= Math.min(HEX_COLS - 1, baseCol + 1); c++) {
-                // Skip the base hex itself as we already checked it
-                if (r == baseRow && c == baseCol) continue;
-                
-                // Calculate hex center
-                double centerX = c * horizontalSpacing + (r % 2) * (horizontalSpacing / 2);
-                double centerY = r * verticalSpacing;
-                
-                // Calculate distance
-                double dx = x - centerX;
-                double dy = y - centerY;
-                double distance = Math.sqrt(dx * dx + dy * dy);
-                
-                if (distance < closestDistance) {
-                    closestDistance = distance;
-                    result[0] = r;
-                    result[1] = c;
-                }
-            }
+    /**
+     * Ray‑casting point‑in‑polygon for a single hex.
+     */
+    private boolean pointInHex(double px, double py, double cx, double cy, double size) {
+        double rot = Math.toRadians(hexRotationDegrees);
+        double[] xs = new double[6];
+        double[] ys = new double[6];
+        for (int i = 0; i < 6; i++) {
+            double a = rot + 2 * Math.PI / 6 * i;
+            xs[i] = cx + size * Math.cos(a) * horizontalSquishFactor;
+            ys[i] = cy + size * Math.sin(a) * verticalSquishFactor;
         }
-        
-        return result;
+        boolean inside = false;
+        for (int i = 0, j = 5; i < 6; j = i++) {
+            if (((ys[i] > py) != (ys[j] > py)) && (px < (xs[j] - xs[i]) * (py - ys[i]) / (ys[j] - ys[i]) + xs[i]))
+                inside = !inside;
+        }
+        return inside;
     }
 }
