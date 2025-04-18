@@ -250,11 +250,17 @@ public class StatueBehaviorRegistry {
         // Dwarf
         registerBehavior("Dwarf", StatueEffectType.DEAL,
                 (statue, gameState, player, params) -> {
-                    // Smeltery: produces +1 Artifact next Round: 1 random Structure does not produce Runes next round
-                    Structure structure = params.getStructure();
-                    if (structure == null || !"Smeltery".equals(structure.getName())) return false;
+                    // Smeltery: produces +1 buff next Round: 1 random Structure does not produce Runes next round
+                    int x = params.getX();
+                    int y = params.getY();
+                    Tile tile = gameState.getBoardManager().getTile(x, y);
+                    Structure structure = (Structure) tile.getEntity();
+                    if (structure == null || !"Surtur's Smeltery".equals(structure.getName())) return false;
 
-                    // Implementation of effect
+                    structure.setParam(0, structure.getParams().get(0).getValue() + 1); // Increase number of buffs by 1
+
+                    Structure targetStructure = RandomGenerator.pickRandomElement(player.getStructures());
+                    targetStructure.setRessourceValue(0);
                     return true;
                 },
                 new StatueParameterRequirement(StatueParameterRequirement.StatueParameterType.SMELTERY)

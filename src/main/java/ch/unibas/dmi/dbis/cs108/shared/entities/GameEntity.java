@@ -82,6 +82,16 @@ public abstract class GameEntity {
     public List<Parameter> getParams() { return params; }
 
     /**
+     * Sets the value of the parameter at the specified index to the given value
+     *
+     * @param index the index of the parameter to have its value replaced
+     * @param value double that represents the value for the param
+     */
+    public void setParam(int index, double value) {
+        Parameter param = new Parameter(params.get(index).getName(), value);
+        params.set(index, param);
+    }
+    /**
      * Loads entity data from a JSON object.
      * In addition to id, name and description, it loads a list of parameters
      * if available.

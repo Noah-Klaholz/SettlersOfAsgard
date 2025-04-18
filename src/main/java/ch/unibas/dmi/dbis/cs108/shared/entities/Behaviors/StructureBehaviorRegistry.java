@@ -78,8 +78,13 @@ public class StructureBehaviorRegistry {
                     Status.BuffType.SHOP_PRICE,
                     Status.BuffType.ARTIFACT_CHANCE
             };
-            int random = (int)Math.ceil(Math.random() * buffTypes.length);
-            player.addBuff(buffTypes[random],(int)structure.getParams().get(random).getValue());
+            int numberOfBuffs = (int) structure.getParams().get(0).getValue();
+
+            for (int i = 0; i < numberOfBuffs; i++) {
+                int random = (int)Math.ceil(Math.random() * buffTypes.length);
+                player.addBuff(buffTypes[random],(int)structure.getParams().get(random+1).getValue()); // +1 because 0 is the number of buffs
+            }
+            structure.setParam(0, 1); // Reset number of buffs -> should never be changed permanently
             return true;
         });
 

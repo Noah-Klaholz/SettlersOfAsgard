@@ -64,6 +64,10 @@
     "resourceValue": 5,
     "params": [
       {
+        "name": "NumberOfBuffs",
+        "value": 1
+      },
+      {
         "name": "Rune generation",
         "value": 0.1
       },

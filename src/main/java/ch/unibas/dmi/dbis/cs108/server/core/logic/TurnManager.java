@@ -132,7 +132,7 @@ public class TurnManager {
             if (tile.hasEntity()) {
                 PurchasableEntity entity = tile.getEntity();
                 if (entity instanceof Structure) {
-                    int value = entity.getResourceValue(); // Either energy or runes
+                    int value = entity.getResourceValue();
                     if (entity.isStructure()) {
                         if (tile.hasRiver()) {
                             value = (int) (value * player.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION) * tile.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION));

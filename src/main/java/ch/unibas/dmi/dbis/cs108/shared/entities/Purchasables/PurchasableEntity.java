@@ -89,4 +89,8 @@ public abstract class PurchasableEntity extends GameEntity {
     public void setActivated(boolean b) {
         this.activated = b;
     }
+
+    public void setRessourceValue(int value) {
+        this.resourceValue = value;
+    }
 }
