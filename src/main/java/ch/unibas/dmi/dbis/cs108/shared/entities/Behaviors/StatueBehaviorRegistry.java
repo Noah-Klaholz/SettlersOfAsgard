@@ -4,6 +4,7 @@ import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.*;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Board;
@@ -304,8 +305,12 @@ public class StatueBehaviorRegistry {
         // Freyja
         registerBehavior("Freyja", StatueEffectType.DEAL,
                 (statue, gameState, player, params) -> {
-                    // Finds 1 random Artifact: costs (a lot of) Runes
+                    // Gives 1 random Artifact: costs (a lot of) Runes
+                    if (!player.buy((int)statue.getParams().get(0).getValue())) return false;
 
+                    Artifact artifact = RandomGenerator.pickRandomElement(EntityRegistry.getAllArtifacts().stream().toList());
+
+                    player.addArtifact(artifact);
                     return true;
                 },
                 new StatueParameterRequirement()
@@ -314,7 +319,12 @@ public class StatueBehaviorRegistry {
         registerBehavior("Freyja", StatueEffectType.BLESSING,
                 (statue, gameState, player, params) -> {
                     // 1 Tile of choice for free
-                    if (!params.hasTileCoordinates()) return false;
+                    int x = params.getX();
+                    int y = params.getY();
+                    Tile tile = gameState.getBoardManager().getTile(x, y);
+                    if (tile == null || tile.isPurchased()) return false;
+
+                    player.addOwnedTile(tile);
 
                     // Implementation of effect
                     return true;
@@ -325,9 +335,15 @@ public class StatueBehaviorRegistry {
         registerBehavior("Freyja", StatueEffectType.CURSE,
                 (statue, gameState, player, params) -> {
                     // Conquers a Tile in possession and makes it unusable
-                    if (!params.hasTileCoordinates()) return false;
+                    Tile tile = player.getOwnedTiles().stream().
+                            filter(t -> t.getEntity() == null)
+                            .findFirst().orElse(null); // Finds the Freyr Statue in the players Owned Tiles
 
-                    // Implementation of effect
+                    if (tile == null) return false;
+                    tile.setEntity(EntityRegistry.getStructure(8));
+                    tile.setResourceValue(0);
+                    player.removePurchasableEntity(statue);
+
                     return true;
                 },
                 new StatueParameterRequirement(StatueParameterRequirement.StatueParameterType.TILE)

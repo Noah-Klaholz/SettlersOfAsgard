@@ -41,7 +41,7 @@
     "blessing": "1 Tile of choice for free",
     "curse": "Conquers a Tile in possession and makes it unusable",
     "description": "",
-    "useType": "mix",
+    "useType": "blessing: Tile",
     "id": 33,
     "price": 30,
     "upgradePrice": 50,
