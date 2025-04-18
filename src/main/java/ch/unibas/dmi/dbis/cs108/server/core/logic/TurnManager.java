@@ -90,6 +90,7 @@ public class TurnManager {
                 purchasableEntity.setActivated(false);
             }
         });
+        oldPlayer.setRoundBoughtTiles(0);
     }
 
     private void initializeFirstTurn() {

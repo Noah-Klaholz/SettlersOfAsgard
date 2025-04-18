@@ -13,7 +13,7 @@ Spieler kann:
 - Tile kaufen (0 bis 3, günstig) -> chance auf Artefakt finden -> gefundene Artefakte werden in den 3 freien Artefact-Slots gespeichert und können verwendet werden
 - Structure kaufen -> auf Tile platzieren (wenn Tile in seinem Besitz und ohne Structure/ Statue drauf)
 - Statue kaufen (teuer/ wenn noch keine Statue in Besitz) -> auf Tile platzieren (Wenn Tile in seinem Besitz und ohne Structure/ Statue drauf und die Welt der Tile der Welt der Statue entspricht)
--> ob eine gekaufte Structure/ Statue sofort platziert werden muss kann noch entschieden werden
+-> ob eine gekaufte Structure/ Statue sofort platziert werden muss kann noch entschieden werden -> ja wird sie!
 
 Limit der Käufe ist außer bei Tiles nur das Runenkapital (änderbar)
 

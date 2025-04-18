@@ -9,11 +9,12 @@ public class SETTINGS {
         TIMEOUT(2 * 1000), // Milliseconds
         MAX_ARTIFACTS(3),
         START_RUNES(50),
-        START_ENERGY(4),
+        START_ENERGY(0),
         CHANCE_FOR_CURSE(1),
         MIN_RESSOURCE_VALUE(10),
         MAX_RESOURCE_VALUE(20),
-        ARTIFACT_CHANCE(10); // Percentage
+        ARTIFACT_CHANCE(10), // Percentage
+        PURCHASABLE_TILES_PER_ROUND(3);
 
         private final int value;
 

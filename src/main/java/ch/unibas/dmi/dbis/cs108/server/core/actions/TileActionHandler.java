@@ -38,12 +38,13 @@ public class TileActionHandler {
             }
 
             Player player = findPlayerByName(playerName);
-            if (player == null || !player.buy(tile.getPrice())) {
+            if (player == null || player.getRoundBoughtTiles() < SETTINGS.Config.PURCHASABLE_TILES_PER_ROUND.getValue() && !player.buy(tile.getPrice())) {
                 return false;
             }
 
             tile.setPurchased(true);
             player.addOwnedTile(tile);
+            player.addBoughtTile();
 
             // Players always have a chance to randomly find an artifact when they buy a tile based on their artifact chance
             if (tile.getArtifact() == null && RandomGenerator.chance((int) player.getStatus().get(Status.BuffType.ARTIFACT_CHANCE))) {

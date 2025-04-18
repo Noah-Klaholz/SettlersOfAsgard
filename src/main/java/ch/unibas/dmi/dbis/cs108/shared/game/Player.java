@@ -23,6 +23,7 @@ public class Player {
     private List<Artifact> artifacts;
     private List<PurchasableEntity> purchasableEntities;
     private Status status;
+    private int roundBoughtTiles;
 
     /**
      * Constructor for Player class
@@ -40,6 +41,7 @@ public class Player {
         artifacts = new ArrayList<>();
         purchasableEntities = new ArrayList<>();
         status = new Status();
+        roundBoughtTiles = 0;
     }
 
     /**
@@ -123,6 +125,31 @@ public class Player {
      */
     public void removePurchasableEntity(PurchasableEntity entity) {
         purchasableEntities.remove(entity);
+    }
+
+    /**
+     * Setter for runeBoughtTiles
+     *
+     * @param roundBoughtTiles the number of tiles already bought
+     */
+    public void setRoundBoughtTiles(int roundBoughtTiles) {
+        this.roundBoughtTiles = roundBoughtTiles;
+    }
+
+    /**
+     * Getter for runeBoughtTiles
+     *
+     * @return roundBoughtTiles the number of tiles already bought
+     */
+    public int getRoundBoughtTiles() {
+        return roundBoughtTiles;
+    }
+
+    /**
+     * adds a bought tile for this turn
+     */
+    public void addBoughtTile() {
+        roundBoughtTiles++;
     }
 
     /**
