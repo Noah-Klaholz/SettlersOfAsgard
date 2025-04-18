@@ -3,6 +3,8 @@ package ch.unibas.dmi.dbis.cs108.server.core.model;
 import ch.unibas.dmi.dbis.cs108.shared.game.Board;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.logging.Logger;
 
@@ -93,6 +95,28 @@ public class BoardManager {
         stateLock.readLock().lock();
         try {
             return board.getAdjacentTiles(x, y);
+        } finally {
+            stateLock.readLock().unlock();
+        }
+    }
+
+    /**
+     * Gets all tiles that hold a river as a List
+     *
+     * @return list of tiles
+     */
+    public List<Tile> getRiverTiles() {
+        stateLock.readLock().lock();
+        List<Tile> result = new ArrayList<>();
+        try {
+            for (Tile[] tile : board.getTiles()) {
+                for (Tile t : tile) {
+                    if (t != null && t.hasRiver()) {
+                        result.add(t);
+                    }
+                }
+            }
+            return result;
         } finally {
             stateLock.readLock().unlock();
         }

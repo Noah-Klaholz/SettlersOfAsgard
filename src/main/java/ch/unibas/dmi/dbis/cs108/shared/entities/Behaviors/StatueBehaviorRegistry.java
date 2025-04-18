@@ -3,13 +3,16 @@ package ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors;
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
+import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.*;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
+import ch.unibas.dmi.dbis.cs108.shared.game.Board;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 import ch.unibas.dmi.dbis.cs108.shared.utils.RandomGenerator;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -190,16 +193,23 @@ public class StatueBehaviorRegistry {
                     targetTile.setEntity(null);
                     return true;
                 },
-                new StatueParameterRequirement(StatueParameterRequirement.StatueParameterType.PLAYER)
+                new StatueParameterRequirement(StatueParameterRequirement.StatueParameterType.PLAYER,StatueParameterRequirement.StatueParameterType.TILE)
         );
 
         // Freyr
         registerBehavior("Freyr", StatueEffectType.DEAL,
                 (statue, gameState, player, params) -> {
                     // Grows 1 Tree on a River Tile: costs all available Energy (min 1 Energy)
-                    if (!params.hasTileCoordinates()) return false;
+                    int x = params.getX();
+                    int y = params.getY();
+                    Tile tile = gameState.getBoardManager().getTile(x, y);
+                    if (tile == null || player.getEnergy() == 0) return false;
 
-                    // Implementation of effect
+                    Structure structure = EntityRegistry.getStructure(7); // Tree has id 7
+                    tile.setEntity(structure); // places the tree
+
+                    player.addPurchasableEntity(structure);
+
                     return true;
                 },
                 new StatueParameterRequirement(StatueParameterRequirement.StatueParameterType.TILE)
@@ -208,9 +218,17 @@ public class StatueBehaviorRegistry {
         registerBehavior("Freyr", StatueEffectType.BLESSING,
                 (statue, gameState, player, params) -> {
                     // Grows Trees on all River Tiles
+                    List<Tile> tiles = gameState.getBoardManager().getRiverTiles();
+                    for (Tile tile : tiles) {
+                        Structure structure = EntityRegistry.getStructure(7); // Tree has id 7
+                        tile.setEntity(structure);
+                        if (player.getOwnedTiles().contains(tile)) {
+                            player.addPurchasableEntity(structure); // If the player owns the tile, he should also own the placed tree
+                        }
+                    }
                     return true;
                 },
-                new StatueParameterRequirement()
+                new StatueParameterRequirement(StatueParameterRequirement.StatueParameterType.TILE)
         );
 
         registerBehavior("Freyr", StatueEffectType.CURSE,
