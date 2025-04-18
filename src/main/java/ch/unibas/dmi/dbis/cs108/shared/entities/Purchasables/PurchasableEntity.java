@@ -25,6 +25,13 @@ public abstract class PurchasableEntity extends GameEntity {
     protected boolean activated = false;
 
     /**
+     * Indicates whether this entity has been disabled last turn.
+     * Value above 0 means it was disabled
+     * Value of 0 means it was not
+     */
+    protected int disabled = 0;
+
+    /**
      * Default constructor for PurchasableEntity.
      */
     public PurchasableEntity() {}
@@ -82,15 +89,56 @@ public abstract class PurchasableEntity extends GameEntity {
         this.resourceValue = json.get("resourceValue").getAsInt();
     }
 
+    /**
+     * Returns whether this entity has been activated this turn
+     *
+     * @return true if it has, false otherwise
+     */
     public boolean isActivated() {
         return activated;
     }
 
+    /**
+     * Returns if this statue is currently disabled,
+     * Any value above 0 means yes
+     *
+     * @return true if yes, false otherwise
+     */
+    public boolean isDisabled() {
+        return disabled > 0;
+    }
+
+    /**
+     * Sets the activation of this structures to the given boolean
+     *
+     * @param b boolean that gives the activation of the statue
+     */
     public void setActivated(boolean b) {
         this.activated = b;
     }
 
+    /**
+     * Sets the ressource value of this entity
+     *
+     * @param value int the resource value
+     */
     public void setRessourceValue(int value) {
         this.resourceValue = value;
+    }
+
+    /**
+     * Disables this statue for "turns" number of turns
+     *
+     * @param turns the number of turns it should be disabled
+     */
+    public void disable(int turns) {
+        this.disabled = turns;
+    }
+
+    /**
+     * Ticks one turn off of the disabled "timer"
+     */
+    public void disabledTurn() {
+        this.disabled--;
     }
 }

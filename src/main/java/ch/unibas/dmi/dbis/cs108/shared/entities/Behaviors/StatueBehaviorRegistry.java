@@ -5,6 +5,7 @@ import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.*;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Board;
@@ -128,8 +129,8 @@ public class StatueBehaviorRegistry {
         String statueName = statue.getName();
         StatueEffectType effectType = determineEffectType(statue);
 
-        // Level 1 statues have no effect
-        if (effectType == StatueEffectType.NONE) {
+        // Level 1 statues have no effect and disabled statues cannot be used.
+        if (effectType == StatueEffectType.NONE || statue.isDisabled()) {
             return false;
         }
 
@@ -368,9 +369,10 @@ public class StatueBehaviorRegistry {
 
                     if (tile == null) return false;
 
-                    tile.getEntity().setActivated(true);
+                    tile.getEntity().disable(1); // Block statue for the next turn
 
-                    //TODO implement negative effect on player (to be decided)
+                    PurchasableEntity purchasableEntity = RandomGenerator.pickRandomElement(player.getPurchasableEntities());
+                    purchasableEntity.disable(2); // Block random entity for current and the next turn
 
                     return true;
                 },

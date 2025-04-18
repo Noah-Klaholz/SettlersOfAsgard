@@ -136,7 +136,7 @@ public class StructureBehaviorRegistry {
      */
     public boolean execute(Structure structure, GameState gameState, Player player) {
         StructureBehavior behavior = behaviors.get(structure.getName());
-        if (behavior != null) {
+        if (behavior != null && !structure.isDisabled()) {
             return behavior.execute(structure, gameState, player);
         }
         return false;

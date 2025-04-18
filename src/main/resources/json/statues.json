@@ -59,7 +59,7 @@
   },
   {
     "name": "Hel",
-    "deal": "Blocks the Statue of a chosen Player next Round: blocks a random Structure of your own next Round",
+    "deal": "Blocks the Statue of a chosen Player next Round: blocks a random Structure of your own until the end of your next turn",
     "blessing": "Destroys the statue of a random Player",
     "curse": "Goes back to Helheim and the Statue gets destroyed",
     "description": "",

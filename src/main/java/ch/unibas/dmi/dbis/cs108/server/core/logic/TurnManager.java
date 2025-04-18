@@ -92,6 +92,9 @@ public class TurnManager {
             if (purchasableEntity.isActivated()) {
                 purchasableEntity.setActivated(false);
             }
+            if (purchasableEntity.isDisabled()) {
+                purchasableEntity.disabledTurn();
+            }
         });
         oldPlayer.setRoundBoughtTiles(0);
     }
