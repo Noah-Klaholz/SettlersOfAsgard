@@ -38,7 +38,7 @@ public class TileActionHandler {
             }
 
             Player player = findPlayerByName(playerName);
-            if (player == null || player.getRoundBoughtTiles() < SETTINGS.Config.PURCHASABLE_TILES_PER_ROUND.getValue() && !player.buy(tile.getPrice())) {
+            if (player == null || !(player.getRoundBoughtTiles() < SETTINGS.Config.PURCHASABLE_TILES_PER_ROUND.getValue()) || !player.buy(tile.getPrice())) {
                 return false;
             }
 
