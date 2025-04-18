@@ -285,6 +285,15 @@ public class StatueBehaviorRegistry {
         registerBehavior("Dwarf", StatueEffectType.CURSE,
                 (statue, gameState, player, params) -> {
                     // Destroys the Smeltery
+                    int x = params.getX();
+                    int y = params.getY();
+                    Tile tile = gameState.getBoardManager().getTile(x, y);
+                    if (!player.getOwnedTiles().contains(tile)) return false;
+                    Structure structure = (Structure) tile.getEntity();
+                    if (structure == null || !"Surtur's Smeltery".equals(structure.getName())) return false;
+
+                    tile.removeEntity();
+                    player.removePurchasableEntity(structure);
                     return true;
                 },
                 new StatueParameterRequirement()
