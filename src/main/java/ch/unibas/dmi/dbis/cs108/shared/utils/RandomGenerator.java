@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.shared.utils;
 
+import java.util.List;
 import java.util.Random;
 
 public class RandomGenerator {
@@ -42,5 +43,16 @@ public class RandomGenerator {
         }
         int index = RANDOM.nextInt(array.length);
         return array[index];
+    }
+
+    /**
+     * Returns a random element from a list or null if list is empty.
+     */
+    public static <T> T pickRandomElement(List<T> array) {
+        if (array == null || array.isEmpty()) {
+            return null;
+        }
+        int index = RANDOM.nextInt(array.size());
+        return array.get(index);
     }
 }

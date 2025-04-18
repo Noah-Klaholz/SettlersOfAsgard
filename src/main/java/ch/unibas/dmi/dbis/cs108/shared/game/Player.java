@@ -362,6 +362,11 @@ public class Player {
         this.energy = 0;
     }
 
+    /**
+     * Checks is the player already owns a statue
+     *
+     * @return true if he does false otherwise
+     */
     public boolean hasStatue() {
         for (PurchasableEntity purchasableEntity : purchasableEntities) {
             if (purchasableEntity instanceof Statue) {
@@ -371,6 +376,11 @@ public class Player {
         return false;
     }
 
+    /**
+     * Removes an owned Tile
+     *
+     * @param removeTile the tile to remove
+     */
     public void removeOwnedTile(Tile removeTile) {
         for (Tile tile : ownedTiles) {
             if (tile.getX() == removeTile.getX() && tile.getY() == removeTile.getY()) {
@@ -378,5 +388,35 @@ public class Player {
                 break;
             }
         }
+    }
+
+    /**
+     * Returns all owned structures as a list
+     *
+     * @return List</Structure> the list of structures
+     */
+    public List<Structure> getStructures() {
+        List<Structure> structures = new ArrayList<>();
+        for (PurchasableEntity purchasableEntity : purchasableEntities) {
+            if (purchasableEntity instanceof Structure) {
+                structures.add((Structure) purchasableEntity);
+            }
+        }
+        return structures;
+    }
+
+    /**
+     * Gets all tiles, that hold structures as a List
+     *
+     * @return the List of Tiles with Structures
+     */
+    public List<Tile> getTilesWithStructures() {
+        List<Tile> tilesWithStructures = new ArrayList<>();
+        for (Tile tile : ownedTiles) {
+            if (tile.hasEntity() && tile.getEntity() instanceof Structure) {
+                tilesWithStructures.add(tile);
+            }
+        }
+        return tilesWithStructures;
     }
 }

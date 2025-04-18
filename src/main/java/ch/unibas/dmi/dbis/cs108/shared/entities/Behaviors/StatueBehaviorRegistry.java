@@ -6,6 +6,8 @@ import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.*;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
+import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
+import ch.unibas.dmi.dbis.cs108.shared.utils.RandomGenerator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -172,7 +174,20 @@ public class StatueBehaviorRegistry {
                 (statue, gameState, player, params) -> {
                     // Destroys 1 random structure of a chosen player: sacrifices 1 structure of your own
                     Player targetPlayer = params.getTargetPlayer();
-                    if (targetPlayer == null) return false;
+                    int x = params.getX();
+                    int y = params.getY();
+                    Tile tile = gameState.getBoardManager().getTile(x, y);
+                    if (targetPlayer == null || tile == null) return false;
+                    if (!tile.hasEntity() || tile.getEntity().isStructure()) return false;
+                    Structure structure = (Structure) tile.getEntity();
+
+                    player.removePurchasableEntity(structure);
+                    tile.setEntity(null);
+
+                    Tile targetTile = RandomGenerator.pickRandomElement(targetPlayer.getTilesWithStructures());
+
+                    targetPlayer.removePurchasableEntity(targetTile.getEntity());
+                    targetTile.setEntity(null);
                     return true;
                 },
                 new StatueParameterRequirement(StatueParameterRequirement.StatueParameterType.PLAYER)
