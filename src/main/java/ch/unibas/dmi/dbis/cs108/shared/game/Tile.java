@@ -13,7 +13,7 @@ public class Tile {
     private boolean hasEntity;
     private String owner; //ownerID
     private final int price;
-    private GameEntity entity;
+    private GameEntity entity; // Not an artifact
     private Artifact artefact;
     private final String world;
     private boolean purchased;

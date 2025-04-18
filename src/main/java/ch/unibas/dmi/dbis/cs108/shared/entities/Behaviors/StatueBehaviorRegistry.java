@@ -4,6 +4,8 @@ import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
+import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.*;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
@@ -510,10 +512,21 @@ public class StatueBehaviorRegistry {
         registerBehavior("Surtr", StatueEffectType.DEAL,
                 (statue, gameState, player, params) -> {
                     // Destroys 1 random Structure or Statue of a chosen Player: consumes the Flaming Sword Structure
-                    Player targetPlayer = params.getTargetPlayer();
-                    if (targetPlayer == null) return false;
 
-                    // Implementation of effect
+                    Tile target = RandomGenerator.pickRandomElement(params.getTargetPlayer().getOwnedTiles().stream().filter(t -> t.hasEntity() && (t.getEntity().isStructure() || t.getEntity().isStatue())).toArray(Tile[]::new));
+                    assert target != null;
+                    GameEntity entity = target.getEntity();
+                    target.setEntity(null);
+                    player.removePurchasableEntity((PurchasableEntity) entity);
+
+                    // Check if player has Flaming Sword
+                    Tile sword = player.getOwnedTiles().stream().filter(t -> t.getEntity() != null && t.getEntity().isMonument() && t.getWorld().equals("Muspelheim")).findFirst().orElse(null);
+                    assert sword != null;
+                    Monument swordMonument = (Monument) sword.getEntity();
+
+                    // Consume flaming sword from player, should still exist as an entity, since tile should still be blocked
+                    player.removeMonument(swordMonument);
+
                     return true;
                 },
                 new StatueParameterRequirement(StatueParameterRequirement.StatueParameterType.PLAYER)
