@@ -115,16 +115,10 @@
   },
   {
     "name": "Overgrowth",
-    "usage": "Can be placed on empty Tiles which are not yet bought. Upon buying the Tile, the Trap is activated and the Player gets a Debuff.",
+    "usage": "Is placed by the curse of Freyr, destroys the structure that is on the tile and makes the tile unusable",
     "description": "",
-    "id": 8,
+    "id": 9,
     "price": 0,
-    "resourceValue": 0,
-    "params": [
-      {
-        "name": "Runes Lost",
-        "value": 20
-      }
-    ]
+    "resourceValue": 0
   }
 ]

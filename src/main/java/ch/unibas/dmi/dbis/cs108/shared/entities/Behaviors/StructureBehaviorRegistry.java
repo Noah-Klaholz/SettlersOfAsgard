@@ -87,6 +87,8 @@ public class StructureBehaviorRegistry {
             player.addEnergy((int)structure.getParams().get(0).getValue());
             return true;
         });
+
+        // No need to register behavior for the Overgrowth structure since it does not have any effect
     }
 
     /**

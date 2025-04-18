@@ -233,10 +233,18 @@ public class StatueBehaviorRegistry {
 
         registerBehavior("Freyr", StatueEffectType.CURSE,
                 (statue, gameState, player, params) -> {
-                    // Overgrows 1 random Statue so it cannot be used anymore and blocks the tile
+                    // Overgrows the Freyr Statue so it cannot be used anymore and blocks the tile
+                    int x = params.getX();
+                    int y = params.getY();
+                    Tile tile = gameState.getBoardManager().getTile(x, y);
+
+                    tile.setEntity(EntityRegistry.getStructure(8));
+                    tile.setResourceValue(0);
+                    player.removePurchasableEntity(statue);
+
                     return true;
                 },
-                new StatueParameterRequirement()
+                new StatueParameterRequirement(StatueParameterRequirement.StatueParameterType.TILE) // the given tile should be the tile of the Freyr Statue
         );
 
         // Dwarf
