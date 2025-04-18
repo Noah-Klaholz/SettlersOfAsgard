@@ -8,7 +8,9 @@ import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
+import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,7 +63,16 @@ public class StructureBehaviorRegistry {
         });
 
         registerBehavior("Huginn and Muninn", (structure, gameState, player) -> {
-            // TODO implement showing of 1 field with artifact (can be already purchased)
+            Tile[][] tiles = gameState.getBoardManager().getBoard().getTiles();
+            for (Tile[] tile : tiles) {
+                for (Tile t : tile) {
+                    if (t.getArtifact() != null) {
+                        gameState.sendNotification(player.getName(), "4$" + t.getX() + "$" + t.getY() + "$" + t.getArtifact().getName());
+                        return true;
+                    }
+                }
+            }
+            gameState.sendNotification(player.getName(), "4$Null");
             return true;
         });
 
