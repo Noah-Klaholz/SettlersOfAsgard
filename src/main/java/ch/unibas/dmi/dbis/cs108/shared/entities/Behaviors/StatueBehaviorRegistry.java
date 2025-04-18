@@ -361,9 +361,17 @@ public class StatueBehaviorRegistry {
                 (statue, gameState, player, params) -> {
                     // Blocks the Statue of a chosen Player next Round: blocks a random Structure of your own next Round
                     Player targetPlayer = params.getTargetPlayer();
-                    if (targetPlayer == null) return false;
 
-                    // Implementation of effect
+                    Tile tile = targetPlayer.getOwnedTiles().stream()
+                            .filter(t -> t.getEntity() != null && t.getEntity().isStatue())
+                            .findFirst().orElse(null);
+
+                    if (tile == null) return false;
+
+                    tile.getEntity().setActivated(true);
+
+                    //TODO implement negative effect on player (to be decided)
+
                     return true;
                 },
                 new StatueParameterRequirement(StatueParameterRequirement.StatueParameterType.PLAYER)
@@ -372,6 +380,17 @@ public class StatueBehaviorRegistry {
         registerBehavior("Hel", StatueEffectType.BLESSING,
                 (statue, gameState, player, params) -> {
                     // Destroys the statue of a random Player
+                    Player targetPlayer = player;
+                    while (targetPlayer == player) { // Make sure the player does not destroy his own statue
+                        targetPlayer = RandomGenerator.pickRandomElement(gameState.getPlayers());
+                    }
+
+                    Tile tile = targetPlayer.getOwnedTiles().stream().filter(t -> t.hasEntity() && t.getEntity().isStatue()).findFirst().orElse(null);
+                    if (tile == null) return false;
+                    Statue targetStatue = (Statue) tile.getEntity();
+
+                    targetPlayer.removePurchasableEntity(targetStatue);
+                    tile.setEntity(null);
                     return true;
                 },
                 new StatueParameterRequirement()
@@ -380,6 +399,12 @@ public class StatueBehaviorRegistry {
         registerBehavior("Hel", StatueEffectType.CURSE,
                 (statue, gameState, player, params) -> {
                     // Goes back to Helheim and the Statue gets destroyed
+                    Tile tile = player.getOwnedTiles().stream().filter(t -> t.hasEntity() && t.getEntity().isStatue()).findFirst().orElse(null);
+                    if (tile == null) return false;
+                    Statue targetStatue = (Statue) tile.getEntity();
+
+                    player.removePurchasableEntity(targetStatue);
+                    tile.setEntity(null);
                     return true;
                 },
                 new StatueParameterRequirement()

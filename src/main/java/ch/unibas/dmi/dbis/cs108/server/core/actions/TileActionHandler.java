@@ -62,7 +62,7 @@ public class TileActionHandler {
                 tile.setArtifact(artifact);
             }
 
-            // Check if the Tile holds an artifact, and if so add it to the player
+            // Check if the Tile holds an artifact, and if so, add it to the player
             if (tile.getArtifact() != null) {
                 player.getArtifacts().add(tile.getArtifact());
                 tile.setArtifact(null);
