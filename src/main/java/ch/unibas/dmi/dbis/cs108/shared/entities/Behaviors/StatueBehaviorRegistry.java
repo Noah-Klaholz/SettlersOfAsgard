@@ -1,19 +1,18 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
-import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.*;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
-import ch.unibas.dmi.dbis.cs108.shared.game.Board;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 import ch.unibas.dmi.dbis.cs108.shared.utils.RandomGenerator;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Registry for statue behaviors based on their name and effect type.
@@ -471,7 +470,7 @@ public class StatueBehaviorRegistry {
                     if (targetPlayer == null) return false;
                     if (!params.hasTileCoordinates()) return false;
 
-                    // Implementation of effect
+                    //TODO Implementation of effect
                     return true;
                 },
                 new StatueParameterRequirement(
@@ -483,14 +482,25 @@ public class StatueBehaviorRegistry {
         registerBehavior("Loki", StatueEffectType.BLESSING,
                 (statue, gameState, player, params) -> {
                     // Steals a set amount of Runes from a random Player and gives them to you
+                    Player targetPlayer = params.getTargetPlayer();
+                    int runes = (int) statue.getParams().get(0).getValue();
+                    int removedRunes = targetPlayer.addRunes(runes);
+                    player.addRunes(removedRunes);
                     return true;
                 },
-                new StatueParameterRequirement()
+                new StatueParameterRequirement(StatueParameterRequirement.StatueParameterType.PLAYER)
         );
 
         registerBehavior("Loki", StatueEffectType.CURSE,
                 (statue, gameState, player, params) -> {
-                    // Sets 2 Traps for yourself
+                    // Sets 2 traps for yourself
+                    AtomicInteger i = new AtomicInteger((int) statue.getParams().get(1).getValue());
+                    player.getOwnedTiles().forEach(tile -> {
+                        if (tile.getEntity() == null && i.get() > 0) {
+                            tile.setEntity(EntityRegistry.getStructure(8)); // Place an active trap on an empty tile twice
+                            i.getAndDecrement();
+                        }
+                    });
                     return true;
                 },
                 new StatueParameterRequirement()

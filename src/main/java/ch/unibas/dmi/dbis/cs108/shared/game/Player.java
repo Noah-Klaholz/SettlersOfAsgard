@@ -299,15 +299,6 @@ public class Player {
     }
 
     /**
-     * Removes runes from the player
-     *
-     * @param runes int
-     */
-    public void removeRunes(int runes) {
-        this.runes -= runes;
-    }
-
-    /**
      * Getter for energy
      *
      * @return int
@@ -351,12 +342,17 @@ public class Player {
     }
 
     /**
-     * Adds runes to the player
+     * Adds runes to the player, runes should never be negative
      *
      * @param amount int
      */
-    public void addRunes(int amount) {
-        this.runes += amount;
+    public int addRunes(int amount) {
+        runes += amount;
+        if (runes < 0) {
+            amount += runes;
+            runes = 0;
+        }
+        return amount;
     }
 
     /**

@@ -85,7 +85,7 @@
   },
   {
     "name": "Loki",
-    "deal": "Sets 1 Trap for a chosen Player: steals 1 Artefact in return",
+    "deal": "Sets 1 Trap for a chosen Player: steals 1 Artefact from you in return",
     "blessing": "Steals a set amount of Runes from a random Player and gives them to you",
     "curse": "Sets 2 Traps for yourself",
     "description": "",
@@ -94,6 +94,16 @@
     "price": 50,
     "upgradePrice": 50,
     "resourceValue": 0,
+    "params": [
+      {
+        "name": "Stolen Runes",
+        "value": 30
+      },
+      {
+        "name": "Amount of CurseTraps",
+        "value": 2
+      }
+    ],
     "world": "Jotunheim"
   },
   {
