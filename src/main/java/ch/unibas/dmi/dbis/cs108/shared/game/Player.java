@@ -381,7 +381,10 @@ public class Player {
      * @param tile Tile
      */
     public void addOwnedTile(Tile tile) {
-        if (!ownedTiles.contains(tile) && tile != null) ownedTiles.add(tile);
+        if (!ownedTiles.contains(tile) && tile != null) {
+            ownedTiles.add(tile);
+            tile.setOwner(name);
+        }
     }
 
     /**

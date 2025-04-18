@@ -513,11 +513,12 @@ public class StatueBehaviorRegistry {
                 (statue, gameState, player, params) -> {
                     // Destroys 1 random Structure or Statue of a chosen Player: consumes the Flaming Sword Structure
 
-                    Tile target = RandomGenerator.pickRandomElement(params.getTargetPlayer().getOwnedTiles().stream().filter(t -> t.hasEntity() && (t.getEntity().isStructure() || t.getEntity().isStatue())).toArray(Tile[]::new));
+                    Player targetPlayer = params.getTargetPlayer();
+                    Tile target = RandomGenerator.pickRandomElement(targetPlayer.getOwnedTiles().stream().filter(t -> t.hasEntity() && (t.getEntity().isStructure() || t.getEntity().isStatue())).toArray(Tile[]::new));
                     assert target != null;
                     GameEntity entity = target.getEntity();
                     target.setEntity(null);
-                    player.removePurchasableEntity((PurchasableEntity) entity);
+                    targetPlayer.removePurchasableEntity((PurchasableEntity) entity);
 
                     // Check if player has Flaming Sword
                     Tile sword = player.getOwnedTiles().stream().filter(t -> t.getEntity() != null && t.getEntity().isMonument() && t.getWorld().equals("Muspelheim")).findFirst().orElse(null);
@@ -535,6 +536,14 @@ public class StatueBehaviorRegistry {
         registerBehavior("Surtr", StatueEffectType.BLESSING,
                 (statue, gameState, player, params) -> {
                     // Gifts 2 Tiles of Muspelheim for free
+                    int i = 0;
+                    Tile[][] boardTiles = gameState.getBoardManager().getBoard().getTiles();
+                    for (Tile[] tile : boardTiles) {
+                        for (Tile t : tile) {
+                            if (i == 2) break;
+                            if (t.getOwner() == null && t.getWorld().equals("Muspelheim")) player.addOwnedTile(t);
+                        }
+                    }
                     return true;
                 },
                 new StatueParameterRequirement()
@@ -543,6 +552,11 @@ public class StatueBehaviorRegistry {
         registerBehavior("Surtr", StatueEffectType.CURSE,
                 (statue, gameState, player, params) -> {
                     // Destroys 1 random Structure or Statue of your own
+                    Tile target = RandomGenerator.pickRandomElement(player.getOwnedTiles().stream().filter(t -> t.hasEntity() && (t.getEntity().isStructure() || t.getEntity().isStatue())).toArray(Tile[]::new));
+                    assert target != null;
+                    GameEntity entity = target.getEntity();
+                    target.setEntity(null);
+                    player.removePurchasableEntity((PurchasableEntity) entity);
                     return true;
                 },
                 new StatueParameterRequirement()
