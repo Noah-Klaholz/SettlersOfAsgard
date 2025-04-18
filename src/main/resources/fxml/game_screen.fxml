@@ -7,7 +7,8 @@
 <BorderPane xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController"
             stylesheets="/css/game-screen.css"
-            minWidth="900" minHeight="600" prefWidth="1200" prefHeight="768" maxWidth="1920" maxHeight="1080">
+            minWidth="900" minHeight="600" prefWidth="1200" prefHeight="768" maxWidth="1920" maxHeight="1080"
+            onKeyPressed="#handleKeyboardShortcut">
 
     <top>
         <HBox alignment="CENTER" spacing="15.0" styleClass="header-panel">
