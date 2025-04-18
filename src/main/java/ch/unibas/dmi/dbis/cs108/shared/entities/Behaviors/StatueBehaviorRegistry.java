@@ -269,6 +269,14 @@ public class StatueBehaviorRegistry {
         registerBehavior("Dwarf", StatueEffectType.BLESSING,
                 (statue, gameState, player, params) -> {
                     // Next Artifact from Smeltery debuffs all Players
+                    int x = params.getX();
+                    int y = params.getY();
+                    Tile tile = gameState.getBoardManager().getTile(x, y);
+                    Structure structure = (Structure) tile.getEntity();
+                    if (structure == null || !"Surtur's Smeltery".equals(structure.getName())) return false;
+
+                    structure.setParam(1, 1); // Set debuffOtherPlayers to 1.0 = true
+
                     return true;
                 },
                 new StatueParameterRequirement()

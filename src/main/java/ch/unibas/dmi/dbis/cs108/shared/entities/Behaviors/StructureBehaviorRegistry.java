@@ -82,9 +82,18 @@ public class StructureBehaviorRegistry {
 
             for (int i = 0; i < numberOfBuffs; i++) {
                 int random = (int)Math.ceil(Math.random() * buffTypes.length);
-                player.addBuff(buffTypes[random],(int)structure.getParams().get(random+1).getValue()); // +1 because 0 is the number of buffs
+                double val = (int)structure.getParams().get(random+2).getValue();
+                player.addBuff(buffTypes[random],val); // +2 because 0 is the number of buffs and 1 is debuffOtherplayers
+
+                if (structure.getParams().get(1).getValue() == 1.0) { // If DebuffOtherPlayers is true (==1.0) then all other players should recieve the same buff(s) as the player using the statue, only negatively
+                    gameState.getPlayers().forEach(otherPlayer -> {
+                        otherPlayer.addBuff(buffTypes[random], - val);
+                    });
+                }
             }
+
             structure.setParam(0, 1); // Reset number of buffs -> should never be changed permanently
+            structure.setParam(1, 0); // Reset buffOtherPlayers -> should never last for more than one turn
             return true;
         });
 

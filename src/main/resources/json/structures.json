@@ -68,6 +68,10 @@
         "value": 1
       },
       {
+        "name": "DebuffOtherPlayers",
+        "value": 0
+      },
+      {
         "name": "Rune generation",
         "value": 0.1
       },
