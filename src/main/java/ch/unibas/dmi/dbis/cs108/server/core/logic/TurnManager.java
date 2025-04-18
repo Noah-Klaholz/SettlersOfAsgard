@@ -1,13 +1,16 @@
 // TurnManager.java
 package ch.unibas.dmi.dbis.cs108.server.core.logic;
 
+import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors.StructureBehaviorRegistry;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
 import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
+import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 import java.util.*;
 
@@ -126,32 +129,47 @@ public class TurnManager {
         // Tile income
         player.getOwnedTiles().forEach(tile -> {
             // Handle Tile - Rune Generation based on the Resource Value of the tile
-            int runes = (int) (tile.getResourceValue() * player.getStatus().get(Status.BuffType.RUNE_GENERATION) * tile.getStatus().get(Status.BuffType.RUNE_GENERATION));
-            // Handle River Rune generation buffs
-            if (tile.hasRiver()) {
-                runes = (int) (runes * player.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION) * tile.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION));
-            }
-            player.addRunes(runes);
-            // Handle Structure - Rune Generation based on the ressource value of the entity (currently only checks Structures since statues do not generate anything
+            int val = tile.getResourceValue();
+            calcAndAddRunes(player, tile, val);
+            // Handle Structure - Rune Generation based on the ressource value of the entity
             if (tile.hasEntity()) {
                 GameEntity ent = tile.getEntity();
+                // Handle for Structures
                 if (ent instanceof Structure) {
                     Structure entity = (Structure) tile.getEntity();
                     int value = entity.getResourceValue();
                     if (entity.isStructure()) {
-                        if (tile.hasRiver()) {
-                            value = (int) (value * player.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION) * tile.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION));
-                        }
-                        value = (int) (value * player.getStatus().get(Status.BuffType.RUNE_GENERATION) * tile.getStatus().get(Status.BuffType.RUNE_GENERATION));
-                        player.addRunes(value);
+                        calcAndAddRunes(player, tile, value);
                         // All structures except rune table have a passive effect which should be used
                         if (!entity.getName().equals("Rune Table")) {
-                            structureBehaviorRegistry.execute((Structure)entity,gameState,player); // Do passive effects -> each structure except Rune Table has one
+                            structureBehaviorRegistry.execute(entity,gameState,player); // Do passive effects -> each structure except Rune Table has one
                         }
                     }
+                // Handle for Monuments
+                } else if (ent instanceof Monument mon) {
+                    int value = mon.getRunes();
+                    if (mon.isSet() && player.hasCompleteSet(mon)) {
+                        value *= SETTINGS.Config.SET_BONUS_MULTIPLIER.getValue();
+                    }
+                    calcAndAddRunes(player, tile, value);
                 }
             }
         });
+    }
+
+    /**
+     * Helper method for calculating and adding the adjusted value of generated runes
+     *
+     * @param player the player
+     * @param tile the tile
+     * @param value the static value of runes
+     */
+    private void calcAndAddRunes(Player player, Tile tile, int value) {
+        if (tile.hasRiver()) {
+            value = (int) (value * player.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION) * tile.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION));
+        }
+        value = (int) (value * player.getStatus().get(Status.BuffType.RUNE_GENERATION) * tile.getStatus().get(Status.BuffType.RUNE_GENERATION));
+        player.addRunes(value);
     }
 
     private int indexOfCurrentPlayer() {

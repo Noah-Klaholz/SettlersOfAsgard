@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.shared.game;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
+import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
@@ -8,6 +9,7 @@ import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -160,6 +162,23 @@ public class Player {
     public void removeMonument(Monument monument) {
         monuments.remove(monument);
     }
+
+    /**
+     * Checks whether a player has a complete set of a certain monument
+     *
+     * @param monument the monument
+     * @return true if yes, false, if not.
+     */
+    public boolean hasCompleteSet(Monument monument) {
+        // Get all monuments from the registry that are part of the same set
+        List<Monument> requiredSet = EntityRegistry.getAllMonuments().stream()
+                .filter(m -> m.isSet() && m.equals(monument))
+                .toList();
+
+        // Check if the player's monuments contain all of them
+        return new HashSet<>(monuments).containsAll(requiredSet);
+    }
+
 
     /**
      * Setter for runeBoughtTiles
