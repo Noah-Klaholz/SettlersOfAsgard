@@ -12,6 +12,7 @@ import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.server.core.model.BoardManager;
 
+import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 
 /**
@@ -65,7 +66,7 @@ public class StatueActionHandler {
 
             // Get statue and check if player already has one
             Statue statue = EntityRegistry.getStatue(statueId);
-            if (statue == null || player.hasStatue()) return false;
+            if (statue == null || player.hasStatue() || !Objects.equals(tile.getWorld(), statue.getWorld())) return false;
 
             // Check if player can afford the statue
             if (!player.buy(statue.getPrice())) return false;

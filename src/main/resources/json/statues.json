@@ -9,7 +9,8 @@
     "id": 30,
     "price": 50,
     "upgradePrice": 0,
-    "resourceValue": 0
+    "resourceValue": 0,
+    "world": "Midgard"
   },
   {
     "name": "Freyr",
@@ -21,7 +22,8 @@
     "id": 31,
     "price": 80,
     "upgradePrice": 50,
-    "resourceValue": 0
+    "resourceValue": 0,
+    "world": "Alfheim"
   },
   {
     "name": "Dwarf",
@@ -33,7 +35,8 @@
     "id": 32,
     "price": 80,
     "upgradePrice": 50,
-    "resourceValue": 0
+    "resourceValue": 0,
+    "world": "Svartalfheim"
   },
   {
     "name": "Freyja",
@@ -46,6 +49,7 @@
     "price": 30,
     "upgradePrice": 50,
     "resourceValue": 0,
+    "world": "Vanaheim",
     "params": [
       {
         "name": "RuneCost",
@@ -63,7 +67,8 @@
     "id": 34,
     "price": 50,
     "upgradePrice": 40,
-    "resourceValue": 0
+    "resourceValue": 0,
+    "world": "Helheim"
   },
   {
     "name": "Nidhöggr",
@@ -75,7 +80,8 @@
     "id": 35,
     "price": 30,
     "upgradePrice": 30,
-    "resourceValue": 0
+    "resourceValue": 0,
+    "world": "Nilfheim"
   },
   {
     "name": "Loki",
@@ -87,7 +93,8 @@
     "id": 36,
     "price": 50,
     "upgradePrice": 50,
-    "resourceValue": 0
+    "resourceValue": 0,
+    "world": "Jotunheim"
   },
   {
     "name": "Surtr",
@@ -99,6 +106,7 @@
     "id": 37,
     "price": 60,
     "upgradePrice": 60,
-    "resourceValue": 0
+    "resourceValue": 0,
+    "world": "Muspelheim"
   }
 ]

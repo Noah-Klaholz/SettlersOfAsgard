@@ -20,6 +20,11 @@ public class Statue extends PurchasableEntity {
     private int level = 1;
 
     /**
+     * String representing the world in which this statue can be placed
+     */
+    private String world;
+
+    /**
      * Default constructor for Statue.
      */
     public Statue() {}
@@ -31,8 +36,9 @@ public class Statue extends PurchasableEntity {
      * @param name The name of this statue
      * @param description The description of this statue
      */
-    public Statue(int id, String name, String description) {
+    public Statue(int id, String name, String description, String world) {
         super(id, name, description, 0, 0); // Price from JSON
+        this.world = world;
     }
 
     /**
@@ -48,6 +54,13 @@ public class Statue extends PurchasableEntity {
      * @return The statue's level
      */
     public int getLevel() { return level; }
+
+    /**
+     * Returns the World in which the statue can be placed
+     *
+     * @return String the world
+     */
+    public String getWorld() { return world; }
 
     /**
      * Upgrades this statue to the next level.
@@ -74,6 +87,7 @@ public class Statue extends PurchasableEntity {
     protected void loadFromJson(JsonObject json) {
         super.loadFromJson(json);
         this.upgradePrice = json.get("upgradePrice").getAsInt();
+        this.world = json.get("world").getAsString();
     }
 
     /**
