@@ -52,7 +52,7 @@ public class Board {
                         SETTINGS.Config.MAX_RESOURCE_VALUE.getValue()
                 ));
                 tilebuilder.setX(i).setY(j);
-                tiles[i][j] = new Tile(tilebuilder);
+                tiles[i][j] = tilebuilder.build();
             }
         }
     }
