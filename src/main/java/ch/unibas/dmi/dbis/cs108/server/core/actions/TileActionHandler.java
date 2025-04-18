@@ -2,8 +2,10 @@ package ch.unibas.dmi.dbis.cs108.server.core.actions;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors.StructureBehaviorRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
@@ -13,12 +15,14 @@ import java.util.Random;
 import java.util.concurrent.locks.ReadWriteLock;
 
 public class TileActionHandler {
+    private StructureBehaviorRegistry structureBehaviorRegistry;
     private final GameState gameState;
     private final ReadWriteLock gameLock;
 
     public TileActionHandler(GameState gameState, ReadWriteLock gameLock) {
         this.gameState = gameState;
         this.gameLock = gameLock;
+        this.structureBehaviorRegistry = new StructureBehaviorRegistry();
     }
 
     /**
@@ -40,6 +44,12 @@ public class TileActionHandler {
             Player player = findPlayerByName(playerName);
             if (player == null || !(player.getRoundBoughtTiles() < SETTINGS.Config.PURCHASABLE_TILES_PER_ROUND.getValue()) || !player.buy(tile.getPrice())) {
                 return false;
+            }
+
+            // Execute ActiveTrap, upon buying the tile and remove it afterward
+            if (tile.hasEntity() && tile.getEntity().getName().equals("ActiveTrap")) {
+                structureBehaviorRegistry.execute((Structure)tile.getEntity(), gameState, player);
+                tile.setEntity(null);
             }
 
             tile.setPurchased(true);
