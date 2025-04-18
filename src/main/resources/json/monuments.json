@@ -1,12 +1,84 @@
 [
   {
-    "name": "Jörmungandr",
+    "name": "Light",
     "description": "",
-    "id": 30,
+    "id": 40,
     "runes": 10,
-    "world": "Midgard",
+    "world": "Alfheim",
     "tiles": [
       {"x": 0, "y": 0}
+    ]
+  },
+  {
+  "name": "Castle",
+  "description": "",
+  "id": 41,
+  "runes": 10,
+  "world": "Asgard",
+  "tiles": [
+    {"x": 0, "y": 3},
+    {"x": 0, "y": 4},
+    {"x": 1, "y": 2}
+  ]
+  },
+  {
+  "name": "Flaming Sword",
+  "description": "",
+  "id": 42,
+  "runes": 10,
+  "world": "Muspelheim",
+  "tiles": [
+    {"x": 0, "y": 6}
+  ]
+  },
+  {
+    "name": "Skull",
+    "description": "",
+    "id": 43,
+    "runes": 10,
+    "world": "Vanaheim",
+    "tiles": [
+      {"x": 2, "y": 5}
+    ]
+  },
+  {
+  "name": "Dwarfen Forge",
+  "description": "",
+  "id": 44,
+  "runes": 10,
+  "world": "Svartalfheim",
+  "tiles": [
+    {"x": 4, "y": 7}
+  ]
+  },
+  {
+    "name": "Mountain",
+    "description": "",
+    "id": 45,
+    "runes": 10,
+    "world": "Jotunheim",
+    "tiles": [
+      {"x": 6, "y": 0}
+    ]
+  },
+  {
+    "name": "Ice",
+    "description": "",
+    "id": 46,
+    "runes": 10,
+    "world": "Nilfheim",
+    "tiles": [
+      {"x": 6, "y": 3}
+    ]
+  },
+  {
+    "name": "Death Tree",
+    "description": "",
+    "id": 47,
+    "runes": 10,
+    "world": "Helheim",
+    "tiles": [
+      {"x": 6, "y": 5}
     ]
   }
 ]
