@@ -13,10 +13,7 @@ import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 import ch.unibas.dmi.dbis.cs108.shared.utils.RandomGenerator;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Registry for statue behaviors based on their name and effect type.
@@ -417,9 +414,17 @@ public class StatueBehaviorRegistry {
         registerBehavior("Nidhöggr", StatueEffectType.DEAL,
                 (statue, gameState, player, params) -> {
                     // Devours a random Tree on the Board: needs to be fed 2 Artifacts
-                    if (params.getArtifact() == null) return false;
+                    Tile target = RandomGenerator.pickRandomElement(gameState.getBoardManager().getRiverTiles().stream().filter(t -> t.hasEntity() && t.getEntity().getId() == 7).toArray(Tile[]::new));
 
-                    // Implementation of effect
+                    if (target == null) return false;
+
+                    Structure tree = (Structure) target.getEntity();
+                    Player targetPlayer = gameState.getPlayers().stream().filter(p -> Objects.equals(p.getName(), target.getOwner())).findFirst().orElse(null);
+                    if (targetPlayer != null) {
+                        target.setEntity(null);
+                        player.removePurchasableEntity(tree);
+                    }
+                    player.removeArtifact(params.getArtifact());
                     return true;
                 },
                 new StatueParameterRequirement(StatueParameterRequirement.StatueParameterType.ARTIFACT)
@@ -428,6 +433,16 @@ public class StatueBehaviorRegistry {
         registerBehavior("Nidhöggr", StatueEffectType.BLESSING,
                 (statue, gameState, player, params) -> {
                     // Devours all Trees on the Board
+                    gameState.getBoardManager().getRiverTiles().forEach(tile -> {
+                        if (tile.getEntity() != null && tile.getEntity().isStructure() && tile.getEntity().getId() == 7) { // check if tile holds a tree
+                            Structure tree = (Structure) tile.getEntity();
+                            Player target = gameState.getPlayers().stream().filter(p -> Objects.equals(p.getName(), tile.getOwner())).findFirst().orElse(null);
+                            if (target != null) {
+                                tile.setEntity(null);
+                                player.removePurchasableEntity(tree);
+                            }
+                        }
+                    });
                     return true;
                 },
                 new StatueParameterRequirement()
@@ -435,7 +450,14 @@ public class StatueBehaviorRegistry {
 
         registerBehavior("Nidhöggr", StatueEffectType.CURSE,
                 (statue, gameState, player, params) -> {
-                    // Devours 2 of your own Structures
+                    // Devours 2 structures of yours randomly
+                    Tile[] tiles = player.getOwnedTiles().stream().filter(t -> t.hasEntity() && t.getEntity().isStructure()).toArray(Tile[]::new);
+                    Tile tile1 = RandomGenerator.pickRandomElement(tiles);
+                    if (tile1 == null) return false;
+                    player.removePurchasableEntity((Structure)tile1.getEntity());
+                    Tile tile2 = RandomGenerator.pickRandomElement(tiles);
+                    if (tile2 == null) return false;
+                    player.removePurchasableEntity((Structure)tile2.getEntity());
                     return true;
                 },
                 new StatueParameterRequirement()
