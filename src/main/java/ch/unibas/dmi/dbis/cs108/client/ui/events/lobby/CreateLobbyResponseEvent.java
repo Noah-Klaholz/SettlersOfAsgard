@@ -1,26 +1,21 @@
-package ch.unibas.dmi.dbis.cs108.client.networking.events;
+package ch.unibas.dmi.dbis.cs108.client.ui.events.lobby;
+
+import ch.unibas.dmi.dbis.cs108.client.networking.events.LobbyEvent;
 
 import java.time.Instant;
 
-public class LobbyEvent implements Event {
+public class CreateLobbyResponseEvent {
     private final Instant timestamp = Instant.now();
-    private final LobbyAction action;
     private final String playerName;
     private final String lobbyName;
 
-    public LobbyEvent(LobbyAction action, String playerName, String lobbyName) {
-        this.action = action;
+    public CreateLobbyResponseEvent( String playerName, String lobbyName) {
         this.playerName = playerName;
         this.lobbyName = lobbyName;
     }
 
-    @Override
     public Instant getTimestamp() {
         return timestamp;
-    }
-
-    public LobbyAction getAction() {
-        return action;
     }
 
     public String getPlayerName() {
@@ -31,7 +26,4 @@ public class LobbyEvent implements Event {
         return lobbyName;
     }
 
-    public enum LobbyAction {
-        LEFT, CREATED
-    }
 }

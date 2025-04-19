@@ -7,6 +7,7 @@ import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 import ch.unibas.dmi.dbis.cs108.server.networking.GameServer;
+import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -236,17 +237,10 @@ public class CommandHandler {
         if (currentLobby != null) {
             handleLeaveLobby();
         }
-        String hostname = cmd.getArgs()[0]; // Falls wir später mal den Hostnamen speichern wollen -> könnte man in Lobby hinzufügen
         String lobbyId = cmd.getArgs()[1];
-        int maxPlayers = 4; //currently, maxPlayers is set to 4
+        int maxPlayers = 4; //currently, maxPlayers is set to 4 //TODO
         Lobby lobby = server.createLobby(lobbyId, maxPlayers);
-        if (lobby != null && lobby.addPlayer(ch)) {
-            joinLobby(lobby);
-            return true;
-        } else {
-            sendMessage("ERR$106$LOBBY_CREATION_FAILED");
-        }
-        return false;
+        return handleJoinLobby(new Command(CommunicationAPI.NetworkProtocol.Commands.JOIN.getCommand() + "$" + playerName + "$" + lobbyId));
     }
 
     /**
@@ -270,7 +264,12 @@ public class CommandHandler {
         }
         if (lobby != null && lobby.addPlayer(ch)) {
             joinLobby(lobby);
-            currentLobby.broadcastMessage("OK$JOIN$" + playerName + "$" + lobbyId);
+            currentLobby.broadcastMessage("OK$JOIN$" + lobbyId + "$" +
+                    lobby.getPlayers().stream()
+                    .map(ClientHandler::getPlayerName)
+                    .collect(Collectors.joining("%"))
+                    + "$" +
+                    (lobby.getHostName().equals(playerName) ? "true" : "false"));
             return true;
         } else {
             sendMessage("ERR$106$JOIN_LOBBY_FAILED");

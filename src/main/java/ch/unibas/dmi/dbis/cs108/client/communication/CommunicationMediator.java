@@ -4,6 +4,8 @@ import ch.unibas.dmi.dbis.cs108.client.core.Game;
 import ch.unibas.dmi.dbis.cs108.client.networking.NetworkController;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.CreateLobbyResponseEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyLeftEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyListResponseEvent;
 
 import java.util.Arrays;
@@ -240,6 +242,40 @@ public class CommunicationMediator {
             @Override
             public Class<LobbyListEvent> getEventType() {
                 return LobbyListEvent.class;
+            }
+        });
+
+        EventDispatcher.getInstance().registerListener(LobbyEvent.class, new EventDispatcher.EventListener<LobbyEvent>() {
+            @Override
+            public void onEvent(LobbyEvent event) {
+                switch (event.getAction()) {
+                    case LEFT:
+                        UIEventBus.getInstance().publish(new LobbyLeftEvent(event.getPlayerName()));
+                        break;
+                    case CREATED:
+                        UIEventBus.getInstance().publish(new CreateLobbyResponseEvent(event.getLobbyName(), event.getPlayerName()));
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            @Override
+            public Class<LobbyEvent> getEventType() {
+                return LobbyEvent.class;
+            }
+        });
+
+        EventDispatcher.getInstance().registerListener(LobbyJoinedEvent.class, new EventDispatcher.EventListener<LobbyJoinedEvent>() {
+            @Override
+            public void onEvent(LobbyJoinedEvent event) {
+                UIEventBus.getInstance().publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyJoinedEvent(
+                        event.getLobbyId(), event.getPlayers(), event.isHost()));
+            }
+
+            @Override
+            public Class<LobbyJoinedEvent> getEventType() {
+                return LobbyJoinedEvent.class;
             }
         });
     }

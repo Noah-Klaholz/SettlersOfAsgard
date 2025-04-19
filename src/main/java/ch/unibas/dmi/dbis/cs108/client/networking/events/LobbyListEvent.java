@@ -25,8 +25,6 @@ public class LobbyListEvent implements Event {
                         params[4] // hostName
                 );
                 this.lobbies.add(lobbyObject);
-            } else {
-                System.out.println("Invalid lobby data: " + lobby);
             }
         });
     }

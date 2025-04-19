@@ -172,6 +172,10 @@ public class Lobby {
                 .collect(Collectors.joining(", "));
     }
 
+    /**
+     * Returns the name of the host player.
+     * @return the name of the host player
+     */
     public String getHostName() {
         return players.get(0).getPlayerName();
     }

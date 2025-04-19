@@ -115,9 +115,9 @@ public class ProtocolTranslator implements CommunicationAPI {
     }
 
     private void processJoinMessage(String args) {
-        String[] parts = args.split("\\" + DELIMITER, 2); // Expecting playerName$lobbyName
-        if (parts.length >= 2) {
-            LobbyEvent event = new LobbyEvent(LobbyEvent.LobbyAction.JOINED, parts[0], parts[1]);
+        String[] parts = args.split("\\" + DELIMITER, 3); // Expecting playerName$lobbyName
+        if (parts.length >= 3) {
+            LobbyJoinedEvent event = new LobbyJoinedEvent(parts[0], parts[1], Boolean.parseBoolean(parts[2]));
             eventDispatcher.dispatchEvent(event);
         }
     }
@@ -202,7 +202,7 @@ public class ProtocolTranslator implements CommunicationAPI {
                 LOGGER.warning("Invalid OK" + DELIMITER + "RGST" + DELIMITER + " format: " + args);
             }
         } else {
-            processIncomingMessage(args); // If its not a special case, process it normally -> OK gets removed in this case
+            processIncomingMessage(args); // If it's not a special case, process it normally -> OK gets removed in this case
         }
     }
 
