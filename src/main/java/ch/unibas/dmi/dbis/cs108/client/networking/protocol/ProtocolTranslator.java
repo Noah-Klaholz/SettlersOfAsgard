@@ -115,10 +115,13 @@ public class ProtocolTranslator implements CommunicationAPI {
     }
 
     private void processJoinMessage(String args) {
+        Logger.getGlobal().info("Processing join message: " + args);
         String[] parts = args.split("\\" + DELIMITER, 3); // Expecting lobbyName$players$isHost
         if (parts.length >= 3) {
             LobbyJoinedEvent event = new LobbyJoinedEvent(parts[0], parts[1], Boolean.parseBoolean(parts[2]));
             eventDispatcher.dispatchEvent(event);
+        } else {
+            LOGGER.warning("Invalid JOIN message format: " + args);
         }
     }
 

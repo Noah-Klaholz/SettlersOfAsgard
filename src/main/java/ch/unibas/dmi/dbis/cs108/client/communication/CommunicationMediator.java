@@ -10,6 +10,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyListResponseEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.PlayerJoinedLobbyEvent;
 
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 /**
  * Mediator class that handles communication between the UI and the network layer.
@@ -270,10 +271,12 @@ public class CommunicationMediator {
         EventDispatcher.getInstance().registerListener(LobbyJoinedEvent.class, new EventDispatcher.EventListener<LobbyJoinedEvent>() {
             @Override
             public void onEvent(LobbyJoinedEvent event) {
+                Logger.getGlobal().info("LobbyJoinedEvent");
                 if (event.getPlayer() != null && playerName.equals(event.getPlayer())) {
                     UIEventBus.getInstance().publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyJoinedEvent(
                             event.getLobbyId(), event.getPlayers(), event.isHost()));
                 } else {
+                    Logger.getGlobal().info("LobbyJoinedEvent: player Joined lobby");
                     UIEventBus.getInstance().publish(new PlayerJoinedLobbyEvent(event.getLobbyId(), event.getPlayer()));
                 }
             }
