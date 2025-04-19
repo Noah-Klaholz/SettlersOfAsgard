@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
+import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
@@ -19,11 +20,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -103,6 +100,9 @@ public class GameScreenController extends BaseController {
     private Image mapImage;
     private boolean isMapLoaded;
 
+    /* Added field for Settings Dialog */
+    private SettingsDialog settingsDialog;
+
     /* ── FXML ──────────────────────────────────────────────────────────────────────────── */
 
     @FXML
@@ -150,6 +150,40 @@ public class GameScreenController extends BaseController {
         loadMapImage();
         setupCanvasListeners();
         createAdjustmentUI();
+        initializeSettingsDialog();
+    }
+
+    /**
+     * Initializes the settings dialog component and adds it to the view.
+     */
+    private void initializeSettingsDialog() {
+        settingsDialog = new SettingsDialog();
+
+        // Get the root StackPane that contains the canvas
+        StackPane root = (StackPane) gameCanvas.getParent();
+
+        // Add the settings dialog to the root container
+        if (!root.getChildren().contains(settingsDialog.getView())) {
+            root.getChildren().add(settingsDialog.getView());
+        }
+
+        // Set initial connection status in the dialog
+        updateSettingsConnectionStatus();
+
+        // Set the save action to log settings (can be expanded later)
+        settingsDialog.setOnSaveAction(() -> {
+            LOGGER.info("Settings saved: Volume=" + settingsDialog.volumeProperty().get() +
+                    ", Mute=" + settingsDialog.muteProperty().get());
+        });
+    }
+
+    /**
+     * Updates the connection status in the settings dialog based on the current state.
+     */
+    private void updateSettingsConnectionStatus() {
+        String status = connectionStatusLabel.getText();
+        boolean isConnected = "Connected".equals(status);
+        settingsDialog.setConnectionStatus(isConnected, status);
     }
 
     private void setupUI() {
@@ -188,6 +222,11 @@ public class GameScreenController extends BaseController {
         Platform.runLater(() -> {
             connectionStatusLabel.setText(Optional.ofNullable(e.getStatus()).map(Object::toString).orElse("UNKNOWN"));
             if (e.getMessage() != null && !e.getMessage().isEmpty()) addSystem(e.getMessage());
+
+            // Update connection status in settings dialog as well
+            if (settingsDialog != null) {
+                updateSettingsConnectionStatus();
+            }
         });
     }
 
@@ -216,6 +255,11 @@ public class GameScreenController extends BaseController {
 
     @FXML
     private void handleSettings() {
+        if (settingsDialog != null) {
+            settingsDialog.show();
+        } else {
+            LOGGER.warning("Settings dialog is not initialized");
+        }
     }
 
     @FXML
@@ -396,52 +440,52 @@ public class GameScreenController extends BaseController {
         // redraw on resize
         gameCanvas.widthProperty().addListener((o, ov, nv) -> drawMapAndGrid());
         gameCanvas.heightProperty().addListener((o, ov, nv) -> drawMapAndGrid());
-      
+
         // ensure canvas can get focus for keyboard adjustment mode
         gameCanvas.setFocusTraversable(true);
-      
+
         // 1) Attach a raw pressed‐handler directly on the canvas
         gameCanvas.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> {
-          // debug: did we even get here?
-          System.out.println("[DEBUG] canvas MOUSE_PRESSED at " + e.getX() + ", " + e.getY());
-          handleCanvasClick(e.getX(), e.getY());
+            // debug: did we even get here?
+            System.out.println("[DEBUG] canvas MOUSE_PRESSED at " + e.getX() + ", " + e.getY());
+            handleCanvasClick(e.getX(), e.getY());
         });
-      
+
         // 2) ALSO attach to the parent StackPane (in case another transparent node is intercepting)
         if (gameCanvas.getParent() instanceof StackPane parent) {
-          parent.addEventHandler(MouseEvent.MOUSE_PRESSED, ev -> {
-            // translate scene coords into canvas‐local coords
-            Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
-            if (local.getX() >= 0 && local.getY() >= 0
-                && local.getX() <= gameCanvas.getWidth()
-                && local.getY() <= gameCanvas.getHeight()) {
-              System.out.println("[DEBUG] parent MOUSE_PRESSED -> canvas coords " 
-                                  + local.getX() + ", " + local.getY());
-              handleCanvasClick(local.getX(), local.getY());
-              ev.consume();
-            }
-          });
+            parent.addEventHandler(MouseEvent.MOUSE_PRESSED, ev -> {
+                // translate scene coords into canvas‐local coords
+                Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
+                if (local.getX() >= 0 && local.getY() >= 0
+                        && local.getX() <= gameCanvas.getWidth()
+                        && local.getY() <= gameCanvas.getHeight()) {
+                    System.out.println("[DEBUG] parent MOUSE_PRESSED -> canvas coords "
+                            + local.getX() + ", " + local.getY());
+                    handleCanvasClick(local.getX(), local.getY());
+                    ev.consume();
+                }
+            });
         }
-      
+
         // your existing key handler
         gameCanvas.setOnKeyPressed(this::handleGridAdjustmentKeys);
-      }
-    
-      private void handleCanvasClick(double px, double py) {
+    }
+
+    private void handleCanvasClick(double px, double py) {
         // debug what getHexAt is doing
         System.out.println("[DEBUG] calling getHexAt(" + px + ", " + py + ")");
         int[] tile = getHexAt(px, py);
         System.out.println("[DEBUG] getHexAt returned: " + Arrays.toString(tile));
-      
+
         if (tile != null) {
-          selectedRow = tile[0];
-          selectedCol = tile[1];
-          drawMapAndGrid();
-          // now do the real output
-          System.out.println("Clicked hex at row=" + selectedRow + ", col=" + selectedCol);
-          eventBus.publish(new TileClickEvent(selectedRow, selectedCol));
+            selectedRow = tile[0];
+            selectedCol = tile[1];
+            drawMapAndGrid();
+            // now do the real output
+            System.out.println("Clicked hex at row=" + selectedRow + ", col=" + selectedCol);
+            eventBus.publish(new TileClickEvent(selectedRow, selectedCol));
         }
-      }
+    }
 
 
     private void handleGridAdjustmentKeys(KeyEvent e) {
@@ -625,3 +669,4 @@ public class GameScreenController extends BaseController {
         return inside;
     }
 }
+
