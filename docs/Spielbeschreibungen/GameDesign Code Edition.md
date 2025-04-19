@@ -68,7 +68,7 @@ Passiv: jede Runde ohne nötige Aktion (alle die nicht aktiv sind, sind passiv)
 | Freyja      | Findet +1 Artefakt - kostet Runen                                                                                    | +1 kostenloses Feld auswählbar                                             | Conquers: -1 Feld         | Vanaheim (lush green)      |
 | Hel         | Blockiert Statue ausgewählten Spielers für nächste Runde - Blockiert random Struktur nächste Runde (- Nutzen/ Runen) | anderer Spieler -1 Statue                                                  | Death: -1 Statue          | Helheim (dead)             |
 | Nidhöggr    | Frisst einen Baum - füttern: -2 Artefakt                                                                             | Frisst alle Bäume auf der Map                                              | Frisst 2 Strukturen       | Nilfheim (ice)             |
-| Loki        | Stellt 1 ausgewählten Spieler eine Falle - Stiehlt: -1 Artefakt                                                      | Stiehlt 1 anderen Spieler gewisse Anzahl an Runen und gibt sie dem Spieler | Stellt Falle: 2 Fallen    | Jotunheim (giants, brown)  |
+| Loki        | Klaut ein Artefakt von dir und einem ausgewählten Spieler und vertauscht sie                                         | Stiehlt 1 anderen Spieler gewisse Anzahl an Runen und gibt sie dem Spieler | Stellt Falle: 2 Fallen    | Jotunheim (giants, brown)  |
 | Surtr       | Für Feld mit Flammenschwert: ausgewählter Spieler -1 Struktur/ Statue - -1 Flammenschwert                            | + 2 Felder Muspelheim (Fire world) ohne Struktur                           | -1 Struktur/ Statue       | Muspelheim (fire)          |
 | Thor        |                                                                                                                      |                                                                            |                           | Asgard                     |
 Thor muss noch designed werden (gerne Ideen her)
@@ -89,9 +89,9 @@ Ein spezifisches Artefakt kann mehrfach gefunden werden (keine Begrenzung)
 | Träne von Yggdrasil      | Anderer Spieler - Energie (flat)                                                |             |
 | Mjölnir-Fragment         | + Chance auf Artefakte                                                          |             |
 | Fenrirs Knochen          | + Effizienz Energy generation auf einem Feld                                    |             |
-| Schatten von Hel         | Andere Spieler - Effizienz Farmen                                               |             |
+| Schatten von Hel         | Andere Spieler - Effizienz Runen Farmen                                         |             |
 | Flamme von Muspelheim    | + Preissenkung kaufbares für nächste Runde                                      |             |
-| Eissplitter von Nilfheim | Andere Spieler - Effizienz Farmen                                               |             |
+| Eissplitter von Nilfheim | Andere Spieler - Effizienz Energie Farmen                                       |             |
 | Blut von Jörmungandr     | + Effizienz Farmen am Fluss                                                     |             |
 | Asche von Surtur         | Andere Spieler - Preissteigerung kaufbares für nächste Runde                    |             |
 | Odins Auge               | + überprüft ein Tile und alle angrenzenden auf Fallen und deckt diese ggbf. auf |             |

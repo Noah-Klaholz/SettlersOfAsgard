@@ -41,7 +41,7 @@
   },
   {
     "name": "Hel's Shadow",
-    "description": "Anderer Spieler - Effizienz Farmen",
+    "description": "Anderer Spieler - Effizienz Runen Farmen",
     "useType": "Player",
     "id": 15,
     "chance": 0.3,
@@ -57,7 +57,7 @@
   },
   {
     "name": "Ice Splinter of Niflheim",
-    "description": "Andere Spieler - Effizienz Farmen",
+    "description": "Andere Spieler - Effizienz Energie Farmen",
     "useType": "Player",
     "id": 17,
     "chance": 0.3,
