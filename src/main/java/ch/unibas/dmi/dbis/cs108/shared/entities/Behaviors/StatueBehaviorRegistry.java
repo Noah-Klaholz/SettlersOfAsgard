@@ -414,7 +414,7 @@ public class StatueBehaviorRegistry {
         // Nidhöggr
         registerBehavior("Nidhöggr", StatueEffectType.DEAL,
                 (statue, gameState, player, params) -> {
-                    // Devours a random Tree on the Board: needs to be fed 2 Artifacts
+                    // Devours a random Tree on the Board: needs to be fed 1 Artifacts
                     Tile target = RandomGenerator.pickRandomElement(gameState.getBoardManager().getRiverTiles().stream().filter(t -> t.hasEntity() && t.getEntity().getId() == 7).toArray(Tile[]::new));
 
                     if (target == null) return false;
@@ -470,20 +470,28 @@ public class StatueBehaviorRegistry {
                     // Sets 1 Trap for a chosen Player: steals 1 Artefact in return
                     Player targetPlayer = params.getTargetPlayer();
                     if (targetPlayer == null) return false;
-                    if (!params.hasTileCoordinates()) return false;
-
-                    //TODO Implementation of effect
+                    Artifact targetArtifact = RandomGenerator.pickRandomElement(targetPlayer.getArtifacts());
+                    Artifact yourArtifact = RandomGenerator.pickRandomElement(player.getArtifacts());
+                    if (yourArtifact != null) {
+                        player.removeArtifact(yourArtifact);
+                    }
+                    if (targetArtifact != null) {
+                        targetPlayer.removeArtifact(targetArtifact);
+                        player.addArtifact(targetArtifact);
+                    }
+                    if (yourArtifact != null) {
+                        targetPlayer.addArtifact(yourArtifact);
+                    }
                     return true;
                 },
                 new StatueParameterRequirement(
-                        StatueParameterRequirement.StatueParameterType.PLAYER,
-                        StatueParameterRequirement.StatueParameterType.TILE
+                        StatueParameterRequirement.StatueParameterType.PLAYER
                 )
         );
 
         registerBehavior("Loki", StatueEffectType.BLESSING,
                 (statue, gameState, player, params) -> {
-                    // Steals a set amount of Runes from a random Player and gives them to you
+                    // Steals a set amount of Runes from another Player and gives them to you
                     Player targetPlayer = params.getTargetPlayer();
                     int runes = (int) statue.getParams().get(0).getValue();
                     int removedRunes = targetPlayer.addRunes(runes);
