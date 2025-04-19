@@ -75,10 +75,7 @@ public class ProtocolTranslator implements CommunicationAPI {
     }
 
     public void processStartGameMessage(String args) {
-        eventDispatcher.dispatchEvent(new ReceiveCommandEvent(
-                Commands.START.getCommand() + DELIMITER + args,
-                Commands.START
-        ));
+        eventDispatcher.dispatchEvent(new StartGameEvent());
     }
 
     private void processNameChangeMessage(String args) {

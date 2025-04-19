@@ -14,10 +14,8 @@ public class LobbyJoinedEvent implements Event {
     private final Instant timestamp = Instant.now();
 
     public LobbyJoinedEvent(String lobbyId, String players, boolean isHost) {
-        Logger.getGlobal().info("LobbyJoinedEvent constructor called");
         this.lobbyId = lobbyId;
         if (players.contains("%")) {
-            Logger.getGlobal().info("Players contains %");
             this.players = List.of(players.split("%"));
             this.player = this.players.get(this.players.size() - 1);
         } else { // if only 1 player is in the lobby, then only the playerName gets transmitted

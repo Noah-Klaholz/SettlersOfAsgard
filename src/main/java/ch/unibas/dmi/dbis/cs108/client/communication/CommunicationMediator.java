@@ -3,11 +3,9 @@ package ch.unibas.dmi.dbis.cs108.client.communication;
 import ch.unibas.dmi.dbis.cs108.client.core.Game;
 import ch.unibas.dmi.dbis.cs108.client.networking.NetworkController;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.*;
+import ch.unibas.dmi.dbis.cs108.client.networking.events.LobbyJoinedEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.CreateLobbyResponseEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyLeftEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyListResponseEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.PlayerJoinedLobbyEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.*;
 
 import java.util.Arrays;
 import java.util.logging.Logger;
@@ -271,12 +269,10 @@ public class CommunicationMediator {
         EventDispatcher.getInstance().registerListener(LobbyJoinedEvent.class, new EventDispatcher.EventListener<LobbyJoinedEvent>() {
             @Override
             public void onEvent(LobbyJoinedEvent event) {
-                Logger.getGlobal().info("LobbyJoinedEvent");
                 if (event.getPlayer() != null && playerName.equals(event.getPlayer())) {
                     UIEventBus.getInstance().publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyJoinedEvent(
                             event.getLobbyId(), event.getPlayers(), event.isHost()));
                 } else {
-                    Logger.getGlobal().info("LobbyJoinedEvent: player Joined lobby");
                     UIEventBus.getInstance().publish(new PlayerJoinedLobbyEvent(event.getLobbyId(), event.getPlayer()));
                 }
             }
@@ -284,6 +280,18 @@ public class CommunicationMediator {
             @Override
             public Class<LobbyJoinedEvent> getEventType() {
                 return LobbyJoinedEvent.class;
+            }
+        });
+
+        EventDispatcher.getInstance().registerListener(StartGameEvent.class, new EventDispatcher.EventListener<StartGameEvent>() {
+            @Override
+            public void onEvent(StartGameEvent event) {
+                UIEventBus.getInstance().publish(new GameStartedEvent());
+            }
+
+            @Override
+            public Class<StartGameEvent> getEventType() {
+                return StartGameEvent.class;
             }
         });
     }
