@@ -84,8 +84,11 @@ public class CommunicationMediator {
             }
         });
 
-        UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.chat.LobbyChatEvent.class, event ->
-                networkController.sendLobbyChat(event.getMessage()));
+        UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.chat.LobbyChatEvent.class, event -> {
+            if (event.getSender() == null) {
+                networkController.sendLobbyChat(event.getMessage());
+            }
+        });
 
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.chat.WhisperChatEvent.class, event ->
                 networkController.sendPrivateChat(event.getRecipient(), event.getMessage()));
@@ -162,7 +165,7 @@ public class CommunicationMediator {
                         UIEventBus.getInstance().publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent(event.getContent(), event.getSender(), uiChatType));
                         break;
                     case LOBBY:
-                        UIEventBus.getInstance().publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.chat.LobbyChatEvent(event.getSender(), event.getSender()));
+                        UIEventBus.getInstance().publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.chat.LobbyChatEvent(event.getSender(), event.getSender(), event.getContent()));
                         break;
                     case PRIVATE:
                         //ToDo: Handle private chat messages

@@ -232,7 +232,7 @@ public class LobbyScreenController extends BaseController {
         } else if (lobbyChatButton.isSelected()) {
             // Send lobby chat message if in a lobby
             if (currentLobbyId != null && !currentLobbyId.isEmpty()) {
-                eventBus.publish(new LobbyChatEvent(currentLobbyId, playerName, message));
+                eventBus.publish(new LobbyChatEvent(currentLobbyId, message));
             } else {
                 addSystemMessage("Cannot send lobby message: You're not in a lobby.");
             }

@@ -297,7 +297,7 @@ public class GameScreenController extends BaseController {
             if (currentLobbyId == null || currentLobbyId.isEmpty()) {
                 addSystem("Cannot send lobby message: You're not in a lobby.");
             } else {
-                eventBus.publish(new LobbyChatEvent(currentLobbyId, null, msg));
+                eventBus.publish(new LobbyChatEvent(currentLobbyId, msg));
             }
         }
         chatInputField.clear();
