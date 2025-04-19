@@ -7,6 +7,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.AboutDialog;
+import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -59,6 +60,7 @@ public class MainMenuController extends BaseController {
     private int onlineUserCount = 0;
     private ChangeListener<Number> chatWidthListener;
     private AboutDialog aboutDialog;
+    private SettingsDialog settingsDialog;
 
     public MainMenuController() {
         super(new ResourceLoader(), UIEventBus.getInstance(), SceneManager.getInstance());
@@ -94,6 +96,9 @@ public class MainMenuController extends BaseController {
         
         // Initialize about dialog
         aboutDialog = new AboutDialog();
+        
+        // Initialize settings dialog
+        settingsDialog = new SettingsDialog();
     }
 
     private void configureChatListView() {
@@ -240,7 +245,55 @@ public class MainMenuController extends BaseController {
     @FXML
     private void handleSettings() {
         LOGGER.info("Settings button clicked");
-        // TODO: Implement settings screen transition
+
+        // First, ensure the dialog isn't already showing
+        if (settingsDialog.getView().getParent() == mainMenuRoot) {
+            return;
+        }
+
+        // Update connection status in dialog
+        settingsDialog.setConnectionStatus(isConnected.get(),
+            isConnected.get() ? "Connected" : "Disconnected");
+
+        // Store the current center content so we can restore it later
+        Node currentCenter = mainMenuRoot.getCenter();
+
+        // Create a new StackPane that will hold both the current center and our dialog
+        StackPane dialogContainer = new StackPane();
+        if (currentCenter != null) {
+            dialogContainer.getChildren().add(currentCenter);
+        }
+
+        // Add the dialog to the stack pane on top
+        dialogContainer.getChildren().add(settingsDialog.getView());
+
+        // Ensure the dialog is centered and uses the full space
+        StackPane.setAlignment(settingsDialog.getView(), Pos.CENTER);
+
+        // Set the container as the new center
+        mainMenuRoot.setCenter(dialogContainer);
+
+        // Set a close handler to restore the original center when dialog is closed
+        settingsDialog.setOnCloseAction(() -> {
+            // When dialog closes, restore the original center
+            mainMenuRoot.setCenter(currentCenter);
+        });
+
+        // Set a save handler for when settings are saved
+        settingsDialog.setOnSaveAction(() -> {
+            // Handle saved settings
+            boolean muted = settingsDialog.muteProperty().get();
+            double volume = settingsDialog.volumeProperty().get();
+
+            // Log the settings (in a real app, these would be saved)
+            LOGGER.info("Settings saved - Volume: " + volume + ", Muted: " + muted);
+            addSystemMessage("Audio settings saved. " + (muted ? "Audio muted." : "Volume set to " + volume + "%"));
+
+            // In a real implementation, these settings would be applied to the audio system
+        });
+
+        // Show the dialog
+        settingsDialog.show();
     }
 
     @FXML
@@ -422,7 +475,13 @@ public class MainMenuController extends BaseController {
         if (aboutDialog != null) {
             aboutDialog.close();
         }
+        
+        // Clean up settings dialog
+        if (settingsDialog != null) {
+            settingsDialog.close();
+        }
 
         LOGGER.info("MainMenuController resources cleaned up");
     }
 }
+
