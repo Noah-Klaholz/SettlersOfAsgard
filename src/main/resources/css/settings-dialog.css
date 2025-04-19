@@ -1,0 +1,82 @@
+/* Styling for the Settings Dialog */
+
+#settings-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.7);
+    -fx-alignment: center;
+    -fx-min-width: 100%;
+    -fx-min-height: 100%;
+    -fx-max-width: 100%;
+    -fx-max-height: 100%;
+    -fx-pref-width: 100%;
+    -fx-pref-height: 100%;
+}
+
+.settings-button {
+    -fx-background-color: #2c3347;
+    -fx-text-fill: #e4c065;
+    -fx-font-family: "Cinzel", serif;
+    -fx-font-size: 14px;
+    -fx-padding: 8 16;
+    -fx-background-radius: 4px;
+    -fx-border-color: #e4c065;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-cursor: hand;
+}
+
+.settings-button:hover {
+    -fx-background-color: #383f54;
+    -fx-border-color: #ffffff;
+}
+
+.settings-button:pressed {
+    -fx-background-color: rgba(228, 192, 101, 0.2);
+    -fx-text-fill: #ffffff;
+}
+
+.settings-button.save-button {
+    -fx-background-color: #3a5738;
+    -fx-border-color: #4eb34e;
+}
+
+.settings-button.save-button:hover {
+    -fx-background-color: #4a6748;
+    -fx-border-color: #ffffff;
+}
+
+/* Slider styling */
+.slider .track {
+    -fx-background-color: #2c3347;
+    -fx-background-radius: 4px;
+}
+
+.slider .thumb {
+    -fx-background-color: #e4c065;
+    -fx-background-radius: 8px;
+    -fx-pref-height: 16px;
+    -fx-pref-width: 16px;
+}
+
+.slider:hover .thumb {
+    -fx-background-color: #ffffff;
+}
+
+/* Checkbox styling */
+.check-box .box {
+    -fx-background-color: #2c3347;
+    -fx-border-color: #e4c065;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+}
+
+.check-box:selected .mark {
+    -fx-background-color: #e4c065;
+}
+
+.check-box:selected .box {
+    -fx-background-color: #2c3347;
+}
+
+.check-box:hover .box {
+    -fx-border-color: #ffffff;
+}
