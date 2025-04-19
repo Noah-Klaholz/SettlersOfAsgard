@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.shared;
 
+import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
@@ -63,11 +64,11 @@ public class BoardTest {
     @Test
     void testRemoveTileEntity() {
         // First add an entity
-        PurchasableEntity mockEntity = mock(Structure.class);
+        GameEntity mockEntity = mock(Structure.class);
         board.getTileByCoordinates(4,5).setEntity(mockEntity);
 
         // Then remove it
-        PurchasableEntity removedEntity = board.getTileByCoordinates(4,5).removeEntity();
+        GameEntity removedEntity = board.getTileByCoordinates(4,5).removeEntity();
 
         // Verify the entity was removed
         assertEquals(mockEntity, removedEntity);
@@ -127,7 +128,7 @@ public class BoardTest {
     @Test
     void testRemoveNonExistentEntity() {
         // Try to remove an entity from a tile that doesn't have one
-        PurchasableEntity removed = board.getTileByCoordinates(6, 6).removeEntity();
+        GameEntity removed = board.getTileByCoordinates(6, 6).removeEntity();
         assertNull(removed);
     }
 

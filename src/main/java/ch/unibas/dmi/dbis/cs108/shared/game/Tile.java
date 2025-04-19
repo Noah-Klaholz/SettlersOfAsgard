@@ -54,7 +54,7 @@ public class Tile {
         return hasEntity;
     }
 
-    public void setEntity(PurchasableEntity entity) {
+    public void setEntity(GameEntity entity) {
         this.entity = entity;
         this.hasEntity = true;
     }
