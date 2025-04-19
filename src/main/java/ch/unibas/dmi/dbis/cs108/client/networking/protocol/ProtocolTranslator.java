@@ -50,6 +50,7 @@ public class ProtocolTranslator implements CommunicationAPI {
         commandHandlers.put(Commands.STARTTURN.getCommand(), this::processTurnMessage);
         commandHandlers.put(Commands.START.getCommand(), this::processStartGameMessage);
         commandHandlers.put(Commands.CREATELOBBY.getCommand(), this::processCreateLobbyMessage);
+        commandHandlers.put(Commands.DISCONNECT.getCommand(), this::processDisconnectMessage);
         commandHandlers.put("LBRD", this::processLeaderboardMessage); // Not in Commands enum
     }
 
@@ -72,6 +73,10 @@ public class ProtocolTranslator implements CommunicationAPI {
                 Commands.STARTTURN.getCommand() + DELIMITER + args,
                 Commands.STARTTURN
         ));
+    }
+
+    public void processDisconnectMessage(String args) {
+        eventDispatcher.dispatchEvent(new ConnectionEvent(ConnectionEvent.ConnectionState.DISCONNECTED, "Player " + args + " has disconnected.")); // args is the player name
     }
 
     public void processStartGameMessage(String args) {

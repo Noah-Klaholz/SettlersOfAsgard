@@ -143,6 +143,19 @@ public class CommandHandler {
     }
 
     /**
+     * This method handles the disconnection of a player.
+     *
+     * @return true if the command was handled successfully, false otherwise
+     */
+    public boolean handleDisconnect() {
+        handleLeaveLobby();
+        server.removeClient(ch);
+        sendMessage("OK$DISC$" + playerName);
+
+        return true;
+    }
+
+    /**
      * This method handles the changing of a player's name.
      *
      * @param cmd the transmitted command

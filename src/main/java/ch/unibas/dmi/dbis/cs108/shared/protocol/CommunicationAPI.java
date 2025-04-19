@@ -170,6 +170,10 @@ public interface CommunicationAPI {
              * Player uses a field artifact
              */
             USEFIELDARTIFACT("USFA"),
+            /**
+             * Player disconnects from the game
+             */
+            DISCONNECT("DISC"),
 
             // Response codes
             /**

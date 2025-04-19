@@ -339,6 +339,10 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                     answer = false;
                     worked = ch.handleStartGame();
                     break;
+                case DISCONNECT:
+                    answer = false;
+                    worked = ch.handleDisconnect();
+                    break;
                 case CHANGENAME:
                     answer = false;
                     worked = ch.handleChangeName(cmd);
