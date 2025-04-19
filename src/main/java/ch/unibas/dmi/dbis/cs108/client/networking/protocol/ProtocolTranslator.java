@@ -49,6 +49,7 @@ public class ProtocolTranslator implements CommunicationAPI {
         commandHandlers.put(Commands.CHANGENAME.getCommand(), this::processNameChangeMessage);
         commandHandlers.put(Commands.STARTTURN.getCommand(), this::processTurnMessage);
         commandHandlers.put(Commands.START.getCommand(), this::processStartGameMessage);
+        commandHandlers.put(Commands.CREATELOBBY.getCommand(), this::processCreateLobbyMessage);
         commandHandlers.put("LBRD", this::processLeaderboardMessage); // Not in Commands enum
     }
 
@@ -129,6 +130,14 @@ public class ProtocolTranslator implements CommunicationAPI {
         }
     }
 
+    private void processCreateLobbyMessage(String args) {
+        String[] parts = args.split("\\" + DELIMITER, 2); // Expecting playerName$lobbyName
+        if (parts.length >= 2) {
+            LobbyEvent event = new LobbyEvent(LobbyEvent.LobbyAction.CREATED, parts[0], parts[1]);
+            eventDispatcher.dispatchEvent(event);
+        }
+    }
+
     private void processNotificationMessage(String args) {
         eventDispatcher.dispatchEvent(new NotificationEvent(args));
     }
@@ -193,7 +202,7 @@ public class ProtocolTranslator implements CommunicationAPI {
                 LOGGER.warning("Invalid OK" + DELIMITER + "RGST" + DELIMITER + " format: " + args);
             }
         } else {
-            eventDispatcher.dispatchEvent(new ReceiveCommandEvent(Commands.OK.getCommand() + DELIMITER + args));
+            processIncomingMessage(args); // If its not a special case, process it normally -> OK gets removed in this case
         }
     }
 

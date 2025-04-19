@@ -4,6 +4,7 @@ import ch.unibas.dmi.dbis.cs108.client.core.Game;
 import ch.unibas.dmi.dbis.cs108.client.networking.NetworkController;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyListResponseEvent;
 
 import java.util.Arrays;
 
@@ -227,6 +228,18 @@ public class CommunicationMediator {
             @Override
             public Class<NameChangeResponseEvent> getEventType() {
                 return NameChangeResponseEvent.class;
+            }
+        });
+
+        EventDispatcher.getInstance().registerListener(LobbyListEvent.class, new EventDispatcher.EventListener<LobbyListEvent>() {
+            @Override
+            public void onEvent(LobbyListEvent event) {
+                    UIEventBus.getInstance().publish(new LobbyListResponseEvent(event.getLobbies()));
+                }
+
+            @Override
+            public Class<LobbyListEvent> getEventType() {
+                return LobbyListEvent.class;
             }
         });
     }

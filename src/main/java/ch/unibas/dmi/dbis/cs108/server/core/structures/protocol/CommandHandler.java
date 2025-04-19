@@ -218,7 +218,7 @@ public class CommandHandler {
         }
 
         String lobbyList = lobbies.stream()
-                .map(lobby -> lobby.getId() + ":  " + lobby.getStatus())
+                .map(lobby -> lobby.getId() + ":" + lobby.getPlayers().size() + ":" + lobby.getMaxPlayers() + ":" + lobby.getStatus() + ":" + lobby.getHostName())
                 .collect(Collectors.joining("%"));
 
         System.out.println(lobbyList);

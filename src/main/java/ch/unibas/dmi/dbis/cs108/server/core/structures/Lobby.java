@@ -40,6 +40,10 @@ public class Lobby {
         return id;
     }
 
+    public int getMaxPlayers() {
+        return maxPlayers;
+    }
+
     public List<ClientHandler> getPlayers() {
         return players;
     }
@@ -166,6 +170,10 @@ public class Lobby {
         return players.stream()
                 .map(ClientHandler::getPlayerName)
                 .collect(Collectors.joining(", "));
+    }
+
+    public String getHostName() {
+        return players.get(0).getPlayerName();
     }
 
     public enum LobbyStatus {
