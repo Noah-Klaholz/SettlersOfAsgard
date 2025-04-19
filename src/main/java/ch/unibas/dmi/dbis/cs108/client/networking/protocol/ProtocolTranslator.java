@@ -115,7 +115,7 @@ public class ProtocolTranslator implements CommunicationAPI {
     }
 
     private void processJoinMessage(String args) {
-        String[] parts = args.split("\\" + DELIMITER, 3); // Expecting playerName$lobbyName
+        String[] parts = args.split("\\" + DELIMITER, 3); // Expecting playerName$lobbyName$isHost
         if (parts.length >= 3) {
             LobbyJoinedEvent event = new LobbyJoinedEvent(parts[0], parts[1], Boolean.parseBoolean(parts[2]));
             eventDispatcher.dispatchEvent(event);

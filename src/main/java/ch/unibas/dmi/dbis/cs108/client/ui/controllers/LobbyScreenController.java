@@ -3,6 +3,7 @@ package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.LobbyChatEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.*;
@@ -165,6 +166,7 @@ public class LobbyScreenController extends BaseController {
         eventBus.subscribe(ErrorEvent.class, this::handleError);
         eventBus.subscribe(LeaveLobbyRequestEvent.class, this::handleLeaveLobby);
         eventBus.subscribe(GameStartedEvent.class, this::handleGameStarted);
+        eventBus.subscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
     }
 
     // UI Action Handlers
@@ -279,6 +281,21 @@ public class LobbyScreenController extends BaseController {
     }
 
     // UIEvent Bus Handlers
+    private void handleNameChangeResponse(NameChangeResponseEvent event) {
+        if (event == null) {
+            LOGGER.warning("Received null name change response event");
+            return;
+        }
+
+        Platform.runLater(() -> {
+            if (event.isSuccess()) {
+                playerName = event.getNewName();
+                addSystemMessage("Name changed to: " + playerName);
+            } else {
+                addSystemMessage("Failed to change name: " + event.getMessage());
+            }
+        });
+    }
 
     private void handleLobbyListResponse(LobbyListResponseEvent event) {
         Platform.runLater(() -> {

@@ -59,10 +59,10 @@ public class Lobby {
     public boolean addPlayer(ClientHandler player) {
         if (players.size() < maxPlayers && status == LobbyStatus.IN_LOBBY) {
             players.add(player);
-            logger.info(player.toString() + " has joined Lobby: " + id);
+            logger.info(player.getPlayerName() + " has joined Lobby: " + id);
             return true;
         }
-        logger.warning(player.toString() + " could not join Lobby: " + id);
+        logger.warning(player.getPlayerName() + " could not join Lobby: " + id);
         return false;
     }
 

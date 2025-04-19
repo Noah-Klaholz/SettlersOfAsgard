@@ -8,6 +8,7 @@ import java.util.List;
 public class LobbyJoinedEvent implements Event {
     private final String lobbyId;
     private final List<String> players;
+    private final String player;
     private final boolean isHost;
     private final Instant timestamp = Instant.now();
 
@@ -15,6 +16,14 @@ public class LobbyJoinedEvent implements Event {
         this.lobbyId = lobbyId;
         this.players = List.of(players.split("%"));
         this.isHost = isHost;
+        this.player = this.players.get(players.length() - 1);
+    }
+
+    public LobbyJoinedEvent(String lobbyId, String player) {
+        this.lobbyId = lobbyId;
+        this.player = player;
+        this.isHost = false;
+        this.players = null;
     }
 
     @Override
