@@ -7,6 +7,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.CreateLobbyResponseEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyLeftEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyListResponseEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.PlayerJoinedLobbyEvent;
 
 import java.util.Arrays;
 
@@ -22,21 +23,18 @@ public class CommunicationMediator {
      */
     private final NetworkController networkController;
     /**
-     * The Game instance representing the current game state.
-     * This instance is used to update the game state based on network events.
+     * The name of the player.
      */
-    private final Game game;
+    private String playerName;
 
     /**
      * Constructor for CommunicationMediator.
      * Initializes the mediator with the network controller and game instance.
      *
      * @param networkController The network controller to handle network communication.
-     * @param game              The game instance to update the game state.
      */
-    public CommunicationMediator(NetworkController networkController, Game game) {
+    public CommunicationMediator(NetworkController networkController) {
         this.networkController = networkController;
-        this.game = game;
         registerUIListeners();
         registerNetworkListeners();
     }
@@ -222,7 +220,7 @@ public class CommunicationMediator {
             public void onEvent(NameChangeResponseEvent event) {
                 if (event.isSuccess()) {
                     // Update game core with new name
-                    game.updatePlayerName(event.getNewName());
+                    playerName = event.getNewName();
                 }
 
                 // Create a UI event to inform UI components
@@ -272,8 +270,12 @@ public class CommunicationMediator {
         EventDispatcher.getInstance().registerListener(LobbyJoinedEvent.class, new EventDispatcher.EventListener<LobbyJoinedEvent>() {
             @Override
             public void onEvent(LobbyJoinedEvent event) {
-                UIEventBus.getInstance().publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyJoinedEvent(
-                        event.getLobbyId(), event.getPlayers(), event.isHost()));
+                if (event.getPlayer() != null && playerName.equals(event.getPlayer())) {
+                    UIEventBus.getInstance().publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyJoinedEvent(
+                            event.getLobbyId(), event.getPlayers(), event.isHost()));
+                } else {
+                    UIEventBus.getInstance().publish(new PlayerJoinedLobbyEvent(event.getLobbyId(), event.getPlayer()));
+                }
             }
 
             @Override

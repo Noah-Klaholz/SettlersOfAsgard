@@ -14,16 +14,14 @@ public class LobbyJoinedEvent implements Event {
 
     public LobbyJoinedEvent(String lobbyId, String players, boolean isHost) {
         this.lobbyId = lobbyId;
-        this.players = List.of(players.split("%"));
+        if (players.contains("%")) {
+            this.players = List.of(players.split("%"));
+            this.player = this.players.get(players.length() - 1);
+        } else { // if only 1 player is in the lobby, then only the playerName gets transmitted
+            this.players = List.of(players);
+            this.player = players;
+        }
         this.isHost = isHost;
-        this.player = this.players.get(players.length() - 1);
-    }
-
-    public LobbyJoinedEvent(String lobbyId, String player) {
-        this.lobbyId = lobbyId;
-        this.player = player;
-        this.isHost = false;
-        this.players = null;
     }
 
     @Override
@@ -37,6 +35,10 @@ public class LobbyJoinedEvent implements Event {
 
     public List<String> getPlayers() {
         return players;
+    }
+
+    public String getPlayer() {
+        return player;
     }
 
     public boolean isHost() {

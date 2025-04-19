@@ -68,7 +68,6 @@ public class GameApplication extends Application {
 
         localPlayer = new Player(username);
         Shop shop = new Shop();
-        Game game = new Game(localPlayer, shop);
 
         // Extract server ip and port from the second argument.
         if (params.size() >= 2) {
@@ -93,7 +92,7 @@ public class GameApplication extends Application {
         networkEventDispatcher = EventDispatcher.getInstance();
 
         // Initialize CommunicationMediator to wire UI and network messages.
-        new CommunicationMediator(networkController, game);
+        new CommunicationMediator(networkController);
         //      REMOVED: setupUIEventHandlers();
 
         // Initialize and display the main menu scene.
