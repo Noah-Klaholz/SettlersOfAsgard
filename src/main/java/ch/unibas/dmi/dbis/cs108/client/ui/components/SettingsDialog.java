@@ -4,6 +4,8 @@ import javafx.animation.FadeTransition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -32,6 +34,7 @@ public class SettingsDialog extends UIComponent<StackPane> {
     // Settings properties
     private final SimpleDoubleProperty volumeProperty = new SimpleDoubleProperty(50);
     private final BooleanProperty muteProperty = new SimpleBooleanProperty(false);
+    private final StringProperty playerNameProperty = new SimpleStringProperty("Guest");
     private boolean isConnected = false;
     private String connectionStatusText = "Disconnected";
     
@@ -108,7 +111,7 @@ public class SettingsDialog extends UIComponent<StackPane> {
         VBox content = new VBox(15);
         content.setAlignment(Pos.CENTER);
         content.setMaxWidth(500);
-        content.setMaxHeight(400);
+        content.setMaxHeight(500); // Increased height to accommodate new section
         content.setPadding(new Insets(25));
         content.setStyle("-fx-background-color: #2a2a2a; -fx-background-radius: 10;");
         
@@ -126,6 +129,9 @@ public class SettingsDialog extends UIComponent<StackPane> {
         title.setFont(Font.font("Cinzel", FontWeight.BOLD, 24));
         title.setFill(Color.GOLD);
         
+        // Player section (NEW)
+        VBox playerSection = createPlayerSection();
+
         // Audio section
         VBox audioSection = createAudioSection();
         
@@ -139,6 +145,8 @@ public class SettingsDialog extends UIComponent<StackPane> {
         content.getChildren().addAll(
                 title,
                 new Separator(),
+                playerSection, // Add the new player section
+                new Separator(),
                 audioSection,
                 new Separator(),
                 connectionSection,
@@ -149,6 +157,45 @@ public class SettingsDialog extends UIComponent<StackPane> {
         return content;
     }
     
+    /**
+     * Creates the player name settings section (NEW).
+     *
+     * @return VBox containing player settings controls
+     */
+    private VBox createPlayerSection() {
+        VBox playerSection = new VBox(10);
+        playerSection.setAlignment(Pos.CENTER_LEFT);
+
+        Label sectionTitle = new Label("Player Settings");
+        sectionTitle.setFont(Font.font("Roboto", FontWeight.BOLD, 16));
+        sectionTitle.setTextFill(Color.WHITE);
+
+        // Player name input
+        HBox nameRow = new HBox(10);
+        nameRow.setAlignment(Pos.CENTER_LEFT);
+
+        Label nameLabel = new Label("Name:");
+        nameLabel.setTextFill(Color.LIGHTGRAY);
+        nameLabel.setMinWidth(80);
+
+        TextField nameField = new TextField(playerNameProperty.get());
+        nameField.textProperty().bindBidirectional(playerNameProperty);
+        nameField.setMaxWidth(300);
+        nameField.setPromptText("Enter your player name");
+        // Apply styling
+        nameField.setStyle("-fx-background-color: #2c3347; -fx-text-fill: #e4c065; -fx-border-color: #e4c065; -fx-border-width: 1px; -fx-border-radius: 3px;");
+
+        nameRow.getChildren().addAll(nameLabel, nameField);
+
+        // Note about name changes
+        Label nameNoteLabel = new Label("Name changes will be applied when you save settings.");
+        nameNoteLabel.setTextFill(Color.GRAY);
+        nameNoteLabel.setStyle("-fx-font-style: italic;");
+
+        playerSection.getChildren().addAll(sectionTitle, nameRow, nameNoteLabel);
+        return playerSection;
+    }
+
     /**
      * Creates the audio settings section.
      * 
