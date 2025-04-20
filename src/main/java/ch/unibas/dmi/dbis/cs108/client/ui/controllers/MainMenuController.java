@@ -1,30 +1,29 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
-import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.AboutDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
-import javafx.geometry.Pos;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import javafx.stage.Stage;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -34,14 +33,21 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Controller for the main menu screen.
+ * <p>
+ * Manages global chat, connection status, and navigation to other scenes.
+ */
 public class MainMenuController extends BaseController {
     private static final Logger LOGGER = Logger.getLogger(MainMenuController.class.getName());
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
     private static final String DEFAULT_USERNAME = "Guest";
+
     // Data models
     private final ObservableList<String> chatHistory = FXCollections.observableArrayList();
     private final AtomicBoolean isConnected = new AtomicBoolean(false);
-    // UI Components
+
+    // FXML UI components
     @FXML
     private BorderPane mainMenuRoot;
     @FXML
@@ -56,20 +62,26 @@ public class MainMenuController extends BaseController {
     private Label connectionStatus;
     @FXML
     private Label versionLabel;
+
     private String playerName = DEFAULT_USERNAME;
-    private int onlineUserCount = 0;
+    private int onlineUserCount;
     private ChangeListener<Number> chatWidthListener;
     private AboutDialog aboutDialog;
     private SettingsDialog settingsDialog;
 
+    /**
+     * Constructs the controller and initializes dependencies.
+     */
     public MainMenuController() {
         super(new ResourceLoader(), UIEventBus.getInstance(), SceneManager.getInstance());
     }
 
+    /**
+     * Initializes UI components, event handlers, and server connection.
+     */
     @FXML
     private void initialize() {
         LOGGER.info("Initializing main menu");
-
         try {
             initializeUI();
             setupEventHandlers();
@@ -81,65 +93,57 @@ public class MainMenuController extends BaseController {
         }
     }
 
+    /**
+     * Configures UI elements such as version label, chat list, and dialogs.
+     */
     private void initializeUI() {
-        // Set version info
         versionLabel.setText("Version 1.0.0");
-
-        // Configure chat list with automatic text wrapping
         configureChatListView();
-
-        // Load game logo
         loadGameLogo();
-
-        // Handle window resizing
         setupResizeListeners();
-        
-        // Initialize about dialog
         aboutDialog = new AboutDialog();
-        
-        // Initialize settings dialog
         settingsDialog = new SettingsDialog();
     }
 
+    /**
+     * Configures the chat list view with word wrapping and dynamic width adjustment.
+     */
     private void configureChatListView() {
         globalChatMessages.setItems(chatHistory);
+        globalChatMessages.setCellFactory(list -> new ListCell<>() {
+            private final Label label = new Label();
 
-        globalChatMessages.setCellFactory(list -> {
-            return new javafx.scene.control.ListCell<>() {
-                private final Label label = new Label();
+            {
+                label.setWrapText(true);
+                label.setTextFill(javafx.scene.paint.Color.valueOf("#e8e8e8"));
+            }
 
-                {
-                    label.setWrapText(true);
-                    label.setTextFill(javafx.scene.paint.Color.valueOf("#e8e8e8"));
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                } else {
+                    label.setText(item);
+                    label.setMaxWidth(globalChatMessages.getWidth() - 20);
+                    setGraphic(label);
                 }
-
-                @Override
-                protected void updateItem(String item, boolean empty) {
-                    super.updateItem(item, empty);
-
-                    if (empty || item == null) {
-                        setGraphic(null);
-                    } else {
-                        label.setText(item);
-                        label.setMaxWidth(globalChatMessages.getWidth() - 20);
-                        setGraphic(label);
-                    }
-                }
-            };
+            }
         });
-
-        // Listener to update text wrapping when width changes
         chatWidthListener = (obs, oldVal, newVal) -> globalChatMessages.refresh();
         globalChatMessages.widthProperty().addListener(chatWidthListener);
     }
 
+    /**
+     * Loads the game logo asynchronously.
+     */
     private void loadGameLogo() {
         CompletableFuture.runAsync(() -> {
             try {
-                final Image logoImage = resourceLoader.loadImage("images/game-logo.png");
+                Image logo = resourceLoader.loadImage("images/game-logo.png");
                 Platform.runLater(() -> {
-                    if (logoImage != null) {
-                        gameLogo.setImage(logoImage);
+                    if (logo != null) {
+                        gameLogo.setImage(logo);
                         gameLogo.setPreserveRatio(true);
                     } else {
                         LOGGER.warning("Game logo resource could not be loaded");
@@ -151,79 +155,82 @@ public class MainMenuController extends BaseController {
         });
     }
 
+    /**
+     * Sets up listeners to adjust UI on window resize.
+     */
     private void setupResizeListeners() {
-        // Adjust UI elements when the window resizes
-        mainMenuRoot.widthProperty().addListener((obs, oldVal, newVal) -> {
-            // Any resize-specific adjustments can be made here
-            globalChatMessages.refresh();
-        });
+        mainMenuRoot.widthProperty().addListener((obs, oldVal, newVal) -> globalChatMessages.refresh());
     }
 
+    /**
+     * Subscribes to event bus events and configures input handlers.
+     */
     private void setupEventHandlers() {
-        // Subscribe to events with type-safe handlers
         eventBus.subscribe(GlobalChatEvent.class, this::handleChatMessage);
         eventBus.subscribe(ConnectionStatusEvent.class, this::handleConnectionStatus);
-        eventBus.subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent.class, this::handleErrorEvent);
+        eventBus.subscribe(ErrorEvent.class, this::handleErrorEvent);
         eventBus.subscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
-
-        // Setup input field handler
-        globalChatInput.setOnAction(event -> handleSendGlobalMessage());
+        globalChatInput.setOnAction(evt -> handleSendGlobalMessage());
     }
 
+    /**
+     * Handles incoming global chat messages.
+     *
+     * @param event the chat event
+     */
     private void handleChatMessage(GlobalChatEvent event) {
-        // Check for null event
         if (event == null || event.getContent() == null) {
-            LOGGER.warning("Received null or incomplete UI chat message event");
+            LOGGER.warning("Received null or incomplete chat event");
             return;
         }
-
         Platform.runLater(() -> {
-            // Format the message including time and player name (using class field)
-            String formattedMessage = String.format("%s %s: %s", getCurrentTime(), playerName, event.getContent());
-            chatHistory.add(formattedMessage);
+            String msg = String.format("%s %s: %s", getCurrentTime(), playerName, event.getContent());
+            chatHistory.add(msg);
             scrollToBottom();
         });
     }
 
+    /**
+     * Updates connection status and posts system messages as needed.
+     *
+     * @param event the connection status event
+     */
     private void handleConnectionStatus(ConnectionStatusEvent event) {
         if (event == null) {
             LOGGER.warning("Received null connection status event");
             return;
         }
-
         Platform.runLater(() -> {
             updateConnectionStatus(Optional.ofNullable(event.getStatus()).map(Object::toString).orElse("UNKNOWN"));
-
             if (event.getMessage() != null && !event.getMessage().isEmpty()) {
                 addSystemMessage(event.getMessage());
             }
         });
     }
 
+    /**
+     * Establishes the server connection asynchronously.
+     *
+     * @return future that completes when connection attempt finishes
+     */
     private CompletableFuture<Void> establishServerConnection() {
         LOGGER.info("Establishing server connection");
-
         return CompletableFuture.runAsync(() -> {
             try {
-                // Simulate network delay
-                Thread.sleep(500);
-
-                // Update UI on JavaFX thread
+                Thread.sleep(500); // simulate network delay
                 Platform.runLater(() -> {
                     setConnectionStatus(true);
-                    updateOnlineUserCount(42); // Mock data
+                    updateOnlineUserCount(42); // placeholder value
                 });
             } catch (InterruptedException e) {
-                LOGGER.log(Level.WARNING, "Connection setup interrupted", e);
                 Thread.currentThread().interrupt();
-
+                LOGGER.log(Level.WARNING, "Connection setup interrupted", e);
                 Platform.runLater(() -> {
                     setConnectionStatus(false);
                     addSystemMessage("Failed to connect to server. Please check your connection.");
                 });
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Error establishing connection", e);
-
                 Platform.runLater(() -> {
                     setConnectionStatus(false);
                     addSystemMessage("Error connecting to server: " + e.getMessage());
@@ -232,6 +239,9 @@ public class MainMenuController extends BaseController {
         });
     }
 
+    /**
+     * Handles Play button click and navigates to the lobby.
+     */
     @FXML
     private void handlePlayGame() {
         LOGGER.info("Play button clicked");
@@ -242,148 +252,95 @@ public class MainMenuController extends BaseController {
         sceneManager.switchToScene(SceneManager.SceneType.LOBBY);
     }
 
+    /**
+     * Opens the settings dialog.
+     */
     @FXML
     private void handleSettings() {
         LOGGER.info("Settings button clicked");
+        if (settingsDialog.getView().getParent() == mainMenuRoot) return;
 
-        // First, ensure the dialog isn't already showing
-        if (settingsDialog.getView().getParent() == mainMenuRoot) {
-            return;
-        }
-
-        // Update connection status in dialog
-        settingsDialog.setConnectionStatus(isConnected.get(),
-            isConnected.get() ? "Connected" : "Disconnected");
-
-        // Store the current center content so we can restore it later
-        Node currentCenter = mainMenuRoot.getCenter();
-
-        // Create a new StackPane that will hold both the current center and our dialog
-        StackPane dialogContainer = new StackPane();
-        if (currentCenter != null) {
-            dialogContainer.getChildren().add(currentCenter);
-        }
-
-        // Add the dialog to the stack pane on top
-        dialogContainer.getChildren().add(settingsDialog.getView());
-
-        // Ensure the dialog is centered and uses the full space
+        settingsDialog.setConnectionStatus(isConnected.get(), isConnected.get() ? "Connected" : "Disconnected");
+        Node previousCenter = mainMenuRoot.getCenter();
+        StackPane container = new StackPane(previousCenter, settingsDialog.getView());
         StackPane.setAlignment(settingsDialog.getView(), Pos.CENTER);
+        mainMenuRoot.setCenter(container);
 
-        // Set the container as the new center
-        mainMenuRoot.setCenter(dialogContainer);
-
-        // Set a close handler to restore the original center when dialog is closed
-        settingsDialog.setOnCloseAction(() -> {
-            // When dialog closes, restore the original center
-            mainMenuRoot.setCenter(currentCenter);
-        });
-
-        // Set a save handler for when settings are saved
+        settingsDialog.setOnCloseAction(() -> mainMenuRoot.setCenter(previousCenter));
         settingsDialog.setOnSaveAction(() -> {
-            // Handle saved settings
             boolean muted = settingsDialog.muteProperty().get();
             double volume = settingsDialog.volumeProperty().get();
-
-            // Log the settings (in a real app, these would be saved)
             LOGGER.info("Settings saved - Volume: " + volume + ", Muted: " + muted);
-            addSystemMessage("Audio settings saved. " + (muted ? "Audio muted." : "Volume set to " + volume + "%"));
-
-            // In a real implementation, these settings would be applied to the audio system
+            addSystemMessage("Audio settings saved. " + (muted ? "Muted." : "Volume: " + volume + "%"));
         });
-
-        // Show the dialog
         settingsDialog.show();
     }
 
+    /**
+     * Opens the about dialog.
+     */
     @FXML
     private void handleAbout() {
         LOGGER.info("About button clicked");
-        
-        // First, ensure the dialog isn't already showing
-        if (aboutDialog.getView().getParent() == mainMenuRoot) {
-            return;
-        }
-        
-        // Remove previous positioning approach that was causing layout issues
-        // Instead, properly set it as the CENTER element of the BorderPane with full coverage
-        
-        // Store the current center content so we can restore it later
-        Node currentCenter = mainMenuRoot.getCenter();
-        
-        // Create a new StackPane that will hold both the current center and our dialog
-        StackPane dialogContainer = new StackPane();
-        if (currentCenter != null) {
-            dialogContainer.getChildren().add(currentCenter);
-        }
-        
-        // Add the dialog to the stack pane on top
-        dialogContainer.getChildren().add(aboutDialog.getView());
-        
-        // Ensure the dialog is centered and uses the full space
+        if (aboutDialog.getView().getParent() == mainMenuRoot) return;
+
+        Node previousCenter = mainMenuRoot.getCenter();
+        StackPane container = new StackPane(previousCenter, aboutDialog.getView());
         StackPane.setAlignment(aboutDialog.getView(), Pos.CENTER);
-        
-        // Set the container as the new center
-        mainMenuRoot.setCenter(dialogContainer);
-        
-        // Set a close handler to restore the original center when dialog is closed
-        aboutDialog.setOnCloseAction(() -> {
-            // When dialog closes, restore the original center
-            mainMenuRoot.setCenter(currentCenter);
-        });
-        
-        // Show the dialog
+        mainMenuRoot.setCenter(container);
+
+        aboutDialog.setOnCloseAction(() -> mainMenuRoot.setCenter(previousCenter));
         aboutDialog.show();
     }
 
+    /**
+     * Exits the application gracefully.
+     */
     @FXML
     private void handleExit() {
         LOGGER.info("Exit button clicked");
-
-        // Clean up resources
         cleanup();
-
-        // Exit application
         Platform.exit();
     }
 
+    /**
+     * Sends the global chat message.
+     */
     @FXML
     private void handleSendGlobalMessage() {
-        String message = globalChatInput.getText().trim();
-
-        if (message.isEmpty()) {
-            return;
-        }
-
+        String msg = globalChatInput.getText().trim();
+        if (msg.isEmpty()) return;
         if (!isConnected.get()) {
             addSystemMessage("Cannot send message while disconnected.");
-            globalChatInput.clear();
-            return;
+        } else {
+            eventBus.publish(new GlobalChatEvent(msg, GlobalChatEvent.ChatType.GLOBAL));
         }
-
-        // Post the message to the event bus as a global chat event
-        eventBus.publish(new GlobalChatEvent(message, GlobalChatEvent.ChatType.GLOBAL));
-        globalChatInput.clear(); // Clear input after sending
-
+        globalChatInput.clear();
     }
 
-    private void handleErrorEvent(ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent event) {
+    /**
+     * Handles error events.
+     *
+     * @param event the error event
+     */
+    private void handleErrorEvent(ErrorEvent event) {
         if (event == null) {
             LOGGER.warning("Received null error event");
             return;
         }
-
-        Platform.runLater(() -> {
-            addSystemMessage("Error: " + event.getErrorMessage());
-        });
+        Platform.runLater(() -> addSystemMessage("Error: " + event.getErrorMessage()));
     }
 
+    /**
+     * Updates the player name on name change response.
+     *
+     * @param event the name change response event
+     */
     private void handleNameChangeResponse(NameChangeResponseEvent event) {
         if (event == null) {
             LOGGER.warning("Received null name change response event");
             return;
         }
-
         Platform.runLater(() -> {
             if (event.isSuccess()) {
                 playerName = event.getNewName();
@@ -394,94 +351,103 @@ public class MainMenuController extends BaseController {
         });
     }
 
+    /**
+     * Adds a custom chat message to history.
+     *
+     * @param message the message to add
+     */
     private void addChatMessage(String message) {
-        if (message == null || message.isEmpty()) {
-            return;
+        if (message != null && !message.isEmpty()) {
+            chatHistory.add(message);
+            scrollToBottom();
         }
-
-        // Formatting is now handled in handleChatMessage
-        chatHistory.add(message);
-        scrollToBottom();
     }
 
+    /**
+     * Adds a system message to chat history.
+     *
+     * @param message the system message content
+     */
     private void addSystemMessage(String message) {
-        if (message == null || message.isEmpty()) {
-            return;
+        if (message != null && !message.isEmpty()) {
+            chatHistory.add(getCurrentTime() + " System: " + message);
+            scrollToBottom();
         }
-
-        chatHistory.add(getCurrentTime() + " System: " + message);
-        scrollToBottom();
     }
 
+    /**
+     * Updates the displayed count of online users.
+     *
+     * @param count the new user count
+     */
     private void updateOnlineUserCount(int count) {
         if (count < 0) {
             LOGGER.warning("Invalid user count: " + count);
             return;
         }
-
         onlineUserCount = count;
         onlineUsersLabel.setText("Online: " + onlineUserCount);
     }
 
+    /**
+     * Updates the connection status label and style.
+     *
+     * @param status the connection status string
+     */
     private void updateConnectionStatus(String status) {
         boolean connected = "CONNECTED".equalsIgnoreCase(status);
         setConnectionStatus(connected);
     }
 
+    /**
+     * Applies connection status UI changes.
+     *
+     * @param connected true if connected, false otherwise
+     */
     private void setConnectionStatus(boolean connected) {
+        boolean wasConnected = isConnected.get();
         isConnected.set(connected);
-
-        if (connected) {
-            connectionStatus.setText("Connected");
-            connectionStatus.getStyleClass().removeAll("disconnected");
-            connectionStatus.getStyleClass().add("status-label");
-        } else {
-            connectionStatus.setText("Disconnected");
-            connectionStatus.getStyleClass().add("disconnected");
-
-            // Show message in chat if it was previously connected
-            if (isConnected.get()) {
-                addSystemMessage("You have been disconnected from the server. Attempting to reconnect...");
-            }
+        connectionStatus.setText(connected ? "Connected" : "Disconnected");
+        connectionStatus.getStyleClass().remove("disconnected");
+        if (!connected) connectionStatus.getStyleClass().add("disconnected");
+        if (!connected && wasConnected) {
+            addSystemMessage("You have been disconnected from the server. Attempting to reconnect...");
         }
     }
 
+    /**
+     * Scrolls the chat list to the bottom.
+     */
     private void scrollToBottom() {
         Platform.runLater(() -> {
-            int size = chatHistory.size();
-            if (size > 0) {
-                globalChatMessages.scrollTo(size - 1);
+            if (!chatHistory.isEmpty()) {
+                globalChatMessages.scrollTo(chatHistory.size() - 1);
             }
         });
     }
 
+    /**
+     * Returns the current time formatted for chat messages.
+     *
+     * @return formatted current time
+     */
     private String getCurrentTime() {
         return "[" + LocalDateTime.now().format(TIME_FORMATTER) + "]";
     }
 
+    /**
+     * Cleans up resources, unsubscribes listeners and closes dialogs.
+     */
     public void cleanup() {
-        // Unsubscribe from events to prevent memory leaks
         eventBus.unsubscribe(GlobalChatEvent.class, this::handleChatMessage);
         eventBus.unsubscribe(ConnectionStatusEvent.class, this::handleConnectionStatus);
-        eventBus.unsubscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent.class, this::handleErrorEvent);
+        eventBus.unsubscribe(ErrorEvent.class, this::handleErrorEvent);
         eventBus.unsubscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
-
-        // Remove property listeners
         if (chatWidthListener != null) {
             globalChatMessages.widthProperty().removeListener(chatWidthListener);
         }
-        
-        // Make sure to clean up the dialog and restore any layout changes
-        if (aboutDialog != null) {
-            aboutDialog.close();
-        }
-        
-        // Clean up settings dialog
-        if (settingsDialog != null) {
-            settingsDialog.close();
-        }
-
+        if (aboutDialog != null) aboutDialog.close();
+        if (settingsDialog != null) settingsDialog.close();
         LOGGER.info("MainMenuController resources cleaned up");
     }
 }
-
