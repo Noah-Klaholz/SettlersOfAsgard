@@ -1,0 +1,30 @@
+/* Styling for the Description Dialog */
+
+.description-dialog {
+    -fx-background-color: rgba(42, 42, 42, 0.95); /* Darker background for better readability */
+    -fx-background-radius: 8px;
+    -fx-padding: 15px;
+    -fx-border-color: #e4c065; /* Gold border */
+    -fx-border-width: 2px;
+    -fx-border-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 10, 0, 0, 2); /* Drop shadow */
+    -fx-alignment: top-left; /* Align content to top-left */
+    -fx-min-width: 250px;
+    -fx-max-width: 300px;
+}
+
+.description-dialog .title-label {
+    -fx-font-family: "Cinzel", serif;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e4c065; /* Gold text */
+    -fx-padding: 0 0 12px 0;
+}
+
+.description-dialog .description-text {
+    -fx-font-family: "Roboto", sans-serif;
+    -fx-font-size: 14px;
+    -fx-text-fill: #e0e0e0; /* Light gray text */
+    -fx-wrap-text: true;
+    -fx-line-spacing: 1.2;
+}

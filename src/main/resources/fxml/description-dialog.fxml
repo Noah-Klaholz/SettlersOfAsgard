@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/1" fx:id="rootVBox"
+      styleClass="description-dialog" prefWidth="250" maxWidth="300">
+    <padding>
+        <Insets top="10" right="15" bottom="10" left="15"/>
+    </padding>
+    <Label fx:id="titleLabel" styleClass="title-label" text="Card Title Placeholder"/>
+    <Text fx:id="descriptionText" styleClass="description-text" wrappingWidth="220"
+          text="This is a placeholder description for the selected card. It explains what the card does and how it can be used in the game."/>
+</VBox>
