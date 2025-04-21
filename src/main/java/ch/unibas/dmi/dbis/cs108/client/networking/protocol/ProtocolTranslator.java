@@ -84,6 +84,7 @@ public class ProtocolTranslator implements CommunicationAPI {
     }
 
     private void processNameChangeMessage(String args) {
+        Logger.getGlobal().info("ProcessedNameChange" + args);
         String[] parts = args.split("\\" + DELIMITER, 2); // Expecting oldName$newName
         if (parts.length >= 2) {
             eventDispatcher.dispatchEvent(new ReceiveCommandEvent(

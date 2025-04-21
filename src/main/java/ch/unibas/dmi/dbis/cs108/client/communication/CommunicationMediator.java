@@ -217,6 +217,7 @@ public class CommunicationMediator {
         EventDispatcher.getInstance().registerListener(NameChangeResponseEvent.class, new EventDispatcher.EventListener<NameChangeResponseEvent>() {
             @Override
             public void onEvent(NameChangeResponseEvent event) {
+                Logger.getGlobal().info("NameChangeResponseEvent: " + event.getMessage());
                 if (event.isSuccess()) {
                     // Update game core with new name
                     playerName = event.getNewName();

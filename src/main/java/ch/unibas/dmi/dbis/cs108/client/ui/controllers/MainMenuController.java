@@ -344,6 +344,7 @@ public class MainMenuController extends BaseController {
         Platform.runLater(() -> {
             if (event.isSuccess()) {
                 playerName = event.getNewName();
+                Logger.getGlobal().info("Player name changed: " + playerName);
                 addSystemMessage("Name changed to: " + playerName);
             } else {
                 addSystemMessage("Failed to change name: " + event.getMessage());
