@@ -270,12 +270,14 @@
     -fx-pref-width: 1px;
 }
 
+/* Card styling */
 .card {
     -fx-background-color: rgba(44, 51, 71, 0.7);
     -fx-background-radius: 6px;
     -fx-border-color: rgba(76, 83, 102, 0.7);
     -fx-border-radius: 6px;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 3, 0, 0, 1);
+    -fx-cursor: hand;
 }
 
 .artifact-card {
@@ -284,6 +286,13 @@
 
 .structure-card {
     -fx-border-color: rgba(228, 192, 101, 0.7);
+}
+
+/* New style for the selected card */
+.selected-card {
+    -fx-border-color: #e4c065;
+    -fx-border-width: 3px;
+    -fx-effect: dropshadow(gaussian, rgba(228, 192, 101, 0.8), 10, 0, 0, 0);
 }
 
 .shop-card {
