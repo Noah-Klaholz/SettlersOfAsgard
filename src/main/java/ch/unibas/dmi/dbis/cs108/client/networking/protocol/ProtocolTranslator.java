@@ -186,6 +186,7 @@ public class ProtocolTranslator implements CommunicationAPI {
             // Ping response is handled in the NetworkController
             return;
         } else if (args.startsWith(Commands.CHANGENAME.getCommand() + DELIMITER)) {
+            Logger.getGlobal().info("Successfully processed changeName message: " + args);
             String chanArgs = args.substring((Commands.CHANGENAME.getCommand() + DELIMITER).length());
             String[] parts = chanArgs.split("\\" + DELIMITER);
             if (parts.length >= 1) {
@@ -197,6 +198,7 @@ public class ProtocolTranslator implements CommunicationAPI {
                 LOGGER.warning("Invalid OK" + DELIMITER + "CHAN" + DELIMITER + " format: " + args);
             }
         } else if (args.startsWith(Commands.REGISTER.getCommand() + DELIMITER)) {
+            Logger.getGlobal().info("Successfully processed register message: " + args);
             String regArgs = args.substring((Commands.REGISTER.getCommand() + DELIMITER).length());
             String[] parts = regArgs.split("\\" + DELIMITER);
             if (parts.length >= 1) {

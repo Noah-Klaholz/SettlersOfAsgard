@@ -184,7 +184,7 @@ public class MainMenuController extends BaseController {
             return;
         }
         Platform.runLater(() -> {
-            String msg = String.format("%s %s: %s", getCurrentTime(), playerName, event.getContent());
+            String msg = String.format("%s %s: %s", getCurrentTime(), event.getSender(), event.getContent());
             chatHistory.add(msg);
             scrollToBottom();
         });

@@ -169,10 +169,10 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     /**
      * Sends a global chat message to all players in the server.
      *
-     * @param cmd the command to send
+     * @param message the message to send
      */
-    public void sendGlobalChatMessage(Command cmd) {
-        server.broadcast(cmd.toString());
+    public void sendGlobalChatMessage(String message) {
+        server.broadcast(message);
     }
 
     /**
@@ -297,11 +297,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             switch (command) {
                 case CHATLOBBY:
                     answer = false;
-                    if (currentLobby == null || getCurrentLobby() == null) {
-                        worked = ch.handleGlobalChatMessage(cmd);
-                    } else {
-                        worked = ch.handleLobbyMessage(cmd);
-                    }
+                    worked = ch.handleLobbyMessage(cmd);
                     break;
                 case CHATPRIVATE:
                     answer = false;

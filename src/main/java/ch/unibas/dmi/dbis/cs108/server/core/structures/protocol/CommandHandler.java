@@ -133,7 +133,7 @@ public class CommandHandler {
                 while (server.containsPlayerName(uniqueName)) {
                     uniqueName = playerName + suffix++;
                 }
-                logger.info("Duplicate player registered: " + playerName);
+                logger.info("Duplicate player registered: " + uniqueName);
                 setLocalPlayer(new Player(uniqueName));
                 sendMessage("OK$RGST$" + uniqueName);
                 sendMessage("ERR$106$PLAYER_ALREADY_EXISTS$" + uniqueName);
@@ -347,7 +347,7 @@ public class CommandHandler {
      * @return true if the message was sent successfully, false otherwise
      */
     public boolean handleLobbyMessage(Command cmd) {
-        String senderName = cmd.getArgs()[0];
+        String senderName = ch.getPlayerName();
         String message = cmd.getArgs()[1];
         if (currentLobby != null) {
             currentLobby.broadcastMessage("CHTL$" + senderName + "$" + message);
@@ -365,9 +365,9 @@ public class CommandHandler {
      * @return true if the message was sent successfully, false otherwise
      */
     public boolean handleGlobalChatMessage(Command cmd) {
-        String com = cmd.toString();
-        com = com.replace("CHTL$", "CHTG$");
-        ch.sendGlobalChatMessage(new Command(com));
+        String senderName = ch.getPlayerName();
+        String message = cmd.getArgs()[1];
+        ch.sendGlobalChatMessage("CHTG$" + senderName + "$" + message);
         return true;
     }
 
