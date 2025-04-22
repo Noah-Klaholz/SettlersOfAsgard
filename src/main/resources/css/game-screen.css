@@ -8,10 +8,14 @@
     -color-background-tertiary: #383f54;
 
     /* Accent colors */
-    -color-accent-primary: #e4c065; /* Gold */
-    -color-accent-secondary: #6595e4; /* Blue */
-    -color-accent-tertiary: #d16565; /* Red */
-    -color-accent-success: #4eb34e; /* Green */
+    -color-accent-primary: #e4c065;
+    /* Gold */
+    -color-accent-secondary: #6595e4;
+    /* Blue */
+    -color-accent-tertiary: #d16565;
+    /* Red */
+    -color-accent-success: #4eb34e;
+    /* Green */
 
     /* Text colors */
     -color-text-primary: #e8e8e8;
@@ -26,7 +30,9 @@
 }
 
 /* Main layout components */
-.side-panel, .chat-panel, .card-shop-panel {
+.side-panel,
+.chat-panel,
+.card-shop-panel {
     -fx-background-color: -color-background-secondary;
     -fx-background-radius: 8px;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0, 0, 4);
@@ -42,7 +48,9 @@
 }
 
 /* Titles and headers */
-.section-title, .panel-title, .card-category {
+.section-title,
+.panel-title,
+.card-category {
     -fx-font-family: "Cinzel", "Segoe UI", serif;
     -fx-font-weight: bold;
     -fx-text-fill: -color-accent-primary;
@@ -72,7 +80,8 @@
 }
 
 .connection-indicator {
-    -fx-fill: #4eb34e; /* Connected by default */
+    -fx-fill: #4eb34e;
+    /* Connected by default */
 }
 
 .connection-indicator.disconnected {
@@ -162,7 +171,11 @@
 }
 
 /* Buttons */
-.action-button, .send-button, .chat-toggle-button, .collapse-button {
+/* Keep general button styles, but remove specific overrides handled by chat-component.css */
+.action-button,
+.send-button,
+.chat-toggle-button,
+.collapse-button {
     -fx-background-color: rgba(44, 51, 71, 0.8);
     -fx-text-fill: -color-accent-primary;
     -fx-border-color: -color-accent-primary;
@@ -173,77 +186,20 @@
     -fx-padding: 8px 12px;
 }
 
-.action-button:hover, .send-button:hover, .chat-toggle-button:hover, .collapse-button:hover {
+.action-button:hover,
+.send-button:hover,
+.chat-toggle-button:hover,
+.collapse-button:hover {
     -fx-background-color: rgba(228, 192, 101, 0.2);
     -fx-cursor: hand;
 }
 
-.action-button:pressed, .send-button:pressed, .chat-toggle-button:pressed, .collapse-button:pressed {
+.action-button:pressed,
+.send-button:pressed,
+.chat-toggle-button:pressed,
+.collapse-button:pressed {
     -fx-background-color: rgba(228, 192, 101, 0.4);
     -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.2), 2, 0, 0, 1);
-}
-
-.chat-toggle-button:selected {
-    -fx-background-color: rgba(228, 192, 101, 0.4);
-    -fx-text-fill: -color-text-primary;
-}
-
-.send-button {
-    -fx-background-color: rgba(101, 149, 228, 0.3);
-    -fx-border-color: -color-accent-secondary;
-    -fx-padding: 6px 12px;
-}
-
-.send-button:hover {
-    -fx-background-color: rgba(101, 149, 228, 0.5);
-}
-
-/* Chat components */
-.chat-selector {
-    -fx-padding: 0 0 5 0;
-}
-
-.whisper-selector {
-    -fx-padding: 0 0 5 0;
-}
-
-.whisper-label {
-    -fx-text-fill: -color-text-secondary;
-    -fx-alignment: center-left;
-    -fx-padding: 4px 0;
-}
-
-.whisper-combo {
-    -fx-background-color: rgba(44, 51, 71, 0.7);
-    -fx-text-fill: -color-text-primary;
-    -fx-prompt-text-fill: -color-text-secondary;
-}
-
-.chat-list {
-    -fx-background-color: rgba(44, 51, 71, 0.9);
-    -fx-background-radius: 4px;
-    -fx-border-color: rgba(228, 192, 101, 0.5);
-    -fx-border-radius: 4px;
-}
-
-.chat-list .list-cell {
-    -fx-background-color: transparent;
-    -fx-text-fill: -color-text-primary;
-    -fx-padding: 6px 8px;
-}
-
-.chat-list .list-cell:odd {
-    -fx-background-color: rgba(44, 51, 71, 0.3);
-}
-
-.chat-input {
-    -fx-background-color: rgba(44, 51, 71, 0.7);
-    -fx-text-fill: -color-text-primary;
-    -fx-prompt-text-fill: -color-text-secondary;
-    -fx-border-color: rgba(76, 83, 102, 0.5);
-    -fx-border-radius: 4px;
-    -fx-background-radius: 4px;
-    -fx-padding: 6px 10px;
 }
 
 /* Card shop styling */
@@ -355,7 +311,7 @@
     -fx-font-weight: bold;
 }
 
-.titled-pane > .title {
+.titled-pane>.title {
     -fx-background-color: rgba(44, 51, 71, 0.8);
     -fx-border-color: rgba(228, 192, 101, 0.3);
 }
