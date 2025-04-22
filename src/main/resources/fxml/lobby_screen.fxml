@@ -67,62 +67,48 @@
 
             <!-- Right Panel: Chat & Players -->
             <VBox styleClass="right-panel">
-                <!-- Lobby Chat Section -->
-                <VBox spacing="10.0" VBox.vgrow="ALWAYS" styleClass="chat-section">
-                    <padding>
-                        <Insets top="15.0" right="15.0" bottom="15.0" left="15.0"/>
-                    </padding>
-
-                    <Label text="Chat" styleClass="section-header"/>
-                    
-                    <HBox spacing="5" styleClass="chat-selector">
-                        <ToggleButton fx:id="globalChatButton" text="Global"
-                                  onAction="#handleGlobalChatSelect" styleClass="chat-toggle-button" minWidth="70"/>
-                        <ToggleButton fx:id="lobbyChatButton" text="Lobby"
-                                  onAction="#handleLobbyChatSelect" styleClass="chat-toggle-button" minWidth="70"/>
-                        <Region HBox.hgrow="ALWAYS"/>
-                    </HBox>
-                    
-                    <ListView fx:id="chatMessages" VBox.vgrow="ALWAYS" styleClass="chat-list"/>
-
-                    <HBox spacing="8.0" alignment="CENTER">
-                        <TextField fx:id="chatInput" promptText="Type a message..."
-                                   HBox.hgrow="ALWAYS" styleClass="chat-input"
-                                   onAction="#handleSendChatMessage"/>
-                        <Button text="Send" onAction="#handleSendChatMessage"
-                                styleClass="send-button"/>
-                    </HBox>
-                </VBox>
+                <!-- Chat Section - Takes most of the available space -->
+                <TitledPane text="Chat" expanded="true" collapsible="true" VBox.vgrow="ALWAYS">
+                    <VBox fx:id="chatContainer" spacing="5.0" styleClass="chat-section, chat-panel" 
+                          VBox.vgrow="ALWAYS" minHeight="250.0" prefWidth="280.0">
+                        <!-- ChatComponent will be added here programmatically -->
+                    </VBox>
+                </TitledPane>
 
                 <!-- Players Section -->
-                <VBox spacing="10.0" styleClass="players-section">
-                    <padding>
-                        <Insets top="15.0" right="15.0" bottom="15.0" left="15.0"/>
-                    </padding>
+                <TitledPane text="Players in Lobby" expanded="true" collapsible="true">
+                    <VBox spacing="10.0" styleClass="players-section">
+                        <ListView fx:id="playerList" prefHeight="150.0" styleClass="player-list">
+                            <placeholder>
+                                <Label text="No players joined yet" styleClass="placeholder-label"/>
+                            </placeholder>
+                        </ListView>
 
-                    <Label text="Players in Lobby" styleClass="section-header"/>
-                    <ListView fx:id="playerList" prefHeight="150.0" styleClass="player-list">
-                        <placeholder>
-                            <Label text="No players joined yet" styleClass="placeholder-label"/>
-                        </placeholder>
-                    </ListView>
+                        <!-- Host Controls -->
+                        <VBox fx:id="hostControlsPanel" spacing="10.0" visible="false" managed="false" styleClass="host-controls">
+                            <Separator/>
+                            <Label text="Host Controls" styleClass="section-header"/>
 
-                    <!-- Host Controls -->
-                    <VBox fx:id="hostControlsPanel" spacing="10.0" visible="false"
-                          managed="false" styleClass="host-controls">
-                        <Separator/>
-                        <Label text="Host Controls" styleClass="section-header"/>
+                            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                                <Label text="Max Players:" styleClass="settings-label"/>
+                                <ComboBox fx:id="maxPlayersCombo" promptText="4" styleClass="settings-combo"/>
+                            </HBox>
 
-                        <HBox spacing="10.0" alignment="CENTER_LEFT">
-                            <Label text="Max Players:" styleClass="settings-label"/>
-                            <ComboBox fx:id="maxPlayersCombo" promptText="4" styleClass="settings-combo"/>
-                        </HBox>
-
-                        <Button text="Start Game" onAction="#handleStartGame"
-                                styleClass="start-game-button" maxWidth="Infinity"/>
+                            <Button text="Start Game" onAction="#handleStartGame" 
+                                    styleClass="start-game-button" maxWidth="Infinity"/>
+                        </VBox>
                     </VBox>
-                </VBox>
+                </TitledPane>
             </VBox>
         </SplitPane>
     </center>
+
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" spacing="10.0" styleClass="footer">
+            <padding>
+                <Insets top="5.0" right="10.0" bottom="5.0" left="10.0"/>
+            </padding>
+            <Label fx:id="connectionStatus" text="Connected" styleClass="status-label"/>
+        </HBox>
+    </bottom>
 </BorderPane>
