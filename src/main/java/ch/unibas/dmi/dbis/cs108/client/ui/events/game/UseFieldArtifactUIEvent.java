@@ -33,6 +33,6 @@ public class UseFieldArtifactUIEvent implements UIEvent {
 
     @Override
     public String getType() {
-        return "USEFIELDARTIFACT";
+        return "USE_FIELD_ARTIFACT";
     }
 }
