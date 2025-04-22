@@ -13,7 +13,8 @@ public class ReceiveCommandEvent implements Event {
     private final String message;
     private final Commands commandType;
 
-    // Commands have OK added in front of them, but this is removed upon event creation
+    // Commands have OK added in front of them, but this is removed upon event
+    // creation
     public ReceiveCommandEvent(String message) {
         this.message = message.replaceAll("OK\\$", "").trim();
         this.commandType = Commands.fromCommand(message.split("\\$")[0]);
