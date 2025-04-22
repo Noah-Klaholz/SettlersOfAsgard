@@ -1,14 +1,16 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
+import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.LobbyChatEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
+import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -16,34 +18,24 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Objects;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Controller for the lobby screen.
- * <p>
- * Manages lobby list display, player roster, chat functionality, and lobby actions
- * such as create, join, leave, and start game.
+ * Manages the display and interaction with game lobbies, including lobby list,
+ * player list, host controls, and chat.
  */
 public class LobbyScreenController extends BaseController {
-    /**
-     * Logger for this class.
-     */
     private static final Logger LOGGER = Logger.getLogger(LobbyScreenController.class.getName());
 
-    /**
-     * Formatter for timestamps in chat messages and system logs.
-     */
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
-
-    // Data models
     private final ObservableList<GameLobby> allLobbies = FXCollections.observableArrayList();
-    private final ObservableList<String> players = FXCollections.observableArrayList();
-    private final ObservableList<String> messages = FXCollections.observableArrayList();
+    private final ObservableList<String> playersInCurrentLobby = FXCollections.observableArrayList();
     private FilteredList<GameLobby> filteredLobbies;
 
-    // FXML UI components for lobby management
     @FXML
     private Label playerNameLabel;
     @FXML
@@ -62,505 +54,666 @@ public class LobbyScreenController extends BaseController {
     private TextField lobbyNameField;
     @FXML
     private Label errorMessage;
-
-    // FXML UI components for player management
     @FXML
     private ListView<String> playerList;
     @FXML
     private VBox hostControlsPanel;
     @FXML
     private ComboBox<Integer> maxPlayersCombo;
+    @FXML
+    private VBox chatContainer;
 
-    // FXML UI components for chat
-    @FXML
-    private ListView<String> chatMessages;
-    @FXML
-    private TextField chatInput;
-    @FXML
-    private ToggleButton globalChatButton;
-    @FXML
-    private ToggleButton lobbyChatButton;
-
-    // State fields
     private String currentLobbyId;
     private boolean isHost = false;
-    private String playerName = "Guest";
+    private Player localPlayer;
+    private ChatComponent chatComponentController;
 
     /**
-     * Constructs the controller and sets up dependencies.
+     * Constructs the controller, injecting dependencies via the BaseController.
      */
     public LobbyScreenController() {
         super(new ResourceLoader(), UIEventBus.getInstance(), SceneManager.getInstance());
+        this.localPlayer = new Player(System.getProperty("user.name", "Guest"));
+        LOGGER.finer("LobbyScreenController instance created.");
     }
 
     /**
-     * Initializes UI components and event subscriptions after FXML loading.
+     * Initializes the controller after FXML loading.
      */
     @FXML
     private void initialize() {
-        LOGGER.info("Initializing lobby screen");
-        setupTableView();
-        setupChat();
-        setupPlayerList();
-        setupComboBoxes();
-        setupSearchField();
-        setupEventHandlers();
-
-        playerNameLabel.setText("Player: " + playerName);
-        requestLobbies();
+        LOGGER.info("Initializing LobbyScreenController...");
+        try {
+            setupLobbyTable();
+            setupPlayerList();
+            setupHostControls();
+            setupSearchFilter();
+            setupChatComponent();
+            setupEventHandlers();
+            playerNameLabel.setText("Player: " + localPlayer.getName());
+            errorMessage.setVisible(false);
+            errorMessage.setManaged(false);
+            requestLobbyList();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Critical error during LobbyScreenController initialization", e);
+            showError("Failed to initialize lobby screen. Please try returning to the main menu.");
+            lobbyTable.setDisable(true);
+            lobbyNameField.setDisable(true);
+        }
+        LOGGER.info("LobbyScreenController initialization complete.");
     }
 
     /**
-     * Configures the lobby table view and columns, including double-click join behavior.
+     * Configures the lobby table view, columns, data binding, and row factory for
+     * double-click joining.
      */
-    private void setupTableView() {
-        nameColumn.setCellValueFactory(cell -> cell.getValue().nameProperty());
-        playersColumn.setCellValueFactory(cell -> cell.getValue().playerCountProperty());
-        statusColumn.setCellValueFactory(cell -> cell.getValue().statusProperty());
-        hostColumn.setCellValueFactory(cell -> cell.getValue().hostProperty());
-
+    private void setupLobbyTable() {
+        nameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
+        playersColumn.setCellValueFactory(cellData -> cellData.getValue().playerCountProperty());
+        statusColumn.setCellValueFactory(cellData -> cellData.getValue().statusProperty());
+        hostColumn.setCellValueFactory(cellData -> cellData.getValue().hostProperty());
         filteredLobbies = new FilteredList<>(allLobbies, p -> true);
         lobbyTable.setItems(filteredLobbies);
-        lobbyTable.setRowFactory(table -> {
+        lobbyTable.setRowFactory(tv -> {
             TableRow<GameLobby> row = new TableRow<>();
-            row.setOnMouseClicked(evt -> {
-                if (evt.getClickCount() == 2 && !row.isEmpty()) {
+            row.setOnMouseClicked(event -> {
+                if (!row.isEmpty() && event.getClickCount() == 2) {
                     handleJoinLobby();
                 }
             });
             return row;
         });
+        lobbyTable.setPlaceholder(new Label("No lobbies available. Create one or refresh."));
     }
 
     /**
-     * Sets up chat UI bindings and default chat mode.
-     */
-    private void setupChat() {
-        chatMessages.setItems(messages);
-        chatInput.setOnAction(evt -> handleSendChatMessage());
-        globalChatButton.setSelected(true);
-        lobbyChatButton.setSelected(false);
-    }
-
-    /**
-     * Binds the player list view to the players data model.
+     * Binds the player list view to the observable list of players in the current
+     * lobby.
      */
     private void setupPlayerList() {
-        playerList.setItems(players);
+        playerList.setItems(playersInCurrentLobby);
+        playerList.setPlaceholder(new Label("No players in lobby."));
     }
 
     /**
-     * Populates and configures the max players combo box for lobby hosts.
+     * Configures the host-specific controls, like the max players combo box.
      */
-    private void setupComboBoxes() {
+    private void setupHostControls() {
         maxPlayersCombo.setItems(FXCollections.observableArrayList(2, 3, 4, 5, 6, 8));
         maxPlayersCombo.getSelectionModel().select(Integer.valueOf(4));
         maxPlayersCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null && isHost && currentLobbyId != null) {
+            if (newVal != null && isHost && currentLobbyId != null && !newVal.equals(oldVal)) {
+                LOGGER.info("Host changed max players to: " + newVal);
                 eventBus.publish(new UpdateLobbySettingsEvent(currentLobbyId, "maxPlayers", newVal.toString()));
             }
+        });
+        hostControlsPanel.setVisible(false);
+        hostControlsPanel.setManaged(false);
+    }
+
+    /**
+     * Sets up the search field to filter the lobby table in real-time.
+     */
+    private void setupSearchFilter() {
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredLobbies.setPredicate(lobby -> {
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+                String lowerCaseFilter = newValue.toLowerCase();
+                return lobby.getName().toLowerCase().contains(lowerCaseFilter) ||
+                        lobby.getHost().toLowerCase().contains(lowerCaseFilter);
+            });
+            lobbyTable.refresh();
         });
     }
 
     /**
-     * Adds filtering behavior to the lobby search field.
+     * Initializes the injected ChatComponent controller.
      */
-    private void setupSearchField() {
-        searchField.textProperty().addListener((obs, oldVal, newVal) -> filteredLobbies.setPredicate(lobby -> {
-            if (newVal == null || newVal.isEmpty()) {
-                return true;
-            }
-            String filter = newVal.toLowerCase();
-            return lobby.getName().toLowerCase().contains(filter) || lobby.getHost().toLowerCase().contains(filter);
-        }));
+    private void setupChatComponent() {
+        chatContainer.getChildren().clear();
+        chatComponentController = new ChatComponent();
+        chatContainer.getChildren().add(chatComponentController.getView());
+        chatComponentController.setPlayer(localPlayer);
+        chatComponentController.setCurrentLobbyId(null);
+        chatComponentController.addSystemMessage("Lobby system initialized. Select or create a lobby.");
     }
 
     /**
-     * Subscribes to relevant UI events from the event bus.
+     * Subscribes to relevant events from the UIEventBus.
      */
     private void setupEventHandlers() {
         eventBus.subscribe(LobbyListResponseEvent.class, this::handleLobbyListResponse);
         eventBus.subscribe(LobbyJoinedEvent.class, this::handleLobbyJoined);
-        eventBus.subscribe(GlobalChatEvent.class, this::handleGlobalChatMessage);
-        eventBus.subscribe(LobbyChatEvent.class, this::handleLobbyChatMessage);
         eventBus.subscribe(PlayerJoinedLobbyEvent.class, this::handlePlayerJoinedLobby);
-        eventBus.subscribe(LobbyLeftEvent.class, this::handleLobbyLeft);
-        eventBus.subscribe(ErrorEvent.class, this::handleError);
-        eventBus.subscribe(LeaveLobbyRequestEvent.class, this::handleLeaveLobby);
+        eventBus.subscribe(PlayerLeftLobbyEvent.class, this::handlePlayerLeftLobby);
+        eventBus.subscribe(LobbyLeftEvent.class, this::handleSelfLeftLobby);
         eventBus.subscribe(GameStartedEvent.class, this::handleGameStarted);
+        eventBus.subscribe(LobbyUpdateEvent.class, this::handleLobbyUpdate);
+        eventBus.subscribe(ErrorEvent.class, this::handleError);
         eventBus.subscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
     }
 
     /**
-     * Navigates back to the main menu, leaving any joined lobby.
+     * Handles the "Back" button click. Leaves the current lobby (if any) and
+     * navigates back to the main menu scene.
      */
     @FXML
     private void handleBackToMainMenu() {
-        if (currentLobbyId != null) {
-            eventBus.publish(new LeaveLobbyRequestEvent(currentLobbyId));
-        }
+        LOGGER.info("Back to Main Menu button clicked.");
+        leaveCurrentLobby();
         sceneManager.switchToScene(SceneManager.SceneType.MAIN_MENU);
     }
 
     /**
-     * Requests an updated list of lobbies from the server.
+     * Handles the "Refresh" button click. Requests an updated list of lobbies.
      */
     @FXML
     private void handleRefreshLobbies() {
-        requestLobbies();
+        LOGGER.fine("Refresh Lobbies button clicked.");
+        requestLobbyList();
+        clearError();
     }
 
     /**
-     * Creates a new lobby with the provided name.
+     * Handles the "Create Lobby" button click. Validates the lobby name and
+     * publishes a request to create a new lobby.
      */
     @FXML
     private void handleCreateLobby() {
         String name = lobbyNameField.getText().trim();
+        LOGGER.info("Create Lobby button clicked with name: '" + name + "'");
         if (name.isEmpty()) {
-            showError("Please enter a lobby name");
+            showError("Please enter a name for the lobby.");
+            return;
+        }
+        if (name.length() > 30) {
+            showError("Lobby name cannot exceed 30 characters.");
             return;
         }
         clearError();
-        eventBus.publish(new CreateLobbyRequestEvent(name, playerName));
+        eventBus.publish(new CreateLobbyRequestEvent(name, localPlayer.getName()));
+        lobbyNameField.clear();
     }
 
     /**
-     * Attempts to join the selected lobby.
+     * Handles the "Join Lobby" button click (or double-click on table row).
      */
     @FXML
     private void handleJoinLobby() {
-        GameLobby lobby = lobbyTable.getSelectionModel().getSelectedItem();
-        if (lobby == null) {
-            showError("Please select a lobby to join");
+        GameLobby selectedLobby = lobbyTable.getSelectionModel().getSelectedItem();
+        LOGGER.fine("Join Lobby action triggered.");
+        if (selectedLobby == null) {
+            showError("Please select a lobby from the list to join.");
             return;
         }
-        if ("In Progress".equals(lobby.getStatus())) {
-            showError("Cannot join a game in progress");
+        LOGGER.info("Attempting to join lobby: " + selectedLobby.getName() + " (ID: " + selectedLobby.getId() + ")");
+        if (currentLobbyId != null) {
+            showError("You are already in a lobby. Leave it first to join another.");
+            return;
+        }
+        if ("In Progress".equalsIgnoreCase(selectedLobby.getStatus())) {
+            showError("Cannot join '" + selectedLobby.getName() + "': Game is already in progress.");
             return;
         }
         clearError();
-        eventBus.publish(new JoinLobbyRequestEvent(lobby.getId(), playerName));
+        eventBus.publish(new JoinLobbyRequestEvent(selectedLobby.getId(), localPlayer.getName()));
     }
 
     /**
-     * Sends the current chat message to the appropriate channel.
-     */
-    @FXML
-    private void handleSendChatMessage() {
-        String msg = chatInput.getText().trim();
-        if (msg.isEmpty()) return;
-
-        if (globalChatButton.isSelected()) {
-            eventBus.publish(new GlobalChatEvent(msg, GlobalChatEvent.ChatType.GLOBAL));
-        } else if (lobbyChatButton.isSelected()) {
-            if (currentLobbyId != null) {
-                eventBus.publish(new LobbyChatEvent(currentLobbyId, msg));
-            } else {
-                addSystemMessage("Cannot send lobby message: You're not in a lobby.");
-            }
-        } else {
-            LOGGER.warning("No chat type selected, defaulting to GLOBAL");
-            eventBus.publish(new GlobalChatEvent(msg, GlobalChatEvent.ChatType.GLOBAL));
-        }
-        chatInput.clear();
-    }
-
-    /**
-     * Starts the game if the user is the host and enough players are present.
+     * Handles the "Start Game" button click (host only).
      */
     @FXML
     private void handleStartGame() {
-        if (isHost && currentLobbyId != null) {
-            if (players.size() < 2) {
-                showError("Need at least 2 players to start");
-                return;
-            }
-            eventBus.publish(new StartGameRequestEvent(currentLobbyId));
-        }
-    }
-
-    /**
-     * Switches to global chat mode.
-     */
-    @FXML
-    private void handleGlobalChatSelect() {
-        LOGGER.info("Global chat selected");
-        globalChatButton.setSelected(true);
-        lobbyChatButton.setSelected(false);
-    }
-
-    /**
-     * Switches to lobby chat mode and warns if not in a lobby.
-     */
-    @FXML
-    private void handleLobbyChatSelect() {
-        LOGGER.info("Lobby chat selected");
-        globalChatButton.setSelected(false);
-        lobbyChatButton.setSelected(true);
-        if (currentLobbyId == null) {
-            addSystemMessage("You are not in a lobby. Messages will not be sent until you join one.");
-        }
-    }
-
-    /**
-     * Processes the name change response event.
-     *
-     * @param event the name change response event
-     */
-    private void handleNameChangeResponse(NameChangeResponseEvent event) {
-        if (event == null) {
-            LOGGER.warning("Received null name change response event");
+        LOGGER.info("Start Game button clicked.");
+        if (!isHost) {
+            showError("Only the lobby host can start the game.");
+            LOGGER.warning("Non-host attempted to start the game.");
             return;
         }
-        Platform.runLater(() -> {
-            if (event.isSuccess()) {
-                playerName = event.getNewName();
-                Logger.getGlobal().info("Player name changed: " + playerName);
-                addSystemMessage("Name changed to: " + playerName);
-            } else {
-                addSystemMessage("Failed to change name: " + event.getMessage());
-            }
-        });
+        if (currentLobbyId == null) {
+            showError("Cannot start game: Not currently in a lobby.");
+            LOGGER.warning("Attempted to start game while not in a lobby.");
+            return;
+        }
+        int minPlayers = 2;
+        if (playersInCurrentLobby.size() < minPlayers) {
+            showError("Need at least " + minPlayers + " players to start the game.");
+            return;
+        }
+        clearError();
+        LOGGER.info("Host is starting the game for lobby: " + currentLobbyId);
+        eventBus.publish(new StartGameRequestEvent(currentLobbyId));
     }
 
     /**
-     * Updates the lobby list with data from the server.
-     *
-     * @param event the lobby list response event
+     * Handles the response containing the list of available lobbies.
      */
     private void handleLobbyListResponse(LobbyListResponseEvent event) {
+        Objects.requireNonNull(event, "LobbyListResponseEvent cannot be null");
         Platform.runLater(() -> {
-            allLobbies.setAll(event.getLobbies());
+            List<GameLobby> lobbies = event.getLobbies().stream()
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+            allLobbies.setAll(lobbies);
+            lobbyTable.refresh();
+            LOGGER.info("Lobby list updated with " + lobbies.size() + " lobbies.");
         });
     }
 
     /**
-     * Handles post-join lobby UI updates.
-     *
-     * @param event the lobby joined event
+     * Handles the confirmation that the player has successfully joined a lobby.
      */
     private void handleLobbyJoined(LobbyJoinedEvent event) {
+        Objects.requireNonNull(event, "LobbyJoinedEvent cannot be null");
         Platform.runLater(() -> {
             currentLobbyId = event.getLobbyId();
             isHost = event.isHost();
+            if (!localPlayer.getName().equals(event.getPlayerName())) {
+                localPlayer.setName(event.getPlayerName());
+                LOGGER.info("Local player name updated to: " + localPlayer.getName());
+            }
+            LOGGER.info("Successfully joined lobby: " + currentLobbyId + " (Host: " + isHost + ")");
+            playerNameLabel.setText("Player: " + localPlayer.getName());
+            playersInCurrentLobby.setAll(event.getPlayers());
             hostControlsPanel.setVisible(isHost);
             hostControlsPanel.setManaged(isHost);
-            players.setAll(event.getPlayers());
-            messages.clear();
-            addSystemMessage("You joined the lobby");
+            lobbyNameField.clear();
+            clearError();
+            if (chatComponentController != null) {
+                chatComponentController.setPlayer(localPlayer);
+                chatComponentController.setCurrentLobbyId(currentLobbyId);
+                chatComponentController.addSystemMessage("You joined lobby: " + event.getLobbyName());
+            }
+            lobbyNameField.setDisable(true);
+            lobbyTable.getSelectionModel().clearSelection();
         });
     }
 
     /**
-     * Appends a global chat message to the chat view.
-     *
-     * @param event the global chat event
-     */
-    private void handleGlobalChatMessage(GlobalChatEvent event) {
-        Platform.runLater(() -> {
-            String formatted = String.format("[%s] %s: %s", TIME_FORMATTER.format(event.getTimestamp()), event.getSender(), event.getContent());
-            messages.add(formatted);
-        });
-    }
-
-    /**
-     * Appends a lobby chat message to the chat view.
-     *
-     * @param event the lobby chat event
-     */
-    private void handleLobbyChatMessage(LobbyChatEvent event) {
-        Platform.runLater(() -> {
-            String formatted = String.format("[%s] %s: %s", TIME_FORMATTER.format(event.getTimestamp()), event.getSender(), event.getMessage());
-            messages.add(formatted);
-        });
-    }
-
-    /**
-     * Adds a player to the roster and logs the join.
-     *
-     * @param event the player joined lobby event
+     * Handles notification that another player has joined the current lobby.
      */
     private void handlePlayerJoinedLobby(PlayerJoinedLobbyEvent event) {
+        Objects.requireNonNull(event, "PlayerJoinedLobbyEvent cannot be null");
+        if (currentLobbyId != null && currentLobbyId.equals(event.getLobbyId())) {
+            Platform.runLater(() -> {
+                String joinedPlayerName = event.getPlayerName();
+                if (!playersInCurrentLobby.contains(joinedPlayerName)) {
+                    playersInCurrentLobby.add(joinedPlayerName);
+                    LOGGER.info(joinedPlayerName + " joined the lobby.");
+                    if (chatComponentController != null) {
+                        chatComponentController.addSystemMessage(joinedPlayerName + " joined the lobby.");
+                    }
+                    updateLobbyPlayerCountInTable(currentLobbyId, playersInCurrentLobby.size());
+                } else {
+                    LOGGER.warning("Received PlayerJoinedLobbyEvent for player already in list: " + joinedPlayerName);
+                }
+            });
+        }
+    }
+
+    /**
+     * Handles notification that another player has left the current lobby.
+     */
+    private void handlePlayerLeftLobby(PlayerLeftLobbyEvent event) {
+        Objects.requireNonNull(event, "PlayerLeftLobbyEvent cannot be null");
+        if (currentLobbyId != null && currentLobbyId.equals(event.getLobbyId())) {
+            Platform.runLater(() -> {
+                String leftPlayerName = event.getPlayerName();
+                if (playersInCurrentLobby.remove(leftPlayerName)) {
+                    LOGGER.info(leftPlayerName + " left the lobby.");
+                    if (chatComponentController != null) {
+                        chatComponentController.addSystemMessage(leftPlayerName + " left the lobby.");
+                    }
+                    updateLobbyPlayerCountInTable(currentLobbyId, playersInCurrentLobby.size());
+                } else {
+                    LOGGER.warning("Received PlayerLeftLobbyEvent for player not in list: " + leftPlayerName);
+                }
+            });
+        }
+    }
+
+    /**
+     * Handles confirmation that the current player has left the lobby.
+     */
+    private void handleSelfLeftLobby(LobbyLeftEvent event) {
+        Objects.requireNonNull(event, "LobbyLeftEvent cannot be null");
+        if (currentLobbyId != null && currentLobbyId.equals(event.getLobbyId())) {
+            Platform.runLater(() -> {
+                LOGGER.info("Left lobby: " + currentLobbyId);
+                resetLobbyState();
+                requestLobbyList();
+                if (chatComponentController != null) {
+                    chatComponentController.addSystemMessage("You left the lobby.");
+                }
+            });
+        } else {
+            LOGGER.warning("Received SelfLeftLobby event for a lobby mismatch. Current: " + currentLobbyId + ", Event: "
+                    + event.getLobbyId());
+            Platform.runLater(this::resetLobbyState);
+        }
+    }
+
+    /**
+     * Handles notification that the game has started for the current lobby.
+     */
+    private void handleGameStarted(GameStartedEvent event) {
+        Objects.requireNonNull(event, "GameStartedEvent cannot be null");
+        if (currentLobbyId != null && currentLobbyId.equals(event.getLobbyId())) {
+            LOGGER.info("Game started for lobby: " + currentLobbyId + ". Switching to game screen.");
+            Platform.runLater(() -> {
+                sceneManager.switchToScene(SceneManager.SceneType.GAME);
+            });
+        }
+    }
+
+    /**
+     * Handles updates to lobby information (e.g., status change, player count).
+     */
+    private void handleLobbyUpdate(LobbyUpdateEvent event) {
+        Objects.requireNonNull(event, "LobbyUpdateEvent cannot be null");
         Platform.runLater(() -> {
-            String name = event.getPlayerName();
-            if (!players.contains(name)) {
-                players.add(name);
-                addSystemMessage(name + " joined the lobby");
+            String updatedLobbyId = event.getLobbyId();
+            LOGGER.fine("Received update for lobby: " + updatedLobbyId);
+            allLobbies.stream()
+                    .filter(lobby -> lobby.getId().equals(updatedLobbyId))
+                    .findFirst()
+                    .ifPresent(lobby -> {
+                        if (event.getNewStatus() != null) {
+                            lobby.setStatus(event.getNewStatus());
+                        }
+                        if (event.getCurrentPlayers() >= 0 && event.getMaxPlayers() > 0) {
+                            lobby.setPlayerCount(event.getCurrentPlayers(), event.getMaxPlayers());
+                        }
+                        lobbyTable.refresh();
+                        LOGGER.fine("Updated lobby details for: " + updatedLobbyId);
+                    });
+        });
+    }
+
+    /**
+     * Handles generic ErrorEvent updates. Displays the error message.
+     */
+    private void handleError(ErrorEvent event) {
+        Objects.requireNonNull(event, "ErrorEvent cannot be null");
+        Platform.runLater(() -> {
+            String msg = event.getErrorMessage();
+            LOGGER.warning("Received error: " + msg);
+            showError(msg);
+            if (chatComponentController != null) {
+                chatComponentController.addSystemMessage("Error: " + msg);
             }
         });
     }
 
     /**
-     * Removes a player from the roster and logs the leave.
-     *
-     * @param event the lobby left event
+     * Handles the response from a player name change request.
      */
-    private void handleLobbyLeft(LobbyLeftEvent event) {
+    private void handleNameChangeResponse(NameChangeResponseEvent event) {
+        Objects.requireNonNull(event, "NameChangeResponseEvent cannot be null");
         Platform.runLater(() -> {
-            players.remove(event.getPlayerName());
-            addSystemMessage(event.getPlayerName() + " left the lobby");
+            if (event.isSuccess()) {
+                String oldName = localPlayer.getName();
+                String newName = event.getNewName();
+                localPlayer.setName(newName);
+                LOGGER.info("Player name successfully changed to: " + localPlayer.getName());
+                playerNameLabel.setText("Player: " + localPlayer.getName());
+                if (chatComponentController != null) {
+                    chatComponentController.setPlayer(localPlayer);
+                    chatComponentController.addSystemMessage("Name successfully changed to: " + localPlayer.getName());
+                }
+                allLobbies.stream()
+                        .filter(lobby -> lobby.getHost().equals(oldName))
+                        .forEach(lobby -> lobby.setHost(newName));
+                lobbyTable.refresh();
+            } else {
+                String failureMsg = event.getMessage() != null ? event.getMessage() : "Unknown reason.";
+                LOGGER.warning("Failed to change player name: " + failureMsg);
+                showError("Failed to change name: " + failureMsg);
+                if (chatComponentController != null) {
+                    chatComponentController.addSystemMessage("Failed to change name: " + failureMsg);
+                }
+            }
         });
     }
 
     /**
-     * Displays an error message from an ErrorEvent.
-     *
-     * @param event the error event
+     * Sends a request to the server (via event bus) to get the latest lobby list.
      */
-    private void handleError(ErrorEvent event) {
-        Platform.runLater(() -> showError(event.getErrorMessage()));
-    }
-
-    /**
-     * Cleans up UI after leaving a lobby and refreshes the lobby list.
-     *
-     * @param event the leave lobby request event
-     */
-    private void handleLeaveLobby(LeaveLobbyRequestEvent event) {
-        Platform.runLater(() -> {
-            currentLobbyId = null;
-            isHost = false;
-            players.clear();
-            messages.clear();
-            hostControlsPanel.setVisible(false);
-            hostControlsPanel.setManaged(false);
-            requestLobbies();
-        });
-    }
-
-    /**
-     * Switches to the game screen when the game starts.
-     *
-     * @param event the game started event
-     */
-    private void handleGameStarted(GameStartedEvent event) {
-        Platform.runLater(() -> sceneManager.switchToScene(SceneManager.SceneType.GAME));
-    }
-
-    /**
-     * Sends a request for the current lobby list.
-     */
-    private void requestLobbies() {
+    private void requestLobbyList() {
+        LOGGER.fine("Requesting updated lobby list...");
         eventBus.publish(new LobbyListRequestEvent());
     }
 
     /**
-     * Shows an error message in the UI.
-     *
-     * @param message the error text to display
+     * Sends a request to the server (via event bus) for the player to leave the
+     * current lobby.
      */
-    private void showError(String message) {
-        errorMessage.setText(message);
-        errorMessage.setVisible(true);
+    private void leaveCurrentLobby() {
+        if (currentLobbyId != null) {
+            LOGGER.info("Requesting to leave lobby: " + currentLobbyId);
+            eventBus.publish(new LeaveLobbyRequestEvent(currentLobbyId));
+        }
     }
 
     /**
-     * Clears any existing error message from the UI.
+     * Resets the UI and internal state related to being in a lobby.
+     */
+    private void resetLobbyState() {
+        currentLobbyId = null;
+        isHost = false;
+        playersInCurrentLobby.clear();
+        hostControlsPanel.setVisible(false);
+        hostControlsPanel.setManaged(false);
+        clearError();
+        lobbyNameField.setDisable(false);
+        if (chatComponentController != null) {
+            chatComponentController.setCurrentLobbyId(null);
+        }
+        LOGGER.fine("Lobby state reset.");
+    }
+
+    /**
+     * Updates the player count display for a specific lobby in the table.
+     *
+     * @param lobbyId        The ID of the lobby to update.
+     * @param newPlayerCount The new current player count.
+     */
+    private void updateLobbyPlayerCountInTable(String lobbyId, int newPlayerCount) {
+        allLobbies.stream()
+                .filter(lobby -> lobby.getId().equals(lobbyId))
+                .findFirst()
+                .ifPresent(lobby -> {
+                    int maxPlayers = lobby.getMaxPlayers();
+                    if (maxPlayers > 0) {
+                        lobby.setPlayerCount(newPlayerCount, maxPlayers);
+                        lobbyTable.refresh();
+                    }
+                });
+    }
+
+    /**
+     * Displays an error message in the dedicated error label.
+     *
+     * @param message The error message to display.
+     */
+    private void showError(String message) {
+        if (message == null || message.trim().isEmpty()) {
+            clearError();
+            return;
+        }
+        errorMessage.setText(message);
+        errorMessage.setVisible(true);
+        errorMessage.setManaged(true);
+        LOGGER.warning("Displaying error: " + message);
+    }
+
+    /**
+     * Clears the error message label.
      */
     private void clearError() {
         errorMessage.setText("");
         errorMessage.setVisible(false);
+        errorMessage.setManaged(false);
     }
 
     /**
-     * Adds a system log message to the chat view with timestamp.
-     *
-     * @param message the system message content
+     * Cleans up resources used by this controller, primarily unsubscribing from
+     * events.
      */
-    private void addSystemMessage(String message) {
-        String formatted = String.format("[%s] %s", TIME_FORMATTER.format(LocalDateTime.now()), message);
-        messages.add(formatted);
+    public void cleanup() {
+        LOGGER.info("Cleaning up LobbyScreenController resources...");
+        eventBus.unsubscribe(LobbyListResponseEvent.class, this::handleLobbyListResponse);
+        eventBus.unsubscribe(LobbyJoinedEvent.class, this::handleLobbyJoined);
+        eventBus.unsubscribe(PlayerJoinedLobbyEvent.class, this::handlePlayerJoinedLobby);
+        eventBus.unsubscribe(PlayerLeftLobbyEvent.class, this::handlePlayerLeftLobby);
+        eventBus.unsubscribe(LobbyLeftEvent.class, this::handleSelfLeftLobby);
+        eventBus.unsubscribe(GameStartedEvent.class, this::handleGameStarted);
+        eventBus.unsubscribe(LobbyUpdateEvent.class, this::handleLobbyUpdate);
+        eventBus.unsubscribe(ErrorEvent.class, this::handleError);
+        eventBus.unsubscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
+        if (chatComponentController != null) {
+            chatComponentController.cleanup();
+        }
+        LOGGER.info("LobbyScreenController cleanup finished.");
     }
 
     /**
-     * Represents a game lobby displayed in the lobby table.
+     * Sets the local player object for this controller.
+     *
+     * @param player The Player object.
+     */
+    public void setLocalPlayer(Player player) {
+        if (player != null) {
+            this.localPlayer = player;
+            if (playerNameLabel != null) {
+                playerNameLabel.setText("Player: " + this.localPlayer.getName());
+            }
+            if (chatComponentController != null) {
+                chatComponentController.setPlayer(this.localPlayer);
+            }
+        }
+    }
+
+    /**
+     * Represents a game lobby entry displayed in the lobby table.
+     * Uses JavaFX properties for easy binding with TableView columns.
      */
     public static class GameLobby {
         private final String id;
-        private final javafx.beans.property.StringProperty name;
-        private final javafx.beans.property.StringProperty playerCount;
-        private final javafx.beans.property.StringProperty status;
-        private final javafx.beans.property.StringProperty host;
+        private final StringProperty name;
+        private final StringProperty playerCount;
+        private final StringProperty status;
+        private final StringProperty host;
+        private int currentPlayersCount;
+        private int maxPlayersCount;
 
         /**
          * Constructs a GameLobby instance.
          *
-         * @param id             unique lobby identifier
-         * @param name           display name of the lobby
-         * @param currentPlayers current player count
-         * @param maxPlayers     maximum player capacity
-         * @param status         current lobby status
-         * @param host           name of the lobby host
+         * @param id             Unique identifier for the lobby.
+         * @param name           Display name of the lobby.
+         * @param currentPlayers Current number of players in the lobby.
+         * @param maxPlayers     Maximum player capacity of the lobby.
+         * @param status         Current status of the lobby.
+         * @param host           Name of the player hosting the lobby.
          */
         public GameLobby(String id, String name, int currentPlayers, int maxPlayers, String status, String host) {
-            this.id = id;
-            this.name = new javafx.beans.property.SimpleStringProperty(name);
-            this.playerCount = new javafx.beans.property.SimpleStringProperty(currentPlayers + "/" + maxPlayers);
-            this.status = new javafx.beans.property.SimpleStringProperty(status);
-            this.host = new javafx.beans.property.SimpleStringProperty(host);
+            this.id = Objects.requireNonNull(id, "Lobby ID cannot be null");
+            this.name = new SimpleStringProperty(Objects.requireNonNull(name, "Lobby name cannot be null"));
+            this.status = new SimpleStringProperty(Objects.requireNonNull(status, "Lobby status cannot be null"));
+            this.host = new SimpleStringProperty(Objects.requireNonNull(host, "Lobby host cannot be null"));
+            this.playerCount = new SimpleStringProperty();
+            setPlayerCount(currentPlayers, maxPlayers);
         }
 
-        /**
-         * @return the lobby ID
-         */
         public String getId() {
             return id;
         }
 
-        /**
-         * @return the lobby name property
-         */
-        public javafx.beans.property.StringProperty nameProperty() {
-            return name;
-        }
-
-        /**
-         * @return the lobby name
-         */
         public String getName() {
             return name.get();
         }
 
-        /**
-         * @return the player count property
-         */
-        public javafx.beans.property.StringProperty playerCountProperty() {
-            return playerCount;
-        }
-
-        /**
-         * @return the player count text
-         */
-        public String getPlayerCount() {
-            return playerCount.get();
-        }
-
-        /**
-         * @return the status property
-         */
-        public javafx.beans.property.StringProperty statusProperty() {
-            return status;
-        }
-
-        /**
-         * @return the status text
-         */
         public String getStatus() {
             return status.get();
         }
 
-        /**
-         * @return the host property
-         */
-        public javafx.beans.property.StringProperty hostProperty() {
+        public String getHost() {
+            return host.get();
+        }
+
+        public int getCurrentPlayers() {
+            return currentPlayersCount;
+        }
+
+        public int getMaxPlayers() {
+            return maxPlayersCount;
+        }
+
+        public StringProperty nameProperty() {
+            return name;
+        }
+
+        public StringProperty playerCountProperty() {
+            return playerCount;
+        }
+
+        public StringProperty statusProperty() {
+            return status;
+        }
+
+        public StringProperty hostProperty() {
             return host;
         }
 
-        /**
-         * @return the host name
-         */
-        public String getHost() {
-            return host.get();
+        public void setStatus(String newStatus) {
+            if (newStatus != null) {
+                this.status.set(newStatus);
+            }
+        }
+
+        public void setHost(String newHost) {
+            if (newHost != null) {
+                this.host.set(newHost);
+            }
+        }
+
+        public void setPlayerCount(int current, int max) {
+            if (current >= 0 && max > 0) {
+                this.currentPlayersCount = current;
+                this.maxPlayersCount = max;
+                this.playerCount.set(current + "/" + max);
+            } else {
+                LOGGER.warning("Invalid player count update for lobby " + id + ": current=" + current + ", max=" + max);
+            }
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o)
+                return true;
+            if (o == null || getClass() != o.getClass())
+                return false;
+            GameLobby gameLobby = (GameLobby) o;
+            return id.equals(gameLobby.id);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(id);
+        }
+
+        @Override
+        public String toString() {
+            return "GameLobby{" +
+                    "id='" + id + '\'' +
+                    ", name='" + name.get() + '\'' +
+                    ", playerCount='" + playerCount.get() + '\'' +
+                    ", status='" + status.get() + '\'' +
+                    ", host='" + host.get() + '\'' +
+                    '}';
         }
     }
 }
