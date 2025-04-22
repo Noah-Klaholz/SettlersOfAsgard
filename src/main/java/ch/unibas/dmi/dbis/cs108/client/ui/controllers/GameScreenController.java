@@ -110,7 +110,9 @@ public class GameScreenController extends BaseController {
     @FXML
     private Label connectionStatusLabel;
     @FXML
-    private ChatComponent chatComponentController;
+    private VBox chatContainer; // Add this field for the chat container
+
+    private ChatComponent chatComponentController; // Now managed programmatically
 
     /**
      * Creates a new controller instance and wires the shared singletons.
@@ -134,13 +136,19 @@ public class GameScreenController extends BaseController {
         createAdjustmentUI();
         initialiseSettingsDialog();
         initialiseDescriptionDialog();
-        if (chatComponentController != null) {
-            chatComponentController.setPlayer(localPlayer);
-            chatComponentController.setCurrentLobbyId(currentLobbyId);
-            chatComponentController.addSystemMessage("Game interface initialized successfully!");
+
+        // --- ChatComponent setup ---
+        chatComponentController = new ChatComponent();
+        chatComponentController.setPlayer(localPlayer);
+        chatComponentController.setCurrentLobbyId(currentLobbyId);
+        chatComponentController.addSystemMessage("Game interface initialized successfully!");
+        if (chatContainer != null) {
+            chatContainer.getChildren().clear();
+            chatContainer.getChildren().add(chatComponentController.getView());
         } else {
-            LOGGER.severe("chatComponentController is null after FXML loading!");
+            LOGGER.severe("chatContainer VBox is null! Check FXML for fx:id=\"chatContainer\"");
         }
+        // --- end ChatComponent setup ---
     }
 
     /**
@@ -727,6 +735,36 @@ public class GameScreenController extends BaseController {
     }
 
     /**
+     * Handles the start of a drag operation on a card.
+     * Puts the card's ID onto the dragboard.
+     *
+     * @param event The mouse event that triggered the drag detection.
+     */
+    @FXML
+    private void handleCardDragDetected(MouseEvent event) {
+        if (!(event.getSource() instanceof Pane draggedCard)) {
+            return;
+        }
+        String cardId = draggedCard.getId();
+        if (cardId == null || cardId.isEmpty()) {
+            LOGGER.warning("Dragged card has no ID.");
+            return;
+        }
+
+        LOGGER.fine("Drag detected on card: " + cardId);
+        Dragboard db = draggedCard.startDragAndDrop(TransferMode.MOVE);
+
+        ClipboardContent content = new ClipboardContent();
+        content.putString(cardId); // Put the card's ID onto the dragboard
+        db.setContent(content);
+
+        // Optional: Set a drag view (snapshot of the card)
+        // db.setDragView(draggedCard.snapshot(null, null));
+
+        event.consume();
+    }
+
+    /**
      * Shows the card description dialog on top of the chat panel.
      *
      * @param title       The card title
@@ -780,5 +818,52 @@ public class GameScreenController extends BaseController {
         } else {
             LOGGER.severe("Failed to add description dialog to root pane");
         }
+    }
+
+    /**
+     * Handles drag events over the game canvas.
+     * Accepts the transfer if it contains a string (e.g., card ID).
+     *
+     * @param event The drag event.
+     */
+    @FXML
+    private void handleDragOver(DragEvent event) {
+        if (event.getGestureSource() != gameCanvas && event.getDragboard().hasString()) {
+            // Allow for moving
+            event.acceptTransferModes(TransferMode.MOVE);
+        }
+        event.consume();
+    }
+
+    /**
+     * Handles dropped events on the game canvas.
+     * If a card was dropped, determines the target tile and potentially triggers a
+     * game action.
+     *
+     * @param event The drag event.
+     */
+    @FXML
+    private void handleDragDropped(DragEvent event) {
+        Dragboard db = event.getDragboard();
+        boolean success = false;
+        if (db.hasString()) {
+            String cardId = db.getString();
+            double dropX = event.getX();
+            double dropY = event.getY();
+            int[] targetTile = getHexAt(dropX, dropY);
+
+            if (targetTile != null) {
+                LOGGER.info("Card " + cardId + " dropped on tile: row=" + targetTile[0] + ", col=" + targetTile[1]);
+                // TODO: Implement logic to handle card drop on tile (e.g., publish an event)
+                // Example: eventBus.publish(new CardDroppedOnTileEvent(cardId, targetTile[0],
+                // targetTile[1]));
+                success = true;
+            } else {
+                LOGGER.warning("Card " + cardId + " dropped outside of any valid tile.");
+            }
+        }
+        // Complete the drag-and-drop gesture
+        event.setDropCompleted(success);
+        event.consume();
     }
 }
