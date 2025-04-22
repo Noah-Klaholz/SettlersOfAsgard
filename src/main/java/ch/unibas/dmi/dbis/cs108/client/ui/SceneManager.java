@@ -4,24 +4,25 @@ import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ThemeManager;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * Manages scene transitions and caching for the JavaFX application.
- * <p>
- * Supports lazy loading of FXML views, caching of root nodes and controllers,
- * and smooth fade animations between scenes.
+ * Handles loading FXML views, caching their root nodes and controllers,
+ * and performing fade transitions between scenes. Singleton pattern.
  */
 public class SceneManager {
     private static final Logger LOGGER = Logger.getLogger(SceneManager.class.getName());
@@ -32,136 +33,166 @@ public class SceneManager {
     private Stage primaryStage;
 
     /**
-     * Private constructor to enforce singleton pattern.
-     *
-     * @param resourceLoader utility for loading FXML resources
+     * Private constructor for singleton.
+     * 
+     * @param resourceLoader Utility for loading resources.
      */
     private SceneManager(ResourceLoader resourceLoader) {
-        this.resourceLoader = resourceLoader;
+        this.resourceLoader = Objects.requireNonNull(resourceLoader, "ResourceLoader cannot be null");
     }
 
     /**
-     * Returns the singleton instance of the SceneManager.
-     * Uses double-checked locking for thread-safe initialization.
-     *
-     * @return the SceneManager instance
+     * Returns the singleton instance of SceneManager.
+     * 
+     * @return SceneManager instance
      */
     public static SceneManager getInstance() {
-        if (instance == null) {
+        SceneManager result = instance;
+        if (result == null) {
             synchronized (SceneManager.class) {
-                if (instance == null) {
-                    instance = new SceneManager(new ResourceLoader());
+                result = instance;
+                if (result == null) {
+                    instance = result = new SceneManager(new ResourceLoader());
                 }
             }
         }
-        return instance;
+        return result;
     }
 
     /**
-     * Sets the primary {@link Stage} for scene management.
-     *
-     * @param stage the primary stage
+     * Sets the primary Stage for the application.
+     * 
+     * @param stage Primary stage
      */
     public void setPrimaryStage(Stage stage) {
-        this.primaryStage = stage;
+        this.primaryStage = Objects.requireNonNull(stage, "Primary stage cannot be null");
     }
 
     /**
-     * Switches the application to the specified scene type.
-     * If the scene is not yet loaded, it is loaded and cached.
-     * Performs a fade transition between scenes.
-     *
-     * @param sceneType the target scene type
+     * Switches the application's view to the specified scene type.
+     * Loads and caches FXML if needed. Applies fade transition.
+     * 
+     * @param sceneType Target scene type
      */
     public void switchToScene(SceneType sceneType) {
+        Objects.requireNonNull(sceneType, "SceneType cannot be null");
+        if (primaryStage == null) {
+            throw new IllegalStateException("Primary stage has not been set. Call setPrimaryStage() first.");
+        }
+        if (!Platform.isFxApplicationThread()) {
+            Platform.runLater(() -> switchToSceneInternal(sceneType));
+        } else {
+            switchToSceneInternal(sceneType);
+        }
+    }
+
+    /**
+     * Internal implementation for switching scenes, called on FX thread.
+     * 
+     * @param sceneType Target scene type
+     */
+    private void switchToSceneInternal(SceneType sceneType) {
         NodeHolder holder = nodeCache.computeIfAbsent(sceneType, this::loadNodeAndController);
+        if (holder == null || holder.getNode() == null) {
+            LOGGER.severe("Failed to load or retrieve node holder for scene: " + sceneType);
+            return;
+        }
         Parent newRoot = holder.getNode();
         Scene currentScene = primaryStage.getScene();
 
         if (currentScene == null) {
-            Scene scene = new Scene(newRoot, Color.rgb(26, 33, 51));
+            Scene scene = new Scene(newRoot);
             primaryStage.setScene(scene);
-            LOGGER.info("Initial scene set: " + sceneType);
             ThemeManager.getInstance().registerScene(scene);
-            createFadeTransition(newRoot, 0.0, 1.0, 150)
-                    .setInterpolator(Interpolator.EASE_OUT);
-            createFadeTransition(newRoot, 0.0, 1.0, 150).play();
+            LOGGER.info("Initial scene set: " + sceneType);
+            newRoot.setOpacity(0.0);
+            createFadeTransition(newRoot, 0.0, 1.0, 250).play();
         } else {
             Parent oldRoot = currentScene.getRoot();
-            FadeTransition fadeOut = createFadeTransition(oldRoot, 1.0, 0.2, 100);
-
+            if (oldRoot == newRoot) {
+                LOGGER.fine("Attempted to switch to the same scene: " + sceneType);
+                return;
+            }
+            FadeTransition fadeOut = createFadeTransition(oldRoot, 1.0, 0.0, 150);
+            FadeTransition fadeIn = createFadeTransition(newRoot, 0.0, 1.0, 200);
             newRoot.setOpacity(0.0);
-            FadeTransition fadeIn = createFadeTransition(newRoot, 0.0, 1.0, 150);
-
             fadeOut.setOnFinished(event -> {
                 currentScene.setRoot(newRoot);
-                ThemeManager.getInstance().applyThemeToScene(currentScene);
                 LOGGER.info("Scene switched to: " + sceneType);
                 fadeIn.play();
             });
-
             fadeOut.play();
         }
     }
 
     /**
-     * Loads the FXML for the given scene type and returns its root node and controller.
-     *
-     * @param sceneType the type of scene to load
-     * @return a {@link NodeHolder} containing the loaded node and controller
-     * @throws RuntimeException if the FXML resource is not found or fails to load
+     * Loads the FXML file associated with the given scene type.
+     * Caches the loaded root node and its controller.
+     * 
+     * @param sceneType Scene type to load
+     * @return NodeHolder with root node and controller, or null on failure
      */
     private NodeHolder loadNodeAndController(SceneType sceneType) {
         URL fxmlUrl = getClass().getResource(sceneType.getPath());
         if (fxmlUrl == null) {
-            throw new RuntimeException("FXML not found: " + sceneType.getPath());
+            LOGGER.log(Level.SEVERE, "FXML resource not found: " + sceneType.getPath());
+            return null;
         }
-
         try {
             FXMLLoader loader = new FXMLLoader(fxmlUrl);
             Parent root = loader.load();
-            LOGGER.info("Loaded scene: " + sceneType);
-            return new NodeHolder(root, loader.getController());
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to load FXML: " + sceneType.getPath(), e);
+            Object controller = loader.getController();
+            LOGGER.info("Successfully loaded scene: " + sceneType);
+            return new NodeHolder(root, controller);
+        } catch (IOException | IllegalStateException e) {
+            LOGGER.log(Level.SEVERE, "Unable to load FXML: " + sceneType.getPath(), e);
+            return null;
         }
     }
 
     /**
-     * Retrieves the controller for a given scene type, loading it if necessary.
-     *
-     * @param sceneType the scene type whose controller is requested
-     * @param <T>       the expected type of the controller
-     * @return the controller instance
-     * @throws IllegalStateException if the controller cannot be loaded or retrieved
+     * Retrieves the controller associated with a given scene type.
+     * Loads and caches if not already loaded.
+     * 
+     * @param sceneType Scene type
+     * @param <T>       Expected controller type
+     * @return Controller instance
      */
     @SuppressWarnings("unchecked")
     public <T> T getController(SceneType sceneType) {
+        Objects.requireNonNull(sceneType, "SceneType cannot be null");
         NodeHolder holder = nodeCache.computeIfAbsent(sceneType, this::loadNodeAndController);
         if (holder == null || holder.getController() == null) {
-            throw new IllegalStateException("Controller not available for: " + sceneType);
+            throw new IllegalStateException("Controller not available or loading failed for: " + sceneType);
         }
-        return (T) holder.getController();
+        try {
+            return (T) holder.getController();
+        } catch (ClassCastException e) {
+            throw new IllegalStateException("Controller for " + sceneType + " is not of the expected type.", e);
+        }
     }
 
     /**
-     * Creates a {@link FadeTransition} for the given node.
-     *
-     * @param node       the target node
-     * @param fromValue  starting opacity
-     * @param toValue    ending opacity
-     * @param durationMs duration in milliseconds
-     * @return the configured FadeTransition
+     * Creates a FadeTransition for animating the opacity of a node.
+     * 
+     * @param node       Target node
+     * @param fromValue  Starting opacity
+     * @param toValue    Ending opacity
+     * @param durationMs Duration in ms
+     * @return FadeTransition
      */
     private FadeTransition createFadeTransition(Parent node, double fromValue, double toValue, int durationMs) {
+        Objects.requireNonNull(node, "Node for transition cannot be null");
         FadeTransition transition = new FadeTransition(Duration.millis(durationMs), node);
         transition.setFromValue(fromValue);
         transition.setToValue(toValue);
+        transition.setInterpolator(Interpolator.EASE_BOTH);
         return transition;
     }
 
     /**
-     * Enumeration of application scenes and their FXML paths.
+     * Enumeration defining the different scenes (views) in the application
+     * and their corresponding FXML file paths.
      */
     public enum SceneType {
         MAIN_MENU(ResourceLoader.MAIN_MENU_FXML),
@@ -175,9 +206,7 @@ public class SceneManager {
         }
 
         /**
-         * Returns the resource path to the FXML file.
-         *
-         * @return the FXML path
+         * @return FXML resource path string
          */
         public String getPath() {
             return path;
@@ -185,37 +214,21 @@ public class SceneManager {
     }
 
     /**
-     * Holder for a scene's root node and its controller.
+     * Helper class to hold a scene's root node and its associated controller.
      */
     private static class NodeHolder {
         private final Parent node;
         private final Object controller;
 
-        /**
-         * Constructs a new NodeHolder.
-         *
-         * @param node       the root node of the scene
-         * @param controller the associated controller
-         */
         public NodeHolder(Parent node, Object controller) {
-            this.node = node;
+            this.node = Objects.requireNonNull(node, "Node cannot be null");
             this.controller = controller;
         }
 
-        /**
-         * Returns the root node.
-         *
-         * @return the root node
-         */
         public Parent getNode() {
             return node;
         }
 
-        /**
-         * Returns the controller object.
-         *
-         * @return the controller
-         */
         public Object getController() {
             return controller;
         }
