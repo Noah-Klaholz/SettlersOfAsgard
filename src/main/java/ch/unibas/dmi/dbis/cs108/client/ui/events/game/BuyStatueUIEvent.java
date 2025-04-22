@@ -15,6 +15,6 @@ public class BuyStatueUIEvent implements UIEvent {
 
     @Override
     public String getType() {
-        return "BUYSTATUE";
+        return "BUY_STATUE";
     }
 }
