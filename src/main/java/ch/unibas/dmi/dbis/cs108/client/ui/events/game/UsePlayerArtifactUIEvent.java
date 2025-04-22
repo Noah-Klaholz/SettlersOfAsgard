@@ -29,6 +29,6 @@ public class UsePlayerArtifactUIEvent implements UIEvent {
 
     @Override
     public String getType() {
-        return "USEPLAYERARTIFACT";
+        return "USE_PLAYER_ARTIFACT";
     }
 }
