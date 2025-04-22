@@ -50,31 +50,14 @@
         </StackPane>
     </center>
 
-    <!-- Global Chat Panel -->
     <right>
-        <VBox spacing="10" styleClass="chat-panel" prefWidth="300.0" minWidth="200.0">
-            <padding>
-                <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
+        <!-- Container for the ChatComponent -->
+        <VBox fx:id="chatContainer" spacing="10.0" prefWidth="280.0" minWidth="250.0" VBox.vgrow="ALWAYS">
+             <padding>
+                <Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/>
             </padding>
-
-            <Label text="Global Chat" styleClass="section-header"/>
-
-            <ListView fx:id="globalChatMessages" VBox.vgrow="ALWAYS" styleClass="chat-list">
-                <placeholder>
-                    <Label text="No messages yet" styleClass="placeholder-label"/>
-                </placeholder>
-            </ListView>
-
-            <HBox spacing="8.0" alignment="CENTER">
-                <TextField fx:id="globalChatInput" promptText="Type a message..."
-                           HBox.hgrow="ALWAYS" onAction="#handleSendGlobalMessage"/>
-                <Button fx:id="sendButton" text="Send" onAction="#handleSendGlobalMessage"
-                        styleClass="send-button" minWidth="60"/>
-            </HBox>
-
-            <HBox alignment="CENTER_RIGHT">
-                <Label fx:id="onlineUsersLabel" text="Online: 0" styleClass="online-users-label"/>
-            </HBox>
+             <Label fx:id="onlineUsersLabel" text="Online: 0" styleClass="online-users"/>
+             <!-- ChatComponent will be added here programmatically -->
         </VBox>
     </right>
 
