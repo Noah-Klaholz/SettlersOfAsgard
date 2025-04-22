@@ -3,18 +3,19 @@ package ch.unibas.dmi.dbis.cs108.client.ui.events.game;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
 
 /**
- * Event fired when a tile on the game grid is clicked.
+ * Event indicating a player clicked on a specific tile (hex) on the game board.
  */
 public class TileClickEvent implements UIEvent {
+
     private final int row;
     private final int col;
     private final long timestamp;
 
     /**
-     * Creates a new tile click event with the specified grid coordinates.
+     * Constructs a TileClickEvent.
      *
-     * @param row The row index of the clicked tile
-     * @param col The column index of the clicked tile
+     * @param row the row coordinate
+     * @param col the column coordinate
      */
     public TileClickEvent(int row, int col) {
         this.row = row;
@@ -23,30 +24,32 @@ public class TileClickEvent implements UIEvent {
     }
 
     /**
-     * Gets the row index of the clicked tile.
-     *
-     * @return The row index
+     * @return the row coordinate
      */
     public int getRow() {
         return row;
     }
 
     /**
-     * Gets the column index of the clicked tile.
-     *
-     * @return The column index
+     * @return the column coordinate
      */
     public int getCol() {
         return col;
     }
 
     /**
-     * Gets the timestamp when the event was created.
-     *
-     * @return The timestamp in milliseconds
+     * @return the timestamp of the click event
      */
     public long getTimestamp() {
         return timestamp;
+    }
+
+    /**
+     * @return the event type identifier
+     */
+    @Override
+    public String getType() {
+        return "TILE_CLICK";
     }
 
     @Override
@@ -56,10 +59,5 @@ public class TileClickEvent implements UIEvent {
                 ", col=" + col +
                 ", timestamp=" + timestamp +
                 '}';
-    }
-
-    @Override
-    public String getType() {
-        return "TILECLICK";
     }
 }
