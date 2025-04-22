@@ -79,7 +79,8 @@
     -fx-cursor: default;
 }
 
-/* Chat panel styling */
+/* Chat panel styling - REMOVED as it's handled by chat-component.css */
+/*
 .chat-panel {
     -fx-background-color: rgba(26, 33, 51, 0.85);
     -fx-background-radius: 8px;
@@ -90,6 +91,7 @@
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 10, 0, 0, 3);
     -fx-padding: 10px;
 }
+*/
 
 .section-header {
     -fx-font-family: "Cinzel", serif;
@@ -99,7 +101,8 @@
     -fx-padding: 0 0 8 0;
 }
 
-/* Improved chat list */
+/* Improved chat list - REMOVED as it's handled by chat-component.css */
+/*
 .chat-list {
     -fx-background-color: rgba(44, 51, 71, 0.7);
     -fx-background-radius: 5px;
@@ -122,6 +125,7 @@
 .chat-list .list-cell:selected {
     -fx-background-color: rgba(228, 192, 101, 0.2);
 }
+*/
 
 /* Text input fields */
 .text-field {
@@ -164,7 +168,8 @@
 }
 
 /* Status indicators with improved visibility */
-.online-users-label, .version-label {
+.online-users-label,
+.version-label {
     -fx-text-fill: -color-text-secondary;
     -fx-font-size: 12px;
 }
@@ -219,11 +224,11 @@
     -fx-background-color: #2a2a2a;
 }
 
-.about-dialog-pane > *.header-panel {
+.about-dialog-pane>*.header-panel {
     -fx-background-color: #1a2133;
 }
 
-.about-dialog-pane > *.header-panel *.header-text {
+.about-dialog-pane>*.header-panel *.header-text {
     -fx-font-family: "Cinzel", serif;
     -fx-font-size: 22px;
     -fx-font-weight: bold;
