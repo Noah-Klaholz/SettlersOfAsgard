@@ -8,8 +8,9 @@ import javafx.scene.text.Text;
 import java.util.logging.Logger;
 
 /**
- * A UI component that displays a description, typically for a game element like a card.
- * It loads its layout from FXML and styles from CSS.
+ * A UI component that displays a title and a description, typically for a game
+ * element.
+ * Loads its layout from FXML and styles from CSS.
  */
 public class DescriptionDialog extends UIComponent<VBox> {
     private static final Logger LOGGER = Logger.getLogger(DescriptionDialog.class.getName());
@@ -19,10 +20,8 @@ public class DescriptionDialog extends UIComponent<VBox> {
 
     @FXML
     private VBox rootVBox;
-    
     @FXML
     private Label titleLabel;
-
     @FXML
     private Text descriptionText;
 
@@ -33,11 +32,13 @@ public class DescriptionDialog extends UIComponent<VBox> {
         super(FXML_PATH);
         loadStylesheets();
         setupDynamicWidthBinding();
-        // Initially hidden
         getView().setVisible(false);
         getView().setManaged(false);
     }
 
+    /**
+     * Loads the CSS stylesheet for this component.
+     */
     private void loadStylesheets() {
         try {
             var cssResource = getClass().getResource(CSS_PATH);
@@ -50,9 +51,11 @@ public class DescriptionDialog extends UIComponent<VBox> {
             LOGGER.warning("Error loading CSS for DescriptionDialog: " + e.getMessage());
         }
     }
-    
+
+    /**
+     * Sets up dynamic width binding for the description text.
+     */
     private void setupDynamicWidthBinding() {
-        // Bind the text wrapping width to the container width minus padding
         rootVBox.widthProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null && newVal.doubleValue() > TEXT_PADDING) {
                 descriptionText.setWrappingWidth(newVal.doubleValue() - TEXT_PADDING);
@@ -71,7 +74,7 @@ public class DescriptionDialog extends UIComponent<VBox> {
         descriptionText.setText(description);
         getView().setVisible(true);
         getView().setManaged(true);
-        getView().toFront(); // Ensure it's on top
+        getView().toFront();
     }
 
     /**
