@@ -66,8 +66,8 @@
     </left>
 
     <center>
-        <StackPane styleClass="game-board-container">
-            <Canvas fx:id="gameCanvas" width="600" height="400"/>
+        <StackPane fx:id="gameBoardContainer" styleClass="game-board-container">
+            <Canvas fx:id="gameCanvas" width="600" height="400" onDragOver="#handleDragOver" onDragDropped="#handleDragDropped"/>
         </StackPane>
     </center>
 
@@ -78,9 +78,9 @@
                     <VBox spacing="5">
                         <Label text="Artifacts:" styleClass="card-category"/>
                         <HBox fx:id="artifactHand" spacing="8">
-                            <Pane fx:id="artifact1" styleClass="card,artifact-card" prefWidth="80" prefHeight="120"/>
-                            <Pane fx:id="artifact2" styleClass="card,artifact-card" prefWidth="80" prefHeight="120"/>
-                            <Pane fx:id="artifact3" styleClass="card,artifact-card" prefWidth="80" prefHeight="120"/>
+                            <Pane fx:id="artifact1" styleClass="card,artifact-card" prefWidth="80" prefHeight="120" onMouseClicked="#handleCardClick"/>
+                            <Pane fx:id="artifact2" styleClass="card,artifact-card" prefWidth="80" prefHeight="120" onMouseClicked="#handleCardClick"/>
+                            <Pane fx:id="artifact3" styleClass="card,artifact-card" prefWidth="80" prefHeight="120" onMouseClicked="#handleCardClick"/>
                         </HBox>
                     </VBox>
 
@@ -89,14 +89,14 @@
                     <VBox spacing="5" HBox.hgrow="ALWAYS">
                         <Label text="Structures:" styleClass="card-category"/>
                         <FlowPane fx:id="structureHand" hgap="8" vgap="8">
-                            <Pane fx:id="structure1" styleClass="card,structure-card" prefWidth="80" prefHeight="120"/>
-                            <Pane fx:id="structure2" styleClass="card,structure-card" prefWidth="80" prefHeight="120"/>
-                            <Pane fx:id="structure3" styleClass="card,structure-card" prefWidth="80" prefHeight="120"/>
-                            <Pane fx:id="structure4" styleClass="card,structure-card" prefWidth="80" prefHeight="120"/>
-                            <Pane fx:id="structure5" styleClass="card,structure-card" prefWidth="80" prefHeight="120"/>
-                            <Pane fx:id="structure6" styleClass="card,structure-card" prefWidth="80" prefHeight="120"/>
-                            <Pane fx:id="structure7" styleClass="card,structure-card" prefWidth="80" prefHeight="120"/>
-                            <Pane fx:id="structure8" styleClass="card,structure-card" prefWidth="80" prefHeight="120"/>
+                            <Pane fx:id="structure1" styleClass="card,structure-card" prefWidth="80" prefHeight="120" onMouseClicked="#handleCardClick" onDragDetected="#handleCardDragDetected"/>
+                            <Pane fx:id="structure2" styleClass="card,structure-card" prefWidth="80" prefHeight="120" onMouseClicked="#handleCardClick" onDragDetected="#handleCardDragDetected"/>
+                            <Pane fx:id="structure3" styleClass="card,structure-card" prefWidth="80" prefHeight="120" onMouseClicked="#handleCardClick" onDragDetected="#handleCardDragDetected"/>
+                            <Pane fx:id="structure4" styleClass="card,structure-card" prefWidth="80" prefHeight="120" onMouseClicked="#handleCardClick" onDragDetected="#handleCardDragDetected"/>
+                            <Pane fx:id="structure5" styleClass="card,structure-card" prefWidth="80" prefHeight="120" onMouseClicked="#handleCardClick" onDragDetected="#handleCardDragDetected"/>
+                            <Pane fx:id="structure6" styleClass="card,structure-card" prefWidth="80" prefHeight="120" onMouseClicked="#handleCardClick" onDragDetected="#handleCardDragDetected"/>
+                            <Pane fx:id="structure7" styleClass="card,structure-card" prefWidth="80" prefHeight="120" onMouseClicked="#handleCardClick" onDragDetected="#handleCardDragDetected"/>
+                            <Pane fx:id="structure8" styleClass="card,structure-card" prefWidth="80" prefHeight="120" onMouseClicked="#handleCardClick" onDragDetected="#handleCardDragDetected"/>
                         </FlowPane>
                     </VBox>
                 </HBox>
@@ -105,27 +105,8 @@
     </bottom>
 
     <right>
-        <VBox spacing="10" styleClass="chat-panel" prefWidth="280.0" minWidth="250.0">
-            <padding>
-                <Insets top="15.0" right="15.0" bottom="15.0" left="15.0"/>
-            </padding>
-
-            <HBox spacing="5" styleClass="chat-selector">
-                <ToggleButton fx:id="globalChatButton" text="Global"
-                              onAction="#handleGlobalChatSelect" styleClass="chat-toggle-button" minWidth="70"/>
-                <ToggleButton fx:id="lobbyChatButton" text="Lobby"
-                              onAction="#handleLobbyChatSelect" styleClass="chat-toggle-button" minWidth="70"/>
-                <Region HBox.hgrow="ALWAYS"/>
-            </HBox>
-
-            <ListView fx:id="chatListView" VBox.vgrow="ALWAYS" styleClass="chat-list" minHeight="200"/>
-
-            <HBox spacing="8.0" alignment="CENTER">
-                <TextField fx:id="chatInputField" promptText="Type a message..."
-                           HBox.hgrow="ALWAYS" onAction="#handleMessageSend"/>
-                <Button text="Send" onAction="#handleMessageSend"
-                        styleClass="send-button"/>
-            </HBox>
+        <VBox fx:id="chatContainer" spacing="10" prefWidth="280.0" minWidth="250.0">
+            <!-- ChatComponent will be added here programmatically - Removed styleClass="chat-panel" -->
         </VBox>
     </right>
 </BorderPane>
