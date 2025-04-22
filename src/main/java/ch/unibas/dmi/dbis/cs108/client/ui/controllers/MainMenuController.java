@@ -2,265 +2,270 @@ package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.AboutDialog;
+import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeRequestEvent; // Assuming this event exists
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import ch.unibas.dmi.dbis.cs108.client.networking.ConnectionState; // Ensure this import exists
+import ch.unibas.dmi.dbis.cs108.client.core.entities.Player; // Import Player
+
 /**
  * Controller for the main menu screen.
- * <p>
- * Manages global chat, connection status, and navigation to other scenes.
+ * Manages the main menu interface, navigation, connection status, chat, and
+ * dialogs.
  */
 public class MainMenuController extends BaseController {
     private static final Logger LOGGER = Logger.getLogger(MainMenuController.class.getName());
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
     private static final String DEFAULT_USERNAME = "Guest";
+    private static final String VERSION = "1.0.0";
 
-    // Data models
-    private final ObservableList<String> chatHistory = FXCollections.observableArrayList();
     private final AtomicBoolean isConnected = new AtomicBoolean(false);
+    private Player localPlayer;
+    private int onlineUserCount = 0;
 
-    // FXML UI components
     @FXML
     private BorderPane mainMenuRoot;
     @FXML
     private ImageView gameLogo;
-    @FXML
-    private ListView<String> globalChatMessages;
-    @FXML
-    private TextField globalChatInput;
     @FXML
     private Label onlineUsersLabel;
     @FXML
     private Label connectionStatus;
     @FXML
     private Label versionLabel;
+    @FXML
+    private VBox chatContainer;
 
-    private String playerName = DEFAULT_USERNAME;
-    private int onlineUserCount;
-    private ChangeListener<Number> chatWidthListener;
     private AboutDialog aboutDialog;
     private SettingsDialog settingsDialog;
+    private ChatComponent chatComponentController;
 
     /**
-     * Constructs the controller and initializes dependencies.
+     * Constructs the controller, injecting dependencies via the BaseController.
      */
     public MainMenuController() {
         super(new ResourceLoader(), UIEventBus.getInstance(), SceneManager.getInstance());
+        LOGGER.finer("MainMenuController instance created.");
+        this.localPlayer = new Player(System.getProperty("user.name", DEFAULT_USERNAME));
     }
 
     /**
-     * Initializes UI components, event handlers, and server connection.
+     * Initializes the controller after FXML loading.
      */
     @FXML
     private void initialize() {
-        LOGGER.info("Initializing main menu");
+        LOGGER.info("Initializing MainMenuController...");
         try {
             initializeUI();
+            initializeDialogs();
             setupEventHandlers();
-            establishServerConnection()
-                    .thenRun(() -> addSystemMessage("Welcome to Settlers of Asgard! Join the global chat to talk with other players."));
+            setupChatComponent();
+            establishServerConnection();
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Failed to initialize main menu", e);
-            addSystemMessage("Error initializing interface. Some features may not work correctly.");
+            LOGGER.log(Level.SEVERE, "Critical error during MainMenuController initialization", e);
+            displayInitializationError("Error initializing main menu interface.");
         }
+        LOGGER.info("MainMenuController initialization complete.");
     }
 
     /**
-     * Configures UI elements such as version label, chat list, and dialogs.
+     * Configures static UI elements and loads the game logo.
      */
     private void initializeUI() {
-        versionLabel.setText("Version 1.0.0");
-        configureChatListView();
-        loadGameLogo();
-        setupResizeListeners();
+        versionLabel.setText("Version " + VERSION);
+        updateOnlineUserCount(onlineUserCount);
+        updateConnectionStatusLabel(isConnected.get());
+        loadGameLogoAsync();
+    }
+
+    /**
+     * Creates instances of the dialogs used by this controller.
+     */
+    private void initializeDialogs() {
         aboutDialog = new AboutDialog();
         settingsDialog = new SettingsDialog();
     }
 
     /**
-     * Configures the chat list view with word wrapping and dynamic width adjustment.
+     * Loads the game logo image asynchronously.
      */
-    private void configureChatListView() {
-        globalChatMessages.setItems(chatHistory);
-        globalChatMessages.setCellFactory(list -> new ListCell<>() {
-            private final Label label = new Label();
-
-            {
-                label.setWrapText(true);
-                label.setTextFill(javafx.scene.paint.Color.valueOf("#e8e8e8"));
-            }
-
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setGraphic(null);
-                } else {
-                    label.setText(item);
-                    label.setMaxWidth(globalChatMessages.getWidth() - 20);
-                    setGraphic(label);
-                }
-            }
-        });
-        chatWidthListener = (obs, oldVal, newVal) -> globalChatMessages.refresh();
-        globalChatMessages.widthProperty().addListener(chatWidthListener);
-    }
-
-    /**
-     * Loads the game logo asynchronously.
-     */
-    private void loadGameLogo() {
+    private void loadGameLogoAsync() {
         CompletableFuture.runAsync(() -> {
             try {
-                Image logo = resourceLoader.loadImage("images/game-logo.png");
+                Image logo = resourceLoader.loadImage(ResourceLoader.GAME_LOGO);
                 Platform.runLater(() -> {
                     if (logo != null) {
                         gameLogo.setImage(logo);
                         gameLogo.setPreserveRatio(true);
                     } else {
-                        LOGGER.warning("Game logo resource could not be loaded");
+                        LOGGER.warning("Game logo image could not be loaded from: " + ResourceLoader.GAME_LOGO);
                     }
                 });
             } catch (Exception e) {
-                LOGGER.log(Level.WARNING, "Error loading game logo", e);
+                LOGGER.log(Level.WARNING, "Error loading game logo asynchronously", e);
             }
         });
     }
 
     /**
-     * Sets up listeners to adjust UI on window resize.
-     */
-    private void setupResizeListeners() {
-        mainMenuRoot.widthProperty().addListener((obs, oldVal, newVal) -> globalChatMessages.refresh());
-    }
-
-    /**
-     * Subscribes to event bus events and configures input handlers.
+     * Subscribes to relevant events and sets up listeners for dialog interactions.
      */
     private void setupEventHandlers() {
-        eventBus.subscribe(GlobalChatEvent.class, this::handleChatMessage);
         eventBus.subscribe(ConnectionStatusEvent.class, this::handleConnectionStatus);
         eventBus.subscribe(ErrorEvent.class, this::handleErrorEvent);
         eventBus.subscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
-        globalChatInput.setOnAction(evt -> handleSendGlobalMessage());
-    }
 
-    /**
-     * Handles incoming global chat messages.
-     *
-     * @param event the chat event
-     */
-    private void handleChatMessage(GlobalChatEvent event) {
-        if (event == null || event.getContent() == null) {
-            LOGGER.warning("Received null or incomplete chat event");
-            return;
-        }
-        Platform.runLater(() -> {
-            String msg = String.format("%s %s: %s", getCurrentTime(), event.getSender(), event.getContent());
-            chatHistory.add(msg);
-            scrollToBottom();
+        settingsDialog.playerNameProperty().addListener((obs, oldName, newName) -> {
+            if (newName != null && !newName.trim().isEmpty() && !newName.equals(localPlayer.getName())) {
+                requestNameChange(newName.trim());
+            }
         });
     }
 
     /**
-     * Updates connection status and posts system messages as needed.
+     * Displays an error message in the chat component if initialization fails.
      *
-     * @param event the connection status event
+     * @param message The error message to display.
+     */
+    private void displayInitializationError(String message) {
+        if (chatComponentController != null) {
+            chatComponentController.addSystemMessage("FATAL ERROR: " + message);
+            chatComponentController
+                    .addSystemMessage("Some features may be unavailable. Please restart the application.");
+        }
+    }
+
+    /**
+     * Initializes and adds the chat component to the UI.
+     */
+    private void setupChatComponent() {
+        chatContainer.getChildren().clear();
+        chatComponentController = new ChatComponent();
+        chatContainer.getChildren().add(chatComponentController.getView());
+        chatComponentController.setPlayer(localPlayer);
+        chatComponentController.addSystemMessage("Welcome to Settlers of Asgard!");
+    }
+
+    /**
+     * Handles ConnectionStatusEvent updates from the network layer.
+     *
+     * @param event The connection status event.
      */
     private void handleConnectionStatus(ConnectionStatusEvent event) {
-        if (event == null) {
-            LOGGER.warning("Received null connection status event");
-            return;
-        }
+        Objects.requireNonNull(event, "ConnectionStatusEvent cannot be null");
         Platform.runLater(() -> {
-            updateConnectionStatus(Optional.ofNullable(event.getStatus()).map(Object::toString).orElse("UNKNOWN"));
-            if (event.getMessage() != null && !event.getMessage().isEmpty()) {
-                addSystemMessage(event.getMessage());
+            boolean currentlyConnected = event.getState() == ConnectionState.CONNECTED;
+            boolean wasConnected = isConnected.getAndSet(currentlyConnected);
+            updateConnectionStatusLabel(currentlyConnected);
+
+            if (chatComponentController != null && event.getMessage() != null && !event.getMessage().isEmpty()) {
+                chatComponentController.addSystemMessage(event.getMessage());
             }
+            if (!currentlyConnected && wasConnected && chatComponentController != null) {
+                chatComponentController.addSystemMessage("Disconnected from server. Attempting to reconnect...");
+            }
+            if (currentlyConnected && !wasConnected && chatComponentController != null) {
+                chatComponentController.addSystemMessage("Reconnected to the server.");
+            }
+            settingsDialog.setConnectionStatus(currentlyConnected, currentlyConnected ? "Connected" : "Disconnected");
         });
     }
 
     /**
-     * Establishes the server connection asynchronously.
+     * Handles generic ErrorEvent updates. Displays the error message in the chat.
      *
-     * @return future that completes when connection attempt finishes
+     * @param event The error event.
      */
-    private CompletableFuture<Void> establishServerConnection() {
-        LOGGER.info("Establishing server connection");
-        return CompletableFuture.runAsync(() -> {
-            try {
-                Thread.sleep(500); // simulate network delay
-                Platform.runLater(() -> {
-                    setConnectionStatus(true);
-                    updateOnlineUserCount(42); // placeholder value
-                });
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                LOGGER.log(Level.WARNING, "Connection setup interrupted", e);
-                Platform.runLater(() -> {
-                    setConnectionStatus(false);
-                    addSystemMessage("Failed to connect to server. Please check your connection.");
-                });
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Error establishing connection", e);
-                Platform.runLater(() -> {
-                    setConnectionStatus(false);
-                    addSystemMessage("Error connecting to server: " + e.getMessage());
-                });
+    private void handleErrorEvent(ErrorEvent event) {
+        Objects.requireNonNull(event, "ErrorEvent cannot be null");
+        Platform.runLater(() -> {
+            String errorMessage = event.getErrorMessage();
+            LOGGER.warning("Received error event: " + errorMessage);
+            if (chatComponentController != null && errorMessage != null && !errorMessage.isEmpty()) {
+                chatComponentController.addSystemMessage("Error: " + errorMessage);
             }
         });
     }
 
     /**
-     * Handles Play button click and navigates to the lobby.
+     * Handles the response from a player name change request.
+     *
+     * @param event The name change response event.
+     */
+    private void handleNameChangeResponse(NameChangeResponseEvent event) {
+        Objects.requireNonNull(event, "NameChangeResponseEvent cannot be null");
+        Platform.runLater(() -> {
+            if (event.isSuccess()) {
+                String newName = event.getNewName();
+                localPlayer.setName(newName);
+                LOGGER.info("Player name successfully changed to: " + localPlayer.getName());
+                if (chatComponentController != null) {
+                    chatComponentController.setPlayer(localPlayer);
+                    chatComponentController.addSystemMessage("Name successfully changed to: " + localPlayer.getName());
+                }
+                settingsDialog.playerNameProperty().set(localPlayer.getName());
+            } else {
+                String failureMsg = event.getMessage() != null ? event.getMessage() : "Unknown reason.";
+                LOGGER.warning("Failed to change player name: " + failureMsg);
+                if (chatComponentController != null) {
+                    chatComponentController.addSystemMessage("Failed to change name: " + failureMsg);
+                }
+                settingsDialog.playerNameProperty().set(localPlayer.getName());
+            }
+        });
+    }
+
+    /**
+     * Handles the "Play Game" button click. Switches to the lobby scene if
+     * connected.
      */
     @FXML
     private void handlePlayGame() {
-        LOGGER.info("Play button clicked");
+        LOGGER.info("Play button clicked.");
         if (!isConnected.get()) {
-            addSystemMessage("Cannot start game while disconnected from server.");
+            LOGGER.warning("Cannot start game: Not connected to server.");
+            if (chatComponentController != null) {
+                chatComponentController.addSystemMessage("Cannot enter lobby: Not connected to the server.");
+            }
             return;
         }
         sceneManager.switchToScene(SceneManager.SceneType.LOBBY);
     }
 
     /**
-     * Opens the settings dialog.
+     * Handles the "Settings" button click. Opens the SettingsDialog as an overlay.
      */
     @FXML
     private void handleSettings() {
-        LOGGER.info("Settings button clicked");
-        if (settingsDialog.getView().getParent() == mainMenuRoot) return;
-
+        LOGGER.info("Settings button clicked.");
+        if (settingsDialog.getView().getParent() != null && settingsDialog.getView().getParent() != mainMenuRoot) {
+            LOGGER.warning("Settings dialog is already attached elsewhere.");
+            return;
+        }
         settingsDialog.setConnectionStatus(isConnected.get(), isConnected.get() ? "Connected" : "Disconnected");
+        settingsDialog.playerNameProperty().set(this.localPlayer.getName());
         Node previousCenter = mainMenuRoot.getCenter();
         StackPane container = new StackPane(previousCenter, settingsDialog.getView());
         StackPane.setAlignment(settingsDialog.getView(), Pos.CENTER);
@@ -270,20 +275,29 @@ public class MainMenuController extends BaseController {
         settingsDialog.setOnSaveAction(() -> {
             boolean muted = settingsDialog.muteProperty().get();
             double volume = settingsDialog.volumeProperty().get();
-            LOGGER.info("Settings saved - Volume: " + volume + ", Muted: " + muted);
-            addSystemMessage("Audio settings saved. " + (muted ? "Muted." : "Volume: " + volume + "%"));
+            String requestedName = settingsDialog.playerNameProperty().get();
+            LOGGER.info("Settings dialog save requested - Volume: " + volume + ", Muted: " + muted
+                    + ", Requested Name: " + requestedName);
+            if (chatComponentController != null) {
+                chatComponentController.addSystemMessage(
+                        "Audio settings saved. " + (muted ? "Muted." : "Volume: " + (int) volume + "%"));
+            }
+            mainMenuRoot.setCenter(previousCenter);
         });
+
         settingsDialog.show();
     }
 
     /**
-     * Opens the about dialog.
+     * Handles the "About" button click. Opens the AboutDialog as an overlay.
      */
     @FXML
     private void handleAbout() {
-        LOGGER.info("About button clicked");
-        if (aboutDialog.getView().getParent() == mainMenuRoot) return;
-
+        LOGGER.info("About button clicked.");
+        if (aboutDialog.getView().getParent() != null && aboutDialog.getView().getParent() != mainMenuRoot) {
+            LOGGER.warning("About dialog is already attached elsewhere.");
+            return;
+        }
         Node previousCenter = mainMenuRoot.getCenter();
         StackPane container = new StackPane(previousCenter, aboutDialog.getView());
         StackPane.setAlignment(aboutDialog.getView(), Pos.CENTER);
@@ -294,161 +308,128 @@ public class MainMenuController extends BaseController {
     }
 
     /**
-     * Exits the application gracefully.
+     * Handles the "Exit" button click. Performs cleanup and exits the application.
      */
     @FXML
     private void handleExit() {
-        LOGGER.info("Exit button clicked");
+        LOGGER.info("Exit button clicked. Cleaning up and exiting application.");
         cleanup();
         Platform.exit();
+        System.exit(0);
     }
 
     /**
-     * Sends the global chat message.
+     * Initiates the server connection process asynchronously.
      */
-    @FXML
-    private void handleSendGlobalMessage() {
-        String msg = globalChatInput.getText().trim();
-        if (msg.isEmpty()) return;
-        if (!isConnected.get()) {
-            addSystemMessage("Cannot send message while disconnected.");
-        } else {
-            eventBus.publish(new GlobalChatEvent(msg, GlobalChatEvent.ChatType.GLOBAL));
-        }
-        globalChatInput.clear();
-    }
-
-    /**
-     * Handles error events.
-     *
-     * @param event the error event
-     */
-    private void handleErrorEvent(ErrorEvent event) {
-        if (event == null) {
-            LOGGER.warning("Received null error event");
-            return;
-        }
-        Platform.runLater(() -> addSystemMessage("Error: " + event.getErrorMessage()));
-    }
-
-    /**
-     * Updates the player name on name change response.
-     *
-     * @param event the name change response event
-     */
-    private void handleNameChangeResponse(NameChangeResponseEvent event) {
-        if (event == null) {
-            LOGGER.warning("Received null name change response event");
-            return;
-        }
-        Platform.runLater(() -> {
-            if (event.isSuccess()) {
-                playerName = event.getNewName();
-                Logger.getGlobal().info("Player name changed: " + playerName);
-                addSystemMessage("Name changed to: " + playerName);
-            } else {
-                addSystemMessage("Failed to change name: " + event.getMessage());
+    private void establishServerConnection() {
+        LOGGER.info("Attempting to establish server connection...");
+        CompletableFuture.runAsync(() -> {
+            try {
+                Thread.sleep(1000);
+                boolean success = true;
+                int usersOnline = 42;
+                Platform.runLater(() -> {
+                    if (success) {
+                        LOGGER.info("Successfully connected to server.");
+                        eventBus.publish(
+                                new ConnectionStatusEvent(ConnectionState.CONNECTED, "Connection established."));
+                        updateOnlineUserCount(usersOnline);
+                    } else {
+                        LOGGER.warning("Failed to connect to server.");
+                        eventBus.publish(new ConnectionStatusEvent(ConnectionState.DISCONNECTED,
+                                "Failed to connect. Please check network or server status."));
+                    }
+                });
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                LOGGER.log(Level.WARNING, "Connection attempt interrupted.", e);
+                Platform.runLater(() -> eventBus
+                        .publish(new ConnectionStatusEvent(ConnectionState.DISCONNECTED,
+                                "Connection attempt cancelled.")));
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Error during simulated connection attempt.", e);
+                Platform.runLater(() -> eventBus
+                        .publish(new ConnectionStatusEvent(ConnectionState.DISCONNECTED,
+                                "Error connecting: " + e.getMessage())));
             }
         });
     }
 
     /**
-     * Adds a custom chat message to history.
+     * Sends a name change request to the server via the event bus.
      *
-     * @param message the message to add
+     * @param newName The desired new player name.
      */
-    private void addChatMessage(String message) {
-        if (message != null && !message.isEmpty()) {
-            chatHistory.add(message);
-            scrollToBottom();
+    private void requestNameChange(String newName) {
+        LOGGER.info("Requesting name change to: " + newName);
+        if (chatComponentController != null) {
+            chatComponentController.addSystemMessage("Requesting name change to: " + newName + "...");
         }
+        eventBus.publish(new NameChangeRequestEvent(newName));
     }
 
     /**
-     * Adds a system message to chat history.
+     * Updates the "Online Users" label.
      *
-     * @param message the system message content
-     */
-    private void addSystemMessage(String message) {
-        if (message != null && !message.isEmpty()) {
-            chatHistory.add(getCurrentTime() + " System: " + message);
-            scrollToBottom();
-        }
-    }
-
-    /**
-     * Updates the displayed count of online users.
-     *
-     * @param count the new user count
+     * @param count The number of users currently online.
      */
     private void updateOnlineUserCount(int count) {
         if (count < 0) {
-            LOGGER.warning("Invalid user count: " + count);
+            LOGGER.warning("Received invalid online user count: " + count);
             return;
         }
-        onlineUserCount = count;
-        onlineUsersLabel.setText("Online: " + onlineUserCount);
+        this.onlineUserCount = count;
+        Platform.runLater(() -> onlineUsersLabel.setText("Online: " + this.onlineUserCount));
     }
 
     /**
-     * Updates the connection status label and style.
+     * Updates the connection status label's text and style class.
      *
-     * @param status the connection status string
+     * @param connected {@code true} if connected, {@code false} otherwise.
      */
-    private void updateConnectionStatus(String status) {
-        boolean connected = "CONNECTED".equalsIgnoreCase(status);
-        setConnectionStatus(connected);
-    }
-
-    /**
-     * Applies connection status UI changes.
-     *
-     * @param connected true if connected, false otherwise
-     */
-    private void setConnectionStatus(boolean connected) {
-        boolean wasConnected = isConnected.get();
-        isConnected.set(connected);
-        connectionStatus.setText(connected ? "Connected" : "Disconnected");
-        connectionStatus.getStyleClass().remove("disconnected");
-        if (!connected) connectionStatus.getStyleClass().add("disconnected");
-        if (!connected && wasConnected) {
-            addSystemMessage("You have been disconnected from the server. Attempting to reconnect...");
-        }
-    }
-
-    /**
-     * Scrolls the chat list to the bottom.
-     */
-    private void scrollToBottom() {
+    private void updateConnectionStatusLabel(boolean connected) {
         Platform.runLater(() -> {
-            if (!chatHistory.isEmpty()) {
-                globalChatMessages.scrollTo(chatHistory.size() - 1);
-            }
+            connectionStatus.setText(connected ? "Connected" : "Disconnected");
+            connectionStatus.getStyleClass().removeAll("connected", "disconnected");
+            connectionStatus.getStyleClass().add(connected ? "connected" : "disconnected");
         });
     }
 
     /**
-     * Returns the current time formatted for chat messages.
-     *
-     * @return formatted current time
-     */
-    private String getCurrentTime() {
-        return "[" + LocalDateTime.now().format(TIME_FORMATTER) + "]";
-    }
-
-    /**
-     * Cleans up resources, unsubscribes listeners and closes dialogs.
+     * Cleans up resources used by this controller.
      */
     public void cleanup() {
-        eventBus.unsubscribe(GlobalChatEvent.class, this::handleChatMessage);
+        LOGGER.info("Cleaning up MainMenuController resources...");
         eventBus.unsubscribe(ConnectionStatusEvent.class, this::handleConnectionStatus);
         eventBus.unsubscribe(ErrorEvent.class, this::handleErrorEvent);
         eventBus.unsubscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
-        if (chatWidthListener != null) {
-            globalChatMessages.widthProperty().removeListener(chatWidthListener);
+
+        if (aboutDialog != null) {
+            aboutDialog.close();
         }
-        if (aboutDialog != null) aboutDialog.close();
-        if (settingsDialog != null) settingsDialog.close();
-        LOGGER.info("MainMenuController resources cleaned up");
+        if (settingsDialog != null) {
+            settingsDialog.close();
+        }
+        if (chatComponentController != null) {
+            chatComponentController.cleanup();
+        }
+        LOGGER.info("MainMenuController cleanup finished.");
+    }
+
+    /**
+     * Sets the local player object for this controller.
+     *
+     * @param player The Player object.
+     */
+    public void setLocalPlayer(Player player) {
+        if (player != null) {
+            this.localPlayer = player;
+            if (chatComponentController != null) {
+                chatComponentController.setPlayer(this.localPlayer);
+            }
+            if (settingsDialog != null) {
+                settingsDialog.playerNameProperty().set(this.localPlayer.getName());
+            }
+        }
     }
 }
