@@ -64,6 +64,7 @@ public class TurnManager {
         try {
             if (getPlayerTurn() == null) {
                 initializeFirstTurn();
+                updateGameStateMeta();
                 return;
             }
 
@@ -78,6 +79,7 @@ public class TurnManager {
                 gameRound ++;
             }
 
+            updateGameStateMeta();
             distributeResources(gameState.findPlayerByName(playerTurn));
 
 
@@ -184,5 +186,11 @@ public class TurnManager {
 
     public boolean isGameRoundComplete() {
         return playerRound == gameState.getPlayers().size() - 1;
+    }
+
+    public void updateGameStateMeta() {
+        gameState.setGameRound(gameRound);
+        gameState.setPlayerTurn(playerTurn);
+        gameState.setPlayerRound(playerRound);
     }
 }

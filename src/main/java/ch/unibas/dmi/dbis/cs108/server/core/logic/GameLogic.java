@@ -39,7 +39,7 @@ public class GameLogic implements GameLogicInterface {
     public GameLogic(GameEventNotifier notifier) {
         this.notifier = notifier;
         this.gameState = new GameState(notifier);
-        this.turnManager = gameState.getTurnManager();
+        this.turnManager = new TurnManager(gameState);
         this.tileActionHandler = new TileActionHandler(gameState, gameLock);
         this.structureActionHandler = new StructureActionHandler(gameState, gameLock);
         this.statueActionHandler = new StatueActionHandler(gameState, gameLock);
@@ -78,8 +78,8 @@ public class GameLogic implements GameLogicInterface {
         try {
             gameState.setPlayers(players);
             gameState.getBoardManager().initializeBoard(8, 7);
-            gameState.getTurnManager().setGameRound(0);
-            gameState.getTurnManager().nextTurn();
+            turnManager.setGameRound(0);
+            turnManager.nextTurn();
         } finally {
             gameLock.writeLock().unlock();
         }

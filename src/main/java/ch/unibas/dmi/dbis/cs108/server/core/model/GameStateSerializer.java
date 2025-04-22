@@ -41,9 +41,9 @@ public class GameStateSerializer {
 
             // 1. Game Meta
             sb.append("META:")
-                    .append(gameState.getTurnManager().getGameRound()).append(",")
-                    .append(gameState.getTurnManager().getPlayerRound()).append(",")
-                    .append(gameState.getTurnManager().getPlayerTurn()).append("|");
+                    .append(gameState.getGameRound()).append(",")
+                    .append(gameState.getPlayerRound()).append(",")
+                    .append(gameState.getPlayerTurn()).append("|");
 
             // 2. All Players
             sb.append("PLAYERS:");
