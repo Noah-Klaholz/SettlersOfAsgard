@@ -1,11 +1,12 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
+import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
+import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
+import ch.unibas.dmi.dbis.cs108.client.ui.components.DescriptionDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.LobbyChatEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.TileClickEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import javafx.animation.PauseTransition;
@@ -26,47 +27,38 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.util.Duration;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * JavaFX controller for the in‑game screen. This class is responsible for loading and drawing the map, computing and
- * rendering the hexagonal grid overlay, dispatching user interactions (tile clicks, chat input, etc.) through the
- * {@link UIEventBus}, and managing a small settings overlay. <p>
- * <p>
- * A *grid‑adjustment mode* can be toggled with <kbd>Ctrl</kbd>+<kbd>G</kbd> to fine‑tune the grid so that it matches
- * new background artwork without having to rebuild the client. The default values reflect the most current customer
- * measurements and should only be changed when the graphics are updated.
+ * JavaFX controller for the in-game screen.
+ * Responsible for loading and drawing the map, rendering the hexagonal grid
+ * overlay,
+ * dispatching user interactions (tile clicks, chat input, etc.) through the
+ * {@link UIEventBus},
+ * and managing overlays such as settings and card descriptions.
  */
 public class GameScreenController extends BaseController {
 
-    /* ── Constants ─────────────────────────────────────────────────────────────────── */
-
     private static final Logger LOGGER = Logger.getLogger(GameScreenController.class.getName());
-    private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("HH:mm");
-
     private static final int HEX_ROWS = 7;
     private static final int HEX_COLS = 8;
 
-    // Custom defaults supplied by the design team (do NOT change unless the map artwork changes!)
+    // Default grid parameters
     private static final double DEF_GRID_SCALE = 0.85;
     private static final double DEF_GRID_H_OFFSET = 0.00;
     private static final double DEF_GRID_V_OFFSET = 0.15;
-    private static final double DEF_GRID_WIDTH_PCT = 0.90;   // 90 % of map width
-    private static final double DEF_GRID_HEIGHT_PCT = 2.06;  // 206 % of map height (artistic perspective)
-
+    private static final double DEF_GRID_WIDTH_PCT = 0.90;
+    private static final double DEF_GRID_HEIGHT_PCT = 2.06;
     private static final double DEF_ROTATION_DEG = 30.0;
     private static final double DEF_H_SPACING = 1.80;
     private static final double DEF_V_SPACING = 1.33;
     private static final double DEF_H_SQUISH = 1.00;
     private static final double DEF_V_SQUISH = 0.80;
 
-    /* ── UI state ───────────────────────────────────────────────────────────────────── */
+    private Player localPlayer;
 
-    private final ObservableList<String> chatMessages = FXCollections.observableArrayList();
     private final ObservableList<String> players = FXCollections.observableArrayList();
 
     private double scaledMapWidth;
@@ -77,13 +69,11 @@ public class GameScreenController extends BaseController {
     private double gridOffsetX;
     private double gridOffsetY;
 
-    /* Grid parameters (runtime‑adjustable) */
     private double gridScaleFactor = DEF_GRID_SCALE;
     private double gridHorizontalOffset = DEF_GRID_H_OFFSET;
     private double gridVerticalOffset = DEF_GRID_V_OFFSET;
     private double gridWidthPercentage = DEF_GRID_WIDTH_PCT;
     private double gridHeightPercentage = DEF_GRID_HEIGHT_PCT;
-
     private double hexRotationDegrees = DEF_ROTATION_DEG;
     private double horizontalSpacingFactor = DEF_H_SPACING;
     private double verticalSpacingFactor = DEF_V_SPACING;
@@ -101,10 +91,9 @@ public class GameScreenController extends BaseController {
     private Image mapImage;
     private boolean isMapLoaded;
 
-    /* Settings overlay */
     private SettingsDialog settingsDialog;
-
-    /* ── FXML injected nodes ────────────────────────────────────────────────────────── */
+    private DescriptionDialog descriptionDialog;
+    private Pane currentlySelectedCard;
 
     @FXML
     private Canvas gameCanvas;
@@ -119,42 +108,21 @@ public class GameScreenController extends BaseController {
     @FXML
     private FlowPane structureHand;
     @FXML
-    private ListView<String> chatListView;
-    @FXML
-    private TextField chatInputField;
-    @FXML
-    private ToggleButton globalChatButton;
-    @FXML
-    private ToggleButton lobbyChatButton;
-    @FXML
     private Label connectionStatusLabel;
-
-    /* ── Construction ──────────────────────────────────────────────────────────────── */
+    @FXML
+    private ChatComponent chatComponentController;
 
     /**
-     * Creates a new controller instance and wires the shared singletons. All heavy initialisation is deferred to
-     * {@link #initialize()} which is invoked by the JavaFX runtime once the FXML graph has been constructed.
+     * Creates a new controller instance and wires the shared singletons.
      */
     public GameScreenController() {
         super(new ResourceLoader(), UIEventBus.getInstance(), SceneManager.getInstance());
-    }
-
-    /* ── Lifecycle / initialisation ─────────────────────────────────────────────────── */
-
-    /**
-     * Convenience helper that keeps a {@link ListView} scrolled to its last element.
-     */
-    private static void scrollBottom(ListView<String> list, ObservableList<String> data) {
-        Platform.runLater(() -> {
-            if (!data.isEmpty()) {
-                list.scrollTo(data.size() - 1);
-            }
-        });
+        this.localPlayer = new Player(System.getProperty("user.name", "Guest"));
     }
 
     /**
-     * Called automatically by the JavaFX loader. Sets up UI bindings, subscribes to the event‑bus, loads resources and
-     * prepares event handlers.
+     * Called automatically by the JavaFX loader. Sets up UI bindings, subscribes to
+     * the event-bus, loads resources and prepares event handlers.
      */
     @FXML
     private void initialize() {
@@ -165,48 +133,34 @@ public class GameScreenController extends BaseController {
         setupCanvasListeners();
         createAdjustmentUI();
         initialiseSettingsDialog();
+        initialiseDescriptionDialog();
+        if (chatComponentController != null) {
+            chatComponentController.setPlayer(localPlayer);
+            chatComponentController.setCurrentLobbyId(currentLobbyId);
+            chatComponentController.addSystemMessage("Game interface initialized successfully!");
+        } else {
+            LOGGER.severe("chatComponentController is null after FXML loading!");
+        }
     }
 
     /**
      * Wires UI controls to their backing properties and assigns sensible defaults.
      */
     private void setupUI() {
-        chatListView.setItems(chatMessages);
         playersList.setItems(players);
-        globalChatButton.setSelected(true);
         energyBar.setProgress(0.5);
         runesLabel.setText("0");
         connectionStatusLabel.setText("Connected");
-        // Keep canvas the same size as its parent StackPane
         gameCanvas.widthProperty().bind(((Region) gameCanvas.getParent()).widthProperty());
         gameCanvas.heightProperty().bind(((Region) gameCanvas.getParent()).heightProperty());
     }
 
     /**
-     * Installs all event‑bus subscriptions and UI callbacks.
+     * Installs all event-bus subscriptions and UI callbacks.
      */
     private void subscribeEvents() {
-        eventBus.subscribe(GlobalChatEvent.class, this::onGlobalChat);
-        eventBus.subscribe(LobbyChatEvent.class, this::onLobbyChat);
         eventBus.subscribe(ConnectionStatusEvent.class, this::onConnectionStatus);
         eventBus.subscribe(TileClickEvent.class, this::onTileClick);
-        chatInputField.setOnAction(e -> handleMessageSend());
-    }
-
-    /* ── Event‑bus callbacks ────────────────────────────────────────────────────────── */
-
-    private void onGlobalChat(GlobalChatEvent e) {
-        if (e == null || e.getContent() == null || e.getSender() == null) {
-            return;
-        }
-        Platform.runLater(() -> addChat(String.format("%s: %s", e.getSender(), e.getContent())));
-    }
-
-    private void onLobbyChat(LobbyChatEvent e) {
-        if (e == null || e.getMessage() == null || e.getSender() == null) {
-            return;
-        }
-        Platform.runLater(() -> addChat(String.format("[Lobby] %s: %s", e.getSender(), e.getMessage())));
     }
 
     private void onConnectionStatus(ConnectionStatusEvent e) {
@@ -214,36 +168,22 @@ public class GameScreenController extends BaseController {
             return;
         }
         Platform.runLater(() -> {
-            connectionStatusLabel.setText(Optional.ofNullable(e.getStatus()).map(Object::toString).orElse("UNKNOWN"));
-            if (e.getMessage() != null && !e.getMessage().isEmpty()) {
-                addSystem(e.getMessage());
+            connectionStatusLabel.setText(Optional.ofNullable(e.getState()).map(Object::toString).orElse("UNKNOWN"));
+            if (e.getMessage() != null && !e.getMessage().isEmpty() && chatComponentController != null) {
+                chatComponentController.addSystemMessage(e.getMessage());
             }
-            if (settingsDialog != null) { // propagate status to the overlay as well
+            if (settingsDialog != null) {
                 updateSettingsConnectionStatus();
             }
         });
     }
 
-    /* ── Chat helpers ───────────────────────────────────────────────────────────────── */
-
     private void onTileClick(TileClickEvent e) {
         LOGGER.fine(() -> String.format("Tile clicked externally (row=%d,col=%d)", e.getRow(), e.getCol()));
     }
 
-    private void addChat(String msg) {
-        chatMessages.add(String.format("[%s] %s", LocalDateTime.now().format(TIME_FMT), msg));
-        scrollBottom(chatListView, chatMessages);
-    }
-
-    private void addSystem(String msg) {
-        chatMessages.add(String.format("[%s] System: %s", LocalDateTime.now().format(TIME_FMT), msg));
-        scrollBottom(chatListView, chatMessages);
-    }
-
-    /* ── FXML‑defined actions ───────────────────────────────────────────────────────── */
-
     /**
-     * Navigates back to the main‑menu scene.
+     * Navigates back to the main-menu scene.
      */
     @FXML
     private void handleBackToMainMenu() {
@@ -263,85 +203,78 @@ public class GameScreenController extends BaseController {
     }
 
     @FXML
-    private void handleResourceOverview() { /* not yet implemented */ }
-
-    @FXML
-    private void handleGameRound() { /* not yet implemented */ }
-
-    @FXML
-    private void handleLeaderboard() { /* not yet implemented */ }
-
-    @FXML
-    private void handleGlobalChatSelect() {
-        globalChatButton.setSelected(true);
-        lobbyChatButton.setSelected(false);
+    private void handleResourceOverview() {
     }
 
     @FXML
-    private void handleLobbyChatSelect() {
-        globalChatButton.setSelected(false);
-        lobbyChatButton.setSelected(true);
-        if (currentLobbyId == null || currentLobbyId.isEmpty()) {
-            addSystem("You are not in a lobby.");
-        }
+    private void handleGameRound() {
+    }
+
+    @FXML
+    private void handleLeaderboard() {
     }
 
     /**
-     * Dispatches the text currently in the chat input field to the appropriate chat channel.
-     */
-    @FXML
-    private void handleMessageSend() {
-        String msg = chatInputField.getText().trim();
-        if (msg.isEmpty()) {
-            return;
-        }
-
-        if (globalChatButton.isSelected()) {
-            eventBus.publish(new GlobalChatEvent(msg, GlobalChatEvent.ChatType.GLOBAL));
-        } else if (lobbyChatButton.isSelected()) {
-            if (currentLobbyId == null || currentLobbyId.isEmpty()) {
-                addSystem("Cannot send lobby message: You're not in a lobby.");
-            } else {
-                eventBus.publish(new LobbyChatEvent(currentLobbyId, msg));
-            }
-        }
-        chatInputField.clear();
-    }
-
-    /* ── Public API ─────────────────────────────────────────────────────────────────── */
-
-    /**
-     * Sets the lobby‑identifier used when sending lobby chat messages.
+     * Sets the lobby-identifier used when sending lobby chat messages.
      *
-     * @param lobbyId unique identifier of the lobby the user is currently in (may be {@code null}).
+     * @param lobbyId unique identifier of the lobby the user is currently in (may
+     *                be {@code null}).
      */
     public void setCurrentLobbyId(String lobbyId) {
         this.currentLobbyId = lobbyId;
+        if (chatComponentController != null) {
+            chatComponentController.setCurrentLobbyId(lobbyId);
+        } else {
+            LOGGER.warning("Cannot set lobby ID: Chat component controller is null");
+        }
     }
 
     /**
-     * Unsubscribes from all event‑bus channels. <b>Must</b> be called when the controller is disposed to avoid memory
-     * leaks.
+     * Sets the local player object for this controller and updates the chat
+     * component.
+     *
+     * @param player The local player object.
+     */
+    public void setLocalPlayer(Player player) {
+        if (player != null) {
+            this.localPlayer = player;
+            if (chatComponentController != null) {
+                chatComponentController.setPlayer(player);
+            } else {
+                LOGGER.warning("Cannot set player: Chat component controller is null");
+            }
+        }
+    }
+
+    /**
+     * Unsubscribes from all event-bus channels. Must be called when the controller
+     * is disposed to avoid memory leaks.
      */
     public void cleanup() {
-        eventBus.unsubscribe(GlobalChatEvent.class, this::onGlobalChat);
-        eventBus.unsubscribe(LobbyChatEvent.class, this::onLobbyChat);
         eventBus.unsubscribe(ConnectionStatusEvent.class, this::onConnectionStatus);
+        eventBus.unsubscribe(TileClickEvent.class, this::onTileClick);
+        if (chatComponentController != null) {
+            chatComponentController.cleanup();
+        }
+        if (settingsDialog != null)
+            settingsDialog.close();
+        if (descriptionDialog != null)
+            descriptionDialog.hide();
+        LOGGER.info("GameScreenController resources cleaned up");
     }
 
-    /* ── Grid‑adjustment mode ───────────────────────────────────────────────────────── */
-
     /**
-     * Toggles grid‑adjustment mode on/off.
+     * Toggles grid-adjustment mode on/off.
      */
     public void toggleGridAdjustmentMode() {
         setGridAdjustmentMode(!gridAdjustmentModeActive);
     }
 
     /**
-     * Enables or disables grid‑adjustment mode.
+     * Enables or disables grid-adjustment mode.
      *
-     * @param active {@code true} to enter adjustment mode, {@code false} to leave it.
+     * @param active {@code true} to enter adjustment mode, {@code false} to leave
+     *               it.
      */
     public void setGridAdjustmentMode(boolean active) {
         gridAdjustmentModeActive = active;
@@ -353,8 +286,6 @@ public class GameScreenController extends BaseController {
         }
         drawMapAndGrid();
     }
-
-    /* Convenience setters that validate input and trigger redraws */
 
     public void setGridScaleFactor(double f) {
         if (f > 0.3 && f < 1.5) {
@@ -411,7 +342,7 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Returns a formatted string with all grid parameters. Mainly intended for diagnostics/debugging.
+     * Returns a formatted string with all grid parameters.
      */
     public String getGridSettings() {
         return String.format(
@@ -421,8 +352,6 @@ public class GameScreenController extends BaseController {
                 gridHeightPercentage * 100, hexRotationDegrees, horizontalSpacingFactor, verticalSpacingFactor,
                 horizontalSquishFactor, verticalSquishFactor);
     }
-
-    /* ── Keyboard handling (global shortcuts) ───────────────────────────────────────── */
 
     /**
      * Handles shortcuts registered on the parent FXML root.
@@ -438,8 +367,6 @@ public class GameScreenController extends BaseController {
             e.consume();
         }
     }
-
-    /* ── Internal helpers ───────────────────────────────────────────────────────────── */
 
     /**
      * Adds the translucent info panel used while in adjustment mode.
@@ -476,21 +403,14 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Installs listeners so that the grid is redrawn when the canvas size changes and so that mouse/keyboard events are
-     * captured even when transparent overlay nodes intercept them.
+     * Installs listeners so that the grid is redrawn when the canvas size changes
+     * and so that mouse/keyboard events are captured.
      */
     private void setupCanvasListeners() {
-        // Redraw on resize
         gameCanvas.widthProperty().addListener((o, ov, nv) -> drawMapAndGrid());
         gameCanvas.heightProperty().addListener((o, ov, nv) -> drawMapAndGrid());
-
-        // Canvas must be focusable for key controls
         gameCanvas.setFocusTraversable(true);
-
-        // Mouse events directly on the canvas
         gameCanvas.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> handleCanvasClick(e.getX(), e.getY()));
-
-        // Mouse events falling through transparent overlay nodes
         if (gameCanvas.getParent() instanceof StackPane parent) {
             parent.addEventHandler(MouseEvent.MOUSE_PRESSED, ev -> {
                 Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
@@ -501,8 +421,6 @@ public class GameScreenController extends BaseController {
                 }
             });
         }
-
-        // Key controls active while the canvas has focus
         gameCanvas.setOnKeyPressed(this::handleGridAdjustmentKeys);
     }
 
@@ -521,14 +439,13 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Processes key presses while in grid‑adjustment mode.
+     * Processes key presses while in grid-adjustment mode.
      */
     @FXML
     private void handleGridAdjustmentKeys(KeyEvent e) {
         if (!gridAdjustmentModeActive && !(e.isControlDown() && e.getCode() == KeyCode.G)) {
             return;
         }
-
         switch (e.getCode()) {
             case UP -> gridVerticalOffset -= 0.01;
             case DOWN -> gridVerticalOffset += 0.01;
@@ -554,7 +471,7 @@ public class GameScreenController extends BaseController {
             case P -> LOGGER.info(getGridSettings());
             case C -> copyGridSettingsToClipboard();
             default -> {
-                return; // nothing changed
+                return;
             }
         }
         drawMapAndGrid();
@@ -591,7 +508,8 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Copies the grid parameter string to the system clipboard and flashes a green background as feedback.
+     * Copies the grid parameter string to the system clipboard and flashes a green
+     * background as feedback.
      */
     private void copyGridSettingsToClipboard() {
         ClipboardContent content = new ClipboardContent();
@@ -604,10 +522,9 @@ public class GameScreenController extends BaseController {
         flash.play();
     }
 
-    /* ── Drawing helpers ─────────────────────────────────────────────────────────────── */
-
     /**
-     * Redraws the background image and the hex overlay using the current parameters.
+     * Redraws the background image and the hex overlay using the current
+     * parameters.
      */
     private void drawMapAndGrid() {
         if (!isMapLoaded) {
@@ -618,11 +535,9 @@ public class GameScreenController extends BaseController {
         if (cW <= 0 || cH <= 0) {
             return;
         }
-
         GraphicsContext gc = gameCanvas.getGraphicsContext2D();
         gc.clearRect(0, 0, cW, cH);
 
-        /* Scale the background while preserving its aspect ratio */
         double imgRatio = mapImage.getWidth() / mapImage.getHeight();
         double canvasRatio = cW / cH;
         if (canvasRatio > imgRatio) {
@@ -637,7 +552,6 @@ public class GameScreenController extends BaseController {
 
         gc.drawImage(mapImage, mapOffsetX, mapOffsetY, scaledMapWidth, scaledMapHeight);
 
-        /* Compute grid metrics */
         double gridW = scaledMapWidth * gridWidthPercentage;
         double gridH = scaledMapHeight * gridHeightPercentage;
         double hLim = gridW / ((HEX_COLS - 1) * 0.75 + 1);
@@ -651,14 +565,15 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Iterates over the logical grid, draws each hex and highlights the currently selected one.
+     * Iterates over the logical grid, draws each hex and highlights the currently
+     * selected one.
      */
     private void drawHexGrid(GraphicsContext gc,
-                             double size,
-                             double gridW,
-                             double gridH,
-                             double addHX,
-                             double addHY) {
+            double size,
+            double gridW,
+            double gridH,
+            double addHX,
+            double addHY) {
         gc.setStroke(Color.WHITE);
         gc.setLineWidth(1.5);
         gc.setGlobalAlpha(0.7);
@@ -716,12 +631,9 @@ public class GameScreenController extends BaseController {
         gc.stroke();
     }
 
-    /* ── Hit detection ──────────────────────────────────────────────────────────────── */
-
     /**
-     * Returns the row/column index of the hex at the given canvas coordinates or {@code null} when the point is not
-     * inside any tile. The implementation mirrors the drawing algorithm and thus stays correct when rotation or
-     * squish parameters change.
+     * Returns the row/column index of the hex at the given canvas coordinates or
+     * {@code null} when the point is not inside any tile.
      */
     private int[] getHexAt(double px, double py) {
         if (!isMapLoaded || effectiveHexSize <= 0) {
@@ -734,7 +646,7 @@ public class GameScreenController extends BaseController {
                 double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2);
                 double cy = gridOffsetY + r * vSpacing;
                 if (pointInHex(px, py, cx, cy, effectiveHexSize)) {
-                    return new int[]{r, c};
+                    return new int[] { r, c };
                 }
             }
         }
@@ -742,7 +654,7 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Standard ray‑casting point‑in‑polygon test for the current hex shape.
+     * Standard ray-casting point-in-polygon test for the current hex shape.
      */
     private boolean pointInHex(double px, double py, double cx, double cy, double size) {
         double rot = Math.toRadians(hexRotationDegrees);
@@ -764,20 +676,17 @@ public class GameScreenController extends BaseController {
         return inside;
     }
 
-    /* ── Settings overlay helpers ───────────────────────────────────────────────────── */
-
     /**
-     * Creates the settings dialog instance and adds it as an overlay to the root {@link StackPane}.
+     * Creates the settings dialog instance and adds it as an overlay to the root
+     * StackPane.
      */
     private void initialiseSettingsDialog() {
         settingsDialog = new SettingsDialog();
-
         StackPane root = (StackPane) gameCanvas.getParent();
         if (!root.getChildren().contains(settingsDialog.getView())) {
             root.getChildren().add(settingsDialog.getView());
         }
         updateSettingsConnectionStatus();
-
         settingsDialog.setOnSaveAction(() -> LOGGER.info(() -> String.format(
                 "Settings saved: Volume=%s, Mute=%s",
                 settingsDialog.volumeProperty().get(), settingsDialog.muteProperty().get())));
@@ -790,5 +699,86 @@ public class GameScreenController extends BaseController {
         String status = connectionStatusLabel.getText();
         boolean isConnected = "Connected".equals(status);
         settingsDialog.setConnectionStatus(isConnected, status);
+    }
+
+    /**
+     * Handles a click on a card in the player's hand.
+     *
+     * @param event The mouse event from the clicked card.
+     */
+    @FXML
+    private void handleCardClick(MouseEvent event) {
+        if (!(event.getSource() instanceof Pane clickedCard)) {
+            return;
+        }
+        if (currentlySelectedCard != null) {
+            currentlySelectedCard.getStyleClass().remove("selected-card");
+        }
+        currentlySelectedCard = clickedCard;
+        clickedCard.getStyleClass().add("selected-card");
+        String cardId = clickedCard.getId();
+        boolean isArtifact = cardId.startsWith("artifact");
+        String cardType = isArtifact ? "Artifact" : "Structure";
+        int cardIndex = Integer.parseInt(cardId.replaceAll("[^0-9]", ""));
+        String title = cardType + " #" + cardIndex;
+        String description = getMockCardDescription(cardType, cardIndex);
+        showCardDescription(title, description);
+        event.consume();
+    }
+
+    /**
+     * Shows the card description dialog on top of the chat panel.
+     *
+     * @param title       The card title
+     * @param description The card description text
+     */
+    private void showCardDescription(String title, String description) {
+        if (descriptionDialog != null) {
+            descriptionDialog.show(title, description);
+        }
+    }
+
+    /**
+     * Provides mock card descriptions for demonstration purposes.
+     */
+    private String getMockCardDescription(String cardType, int index) {
+        if ("Artifact".equals(cardType)) {
+            return switch (index) {
+                case 1 ->
+                    "Mjölnir, the legendary hammer of Thor. Grants +2 attack power and the ability to strike enemies with lightning.";
+                case 2 -> "Gungnir, Odin's enchanted spear. Never misses its target and grants wisdom to its bearer.";
+                case 3 -> "Draupnir, the magical ring that creates eight duplicates of itself every ninth night.";
+                default -> "A mysterious artifact with unknown powers.";
+            };
+        } else {
+            return switch (index) {
+                case 1 -> "Mead Hall: Increases morale and provides +1 rune per turn.";
+                case 2 -> "Forge: Allows crafting of enhanced weapons and tools.";
+                case 3 -> "Watchtower: Improves visibility and provides early warning of attacks.";
+                case 4 -> "Runestone: Increases magical energy production by 15%.";
+                case 5 -> "Barracks: Allows training of elite warriors.";
+                case 6 -> "Market: Enables trading with other settlements.";
+                case 7 -> "Temple: Provides divine blessings and special abilities.";
+                case 8 -> "Wall: Improves settlement defense against raids.";
+                default -> "A basic structure that provides shelter.";
+            };
+        }
+    }
+
+    /**
+     * Creates and initializes the description dialog.
+     */
+    private void initialiseDescriptionDialog() {
+        descriptionDialog = new DescriptionDialog();
+        StackPane root = (StackPane) gameCanvas.getParent();
+        if (descriptionDialog.getView() != null && root != null) {
+            if (!root.getChildren().contains(descriptionDialog.getView())) {
+                root.getChildren().add(descriptionDialog.getView());
+            }
+            StackPane.setAlignment(descriptionDialog.getView(), Pos.TOP_RIGHT);
+            StackPane.setMargin(descriptionDialog.getView(), new Insets(10, 300, 10, 10));
+        } else {
+            LOGGER.severe("Failed to add description dialog to root pane");
+        }
     }
 }
