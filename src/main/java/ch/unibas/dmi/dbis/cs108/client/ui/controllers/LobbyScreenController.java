@@ -8,6 +8,9 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import ch.unibas.dmi.dbis.cs108.client.core.entities.Player;
+// Import SettingsDialog and NameChangeRequestEvent
+import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeRequestEvent;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -17,6 +20,12 @@ import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+// Import BorderPane
+import javafx.scene.layout.BorderPane;
+// Import StackPane, Node, Pos
+import javafx.scene.layout.StackPane;
+import javafx.scene.Node;
+import javafx.geometry.Pos;
 
 import java.util.List;
 import java.util.Objects;
@@ -36,6 +45,8 @@ public class LobbyScreenController extends BaseController {
     private final ObservableList<String> playersInCurrentLobby = FXCollections.observableArrayList();
     private FilteredList<GameLobby> filteredLobbies;
 
+    @FXML
+    private BorderPane rootPane; // Add reference to the root pane
     @FXML
     private Label playerNameLabel;
     @FXML
@@ -67,6 +78,7 @@ public class LobbyScreenController extends BaseController {
     private boolean isHost = false;
     private Player localPlayer;
     private ChatComponent chatComponentController;
+    private SettingsDialog settingsDialog; // Declare SettingsDialog
 
     /**
      * Constructs the controller, injecting dependencies via the BaseController.
@@ -89,6 +101,7 @@ public class LobbyScreenController extends BaseController {
             setupHostControls();
             setupSearchFilter();
             setupChatComponent();
+            setupSettingsDialog(); // Call setup for settings dialog
             setupEventHandlers();
             playerNameLabel.setText("Player: " + localPlayer.getName());
             errorMessage.setVisible(false);
@@ -178,6 +191,22 @@ public class LobbyScreenController extends BaseController {
         chatComponentController.setPlayer(localPlayer);
         chatComponentController.setCurrentLobbyId(null);
         chatComponentController.addSystemMessage("Lobby system initialized. Select or create a lobby.");
+    }
+
+    /**
+     * Initializes the SettingsDialog and adds it to the root pane.
+     */
+    private void setupSettingsDialog() {
+        settingsDialog = new SettingsDialog();
+        if (rootPane == null) {
+            LOGGER.warning("Root pane is null, cannot add SettingsDialog.");
+            return;
+        }
+
+        settingsDialog.playerNameProperty().set(localPlayer.getName());
+        settingsDialog.setOnSaveAction(this::handleSettingsSave);
+        // Optionally set connection status if needed in lobby settings
+        // settingsDialog.setConnectionStatus(true, "Connected"); // Example
     }
 
     /**
@@ -459,6 +488,9 @@ public class LobbyScreenController extends BaseController {
                 localPlayer.setName(newName);
                 LOGGER.info("Player name successfully changed to: " + localPlayer.getName());
                 playerNameLabel.setText("Player: " + localPlayer.getName());
+                if (settingsDialog != null) {
+                    settingsDialog.playerNameProperty().set(newName); // Update dialog as well
+                }
                 if (chatComponentController != null) {
                     chatComponentController.setPlayer(localPlayer);
                     chatComponentController.addSystemMessage("Name successfully changed to: " + localPlayer.getName());
@@ -471,6 +503,10 @@ public class LobbyScreenController extends BaseController {
                 String failureMsg = event.getMessage() != null ? event.getMessage() : "Unknown reason.";
                 LOGGER.warning("Failed to change player name: " + failureMsg);
                 showError("Failed to change name: " + failureMsg);
+                if (settingsDialog != null) {
+                    // Revert name in dialog if change failed
+                    settingsDialog.playerNameProperty().set(localPlayer.getName());
+                }
                 if (chatComponentController != null) {
                     chatComponentController.addSystemMessage("Failed to change name: " + failureMsg);
                 }
@@ -559,6 +595,72 @@ public class LobbyScreenController extends BaseController {
     }
 
     /**
+     * Handles the "Settings" button click. Shows the settings dialog.
+     */
+    @FXML
+    private void handleSettings() {
+        LOGGER.fine("Settings button clicked.");
+        if (settingsDialog == null) {
+            LOGGER.warning("SettingsDialog is not initialized.");
+            return;
+        }
+        if (rootPane == null) {
+            LOGGER.warning("Root pane is null, cannot display SettingsDialog.");
+            return;
+        }
+        // Prevent adding if already shown or attached elsewhere incorrectly
+        if (settingsDialog.getView().getParent() != null && settingsDialog.getView().getParent() != rootPane) {
+            LOGGER.warning("Settings dialog is already attached elsewhere.");
+            return;
+        }
+
+        settingsDialog.playerNameProperty().set(localPlayer.getName()); // Ensure name is current
+        Node previousCenter = rootPane.getCenter();
+        StackPane container = new StackPane(previousCenter, settingsDialog.getView());
+        StackPane.setAlignment(settingsDialog.getView(), Pos.CENTER);
+        rootPane.setCenter(container);
+
+        // Restore original center when dialog closes or saves
+        settingsDialog.setOnCloseAction(() -> {
+            if (rootPane.getCenter() == container) {
+                rootPane.setCenter(previousCenter);
+            }
+        });
+        settingsDialog.setOnSaveAction(() -> {
+            handleSettingsSave(); // Call the existing save logic
+            if (rootPane.getCenter() == container) {
+                rootPane.setCenter(previousCenter);
+            }
+        });
+
+        settingsDialog.show();
+    }
+
+    /**
+     * Handles the save action from the SettingsDialog.
+     * Checks if the player name has changed and sends an update request.
+     */
+    private void handleSettingsSave() {
+        LOGGER.fine("Settings save action triggered.");
+        if (settingsDialog == null) {
+            LOGGER.warning("SettingsDialog is not initialized.");
+            return;
+        }
+        String newName = settingsDialog.playerNameProperty().get().trim();
+        if (!newName.isEmpty() && !newName.equals(localPlayer.getName())) {
+            LOGGER.info("Requesting name change from '" + localPlayer.getName() + "' to '" + newName + "'");
+            // Optionally add validation for name length/characters here
+            eventBus.publish(new NameChangeRequestEvent(newName));
+        } else if (newName.isEmpty()) {
+            LOGGER.warning("Attempted to save empty player name.");
+            // Optionally show an error in the dialog or main screen
+            showError("Player name cannot be empty.");
+            // Revert the name in the dialog
+            settingsDialog.playerNameProperty().set(localPlayer.getName());
+        }
+    }
+
+    /**
      * Cleans up resources used by this controller, primarily unsubscribing from
      * events.
      */
@@ -576,6 +678,9 @@ public class LobbyScreenController extends BaseController {
         if (chatComponentController != null) {
             chatComponentController.cleanup();
         }
+        if (settingsDialog != null) {
+            settingsDialog.close(); // Ensure dialog is closed
+        }
         LOGGER.info("LobbyScreenController cleanup finished.");
     }
 
@@ -592,6 +697,9 @@ public class LobbyScreenController extends BaseController {
             }
             if (chatComponentController != null) {
                 chatComponentController.setPlayer(this.localPlayer);
+            }
+            if (settingsDialog != null) { // Update settings dialog name
+                settingsDialog.playerNameProperty().set(this.localPlayer.getName());
             }
         }
     }
@@ -694,7 +802,7 @@ public class LobbyScreenController extends BaseController {
         public boolean equals(Object o) {
             if (this == o)
                 return true;
-            if (o == null || getClass() != o.getClass())
+            if (o == null || getClass() != getClass())
                 return false;
             GameLobby gameLobby = (GameLobby) o;
             return id.equals(gameLobby.id);
