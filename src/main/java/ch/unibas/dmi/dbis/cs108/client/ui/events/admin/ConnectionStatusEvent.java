@@ -1,41 +1,50 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.events.admin;
 
+import ch.unibas.dmi.dbis.cs108.client.networking.ConnectionState;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
 
-import ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent.ConnectionState;
 /**
- * UIEvent representing the connection status of the client.
+ * UIEvent representing a change in the network connection status.
  */
-public class ConnectionStatusEvent {
-    private final ConnectionState status;
+public class ConnectionStatusEvent implements UIEvent {
+
+    private final ConnectionState state;
     private final String message;
 
     /**
-     * Constructor for ConnectionStatusEvent.
+     * Constructs a new ConnectionStatusEvent.
      *
-     * @param status  The status of the connection.
-     * @param message The message associated with the connection status.
+     * @param state   the connection state
+     * @param message an optional message
      */
-    public ConnectionStatusEvent(ConnectionState status, String message) {
-        this.status = status;
+    public ConnectionStatusEvent(ConnectionState state, String message) {
+        this.state = state;
         this.message = message;
     }
 
     /**
-     * Get the status of the connection.
+     * Gets the connection state.
      *
-     * @return The connection status.
+     * @return the connection state
      */
-    public ConnectionState getStatus() {
-        return status;
+    public ConnectionState getState() {
+        return state;
     }
 
     /**
-     * Get the message associated with the connection status.
+     * Gets the status message.
      *
-     * @return The message.
+     * @return the message
      */
     public String getMessage() {
         return message;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getType() {
+        return "CONNECTION_STATUS";
+    }
 }
