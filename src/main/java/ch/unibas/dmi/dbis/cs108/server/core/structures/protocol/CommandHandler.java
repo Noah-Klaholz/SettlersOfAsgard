@@ -354,7 +354,7 @@ public class CommandHandler {
         if (ch.getCurrentLobby() != null && ch.getCurrentLobby().startGame()) {
             this.currentLobby = ch.getCurrentLobby();
             this.gameLogic = currentLobby.getGameLogic();
-            String startPlayerName = gameLogic.getTurnManager().getPlayerTurn();
+            String startPlayerName = gameLogic.getGameState().getPlayerTurn();
             currentLobby.broadcastMessage("STRT$" + startPlayerName);
             return true;
         } else {

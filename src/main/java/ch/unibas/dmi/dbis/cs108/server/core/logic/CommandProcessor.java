@@ -54,7 +54,7 @@ public class CommandProcessor {
         try {
             if (isStateChangingCommand(command.getCommandType())) {
                 synchronized (commandExecutionLock) {
-                    if (!gameLogic.getTurnManager().getPlayerTurn().equals(command.getPlayer().getName())) {
+                    if (!gameLogic.getGameState().getPlayerTurn().equals(command.getPlayer().getName())) {
                         return formatError(ErrorsAPI.Errors.NOT_PLAYER_TURN.getError());
                     }
                     return handler.apply(command);
@@ -86,7 +86,7 @@ public class CommandProcessor {
             }
 
             // Validate it's this player's turn
-            if (!playerName.equals(gameLogic.getTurnManager().getPlayerTurn())) {
+            if (!playerName.equals(gameLogic.getGameState().getPlayerTurn())) {
                 return formatError(ErrorsAPI.Errors.NOT_PLAYER_TURN.getError());
             }
 
@@ -95,7 +95,7 @@ public class CommandProcessor {
                 return formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError());
             }
             return formatSuccess(Commands.STARTTURN.getCommand() + "$" + playerName + "$" +
-                    gameLogic.getTurnManager().getPlayerTurn());
+                    gameLogic.getGameState().getPlayerTurn());
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error ending turn", e);
             return formatError(e.getMessage());

@@ -19,12 +19,6 @@ import java.util.*;
 public class TurnManager {
     /** The gameState object managed by this turnManager */
     private final GameState gameState;
-    /** The name of the player whose turn it is */
-    private String playerTurn;
-    /** An integer representing whose turn it is (0 to maxPlayers - 1) */
-    private int playerRound;
-    /** An integer representing which gameRound it is (0 to 4) */
-    private int gameRound;
     /** Registry for handling structure effects */
     private StructureBehaviorRegistry structureBehaviorRegistry;
 
@@ -35,63 +29,9 @@ public class TurnManager {
      */
     public TurnManager(GameState gameState) {
         this.gameState = gameState;
-        this.gameRound = 0;
-        this.playerRound = 0;
-        this.playerTurn = null;
-    }
-
-    /**
-     * Gets the playerTurn.
-     *
-     * @return the playerTurn.
-     */
-    public String getPlayerTurn() {
-        return playerTurn;
-    }
-
-    /**
-     * Sets the playerTurn.
-     *
-     * @param playerTurn the playerTurn to set.
-     */
-    public void setPlayerTurn(String playerTurn) {
-        this.playerTurn = playerTurn;
-    }
-
-    /**
-     * Gets the playerRound.
-     *
-     * @return the playerRound.
-     */
-    public int getPlayerRound() {
-        return playerRound;
-    }
-
-    /**
-     * Sets the playerRound.
-     *
-     * @param playerRound the playerRound to set.
-     */
-    public void setPlayerRound(int playerRound) {
-        this.playerRound = playerRound;
-    }
-
-    /**
-     * Gets the gameRound.
-     *
-     * @return the gameRound.
-     */
-    public int getGameRound() {
-        return gameRound;
-    }
-
-    /**
-     * Sets the gameRound.
-     *
-     * @param gameRound the gameRound to set.
-     */
-    public void setGameRound(int gameRound) {
-        this.gameRound = gameRound;
+        gameState.setGameRound(0);
+        gameState.setPlayerRound(0);
+        gameState.setPlayerTurn(null);
     }
 
     /**
@@ -103,24 +43,23 @@ public class TurnManager {
     public void nextTurn() {
         gameState.getStateLock().writeLock().lock();
         try {
-            if (getPlayerTurn() == null) {
+            if (gameState.getPlayerTurn() == null) {
                 initializeFirstTurn();
                 return;
             }
 
-            Player oldPlayer = gameState.findPlayerByName(playerTurn);
+            Player oldPlayer = gameState.findPlayerByName(gameState.getPlayerTurn());
             endTurn(oldPlayer);
 
-            int nextPosition = (playerRound + 1) % gameState.getPlayers().size();
-            playerTurn = gameState.getPlayers().get(nextPosition).getName();
-            playerRound = nextPosition;
+            int nextPosition = (gameState.getPlayerRound() + 1) % gameState.getPlayers().size();
+            gameState.setPlayerTurn(gameState.getPlayers().get(nextPosition).getName());
+            gameState.setPlayerRound(nextPosition);
 
             if (nextPosition == 0) {
-                gameRound ++;
+                gameState.setGameRound(gameState.getGameRound() + 1);
             }
 
-            updateGameStateMeta();
-            distributeResources(gameState.findPlayerByName(playerTurn));
+            distributeResources(gameState.findPlayerByName(gameState.getPlayerTurn()));
 
 
         } finally {
@@ -151,19 +90,17 @@ public class TurnManager {
      */
     private void initializeFirstTurn() {
         Player firstPlayer = gameState.getPlayers().get(0);
-        setPlayerTurn(firstPlayer.getName());
+        gameState.setPlayerTurn(firstPlayer.getName());
         distributeResources(firstPlayer);
-        updateGameStateMeta();
-
     }
 
     /**
      * Reset the metadata.
      */
     public void reset() {
-        gameRound = 0;
-        playerRound = 0;
-        playerTurn = null;
+        gameState.setGameRound(0);
+        gameState.setPlayerRound(0);
+        gameState.setPlayerTurn(null);
     }
 
     /**
@@ -224,15 +161,7 @@ public class TurnManager {
      * @return true if the gameRound is complete, false otherwise.
      */
     public boolean isGameRoundComplete() {
-        return playerRound == gameState.getPlayers().size() - 1;
+        return gameState.getPlayerRound() == gameState.getPlayers().size() - 1;
     }
 
-    /**
-     * Updates the fields in the managed gameState.
-     */
-    public void updateGameStateMeta() {
-        gameState.setGameRound(gameRound);
-        gameState.setPlayerTurn(playerTurn);
-        gameState.setPlayerRound(playerRound);
-    }
 }
