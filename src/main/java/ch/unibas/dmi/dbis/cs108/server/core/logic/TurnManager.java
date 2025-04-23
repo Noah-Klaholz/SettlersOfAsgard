@@ -1,4 +1,3 @@
-// TurnManager.java
 package ch.unibas.dmi.dbis.cs108.server.core.logic;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
@@ -14,57 +13,98 @@ import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 import java.util.*;
 
+/**
+ * This class manages the turn and player related logic and updates the gameState.
+ */
 public class TurnManager {
+    /** The gameState object managed by this turnManager */
     private final GameState gameState;
-    private CommunicationAPI communicationApi;
+    /** The name of the player whose turn it is */
     private String playerTurn;
+    /** An integer representing whose turn it is (0 to maxPlayers - 1) */
     private int playerRound;
+    /** An integer representing which gameRound it is (0 to 4) */
     private int gameRound;
+    /** Registry for handling structure effects */
     private StructureBehaviorRegistry structureBehaviorRegistry;
 
+    /**
+     * Initializes the turnManager. Sets the player- and gameRound to 0.
+     *
+     * @param gameState the gameState to manage.
+     */
     public TurnManager(GameState gameState) {
         this.gameState = gameState;
-        this.communicationApi = null;
         this.gameRound = 0;
         this.playerRound = 0;
         this.playerTurn = null;
     }
 
-    public void setCommunicationApi(CommunicationAPI communicationApi) {
-        this.communicationApi = communicationApi;
-    }
-
-    // Add getter and setter methods
+    /**
+     * Gets the playerTurn.
+     *
+     * @return the playerTurn.
+     */
     public String getPlayerTurn() {
         return playerTurn;
     }
 
+    /**
+     * Sets the playerTurn.
+     *
+     * @param playerTurn the playerTurn to set.
+     */
     public void setPlayerTurn(String playerTurn) {
         this.playerTurn = playerTurn;
     }
 
+    /**
+     * Gets the playerRound.
+     *
+     * @return the playerRound.
+     */
     public int getPlayerRound() {
         return playerRound;
     }
 
+    /**
+     * Sets the playerRound.
+     *
+     * @param playerRound the playerRound to set.
+     */
     public void setPlayerRound(int playerRound) {
         this.playerRound = playerRound;
     }
 
+    /**
+     * Gets the gameRound.
+     *
+     * @return the gameRound.
+     */
     public int getGameRound() {
         return gameRound;
     }
 
+    /**
+     * Sets the gameRound.
+     *
+     * @param gameRound the gameRound to set.
+     */
     public void setGameRound(int gameRound) {
         this.gameRound = gameRound;
     }
 
+    /**
+     * Advances to the next turn. Handles:
+     * - Correct Assignment of the next player whose turn it is.
+     * - Updating the gameState (method call).
+     * - Distributing resources for the next player.
+     */
     public void nextTurn() {
         gameState.getStateLock().writeLock().lock();
         try {
             if (getPlayerTurn() == null) {
                 initializeFirstTurn();
-                updateGameStateMeta();
                 return;
             }
 
@@ -105,17 +145,21 @@ public class TurnManager {
         oldPlayer.setRoundBoughtTiles(0);
     }
 
+    /**
+     * Initializes the first turn. Sets the playerTurn and gives him the resources.
+     * Updates the metadata.
+     */
     private void initializeFirstTurn() {
-        // Start with a random player
-        setPlayerRound(0);
         Player firstPlayer = gameState.getPlayers().get(0);
         setPlayerTurn(firstPlayer.getName());
-
-        // Initial resources for first player
         distributeResources(firstPlayer);
+        updateGameStateMeta();
 
     }
 
+    /**
+     * Reset the metadata.
+     */
     public void reset() {
         gameRound = 0;
         playerRound = 0;
@@ -174,20 +218,18 @@ public class TurnManager {
         player.addRunes(value);
     }
 
-    private int indexOfCurrentPlayer() {
-        List<Player> players = gameState.getPlayers();
-        for (int i = 0; i < players.size(); i++) {
-            if (players.get(i).getName().equals(playerTurn)) {
-                return i;
-            }
-        }
-        return 0;
-    }
-
+    /**
+     * Checks if the gameRound is complete.
+     *
+     * @return true if the gameRound is complete, false otherwise.
+     */
     public boolean isGameRoundComplete() {
         return playerRound == gameState.getPlayers().size() - 1;
     }
 
+    /**
+     * Updates the fields in the managed gameState.
+     */
     public void updateGameStateMeta() {
         gameState.setGameRound(gameRound);
         gameState.setPlayerTurn(playerTurn);
