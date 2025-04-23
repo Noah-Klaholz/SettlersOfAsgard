@@ -33,6 +33,13 @@ public class Monument extends FindableEntity {
     private boolean setBonus;
 
     /**
+     * Indicates whether this entity has been disabled last turn.
+     * Value above 0 means it was disabled
+     * Value of 0 means it was not
+     */
+    protected int disabled = 0;
+
+    /**
      * A List representing the Tiles this Monument is placed upon
      */
     private List<Coordinates> tiles;
@@ -107,6 +114,16 @@ public class Monument extends FindableEntity {
      */
     public int getSetBonus() {
         return (runes * SETTINGS.Config.SET_BONUS_MULTIPLIER.getValue());
+    }
+
+    /**
+     * Returns if this statue is currently disabled,
+     * Any value above 0 means yes
+     *
+     * @return true if yes, false otherwise
+     */
+    public boolean isDisabled() {
+        return disabled > 0;
     }
 
     /**
