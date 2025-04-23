@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.server;
 
+import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.TurnManager;
@@ -91,6 +92,7 @@ public class LobbyTest {
         // Setup mocks only for this test
         GameLogic mockGameLogic = mock(GameLogic.class);
         TurnManager mockTurnManager = mock(TurnManager.class);
+        GameState mockGameState = mock(GameState.class);
         when(mockGameLogic.getTurnManager()).thenReturn(mockTurnManager);
         when(player1.getPlayerName()).thenReturn("Player1"); // Stub only when needed
         when(player2.getPlayerName()).thenReturn("Player2");
@@ -99,6 +101,7 @@ public class LobbyTest {
         lobby.addPlayer(player2);
         lobby.startGame();
         lobby.setGameLogic(mockGameLogic);
+        when(mockGameLogic.getGameState()).thenReturn(mockGameState);
 
         assertTrue(lobby.manualEndTurn());
         verify(mockTurnManager).nextTurn();
