@@ -84,6 +84,13 @@ public class Statue extends PurchasableEntity {
     public void upgrade() { level++; }
 
     /**
+     * Sets the level of the statue.
+     *
+     * @param level the level to set.
+     */
+    public void setLevel(int level) { this.level = level; }
+
+    /**
      * Defines the types of effects a statue can have based on its level.
      */
     public enum StatueEffectType {
