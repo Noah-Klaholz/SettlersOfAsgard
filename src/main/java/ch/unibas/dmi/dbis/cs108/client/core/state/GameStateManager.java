@@ -299,6 +299,12 @@ public class GameStateManager {
         return statue;
     }
 
+    /**
+     * Handles the properties of a monument on a tile.
+     *
+     * @param props the properties of the monument.
+     * @return the monument object
+     */
     private Monument parseMonument(String props) {
         String[] parts = props.split("MON,")[1].split(","); // Split after "MON,"
         // Format: MON,id,DI<disabled>
@@ -312,6 +318,12 @@ public class GameStateManager {
         return monument;
     }
 
+    /**
+     * Handles the properties of a Structure on a tile.
+     *
+     * @param props the properties of the Structure.
+     * @return the Structure object
+     */
     private Structure parseStructure(String props) {
         String[] parts = props.split("STR,")[1].split(","); // Split after "STR,"
         // Format: STR,id,DI<disabled>,AC<activated>
