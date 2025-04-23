@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -69,6 +70,33 @@ public class Monument extends FindableEntity {
         this.setBonus = setBonus;
         this.tiles = tiles;
         this.world = world;
+    }
+
+    /**
+     * Sets the runes of this Monument.
+     *
+     * @param runes The runes this monument produces
+     */
+    public void setRunes(int runes) {
+        this.runes = runes;
+    }
+
+    /**
+     * Sets the world of this Monument
+     *
+     * @param world The world of this monument
+     */
+    public void setWorld(String world) {
+        this.world = world;
+    }
+
+    /**
+     * Sets the Tiles this Monument spans over
+     *
+     * @param tiles The tiles this monument spans over
+     */
+    public void setTiles(List<Coordinates> tiles) {
+        this.tiles = tiles;
     }
 
     /**
@@ -170,5 +198,22 @@ public class Monument extends FindableEntity {
         Monument artifact = new Monument();
         artifact.loadFromJson(json);
         return artifact;
+    }
+
+    /**
+     * Returns a clone of this Monument.
+     * This method creates a new instance of the Monument with the same properties as the original.
+     *
+     * @return A new Monument object that is a clone of this one
+     */
+    @Override
+    public Monument clone() {
+        Monument clone = new Monument();
+
+        clone.setRunes(this.runes);
+        clone.setWorld(this.world);
+        clone.setTiles(new ArrayList<>(this.tiles));
+
+        return (Monument) copyTo(clone);
     }
 }

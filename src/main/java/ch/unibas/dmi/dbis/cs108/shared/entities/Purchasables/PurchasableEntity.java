@@ -131,4 +131,26 @@ public abstract class PurchasableEntity extends GameEntity {
     public void disabledTurn() {
         this.disabled--;
     }
+
+    @Override
+    public abstract PurchasableEntity clone();
+
+    /**
+     * Copies purchasable entity properties from this entity to the clone
+     *
+     * @param clone The entity to copy properties to
+     * @return The clone with copied properties
+     */
+    protected PurchasableEntity copyTo(PurchasableEntity clone) {
+        // Copy base entity properties
+        super.copyTo(clone);
+
+        // Copy purchasable properties
+        clone.price = this.price;
+        clone.resourceValue = this.resourceValue;
+        clone.activated = this.activated;
+        clone.disabled = this.disabled;
+
+        return clone;
+    }
 }

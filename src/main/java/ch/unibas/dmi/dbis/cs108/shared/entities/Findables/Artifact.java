@@ -101,6 +101,33 @@ public class Artifact extends FindableEntity {
     }
 
     /**
+     * Sets the type of this artifact.
+     *
+     * @param useType The type of this artifact
+     */
+    public void setUseType(UseType useType) {
+        this.useType = useType;
+    }
+
+    /**
+     * Sets the chance to find this artifact.
+     *
+     * @param chanceToFind The chance to find this artifact
+     */
+    public void setChanceToFind(double chanceToFind) {
+        this.chanceToFind = chanceToFind;
+    }
+
+    /**
+     * Sets the effect of this artifact.
+     *
+     * @param effect The effect of this artifact
+     */
+    public void setEffect(double effect) {
+        this.effect = effect;
+    }
+
+    /**
      * Returns the target type of this findable entity.
      *
      * @return The target type (FIELD or PLAYER)
@@ -174,5 +201,22 @@ public class Artifact extends FindableEntity {
         Artifact artifact = new Artifact();
         artifact.loadFromJson(json);
         return artifact;
+    }
+
+    /**
+     * Returns a clone of this Artifact.
+     * This method creates a new instance of the Artifact with the same properties as the original.
+     *
+     * @return A new Artifact object that is a clone of this one
+     */
+    @Override
+    public Artifact clone() {
+        Artifact clone = new Artifact();
+
+        clone.setUseType(this.useType);
+        clone.setChanceToFind(this.chanceToFind);
+        clone.setEffect(this.effect);
+
+        return (Artifact) copyTo(clone);
     }
 }

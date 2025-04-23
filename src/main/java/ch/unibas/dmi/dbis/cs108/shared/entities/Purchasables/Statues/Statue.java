@@ -16,6 +16,7 @@ public class Statue extends PurchasableEntity {
 
     /**
      * The current level of this statue.
+     * Level 1 is the default level.
      */
     private int level = 1;
 
@@ -36,10 +37,25 @@ public class Statue extends PurchasableEntity {
      * @param name The name of this statue
      * @param description The description of this statue
      */
-    public Statue(int id, String name, String description, String world) {
-        super(id, name, description, 0, 0); // Price from JSON
+    public Statue(int id, String name, int price, int ressourceValue, int upgradePrice, String description, String world) {
+        super(id, name, description, price, ressourceValue);
         this.world = world;
+        this.upgradePrice = upgradePrice;
     }
+
+    /**
+     * Sets the cost to upgrade this statue.
+     *
+     * @param upgradePrice The upgrade price
+     */
+    public void setUpgradePrice(int upgradePrice) { this.upgradePrice = upgradePrice; }
+
+    /**
+     * Sets the world in which this statue can be placed.
+     *
+     * @param world The world
+     */
+    public void setWorld(String world) { this.world = world; }
 
     /**
      * Returns the cost to upgrade this statue.
@@ -100,5 +116,20 @@ public class Statue extends PurchasableEntity {
         Statue statue = new Statue();
         statue.loadFromJson(json);
         return statue;
+    }
+
+    /**
+     * Returns a clone of this Statue.
+     * This method creates a new instance of the Statue with the same properties as the original.
+     *
+     * @return A new Statue object that is a clone of this one
+     */
+    @Override
+    public Statue clone() {
+        Statue clone = new Statue();
+        clone.setUpgradePrice(this.upgradePrice);
+        clone.setWorld(this.world);
+
+        return (Statue) copyTo(clone);
     }
 }

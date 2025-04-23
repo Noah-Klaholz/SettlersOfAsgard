@@ -180,43 +180,51 @@ public class EntityRegistry {
 
 
     /**
-     * Returns a structure by its ID.
+     * Returns a new instance of a structure by its ID.
+     * Creates a clone of the original object to prevent shared references.
      *
      * @param id The ID of the structure to retrieve
-     * @return The Structure object with the given ID, or null if not found
+     * @return A new Structure object with the given ID, or null if not found
      */
     public static Structure getStructure(int id) {
-        return structures.get(id);
+        Structure original = structures.get(id);
+        return original != null ? original.clone() : null;
     }
 
     /**
-     * Returns a statue by its ID.
+     * Returns a new instance of a statue by its ID.
+     * Creates a clone of the original object to prevent shared references.
      *
      * @param id The ID of the statue to retrieve
-     * @return The Statue object with the given ID, or null if not found
+     * @return A new Statue object with the given ID, or null if not found
      */
     public static Statue getStatue(int id) {
-        return statues.get(id);
+        Statue original = statues.get(id);
+        return original != null ? original.clone() : null;
     }
 
     /**
-     * Returns an artifact by its ID.
+     * Returns a new instance of an artifact by its ID.
+     * Creates a clone of the original object to prevent shared references.
      *
      * @param id The ID of the artifact to retrieve
-     * @return The Artifact object with the given ID, or null if not found
+     * @return A new Artifact object with the given ID, or null if not found
      */
     public static Artifact getArtifact(int id) {
-        return artifacts.get(id);
+        Artifact original = artifacts.get(id);
+        return original != null ? original.clone() : null;
     }
 
     /**
-     * Returns a monument by its ID.
+     * Returns a new instance of a monument by its ID.
+     * Creates a clone of the original object to prevent shared references.
      *
      * @param id The ID of the monument to retrieve
-     * @return The Monument object with the given ID, or null if not found
+     * @return A new Monument object with the given ID, or null if not found
      */
     public static Monument getMonument(int id) {
-        return monuments.get(id);
+        Monument original = monuments.get(id);
+        return original != null ? original.clone() : null;
     }
 
     /**
@@ -256,11 +264,11 @@ public class EntityRegistry {
     }
 
     /**
-     * Returns a random artifact from the registry.
+     * Returns a random artifact from the list of available artifacts.
      *
      * @return A random Artifact object
      */
     public static Artifact getRandomArtifact() {
-        return getArtifact(RandomGenerator.randomIntInRange(10,21));
+        return RandomGenerator.pickRandomElement(getAllArtifacts().stream().toList());
     }
 }

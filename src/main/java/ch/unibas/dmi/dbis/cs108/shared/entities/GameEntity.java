@@ -126,7 +126,7 @@ public abstract class GameEntity {
      *    "id": 1,
      *    "name": "Example Entity",
      *    "description": "Description text",
-     *    "params": [10, 20]  // list of parameters
+     *    "params": [10, 20] // list of parameters
      * }
      *
      * @param json The JSON object containing entity data.
@@ -148,5 +148,33 @@ public abstract class GameEntity {
                 }
             }
         }
+    }
+
+    /**
+     * Creates a deep copy of this entity
+     *
+     * @return A new instance with identical properties
+     */
+    public abstract GameEntity clone();
+
+    /**
+     * Copies basic entity properties from this entity to the clone
+     *
+     * @param clone The entity to copy properties to
+     * @return The clone with copied properties
+     */
+    protected GameEntity copyTo(GameEntity clone) {
+        // Copy basic properties
+        clone.id = this.id;
+        clone.name = this.name;
+        clone.description = this.description;
+
+        // Deep copy parameters
+        clone.params = new ArrayList<>();
+        for (Parameter param : this.params) {
+            clone.params.add(new Parameter(param.getName(), param.getValue()));
+        }
+
+        return clone;
     }
 }

@@ -22,7 +22,7 @@ public class Structure extends PurchasableEntity {
      * @param price The purchase price of this structure
      */
     public Structure(int id, String name, String description, int price, int resourceValue) {
-        super(id, name, description, price, resourceValue); // Resource value is set to 0 for structures
+        super(id, name, description, price, resourceValue);
     }
     /**
      * Loads structure data from a JSON object.
@@ -47,7 +47,15 @@ public class Structure extends PurchasableEntity {
         return structure;
     }
 
-    public int getRessourceValue() {
-        return this.resourceValue;
+    /**
+     * Returns a clone of this Structure.
+     * This method creates a new instance of the Structure with the same properties as the original.
+     *
+     * @return A new Structure object that is a clone of this one
+     */
+    @Override
+    public Structure clone() {
+        Structure clone = new Structure();
+        return (Structure) copyTo(clone);
     }
 }
