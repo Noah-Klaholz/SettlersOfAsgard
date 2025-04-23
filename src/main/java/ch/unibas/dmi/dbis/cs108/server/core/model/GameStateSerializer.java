@@ -108,7 +108,7 @@ public class GameStateSerializer {
 
                     if (e instanceof Statue statue) {
                         sb.append("STA").append(statue.getId()).append(",")
-                                .append("DI").append(statue.isDisabled()).append(",")
+                                .append("DI").append(statue.getDisabled()).append(",")
                                 .append("AC").append(statue.isActivated()).append(",")
                                 .append("LV").append(statue.getLevel()).append(",");
                     }
