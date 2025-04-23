@@ -136,6 +136,15 @@ public class Monument extends FindableEntity {
     }
 
     /**
+     * Sets the value of disable.
+     *
+     * @param disabled the value to set.
+     */
+    public void setDisabled(int disabled) {
+        this.disabled = disabled;
+    }
+
+    /**
      * Gets if this Monument is part of a set
      *
      * @return The set of this Monument
