@@ -428,13 +428,11 @@ public class LobbyScreenController extends BaseController {
      * Handles notification that the game has started for the current lobby.
      */
     private void handleGameStarted(GameStartedEvent event) {
-        Objects.requireNonNull(event, "GameStartedEvent cannot be null");
-        if (currentLobbyId != null && currentLobbyId.equals(event.getLobbyId())) {
-            LOGGER.info("Game started for lobby: " + currentLobbyId + ". Switching to game screen.");
-            Platform.runLater(() -> {
-                sceneManager.switchToScene(SceneManager.SceneType.GAME);
-            });
-        }
+        //Objects.requireNonNull(event, "GameStartedEvent cannot be null");
+        LOGGER.info("Game started for lobby: " + currentLobbyId + ". Switching to game screen.");
+        Platform.runLater(() -> {
+            sceneManager.switchToScene(SceneManager.SceneType.GAME);
+        });
     }
 
     /**

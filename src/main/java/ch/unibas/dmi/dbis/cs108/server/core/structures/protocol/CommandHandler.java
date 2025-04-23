@@ -384,7 +384,7 @@ public class CommandHandler {
             currentLobby.broadcastMessage("STRT$" + startPlayerName);
             return true;
         } else {
-            System.out.println("ERR$106$NOT_IN_LOBBY");
+            System.out.println("ERR$106$CANNOT_START_GAME");
             sendMessage("ERR$106$CANNOT_START_GAME");
             return false;
         }

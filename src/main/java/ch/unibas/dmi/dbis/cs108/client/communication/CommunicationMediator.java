@@ -398,7 +398,8 @@ public class CommunicationMediator {
                     public void onEvent(StartGameEvent event) {
                         // Publish UI event. Pass null as lobbyId since StartGameEvent doesn't provide
                         // it.
-                        // TODO: Verify if GameStartedEvent requires a non-null lobbyId.
+                        // UI does not need lobbyId for game start event. -> I (noah) changed it so that it can handle null-lobbies
+                        // Server checks every error angle, does not need to be done here!!
                         UIEventBus.getInstance().publish(new GameStartedEvent(null)); // Pass null instead of
                                                                                       // event.getLobbyId()
                         LOGGER.info(
