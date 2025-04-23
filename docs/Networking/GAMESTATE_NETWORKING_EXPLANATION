@@ -24,6 +24,10 @@ SNYC$META:3,1,player2|PLAYERS:
   HE:1,
   O:player1,
   P:10,
+  STA:30,
+  DI:1,
+  AC:1,
+  LV:2,
   AR:ART001,
   W:midgard,
   PU:1,
@@ -61,6 +65,10 @@ Coordinates: (0,0)
 Has entity: true
 Owner: "player1"
 Price: 10
+StatueID: "30"
+Disabled: 1
+Activated: 1
+Level: 2
 Artifact: "ART001"
 World: "midgard"
 Purchased: true

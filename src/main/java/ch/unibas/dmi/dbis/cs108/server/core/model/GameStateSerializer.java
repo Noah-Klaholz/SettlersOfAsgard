@@ -1,6 +1,10 @@
 package ch.unibas.dmi.dbis.cs108.server.core.model;
 
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
+import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
@@ -95,11 +99,30 @@ public class GameStateSerializer {
             for (int x = 0; x < tiles.length; x++) {
                 for (int y = 0; y < tiles[x].length; y++) {
                     Tile t = tiles[x][y];
+                    GameEntity e = t.getEntity();
+
                     sb.append(x).append(",").append(y).append("{")
                             .append("HE:").append(t.hasEntity() ? 1 : 0).append(",")
                             .append("O:").append(t.getOwner() != null ? t.getOwner() : "null").append(",")
-                            .append("P:").append(t.getPrice()).append(",")
-                            .append("AR:").append(t.getArtifact() != null ? t.getArtifact().getId() : "null").append(",")
+                            .append("P:").append(t.getPrice()).append(",");
+
+                    if (e instanceof Statue statue) {
+                        sb.append("STA").append(statue.getId()).append(",")
+                                .append("DI").append(statue.isDisabled()).append(",")
+                                .append("AC").append(statue.isActivated()).append(",")
+                                .append("LV").append(statue.getLevel()).append(",");
+                    }
+                    else if (e instanceof Monument monument) {
+                        sb.append("MON").append(monument.getId()).append(",")
+                                .append("DI").append(monument.isDisabled()).append(",");
+                    }
+                    else if (e instanceof Structure structure) {
+                        sb.append("STR").append(structure.getId()).append(",")
+                                .append("DI").append(structure.isDisabled()).append(",")
+                                .append("AC").append(structure.isActivated()).append(",");
+
+                    }
+                    sb.append("AR:").append(t.getArtifact() != null ? t.getArtifact().getId() : "null").append(",")
                             .append("W:").append(t.getWorld()).append(",")
                             .append("PU:").append(t.isPurchased() ? 1 : 0).append(",")
                             .append("RV:").append(t.getResourceValue()).append(",")
