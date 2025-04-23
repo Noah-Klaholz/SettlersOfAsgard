@@ -1,5 +1,9 @@
 package ch.unibas.dmi.dbis.cs108.client.core.state;
 
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
+import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Board;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
@@ -216,7 +220,24 @@ public class GameStateManager {
             Tile tile = board.getTileByCoordinates(x, y);
             if (tile == null) continue;
 
-            // Parse properties
+            // First: handle entity-specific properties
+            GameEntity entity = null;
+            if (props.contains("STA")) {
+                entity = parseStatue(props);
+            }
+            else if (props.contains("MON")) {
+                entity = parseMonument(props);
+            }
+            else if (props.contains("STR")) {
+                entity = parseStructure(props);
+            }
+
+            if (entity != null) {
+                tile.setEntity(entity);
+                tile.setHasEntity(true);
+            }
+
+            // Second: handle regular properties
             for (String prop : props.split(",(?=[A-Z]{1,2}:)")) {
                 String[] keyValue = prop.split(":", 2);
                 if (keyValue.length != 2) continue;
@@ -253,5 +274,56 @@ public class GameStateManager {
                 }
             }
         }
+    }
+
+    /**
+     * Handles the properties of a statue on a tile.
+     *
+     * @param props the properties of the statue.
+     * @return the Statue object
+     */
+    private Statue parseStatue(String props) {
+        String[] parts = props.split("STA,")[1].split(","); // Split after "STA,"
+        // Format: STA,id,DI<disabled>,AC<activated>,LV<level>
+        int id = Integer.parseInt(parts[0]);
+        int disabled = Integer.parseInt(parts[1].substring(2));
+        boolean activated = parts[2].substring(2).equals("1");
+        int level = Integer.parseInt(parts[3].substring(2));
+
+        Statue statue = EntityRegistry.getStatue(id);
+        if (statue != null) {
+            statue.setDisabled(disabled);
+            statue.setActivated(activated);
+            statue.setLevel(level);
+        }
+        return statue;
+    }
+
+    private Monument parseMonument(String props) {
+        String[] parts = props.split("MON,")[1].split(","); // Split after "MON,"
+        // Format: MON,id,DI<disabled>
+        int id = Integer.parseInt(parts[0]);
+        int disabled = Integer.parseInt(parts[1].substring(2));
+
+        Monument monument = EntityRegistry.getMonument(id);
+        if (monument != null) {
+            monument.setDisabled(disabled);
+        }
+        return monument;
+    }
+
+    private Structure parseStructure(String props) {
+        String[] parts = props.split("STR,")[1].split(","); // Split after "STR,"
+        // Format: STR,id,DI<disabled>,AC<activated>
+        int id = Integer.parseInt(parts[0]);
+        int disabled = Integer.parseInt(parts[1].substring(2));
+        boolean activated = parts[2].substring(2).equals("1");
+
+        Structure structure = EntityRegistry.getStructure(id);
+        if (structure != null) {
+            structure.setDisabled(disabled);
+            structure.setActivated(activated);
+        }
+        return structure;
     }
 }
