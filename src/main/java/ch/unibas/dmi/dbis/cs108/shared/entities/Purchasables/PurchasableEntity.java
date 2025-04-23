@@ -132,6 +132,24 @@ public abstract class PurchasableEntity extends GameEntity {
         this.disabled--;
     }
 
+    /**
+     * Sets disabled
+     *
+     * @param disabled the value to set.
+     */
+    public void setDisabled(int disabled) {
+        this.disabled = disabled;
+    }
+
+    /**
+     * Gets the value of disabled
+     *
+     * @return the value of disabled
+     */
+    public int getDisabled() {
+        return disabled;
+    }
+
     @Override
     public abstract PurchasableEntity clone();
 
