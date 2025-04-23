@@ -73,19 +73,24 @@ public class TurnManager {
      * @param oldPlayer The player whose turn is ending.
      */
     private void endTurn(Player oldPlayer) {
-        oldPlayer.getPurchasableEntities().forEach(purchasableEntity -> {
-            if (purchasableEntity.isActivated()) {
-                purchasableEntity.setActivated(false);
-            }
-            if (purchasableEntity.isDisabled()) {
-                purchasableEntity.disabledTurn();
-            }
-        });
-        oldPlayer.getMonuments().forEach(monument -> {
-            if (monument.isDisabled()) {
-                monument.disabledTurn();
-            }
-        });
+        if (oldPlayer == null) return;
+        if (oldPlayer.getPurchasableEntities() != null) {
+            oldPlayer.getPurchasableEntities().forEach(purchasableEntity -> {
+                if (purchasableEntity.isActivated()) {
+                    purchasableEntity.setActivated(false);
+                }
+                if (purchasableEntity.isDisabled()) {
+                    purchasableEntity.disabledTurn();
+                }
+            });
+        }
+        if (oldPlayer.getMonuments() != null) {
+            oldPlayer.getMonuments().forEach(monument -> {
+                if (monument.isDisabled()) {
+                    monument.disabledTurn();
+                }
+            });
+        }
         oldPlayer.setRoundBoughtTiles(0);
     }
 
