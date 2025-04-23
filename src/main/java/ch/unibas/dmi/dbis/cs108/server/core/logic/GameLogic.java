@@ -8,6 +8,7 @@ import ch.unibas.dmi.dbis.cs108.server.core.actions.TileActionHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -120,34 +121,33 @@ public class GameLogic implements GameLogicInterface {
     }
 
     /**
-     * Sorts the players based on scores.
-     */
-    public void sortPlayersByScore(List<Player> players) {
-        players.sort(Comparator.comparingInt(Player::getRunes).reversed());
-    }
-
-    /**
-     * Creates the final score message.
+     * Creates the final score message without modifying the original player order.
+     *
      * @return the final score message as a String in the format:
      * player1$score1$player2$score2$player3$score3$player4$score4
      * (ordered from highest to lowest score)
      */
     public String createFinalScoreMessage() {
-        List<Player> players = gameState.getPlayers();
-        sortPlayersByScore(players);
+        // Create a new sorted list without modifying the original
+        List<Player> sortedPlayers = new ArrayList<>(gameState.getPlayers());
+        sortedPlayers.sort(Comparator.comparingInt(Player::getRunes).reversed());
 
         StringBuilder result = new StringBuilder();
-        for (Player player : players) {
+        for (Player player : sortedPlayers) {
             result.append(player.getName())
                     .append("$")
                     .append(player.getRunes())
                     .append("$");
         }
         // remove the last '$'
-        result.setLength(result.length() - 1);
+        if (!result.isEmpty()) {
+            result.setLength(result.length() - 1);
+        }
 
         return result.toString();
     }
+
+// Remove the sortPlayersByScore method as it's no longer needed
 
     /**
      * Buy a tile on the board.
