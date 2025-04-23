@@ -314,9 +314,7 @@ public class StatueBehaviorRegistry {
                     // Gives 1 random Artifact: costs (a lot of) Runes
                     if (!player.buy((int)statue.getParams().get(0).getValue())) return false;
 
-                    Artifact artifact = RandomGenerator.pickRandomElement(EntityRegistry.getAllArtifacts().stream().toList());
-
-                    player.addArtifact(artifact);
+                    player.addArtifact(EntityRegistry.getRandomArtifact());
                     return true;
                 },
                 new StatueParameterRequirement()

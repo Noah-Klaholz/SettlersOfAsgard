@@ -229,6 +229,7 @@ public class EntityRegistry {
 
     /**
      * Returns a collection of all available structures.
+     * Should never be used to make changes to the structures because it stores references to the original objects.
      *
      * @return Collection of all Structure objects
      */
@@ -238,6 +239,7 @@ public class EntityRegistry {
 
     /**
      * Returns a collection of all available statues.
+     * Should never be used to make changes to the statues because it stores references to the original objects.
      *
      * @return Collection of all Statue objects
      */
@@ -247,6 +249,7 @@ public class EntityRegistry {
 
     /**
      * Returns a collection of all available artifacts.
+     * Should never be used to make changes to the artifacts because it stores references to the original objects.
      *
      * @return Collection of all Artifact objects
      */
@@ -256,6 +259,7 @@ public class EntityRegistry {
 
     /**
      * Returns a collection of all available monuments.
+     * Should never be used to make changes to the monuments because it stores references to the original objects.
      *
      * @return Collection of all Monument objects
      */
@@ -264,11 +268,12 @@ public class EntityRegistry {
     }
 
     /**
-     * Returns a random artifact from the list of available artifacts.
+     * Returns a new instance of a random artifact from the list of available artifacts.
      *
      * @return A random Artifact object
      */
     public static Artifact getRandomArtifact() {
-        return RandomGenerator.pickRandomElement(getAllArtifacts().stream().toList());
+        int id = RandomGenerator.pickRandomElement(getAllArtifacts().stream().toList()).getId();
+        return getArtifact(id);
     }
 }

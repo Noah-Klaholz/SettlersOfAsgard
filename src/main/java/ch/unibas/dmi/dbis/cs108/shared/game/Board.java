@@ -68,7 +68,7 @@ public class Board {
         AtomicReference<Monument> monument = new AtomicReference<>();
         EntityRegistry.getAllMonuments().forEach(mon -> {
             if (mon.getTiles().contains(new Monument.Coordinates(x, y))) {
-                monument.set(mon);
+                monument.set(EntityRegistry.getMonument(mon.getId()));
             }
         });
         return monument.get();
