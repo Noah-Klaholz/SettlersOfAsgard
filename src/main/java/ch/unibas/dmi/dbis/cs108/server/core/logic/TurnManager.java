@@ -81,6 +81,11 @@ public class TurnManager {
                 purchasableEntity.disabledTurn();
             }
         });
+        oldPlayer.getMonuments().forEach(monument -> {
+            if (monument.isDisabled()) {
+                monument.disabledTurn();
+            }
+        });
         oldPlayer.setRoundBoughtTiles(0);
     }
 
@@ -121,7 +126,7 @@ public class TurnManager {
                 if (ent instanceof Structure) {
                     Structure entity = (Structure) tile.getEntity();
                     int value = entity.getResourceValue();
-                    if (entity.isStructure()) {
+                    if (entity.isStructure() && !entity.isDisabled()) {
                         calcAndAddRunes(player, tile, value);
                         // All structures except rune table have a passive effect which should be used
                         if (!entity.getName().equals("Rune Table")) {
@@ -130,11 +135,13 @@ public class TurnManager {
                     }
                 // Handle for Monuments
                 } else if (ent instanceof Monument mon) {
-                    int value = mon.getRunes();
-                    if (mon.isSet() && player.hasCompleteSet(mon)) {
-                        value *= SETTINGS.Config.SET_BONUS_MULTIPLIER.getValue();
+                    if (!mon.isDisabled()) {
+                        int value = mon.getRunes();
+                        if (mon.isSet() && player.hasCompleteSet(mon)) {
+                            value *= SETTINGS.Config.SET_BONUS_MULTIPLIER.getValue();
+                        }
+                        calcAndAddRunes(player, tile, value);
                     }
-                    calcAndAddRunes(player, tile, value);
                 }
             }
         });

@@ -117,13 +117,29 @@ public class Monument extends FindableEntity {
     }
 
     /**
-     * Returns if this statue is currently disabled,
+     * Returns if this Monument is currently disabled,
      * Any value above 0 means yes
      *
      * @return true if yes, false otherwise
      */
     public boolean isDisabled() {
         return disabled > 0;
+    }
+
+    /**
+     * Disables this Monument for "turns" number of turns
+     *
+     * @param turns the number of turns it should be disabled
+     */
+    public void disable(int turns) {
+        this.disabled = turns;
+    }
+
+    /**
+     * Ticks one turn off of the disabled "timer"
+     */
+    public void disabledTurn() {
+        this.disabled--;
     }
 
     /**
