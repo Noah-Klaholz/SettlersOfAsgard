@@ -237,7 +237,7 @@ public class Lobby implements GameEventNotifier {
     /**
      * Stops the TurnScheduler by resetting it.
      */
-    private void stopTurnScheduler() {
+    public void stopTurnScheduler() {
         if (turnScheduler != null) {
             turnScheduler.shutdownNow();
             try {
