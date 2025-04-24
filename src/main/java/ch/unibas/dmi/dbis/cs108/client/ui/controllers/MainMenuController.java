@@ -146,12 +146,6 @@ public class MainMenuController extends BaseController {
         eventBus.subscribe(ConnectionStatusEvent.class, this::handleConnectionStatus);
         eventBus.subscribe(ErrorEvent.class, this::handleErrorEvent);
         eventBus.subscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
-
-        settingsDialog.playerNameProperty().addListener((obs, oldName, newName) -> {
-            if (newName != null && !newName.trim().isEmpty() && !newName.equals(localPlayer.getName())) {
-                requestNameChange(newName.trim());
-            }
-        });
     }
 
     /**
