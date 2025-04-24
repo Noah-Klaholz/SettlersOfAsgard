@@ -21,6 +21,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
+// Add specific exception imports if needed, e.g., java.io.IOException
+import java.io.IOException; // Example if FXML loading could throw this directly
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -83,9 +85,15 @@ public class MainMenuController extends BaseController {
             setupEventHandlers();
             setupChatComponent();
             establishServerConnection();
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Critical error during MainMenuController initialization", e);
-            displayInitializationError("Error initializing main menu interface.");
+            // Catch more specific exceptions if possible, or keep Exception as a last
+            // resort
+        } catch (IllegalStateException | NullPointerException e) {
+            // Example: Catching potential runtime issues during setup
+            LOGGER.log(Level.SEVERE, "Runtime error during MainMenuController initialization", e);
+            displayInitializationError("Error initializing main menu interface: " + e.getMessage());
+        } catch (Exception e) { // General fallback
+            LOGGER.log(Level.SEVERE, "Unexpected error during MainMenuController initialization", e);
+            displayInitializationError("An unexpected error occurred during initialization.");
         }
         LOGGER.info("MainMenuController initialization complete.");
     }
@@ -260,13 +268,23 @@ public class MainMenuController extends BaseController {
     @FXML
     private void handleSettings() {
         LOGGER.info("Settings button clicked.");
-        if (settingsDialog.getView().getParent() != null && settingsDialog.getView().getParent() != mainMenuRoot) {
-            LOGGER.warning("Settings dialog is already attached elsewhere.");
+        // Prevent opening if already showing the settings dialog in the center stack
+        // pane
+        if (mainMenuRoot.getCenter() instanceof StackPane
+                && ((StackPane) mainMenuRoot.getCenter()).getChildren().contains(settingsDialog.getView())) {
+            LOGGER.fine("Settings dialog is already showing.");
             return;
         }
+
         settingsDialog.setConnectionStatus(isConnected.get(), isConnected.get() ? "Connected" : "Disconnected");
         settingsDialog.playerNameProperty().set(this.localPlayer.getName());
+
         Node previousCenter = mainMenuRoot.getCenter();
+        // Ensure previousCenter is not null before adding to StackPane
+        if (previousCenter == null) {
+            LOGGER.severe("Cannot show settings dialog, main menu center node is null.");
+            return;
+        }
         StackPane container = new StackPane(previousCenter, settingsDialog.getView());
         StackPane.setAlignment(settingsDialog.getView(), Pos.CENTER);
         mainMenuRoot.setCenter(container);
@@ -285,7 +303,7 @@ public class MainMenuController extends BaseController {
             mainMenuRoot.setCenter(previousCenter);
         });
 
-        settingsDialog.show();
+        settingsDialog.show(); // Assuming show() makes it visible if needed, or handles focus
     }
 
     /**
@@ -294,17 +312,25 @@ public class MainMenuController extends BaseController {
     @FXML
     private void handleAbout() {
         LOGGER.info("About button clicked.");
-        if (aboutDialog.getView().getParent() != null && aboutDialog.getView().getParent() != mainMenuRoot) {
-            LOGGER.warning("About dialog is already attached elsewhere.");
+        // Prevent opening if already showing the about dialog in the center stack pane
+        if (mainMenuRoot.getCenter() instanceof StackPane
+                && ((StackPane) mainMenuRoot.getCenter()).getChildren().contains(aboutDialog.getView())) {
+            LOGGER.fine("About dialog is already showing.");
             return;
         }
+
         Node previousCenter = mainMenuRoot.getCenter();
+        // Ensure previousCenter is not null before adding to StackPane
+        if (previousCenter == null) {
+            LOGGER.severe("Cannot show about dialog, main menu center node is null.");
+            return;
+        }
         StackPane container = new StackPane(previousCenter, aboutDialog.getView());
         StackPane.setAlignment(aboutDialog.getView(), Pos.CENTER);
         mainMenuRoot.setCenter(container);
 
         aboutDialog.setOnCloseAction(() -> mainMenuRoot.setCenter(previousCenter));
-        aboutDialog.show();
+        aboutDialog.show(); // Assuming show() makes it visible if needed, or handles focus
     }
 
     /**
