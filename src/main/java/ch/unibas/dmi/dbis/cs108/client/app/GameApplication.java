@@ -119,7 +119,7 @@ public class GameApplication extends Application {
         GameStateManager gameStateManager = new GameStateManager(gameState);
 
         // Initialize CommunicationMediator to wire UI and network messages.
-        new CommunicationMediator(networkController, gameStateManager);
+        new CommunicationMediator(networkController, gameStateManager, localPlayer);
         LOGGER.info("CommunicationMediator initialized.");
 
         // Initialize and display the main menu scene.
