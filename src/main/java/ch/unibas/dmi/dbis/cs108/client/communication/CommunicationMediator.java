@@ -106,7 +106,11 @@ public class CommunicationMediator {
                 });
 
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.chat.WhisperChatEvent.class,
-                event -> networkController.sendPrivateChat(event.getRecipient(), event.getMessage()));
+                event -> {
+                    if (event.getSender() == null) {
+                        networkController.sendPrivateChat(event.getRecipient(), event.getMessage());
+                    }
+                });
 
         // Lobby Events
         UIEventBus.getInstance().subscribe(
@@ -201,6 +205,7 @@ public class CommunicationMediator {
                 new EventDispatcher.EventListener<ChatMessageEvent>() {
                     @Override
                     public void onEvent(ChatMessageEvent event) {
+                        Logger.getGlobal().info("Communication Mediator: ChatMessageEvent: " + event.getSender() + ": " + event.getContent());
                         switch (event.getType()) {
                             case INFO:
                                 UIEventBus.getInstance()
