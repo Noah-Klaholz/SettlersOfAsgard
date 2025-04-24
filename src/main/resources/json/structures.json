@@ -27,8 +27,8 @@
   },
   {
     "name": "Helgrindr",
-    "usage": "",
-    "description": "Prevents Player-Debuffs and gives 1 Energy per Round",
+    "usage": "Prevents Player-Debuffs and gives 1 Energy per Round",
+    "description": "",
     "id": 3,
     "price": 50,
     "resourceValue": 5
