@@ -22,10 +22,6 @@ public class LobbyChatEvent implements UIEvent {
      * @param message the message content
      */
     public LobbyChatEvent(String lobbyId, String sender, String message) {
-        Logger.getGlobal().info("Creating a new LobbyChatEvent" +
-                " with lobbyId: " + lobbyId +
-                ", sender: " + sender +
-                ", message: " + message);
         this.lobbyId = lobbyId;
         this.sender = sender;
         this.message = message;
