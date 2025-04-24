@@ -407,7 +407,7 @@ public class CommunicationMediator {
                     }
                 });
 
-        // Notification Events
+        // Notification Event
         EventDispatcher.getInstance().registerListener(NotificationEvent.class,
                 new EventDispatcher.EventListener<NotificationEvent>() {
                     @Override
@@ -425,8 +425,22 @@ public class CommunicationMediator {
                     }
                 });
 
-        // Removed LeaderboardResponseEvent listener block as it was
-        // incomplete/placeholder
+        // End Game Event
+        EventDispatcher.getInstance().registerListener(EndGameEvent.class,
+                new EventDispatcher.EventListener<EndGameEvent>() {
+                    @Override
+                    public void onEvent(EndGameEvent event) {
+                        // Publish end game event to UI
+                        UIEventBus.getInstance()
+                                .publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.game.EndGameEvent(
+                                        event.getLeaderboard()));
+                    }
+
+                    @Override
+                    public Class<EndGameEvent> getEventType() {
+                        return EndGameEvent.class;
+                    }
+                });
 
     }
 
