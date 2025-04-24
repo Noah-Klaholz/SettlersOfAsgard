@@ -179,6 +179,10 @@ public interface CommunicationAPI {
              */
             USEFIELDARTIFACT("USFA"),
             /**
+             * Player disconnects from the game
+             */
+            DISCONNECT("DISC"),
+            /**
              * Entity notifies player
              */
             INFO("INFO"),

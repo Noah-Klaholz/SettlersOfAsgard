@@ -45,8 +45,7 @@ public class NetworkController {
                 stopPingScheduler();
                 eventDispatcher.dispatchEvent(new ConnectionEvent(
                         ConnectionEvent.ConnectionState.DISCONNECTED,
-                        "Connection lost: " + cause.getMessage()
-                ));
+                        "Connection lost: " + cause.getMessage()));
             }
         });
     }
@@ -54,22 +53,19 @@ public class NetworkController {
     public void connect(String host, int port) {
         eventDispatcher.dispatchEvent(new ConnectionEvent(
                 ConnectionEvent.ConnectionState.CONNECTING,
-                "Connecting to " + host + ":" + port
-        ));
+                "Connecting to " + host + ":" + port));
         networkClient.connect(host, port)
                 .thenRun(() -> {
                     eventDispatcher.dispatchEvent(new ConnectionEvent(
                             ConnectionEvent.ConnectionState.CONNECTED,
-                            "Connected to " + host + ":" + port
-                    ));
+                            "Connected to " + host + ":" + port));
                     startPingScheduler();
                     register();
                 })
                 .exceptionally(ex -> {
                     eventDispatcher.dispatchEvent(new ConnectionEvent(
                             ConnectionEvent.ConnectionState.DISCONNECTED,
-                            "Failed to connect: " + ex.getMessage()
-                    ));
+                            "Failed to connect: " + ex.getMessage()));
                     return null;
                 });
     }
@@ -102,16 +98,16 @@ public class NetworkController {
         stopPingScheduler();
         pingScheduler = Executors.newSingleThreadScheduledExecutor();
         pingScheduler.scheduleAtFixedRate(() -> {
-                    if (lastPingTime.get() > 0) {
-                        long elapsed = Instant.now().toEpochMilli() - lastPingTime.get();
-                        if (elapsed > SETTINGS.Config.TIMEOUT.getValue()) {
-                            LOGGER.severe("Ping timeout detected. Disconnecting...");
-                            disconnect();
-                            return;
-                        }
-                    }
-                    sendPing();
-                }, SETTINGS.Config.PING_INTERVAL.getValue(),
+            if (lastPingTime.get() > 0) {
+                long elapsed = Instant.now().toEpochMilli() - lastPingTime.get();
+                if (elapsed > SETTINGS.Config.TIMEOUT.getValue()) {
+                    LOGGER.severe("Ping timeout detected. Disconnecting...");
+                    disconnect();
+                    return;
+                }
+            }
+            sendPing();
+        }, SETTINGS.Config.PING_INTERVAL.getValue(),
                 SETTINGS.Config.PING_INTERVAL.getValue(), TimeUnit.MILLISECONDS);
     }
 
@@ -148,19 +144,22 @@ public class NetworkController {
     }
 
     public void sendGlobalChat(String content) {
-        if (content == null || content.trim().isEmpty()) return;
+        if (content == null || content.trim().isEmpty())
+            return;
         String message = translator.formatGlobalChatMessage(localPlayer.getName(), content);
         networkClient.send(message);
     }
 
     public void sendLobbyChat(String content) {
-        if (content == null || content.trim().isEmpty()) return;
+        if (content == null || content.trim().isEmpty())
+            return;
         String message = translator.formatLobbyChatMessage(localPlayer.getName(), content);
         networkClient.send(message);
     }
 
     public void sendPrivateChat(String recipient, String content) {
-        if (content == null || content.trim().isEmpty()) return;
+        if (content == null || content.trim().isEmpty())
+            return;
         String message = translator.formatWhisper(localPlayer.getName(), recipient, content);
         networkClient.send(message);
     }
@@ -268,5 +267,20 @@ public class NetworkController {
     public void getGameState() {
         String message = translator.formatGetGameStatus();
         networkClient.send(message);
+    }
+
+    /**
+     * Requests leaderboard data from the server.
+     * The server will respond with a message containing player rankings and scores.
+     */
+    public void getLeaderboard() {
+        String message = translator.formatGetLeaderboard();
+        networkClient.send(message);
+    }
+
+    // Add getter for localPlayer if needed by other components (like
+    // CommunicationMediator)
+    public Player getLocalPlayer() {
+        return localPlayer;
     }
 }

@@ -1,0 +1,157 @@
+/* ===== Chat Component Styles ===== */
+
+/* Use the same color variables as the main theme */
+.root {
+    /* Main colors */
+    -color-background-primary: #1a2133;
+    -color-background-secondary: #2c3347;
+    -color-background-tertiary: #383f54;
+
+    /* Accent colors */
+    -color-accent-primary: #e4c065;
+    /* Gold */
+    -color-accent-secondary: #6595e4;
+    /* Blue */
+    -color-accent-tertiary: #d16565;
+    /* Red */
+
+    /* Text colors */
+    -color-text-primary: #e8e8e8;
+    -color-text-secondary: #9a9a9a;
+    -color-text-accent: #e4c065;
+}
+
+/* Chat main container - Defines the component's look */
+.chat-panel {
+    -fx-background-color: -color-background-secondary;
+    /* Use variable */
+    -fx-background-radius: 8px;
+    -fx-border-color: rgba(228, 192, 101, 0.3);
+    /* Gold accent border */
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    /* Remove padding from the component root, let the parent container handle it */
+    -fx-padding: 0;
+    /* Remove effect from component root, let parent handle it if needed */
+    -fx-effect: null;
+}
+
+/* Toggle buttons for chat channels */
+.chat-toggle-button {
+    -fx-background-color: rgba(44, 51, 71, 0.8);
+    -fx-text-fill: -color-accent-primary;
+    -fx-border-color: -color-accent-primary;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 12px;
+}
+
+.chat-toggle-button:hover {
+    -fx-background-color: rgba(228, 192, 101, 0.2);
+    -fx-cursor: hand;
+}
+
+.chat-toggle-button:pressed {
+    -fx-background-color: rgba(228, 192, 101, 0.4);
+    -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.2), 2, 0, 0, 1);
+}
+
+.chat-toggle-button:selected {
+    -fx-background-color: rgba(228, 192, 101, 0.4);
+    -fx-text-fill: -color-text-primary;
+}
+
+/* Chat messages list */
+.chat-list {
+    -fx-background-color: rgba(44, 51, 71, 0.9);
+    -fx-background-radius: 4px;
+    -fx-border-color: rgba(228, 192, 101, 0.5);
+    -fx-border-radius: 4px;
+    -fx-padding: 5px;
+    /* Add padding inside the list */
+}
+
+.chat-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-text-primary;
+    -fx-padding: 6px 8px;
+    /* Remove bottom border */
+    -fx-border-color: transparent;
+}
+
+.chat-list .list-cell:odd {
+    -fx-background-color: rgba(44, 51, 71, 0.3);
+}
+
+/* Chat input field */
+.chat-input {
+    -fx-background-color: rgba(44, 51, 71, 0.7);
+    -fx-text-fill: -color-text-primary;
+    -fx-prompt-text-fill: -color-text-secondary;
+    -fx-border-color: rgba(76, 83, 102, 0.5);
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-padding: 6px 10px;
+}
+
+/* Send button */
+.send-button {
+    -fx-background-color: rgba(101, 149, 228, 0.3);
+    /* Blue accent */
+    -fx-border-color: -color-accent-secondary;
+    /* Blue accent border */
+    -fx-text-fill: -color-text-primary;
+    /* Use primary text color */
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-font-weight: bold;
+    -fx-padding: 6px 12px;
+}
+
+.send-button:hover {
+    -fx-background-color: rgba(101, 149, 228, 0.5);
+    -fx-cursor: hand;
+}
+
+.send-button:pressed {
+    -fx-background-color: rgba(101, 149, 228, 0.7);
+    -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.2), 2, 0, 0, 1);
+}
+
+/* Scrollbar styling */
+.chat-list .scroll-bar {
+    /* Target scrollbar inside chat-list */
+    -fx-background-color: rgba(26, 33, 51, 0.5);
+    -fx-background-radius: 2px;
+}
+
+.chat-list .scroll-bar .thumb {
+    /* Target thumb inside chat-list */
+    -fx-background-color: rgba(228, 192, 101, 0.3);
+    /* Gold accent */
+    -fx-background-radius: 2px;
+}
+
+.chat-list .scroll-bar .thumb:hover {
+    /* Target thumb hover inside chat-list */
+    -fx-background-color: rgba(228, 192, 101, 0.5);
+}
+
+.chat-list .scroll-bar .increment-button,
+/* Target buttons inside chat-list */
+.chat-list .scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+    /* Remove padding from scrollbar buttons */
+}
+
+.chat-list .scroll-bar .increment-arrow,
+/* Target arrows inside chat-list */
+.chat-list .scroll-bar .decrement-arrow {
+    -fx-shape: " ";
+    /* Hide default arrows */
+    -fx-padding: 0;
+}

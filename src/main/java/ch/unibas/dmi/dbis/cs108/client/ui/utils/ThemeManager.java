@@ -1,113 +1,109 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.utils;
 
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.text.Font;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.logging.Logger;
 
+/**
+ * Singleton manager for application themes (CSS stylesheets).
+ * Handles registering scenes and applying the current theme to all.
+ */
 public class ThemeManager {
-    private static ThemeManager instance;
+    private static final Logger LOGGER = Logger.getLogger(ThemeManager.class.getName());
+    private static volatile ThemeManager instance;
+
     private final List<Scene> registeredScenes = new ArrayList<>();
-    //    private final List<String> commonStylesheets = List.of("/css/common.css");
-    private Theme currentTheme = Theme.DEFAULT;
+    private String currentTheme = ResourceLoader.DEFAULT_THEME_CSS;
 
     private ThemeManager() {
-        loadFonts();
+        loadFont(ResourceLoader.CINZEL_REGULAR);
+        loadFont(ResourceLoader.ROBOTO_REGULAR);
     }
 
+    /**
+     * @return singleton instance of ThemeManager
+     */
     public static ThemeManager getInstance() {
         if (instance == null) {
-            instance = new ThemeManager();
+            synchronized (ThemeManager.class) {
+                if (instance == null) {
+                    instance = new ThemeManager();
+                }
+            }
         }
         return instance;
     }
 
+    /**
+     * Register a scene for theme management.
+     * 
+     * @param scene Scene to register
+     */
     public void registerScene(Scene scene) {
+        Objects.requireNonNull(scene);
         if (!registeredScenes.contains(scene)) {
             registeredScenes.add(scene);
             applyThemeToScene(scene);
         }
     }
 
-    public void setTheme(Theme theme) {
-        if (theme != currentTheme) {
-            currentTheme = theme;
-            applyThemeToAllScenes();
-        }
+    /**
+     * Set the current theme and apply to all registered scenes.
+     * 
+     * @param themePath CSS resource path
+     */
+    public void setTheme(String themePath) {
+        Objects.requireNonNull(themePath);
+        this.currentTheme = themePath;
+        applyThemeToAllScenes();
     }
 
+    /**
+     * Apply the current theme to all registered scenes.
+     */
     private void applyThemeToAllScenes() {
         for (Scene scene : registeredScenes) {
             applyThemeToScene(scene);
         }
     }
 
-    // File: src/main/java/ch/unibas/dmi/dbis/cs108/client/ui/utils/ThemeManager.java
-    private void applyThemeToScene(Scene scene) {
-        scene.getStylesheets().clear();
-
-        // Apply the theme stylesheet
-        URL themeUrl = getClass().getResource(currentTheme.getPath());
-        if (themeUrl != null) {
-            scene.getStylesheets().add(themeUrl.toExternalForm());
-        } else {
-            System.err.println("Theme stylesheet " + currentTheme.getPath() + " not found.");
-        }
+    /**
+     * Apply the current theme to a specific scene.
+     * 
+     * @param scene Scene to apply theme to
+     */
+    public void applyThemeToScene(Scene scene) {
+        Objects.requireNonNull(scene);
+        Platform.runLater(() -> {
+            scene.getStylesheets().clear();
+            URL commonCss = getClass().getResource(ResourceLoader.COMMON_CSS);
+            URL themeCss = getClass().getResource(currentTheme);
+            if (commonCss != null)
+                scene.getStylesheets().add(commonCss.toExternalForm());
+            if (themeCss != null)
+                scene.getStylesheets().add(themeCss.toExternalForm());
+        });
     }
 
-    private void loadFonts() {
-        boolean cinzelLoaded = false;
-        boolean robotoLoaded = false;
-
+    /**
+     * Loads a font from the given resource path.
+     * 
+     * @param fontPath Font resource path
+     */
+    private void loadFont(String fontPath) {
         try {
-            // Load Cinzel font and capture return value
-            Font cinzelFont = Font.loadFont(
-                    getClass().getResourceAsStream(ResourceLoader.CINZEL_REGULAR),
-                    12
-            );
-            cinzelLoaded = cinzelFont != null;
-
-            // Load Roboto font and capture return value
-            Font robotoFont = Font.loadFont(
-                    getClass().getResourceAsStream(ResourceLoader.ROBOTO_REGULAR),
-                    12
-            );
-            robotoLoaded = robotoFont != null;
-
-            // Verify the fonts are in the system
-            boolean cinzelInSystem = Font.getFamilies().contains("Cinzel");
-            boolean robotoInSystem = Font.getFamilies().contains("Roboto");
-
-            System.out.println("Font loading status:");
-            System.out.println("- Cinzel: " + (cinzelLoaded ? "Loaded" : "Failed") +
-                    ", In system: " + cinzelInSystem);
-            System.out.println("- Roboto: " + (robotoLoaded ? "Loaded" : "Failed") +
-                    ", In system: " + robotoInSystem);
-
-            if (cinzelLoaded && robotoLoaded) {
-                System.out.println("Fonts loaded successfully");
-            } else {
-                System.err.println("Some fonts failed to load");
+            URL url = getClass().getResource(fontPath);
+            if (url != null) {
+                Font.loadFont(url.toExternalForm(), 10);
             }
         } catch (Exception e) {
-            System.err.println("Error loading fonts: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    public enum Theme {
-        DEFAULT("/css/game-screen.css");
-
-        private final String cssPath;
-
-        Theme(String path) {
-            this.cssPath = path;
-        }
-
-        public String getPath() {
-            return cssPath;
+            LOGGER.warning("Failed to load font: " + fontPath);
         }
     }
 }

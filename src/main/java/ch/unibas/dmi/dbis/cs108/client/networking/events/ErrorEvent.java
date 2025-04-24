@@ -3,7 +3,7 @@ package ch.unibas.dmi.dbis.cs108.client.networking.events;
 import java.time.Instant;
 
 /**
- * Event representing an error in the application.
+ * UIEvent representing an error in the application.
  * This event is triggered when an error occurs, providing details about the error.
  */
 public class ErrorEvent implements Event {

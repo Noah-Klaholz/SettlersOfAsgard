@@ -91,7 +91,7 @@ public class GameApplication extends Application {
         networkEventDispatcher = EventDispatcher.getInstance();
 
         // Initialize CommunicationMediator to wire UI and network messages.
-        new CommunicationMediator(networkController, game);
+        new CommunicationMediator(networkController);
         //      REMOVED: setupUIEventHandlers();
 
         // Initialize and display the main menu scene.
@@ -111,7 +111,7 @@ public class GameApplication extends Application {
     /** Unnecessary for now, but can be used for future UI event handling
     private void setupUIEventHandlers() {
         // Subscribe to Chat events
-        uiEventBus.subscribe(SendChatEvent.class, event -> {
+        uiEventBus.subscribe(GlobalChatEvent.class, event -> {
             switch (event.getType()) {
                 case GLOBAL:
                     networkController.sendGlobalChat(event.getMessage());

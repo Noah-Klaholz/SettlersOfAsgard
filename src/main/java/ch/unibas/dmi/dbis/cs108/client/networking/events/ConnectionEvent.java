@@ -3,7 +3,7 @@ package ch.unibas.dmi.dbis.cs108.client.networking.events;
 import java.time.Instant;
 
 /**
- * Event representing a connection state change.
+ * UIEvent representing a connection state change.
  * This event is triggered when the connection state changes, such as connecting, connected, or disconnected.
  */
 public class ConnectionEvent implements Event {

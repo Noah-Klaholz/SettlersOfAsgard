@@ -4,7 +4,7 @@ import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 
 /**
- * Event representing the acquisition of an artifact by a player.
+ * UIEvent representing the acquisition of an artifact by a player.
  * This event is triggered when a player acquires an artifact in the game.
  */
 public class ArtifactAcquiredEvent implements GameEvent {

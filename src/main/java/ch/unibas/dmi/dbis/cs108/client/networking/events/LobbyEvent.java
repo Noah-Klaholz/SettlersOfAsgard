@@ -32,6 +32,6 @@ public class LobbyEvent implements Event {
     }
 
     public enum LobbyAction {
-        JOINED, LEFT, CREATED, LISTED
+        LEFT, CREATED
     }
 }

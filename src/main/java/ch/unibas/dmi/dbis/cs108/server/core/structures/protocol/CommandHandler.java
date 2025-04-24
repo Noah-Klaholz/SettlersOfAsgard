@@ -6,6 +6,7 @@ import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 import ch.unibas.dmi.dbis.cs108.server.networking.GameServer;
+import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -118,12 +119,25 @@ public class CommandHandler {
                 while (server.containsPlayerName(uniqueName)) {
                     uniqueName = playerName + suffix++;
                 }
-                logger.info("Duplicate player registered: " + playerName);
+                logger.info("Duplicate player registered: " + uniqueName);
                 setLocalPlayer(new Player(uniqueName));
                 sendMessage("OK$RGST$" + uniqueName);
                 sendMessage("ERR$106$PLAYER_ALREADY_EXISTS$" + uniqueName);
             }
         }
+        return true;
+    }
+
+    /**
+     * This method handles the disconnection of a player.
+     *
+     * @return true if the command was handled successfully, false otherwise
+     */
+    public boolean handleDisconnect() {
+        handleLeaveLobby();
+        server.removeClient(ch);
+        sendMessage("OK$DISC$" + playerName);
+
         return true;
     }
 
@@ -204,7 +218,7 @@ public class CommandHandler {
         }
 
         String lobbyList = lobbies.stream()
-                .map(lobby -> lobby.getId() + ":  " + lobby.getStatus())
+                .map(lobby -> lobby.getId() + ":" + lobby.getPlayers().size() + ":" + lobby.getMaxPlayers() + ":" + lobby.getStatus() + ":" + lobby.getHostName())
                 .collect(Collectors.joining("%"));
 
         System.out.println(lobbyList);
@@ -222,17 +236,10 @@ public class CommandHandler {
         if (currentLobby != null) {
             handleLeaveLobby();
         }
-        String hostname = cmd.getArgs()[0]; // Falls wir später mal den Hostnamen speichern wollen -> könnte man in Lobby hinzufügen
         String lobbyId = cmd.getArgs()[1];
-        int maxPlayers = 4; //currently, maxPlayers is set to 4
+        int maxPlayers = 4; //currently, maxPlayers is set to 4 //TODO
         Lobby lobby = server.createLobby(lobbyId, maxPlayers);
-        if (lobby != null && lobby.addPlayer(ch)) {
-            joinLobby(lobby);
-            return true;
-        } else {
-            sendMessage("ERR$106$LOBBY_CREATION_FAILED");
-        }
-        return false;
+        return handleJoinLobby(new Command(CommunicationAPI.NetworkProtocol.Commands.JOIN.getCommand() + "$" + playerName + "$" + lobbyId));
     }
 
     /**
@@ -256,7 +263,12 @@ public class CommandHandler {
         }
         if (lobby != null && lobby.addPlayer(ch)) {
             joinLobby(lobby);
-            currentLobby.broadcastMessage("OK$JOIN$" + playerName + "$" + lobbyId);
+            currentLobby.broadcastMessage("OK$JOIN$" + lobbyId + "$" +
+                    lobby.getPlayers().stream()
+                    .map(ClientHandler::getPlayerName)
+                    .collect(Collectors.joining("%"))
+                    + "$" +
+                    (lobby.getHostName().equals(playerName) ? "true" : "false"));
             return true;
         } else {
             sendMessage("ERR$106$JOIN_LOBBY_FAILED");
@@ -321,7 +333,7 @@ public class CommandHandler {
      * @return true if the message was sent successfully, false otherwise
      */
     public boolean handleLobbyMessage(Command cmd) {
-        String senderName = cmd.getArgs()[0];
+        String senderName = ch.getPlayerName();
         String message = cmd.getArgs()[1];
         if (currentLobby != null) {
             currentLobby.broadcastMessage("CHTL$" + senderName + "$" + message);
@@ -339,9 +351,9 @@ public class CommandHandler {
      * @return true if the message was sent successfully, false otherwise
      */
     public boolean handleGlobalChatMessage(Command cmd) {
-        String com = cmd.toString();
-        com = com.replace("CHTL$", "CHTG$");
-        ch.sendGlobalChatMessage(new Command(com,localPlayer));
+        String senderName = ch.getPlayerName();
+        String message = cmd.getArgs()[1];
+        ch.sendGlobalChatMessage("CHTG$" + senderName + "$" + message);
         return true;
     }
 
@@ -358,7 +370,7 @@ public class CommandHandler {
             currentLobby.broadcastMessage("STRT$" + startPlayerName);
             return true;
         } else {
-            System.out.println("ERR$106$NOT_IN_LOBBY");
+            System.out.println("ERR$106$CANNOT_START_GAME");
             sendMessage("ERR$106$CANNOT_START_GAME");
             return false;
         }
@@ -369,7 +381,7 @@ public class CommandHandler {
      *
      * @return the current game logic
      */
-    public GameLogic getGameLogic() {
+    private GameLogic getGameLogic() {
         // Refresh gameLogic if it's null but the lobby has one
         if (gameLogic == null && currentLobby != null) {
             gameLogic = currentLobby.getGameLogic();

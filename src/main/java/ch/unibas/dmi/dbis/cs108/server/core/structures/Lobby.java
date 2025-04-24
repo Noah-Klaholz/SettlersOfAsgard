@@ -126,10 +126,10 @@ public class Lobby implements GameEventNotifier {
         }
         if (!isFull()) {
             players.add(player);
-            logger.info(player.toString() + " has joined Lobby: " + id);
+            logger.info(player.getPlayerName() + " has joined Lobby: " + id);
             return true;
         }
-        logger.warning(player.toString() + " could not join Lobby: " + id);
+        logger.warning(player.getPlayerName() + " could not join Lobby: " + id);
         return false;
     }
 
@@ -343,6 +343,14 @@ public class Lobby implements GameEventNotifier {
         return players.stream()
                 .map(ClientHandler::getPlayerName)
                 .collect(Collectors.joining(", "));
+    }
+
+    /**
+     * Returns the name of the host player.
+     * @return the name of the host player
+     */
+    public String getHostName() {
+        return players.get(0).getPlayerName();
     }
 
     /**
