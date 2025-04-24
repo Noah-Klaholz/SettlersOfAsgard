@@ -8,11 +8,11 @@
     "resourceValue": 5,
     "params": [
       {
-        "name": "Energy exchanged",
+        "name": "Energy",
         "value": -4
       },
       {
-        "name": "Runes exchanged",
+        "name": "Runes",
         "value": 100
       }
     ]
@@ -23,7 +23,13 @@
     "description": "",
     "id": 2,
     "price": 20,
-    "resourceValue": 5
+    "resourceValue": 5,
+    "params": [
+      {
+        "name": "Energy",
+        "value": 1
+      }
+    ]
   },
   {
     "name": "Helgrindr",
@@ -31,7 +37,13 @@
     "description": "",
     "id": 3,
     "price": 50,
-    "resourceValue": 5
+    "resourceValue": 5,
+    "params": [
+      {
+        "name": "Energy",
+        "value": 1
+      }
+    ]
   },
   {
     "name": "Huginn and Muninn",
@@ -39,7 +51,13 @@
     "description": "",
     "id": 4,
     "price": 30,
-    "resourceValue": 5
+    "resourceValue": 5,
+    "params": [
+      {
+        "name": "Energy",
+        "value": 2
+      }
+    ]
   },
   {
     "name": "Ran's Hall",
@@ -99,13 +117,7 @@
     "description": "",
     "id": 7,
     "price": 0,
-    "resourceValue": 20,
-    "params": [
-      {
-        "name": "Energy",
-        "value": 1
-      }
-    ]
+    "resourceValue": 20
   },
   {
     "name": "ActiveTrap",
@@ -116,7 +128,7 @@
     "resourceValue": 0,
     "params": [
       {
-        "name": "Runes Lost",
+        "name": "Runes",
         "value": -20
       }
     ]
