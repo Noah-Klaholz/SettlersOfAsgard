@@ -283,7 +283,6 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                     sendMessage("ERR$" + ErrorsAPI.Errors.NOT_IN_LOBBY.getError());
                 }
             }
-
         } else {
             logger.warning("ClientHandler: Invalid command: " + cmd);
         }

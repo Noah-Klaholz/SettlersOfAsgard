@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.networking.protocol;
 
 import ch.unibas.dmi.dbis.cs108.client.networking.events.*;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.game.EndTurnResponseEvent;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol.Commands;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.ErrorsAPI.Errors;
@@ -40,7 +41,7 @@ public class ProtocolTranslator implements CommunicationAPI {
         commandHandlers.put(Commands.CHATPRIVATE.getCommand(), this::processPrivateChatMessage);
         commandHandlers.put(Commands.JOIN.getCommand(), this::processJoinMessage);
         commandHandlers.put(Commands.LEAVE.getCommand(), this::processLeaveMessage);
-        commandHandlers.put("NOTF", this::processNotificationMessage); // Not in Commands enum
+        commandHandlers.put(Commands.INFO.getCommand(), this::processNotificationMessage); // Not in Commands enum
         commandHandlers.put(Commands.ERROR.getCommand(), this::processErrorMessage);
         commandHandlers.put(Commands.LISTLOBBIES.getCommand(), this::processLobbyListMessage);
         commandHandlers.put(Commands.OK.getCommand(), this::processSuccessMessage);
@@ -51,9 +52,8 @@ public class ProtocolTranslator implements CommunicationAPI {
         commandHandlers.put(Commands.START.getCommand(), this::processStartGameMessage);
         commandHandlers.put(Commands.CREATELOBBY.getCommand(), this::processCreateLobbyMessage);
         commandHandlers.put(Commands.DISCONNECT.getCommand(), this::processDisconnectMessage);
-        commandHandlers.put("LBRD", this::processLeaderboardMessage); // Not in Commands enum
+        commandHandlers.put(Commands.ENDGAME.getCommand(), this::processEndGameMessage); // Not in Commands enum
         commandHandlers.put(Commands.SYNCHRONIZE.getCommand(), this::processSyncMessage);
-
     }
 
     public void processIncomingMessage(String message) {
@@ -90,6 +90,10 @@ public class ProtocolTranslator implements CommunicationAPI {
 
     public void processStartGameMessage(String args) {
         eventDispatcher.dispatchEvent(new StartGameEvent());
+    }
+
+    public void processEndGameMessage(String args) {
+        eventDispatcher.dispatchEvent(new EndGameEvent(args));
     }
 
     private void processNameChangeMessage(String args) {
@@ -234,15 +238,6 @@ public class ProtocolTranslator implements CommunicationAPI {
                 "Server is shutting down"
         );
         eventDispatcher.dispatchEvent(event);
-    }
-
-    private void processLeaderboardMessage(String args) {
-        // ToDo: Implement this method to process leaderboard messages.
-        if (args == null || args.isEmpty()) {
-            LOGGER.warning("Invalid leaderboard message: LBRD" + DELIMITER + " was empty");
-            return;
-        }
-        LOGGER.info("Received leaderboard message: " + args);
     }
 
     // Protocol formatting methods
