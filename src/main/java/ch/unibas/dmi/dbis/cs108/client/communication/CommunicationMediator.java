@@ -474,8 +474,7 @@ public class CommunicationMediator {
                     public void onEvent(GameSyncEvent event) {
                         // Publish game sync event to UI
                         UIEventBus.getInstance()
-                                .publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.game.GameSyncEvent(
-                                        event.getGameState()));
+                                .publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.game.GameSyncEvent(event.getMessage(), gameStateManager));
                     }
 
                     @Override
