@@ -38,6 +38,11 @@ public class CreateLobbyRequestEvent implements UIEvent {
         return hostName;
     }
 
+    /**
+     * Returns the event type identifier.
+     *
+     * @return event type
+     */
     @Override
     public String getType() {
         return "CREATE_LOBBY_REQUEST";
