@@ -6,9 +6,13 @@ import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.TurnManager;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
+import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 
 import java.util.List;
 
+import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -163,23 +167,22 @@ public class GameLogicTest {
      */
     @Test
     void testPlaceStructure() {
+        Tile t = gameState.getBoardManager().getTile(0, 0);
+        Structure s = EntityRegistry.getStructure(1);
         int runesBefore = gameState.getPlayers().get(0).getRunes();
+        assert s != null;
+        int price = t.getPrice() + s.getPrice();
         // Verify that the player is able to buy a tile and place a structure on it
         assertTrue(gameLogic.buyTile(0, 0, "player1"));
         assertTrue(gameLogic.placeStructure(0, 0, 1, "player1"));
-        // Verify
-        Tile t = gameState.getBoardManager().getTile(0, 0);
-
-
-
-
-
-
-
-
-
-
-
+        int runesAfter = gameState.getPlayers().get(0).getRunes();
+        // Verify players has the correct amount of runes
+        assertEquals(runesBefore - price, runesAfter);
+        // Verify the tile has the correct entity
+        assertTrue(t.hasEntity());
+        assertEquals(1, t.getEntity().getId());
+        assertEquals(1, gameState.getPlayers().get(0).getPurchasableEntities().size());
+        assertEquals(gameState.getPlayers().get(0).getPurchasableEntities().get(0), s);
     }
 
 }
