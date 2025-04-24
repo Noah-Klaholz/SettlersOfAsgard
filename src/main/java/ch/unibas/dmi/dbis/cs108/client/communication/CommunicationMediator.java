@@ -8,6 +8,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ServerCommandEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.PlaceStatueUIEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.*;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 
 import java.util.Arrays;
@@ -32,7 +33,7 @@ public class CommunicationMediator {
     /**
      * The name of the player.
      */
-    private String playerName;
+    private Player player;
     /**
      * The GameStateManager instance used to manage the game state.
      * This manager handles the current state of the game and updates it based on
@@ -47,7 +48,8 @@ public class CommunicationMediator {
      * @param networkController The network controller to handle network
      *                          communication.
      */
-    public CommunicationMediator(NetworkController networkController, GameStateManager gameStateManager) {
+    public CommunicationMediator(NetworkController networkController, GameStateManager gameStateManager, Player player) {
+        this.player = player;
         this.gameStateManager = gameStateManager;
         this.networkController = networkController;
         registerUIListeners();
@@ -224,7 +226,7 @@ public class CommunicationMediator {
                                 // Recipient should be the local player when receiving
                                 UIEventBus.getInstance()
                                         .publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.chat.WhisperChatEvent(
-                                                event.getSender(), playerName, event.getContent())); // Sender,
+                                                event.getSender(), player.getName(), event.getContent())); // Sender,
                                 // Recipient
                                 // (self), Message
                                 break;
@@ -316,11 +318,8 @@ public class CommunicationMediator {
                         Logger.getGlobal().info("NameChangeResponseEvent: " + event.getMessage());
                         if (event.isSuccess()) {
                             // Update game core with new name
-                            playerName = event.getNewName();
+                            player.setName(event.getNewName());
                         }
-
-                        // Create a UI event to inform UI components
-                        // ToDo: Create a UI event class for name change response
                     }
 
                     @Override
@@ -376,7 +375,7 @@ public class CommunicationMediator {
                         // Check if the player who joined is the local player
                         // Ensure playerName (local player's name) is updated via
                         // NameChangeResponseEvent
-                        if (playerName != null && playerName.equals(event.getPlayer())) {
+                        if (player.getName() != null && player.getName().equals(event.getPlayer())) {
                             // It's the local player who joined
                             UIEventBus.getInstance()
                                     .publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyJoinedEvent(
