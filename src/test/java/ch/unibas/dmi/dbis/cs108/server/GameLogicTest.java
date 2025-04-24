@@ -9,6 +9,7 @@ import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 
 import java.util.List;
 
+import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -114,25 +115,44 @@ public class GameLogicTest {
     void testTurnProgression() {
         List<Player> players = gameState.getPlayers();
         String firstPlayer = gameState.getPlayerTurn();
-
         // Advance turn
         lobby.manualEndTurn();
         String secondPlayer = gameState.getPlayerTurn();
         assertNotEquals(firstPlayer, secondPlayer);
-
         // Verify turn order is maintained
         int firstIndex = players.indexOf(gameState.findPlayerByName(firstPlayer));
         int secondIndex = players.indexOf(gameState.findPlayerByName(secondPlayer));
         assertEquals((firstIndex + 1) % players.size(), secondIndex);
-
         // Complete full rotation
         for (int i = 0; i < players.size() - 1; i++) {
             lobby.manualEndTurn();
         }
-
         // Verify game round increments
         assertEquals(1, gameState.getGameRound());
     }
 
+    /**
+     * This test checks the successful completion of a players request to buy a tile. It verifies:
+     * - resource allocation
+     * - tile properties
+     * - player properties
+     */
+    @Test
+    void testBuyTileAction() {
+        int runesBefore = gameState.getPlayers().get(0).getRunes();
+        Tile t = gameState.getBoardManager().getTile(0, 0);
+        int price = t.getPrice();
+        // Verify that the player can buy the tile
+        assertTrue(gameLogic.buyTile(0, 0, "player1"));
+        // Verify that the player has paid the resources
+        int runesAfter = gameState.getPlayers().get(0).getRunes();
+        assertEquals(runesBefore - price, runesAfter);
+        // Verify that the tile has the correct owner
+        String owner = gameState.getBoardManager().getBoard().getTiles()[0][0].getOwner();
+        assertEquals("player1" ,owner);
+        // Verify that the player owns this tile (and only this one)
+        assertEquals(1, gameState.getPlayers().get(0).getOwnedTiles().size());
+        assertEquals(t, gameState.getPlayers().get(0).getOwnedTiles().get(0));
+    }
 
 }
