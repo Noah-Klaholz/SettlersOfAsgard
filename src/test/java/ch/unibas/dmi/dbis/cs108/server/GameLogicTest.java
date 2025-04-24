@@ -182,7 +182,7 @@ public class GameLogicTest {
         assertTrue(t.hasEntity());
         assertEquals(1, t.getEntity().getId());
         assertEquals(1, gameState.getPlayers().get(0).getPurchasableEntities().size());
-        assertEquals(gameState.getPlayers().get(0).getPurchasableEntities().get(0), s);
+        assertEquals(s.getId(), gameState.getPlayers().get(0).getPurchasableEntities().get(0).getId());
     }
 
 }
