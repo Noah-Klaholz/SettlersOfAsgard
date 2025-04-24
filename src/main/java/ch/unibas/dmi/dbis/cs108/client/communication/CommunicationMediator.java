@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.communication;
 
+import ch.unibas.dmi.dbis.cs108.client.core.state.GameStateManager;
 import ch.unibas.dmi.dbis.cs108.client.networking.NetworkController;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.*;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.LobbyJoinedEvent;
@@ -32,6 +33,12 @@ public class CommunicationMediator {
      * The name of the player.
      */
     private String playerName;
+    /**
+     * The GameStateManager instance used to manage the game state.
+     * This manager handles the current state of the game and updates it based on
+     * network events.
+     */
+    private final GameStateManager gameStateManager;
 
     /**
      * Constructor for CommunicationMediator.
@@ -40,7 +47,8 @@ public class CommunicationMediator {
      * @param networkController The network controller to handle network
      *                          communication.
      */
-    public CommunicationMediator(NetworkController networkController) {
+    public CommunicationMediator(NetworkController networkController, GameStateManager gameStateManager) {
+        this.gameStateManager = gameStateManager;
         this.networkController = networkController;
         registerUIListeners();
         registerNetworkListeners();
@@ -456,6 +464,23 @@ public class CommunicationMediator {
                     @Override
                     public Class<EndTurnEvent> getEventType() {
                         return EndTurnEvent.class;
+                    }
+                });
+
+        // Game Sync Event
+        EventDispatcher.getInstance().registerListener(GameSyncEvent.class,
+                new EventDispatcher.EventListener<GameSyncEvent>() {
+                    @Override
+                    public void onEvent(GameSyncEvent event) {
+                        // Publish game sync event to UI
+                        UIEventBus.getInstance()
+                                .publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.game.GameSyncEvent(
+                                        event.getGameState()));
+                    }
+
+                    @Override
+                    public Class<GameSyncEvent> getEventType() {
+                        return GameSyncEvent.class;
                     }
                 });
     }
