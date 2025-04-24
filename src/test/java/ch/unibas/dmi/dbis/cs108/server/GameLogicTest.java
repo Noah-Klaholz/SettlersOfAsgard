@@ -8,6 +8,8 @@ import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 
 import java.util.List;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +30,7 @@ public class GameLogicTest {
     private ClientHandler player1, player2, player3, player4;
     private GameLogic gameLogic;
     private GameState gameState;
-    TurnManager turnManager;
+    private TurnManager turnManager;
 
     /**
      * Initializes a test environment before each test:
@@ -58,13 +60,32 @@ public class GameLogicTest {
         turnManager = gameLogic.getTurnManager();
     }
 
+    @AfterEach
+    void tearDown() {
+        // Shutdown the turn scheduler if the game is running
+        if (lobby.getStatus().equals("In-Game")) {
+            lobby.stopTurnScheduler();
+        }
+        if (gameLogic != null) {
+            gameLogic.endGame();
+        }
+        lobby = null;
+        gameLogic = null;
+        gameState = null;
+    }
+
+    /**
+     * This test checks the correct starting of the game. It verifies:
+     * - Creation of GameLogic, GameState and TurnManager
+     * - Player initialization
+     * - Board initialization
+     * - Metadata initialization
+     */
     @Test
     void testStartGame() {
-        // Verify gameLogic is not null after setup
+        // Verify gameLogic, gameState and turnManager are not null after setup
         assertNotNull(gameLogic);
-        // Verify gameState is not null after setup
         assertNotNull(gameState);
-        // Verify turn manager is not null after setup
         assertNotNull(turnManager);
         // Verify players were properly set
         List<Player> players = gameState.getPlayers();
@@ -82,5 +103,36 @@ public class GameLogicTest {
         assertEquals(0, gameState.getPlayerRound());
         assertEquals("player1", gameState.getPlayerTurn());
     }
+
+    /**
+     * This test checks the turn progression. It verifies:
+     * - Second Player is different from the first.
+     * - Index of the new player is correct.
+     * - After a complete round, the gameRound count is 1.
+     */
+    @Test
+    void testTurnProgression() {
+        List<Player> players = gameState.getPlayers();
+        String firstPlayer = gameState.getPlayerTurn();
+
+        // Advance turn
+        lobby.manualEndTurn();
+        String secondPlayer = gameState.getPlayerTurn();
+        assertNotEquals(firstPlayer, secondPlayer);
+
+        // Verify turn order is maintained
+        int firstIndex = players.indexOf(gameState.findPlayerByName(firstPlayer));
+        int secondIndex = players.indexOf(gameState.findPlayerByName(secondPlayer));
+        assertEquals((firstIndex + 1) % players.size(), secondIndex);
+
+        // Complete full rotation
+        for (int i = 0; i < players.size() - 1; i++) {
+            lobby.manualEndTurn();
+        }
+
+        // Verify game round increments
+        assertEquals(1, gameState.getGameRound());
+    }
+
 
 }
