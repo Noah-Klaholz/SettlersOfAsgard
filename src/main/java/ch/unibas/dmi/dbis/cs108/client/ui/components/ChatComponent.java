@@ -234,18 +234,25 @@ public class ChatComponent extends UIComponent<BorderPane> {
     private void handleLobbyChatMessage(LobbyChatEvent event) {
         boolean isOwnMessage = localPlayer != null && event.getSender() != null
                 && localPlayer.getName().equals(event.getSender());
-        boolean isIncomingNetworkMessage = event.getLobbyId() == null && event.getSender() != null;
-        if (!isOwnMessage && lobbyChatButton.isSelected() && currentLobbyId != null) {
-            if (isIncomingNetworkMessage) {
-                Platform.runLater(() -> {
-                    String formatted = String.format("[%s] %s: %s",
-                            TIME_FORMATTER.format(event.getTimestamp()),
-                            event.getSender(),
-                            event.getMessage());
-                    messages.add(formatted);
-                    scrollToBottom();
-                });
-            }
+
+        // Check if the message is NOT from self AND is for the CURRENT lobby this
+        // component is tracking
+        if (!isOwnMessage && currentLobbyId != null && currentLobbyId.equals(event.getLobbyId())) {
+            // Removed the check for event.getLobbyId() == null as incoming messages should
+            // have it.
+            Platform.runLater(() -> {
+                String formatted = String.format("[%s] %s: %s",
+                        TIME_FORMATTER.format(event.getTimestamp()),
+                        event.getSender(),
+                        event.getMessage());
+                messages.add(formatted);
+                scrollToBottom();
+            });
+        } else if (!isOwnMessage) {
+            // Log if a message for a different lobby was received while this component is
+            // active
+            LOGGER.finer("Received lobby chat message for a different lobby (Current: " + currentLobbyId + ", Event: "
+                    + event.getLobbyId() + ")");
         }
     }
 
