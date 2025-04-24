@@ -9,6 +9,10 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * SocketNetworkClient is a network client that uses a socket to communicate with a server.
+ * It handles sending and receiving messages asynchronously and provides a message handler for processing incoming messages.
+ */
 public class SocketNetworkClient implements NetworkClient {
     private static final Logger LOGGER = Logger.getLogger(SocketNetworkClient.class.getName());
     private final ExecutorService executorService;
@@ -19,6 +23,10 @@ public class SocketNetworkClient implements NetworkClient {
     private volatile boolean running;
     private Thread readerThread;
 
+    /**
+     * Constructor for SocketNetworkClient.
+     * Initializes the executor service for handling network operations.
+     */
     public SocketNetworkClient() {
         this.executorService = Executors.newCachedThreadPool(r -> {
             Thread thread = new Thread(r, "NetworkClientThread");
@@ -27,6 +35,13 @@ public class SocketNetworkClient implements NetworkClient {
         });
     }
 
+    /**
+     * Constructor for SocketNetworkClient with a custom executor service.
+     * This allows for more control over the threading model used by the client.
+     *
+     * @param host The host address of the server.
+     * @param port The port number of the server.
+     */
     @Override
     public CompletableFuture<Void> connect(String host, int port) {
         CompletableFuture<Void> future = new CompletableFuture<>();
@@ -55,6 +70,10 @@ public class SocketNetworkClient implements NetworkClient {
         return future;
     }
 
+    /**
+     * Starts a thread to read messages from the socket.
+     * This method is called when the client successfully connects to the server.
+     */
     private void startReaderThread() {
         readerThread = new Thread(() -> {
             try {
@@ -77,6 +96,10 @@ public class SocketNetworkClient implements NetworkClient {
         readerThread.start();
     }
 
+    /**
+     * Disconnects from the server and cleans up resources.
+     * This method is called when the client is no longer needed or when an error occurs.
+     */
     @Override
     public void disconnect() {
         running = false;
@@ -93,6 +116,13 @@ public class SocketNetworkClient implements NetworkClient {
         }
     }
 
+    /**
+     * Sends a message to the server.
+     * This method is asynchronous and returns a CompletableFuture.
+     *
+     * @param message The message to send.
+     * @return A CompletableFuture that completes when the message is sent.
+     */
     @Override
     public CompletableFuture<Void> send(String message) {
         CompletableFuture<Void> future = new CompletableFuture<>();
@@ -112,16 +142,32 @@ public class SocketNetworkClient implements NetworkClient {
         return future;
     }
 
+    /**
+     * Checks if the client is connected to the server.
+     *
+     * @return true if connected, false otherwise.
+     */
     @Override
     public boolean isConnected() {
         return running && socket != null && !socket.isClosed();
     }
 
+    /**
+     * Sets the message handler for processing incoming messages.
+     * This allows the client to handle messages in a custom way.
+     *
+     * @param handler The message handler to set.
+     */
     @Override
     public void setMessageHandler(MessageHandler handler) {
         this.messageHandler = handler;
     }
 
+    /**
+     * Gets the message handler.
+     *
+     * @return The current message handler.
+     */
     private void notifyDisconnect(Throwable cause) {
         if (!running) return;
         running = false;
