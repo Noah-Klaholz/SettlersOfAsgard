@@ -35,7 +35,7 @@ public class GameStateManager {
      *
      * @param gameState the gameState to manage
      */
-    GameStateManager(GameState gameState) {
+    public GameStateManager(GameState gameState) {
         this.gameState = gameState;
     }
 

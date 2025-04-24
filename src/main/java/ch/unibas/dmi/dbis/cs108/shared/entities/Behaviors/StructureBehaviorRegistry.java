@@ -49,6 +49,7 @@ public class StructureBehaviorRegistry {
                 player.addArtifact(artifact);
                 return true;
             }
+            player.addEnergy(1);
             return false;
         });
 
@@ -59,6 +60,7 @@ public class StructureBehaviorRegistry {
 
         registerBehavior("Helgrindr", (structure, gameState, player) -> {
             player.addBuff(Status.BuffType.DEBUFFABLE, 0); // sets the player to non-debuffable
+            player.addEnergy(1);
             return true;
         });
 

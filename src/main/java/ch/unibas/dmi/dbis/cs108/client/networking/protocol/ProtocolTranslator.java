@@ -2,6 +2,7 @@ package ch.unibas.dmi.dbis.cs108.client.networking.protocol;
 
 import ch.unibas.dmi.dbis.cs108.client.networking.events.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.EndTurnResponseEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.game.GameSyncEvent;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol.Commands;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.ErrorsAPI.Errors;
@@ -71,10 +72,7 @@ public class ProtocolTranslator implements CommunicationAPI {
 
     // Message handler methods
     public void processTurnMessage(String args) {
-        eventDispatcher.dispatchEvent(new ReceiveCommandEvent(
-                Commands.STARTTURN.getCommand() + DELIMITER + args,
-                Commands.STARTTURN
-        ));
+        eventDispatcher.dispatchEvent(new EndTurnEvent(args));
     }
 
     public void processDisconnectMessage(String args) {
@@ -82,10 +80,7 @@ public class ProtocolTranslator implements CommunicationAPI {
     }
 
     public void processSyncMessage(String message) {
-        String[] parts = message.split("\\$", 2);
-        if (parts.length == 2) {
-            eventDispatcher.dispatchEvent(new ReceiveCommandEvent(message, Commands.SYNCHRONIZE));
-        }
+            eventDispatcher.dispatchEvent(new GameSyncEvent());
     }
 
     public void processStartGameMessage(String args) {
