@@ -83,11 +83,10 @@ public class GameLogic implements GameLogicInterface {
         } finally {
             gameLock.writeLock().unlock();
         }
-
     }
 
     /**
-     * Process incoming message by delegating to CommandProcessor
+     * Process an incoming message by delegating to CommandProcessor
      */
     @Override
     public void processCommand(Command command) {
@@ -129,8 +128,6 @@ public class GameLogic implements GameLogicInterface {
 
         return result.toString();
     }
-
-// Remove the sortPlayersByScore method as it's no longer needed
 
     /**
      * Buy a tile on the board.
