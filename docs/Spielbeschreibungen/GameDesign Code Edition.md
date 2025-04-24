@@ -87,7 +87,7 @@ Ein spezifisches Artefakt kann mehrfach gefunden werden (keine Begrenzung)
 | Freyas Holzamulett       | + Effizienz Runen-Farmen auf einem Feld                                         |             |
 | Freyrs Goldener Apfel    | + Energie (flat)                                                                |             |
 | Träne von Yggdrasil      | Anderer Spieler - Energie (flat)                                                |             |
-| Mjölnir-Fragment         | + Chance auf Artefakte                                                          |             |
+| Mjölnir-Charm            | + Chance auf Artefakte                                                          |             |
 | Fenrirs Knochen          | + Effizienz Energy generation auf einem Feld                                    |             |
 | Schatten von Hel         | Andere Spieler - Effizienz Runen Farmen                                         |             |
 | Flamme von Muspelheim    | + Preissenkung kaufbares für nächste Runde                                      |             |
