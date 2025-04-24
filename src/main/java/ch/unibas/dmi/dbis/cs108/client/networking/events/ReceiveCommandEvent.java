@@ -13,6 +13,11 @@ public class ReceiveCommandEvent implements Event {
     private final String message;
     private final Commands commandType;
 
+    /**
+     * Constructor for ReceiveCommandEvent.
+     *
+     * @param message The message received from the server.
+     */
     // Commands have OK added in front of them, but this is removed upon event
     // creation
     public ReceiveCommandEvent(String message) {
@@ -20,21 +25,39 @@ public class ReceiveCommandEvent implements Event {
         this.commandType = Commands.fromCommand(message.split("\\$")[0]);
     }
 
+    /**
+     * Constructor for ReceiveCommandEvent without OK prefix.
+     *
+     * @param message     The message received from the server.
+     * @param commandType The type of command.
+     */
     // Constructor for commands without OK prefix
     public ReceiveCommandEvent(String message, Commands commandType) {
         this.message = message;
         this.commandType = commandType;
     }
 
+    /**
+     * Get the timestamp of the event.
+     *
+     * @return The timestamp.
+     */
     public String getMessage() {
         return message;
     }
 
+    /**
+     * Get the command type of the event.
+     *
+     * @return The command type.
+     */
     public Commands getType() {
         return commandType;
     }
 
     /**
+     * Getter for the timestamp of the event.
+     *
      * @return
      */
     @Override
