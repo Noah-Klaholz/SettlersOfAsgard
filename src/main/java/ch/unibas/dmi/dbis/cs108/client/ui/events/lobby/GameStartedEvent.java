@@ -27,6 +27,11 @@ public class GameStartedEvent implements UIEvent {
         return lobbyId;
     }
 
+    /**
+     * Returns the event type identifier.
+     *
+     * @return the event type
+     */
     @Override
     public String getType() {
         return "GAME_STARTED";
