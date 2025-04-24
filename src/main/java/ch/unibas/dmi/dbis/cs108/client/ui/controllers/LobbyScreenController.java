@@ -733,26 +733,56 @@ public class LobbyScreenController extends BaseController {
             setPlayerCount(currentPlayers, maxPlayers);
         }
 
+        /**
+         * Gets the unique identifier of the lobby.
+         *
+         * @return The lobby ID.
+         */
         public String getId() {
             return id;
         }
 
+        /**
+         * Gets the display name of the lobby.
+         *
+         * @return The lobby name.
+         */
         public String getName() {
             return name.get();
         }
 
+        /**
+         * Gets the current status of the lobby.
+         *
+         * @return The lobby status.
+         */
         public String getStatus() {
             return status.get();
         }
 
+        /**
+         * Gets the host of the lobby.
+         *
+         * @return The host name.
+         */
         public String getHost() {
             return host.get();
         }
 
+        /**
+         * Gets the current number of players in the lobby.
+         *
+         * @return The current player count.
+         */
         public int getCurrentPlayers() {
             return currentPlayersCount;
         }
 
+        /**
+         * Gets the maximum number of players allowed in the lobby.
+         *
+         * @return The maximum player count.
+         */
         public int getMaxPlayers() {
             return maxPlayersCount;
         }
@@ -773,18 +803,34 @@ public class LobbyScreenController extends BaseController {
             return host;
         }
 
+        /**
+         * Sets the status of the lobby.
+         *
+         * @param newStatus The new status to set.
+         */
         public void setStatus(String newStatus) {
             if (newStatus != null) {
                 this.status.set(newStatus);
             }
         }
 
+        /**
+         * Sets the host of the lobby.
+         *
+         * @param newHost The new host to set.
+         */
         public void setHost(String newHost) {
             if (newHost != null) {
                 this.host.set(newHost);
             }
         }
 
+        /**
+         * Sets the current and maximum player count for the lobby.
+         *
+         * @param current The current number of players.
+         * @param max     The maximum number of players allowed.
+         */
         public void setPlayerCount(int current, int max) {
             if (current >= 0 && max > 0) {
                 this.currentPlayersCount = current;
@@ -795,6 +841,11 @@ public class LobbyScreenController extends BaseController {
             }
         }
 
+        /**
+         * Gets the player count property for binding.
+         *
+         * @return The player count property.
+         */
         @Override
         public boolean equals(Object o) {
             if (this == o)
@@ -805,11 +856,21 @@ public class LobbyScreenController extends BaseController {
             return id.equals(gameLobby.id);
         }
 
+        /**
+         * Returns a hash code for the lobby based on its ID.
+         *
+         * @return The hash code of the lobby.
+         */
         @Override
         public int hashCode() {
             return Objects.hash(id);
         }
 
+        /**
+         * Returns a string representation of the GameLobby object.
+         *
+         * @return A string containing the lobby's ID, name, player count, status, and host.
+         */
         @Override
         public String toString() {
             return "GameLobby{" +
