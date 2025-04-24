@@ -30,6 +30,11 @@ public class LobbyListResponseEvent implements UIEvent {
         return lobbies;
     }
 
+    /**
+     * Returns the event type identifier.
+     *
+     * @return event type identifier
+     */
     @Override
     public String getType() {
         return "LOBBY_LIST_RESPONSE";
