@@ -117,7 +117,6 @@ public class ProtocolTranslator implements CommunicationAPI {
     }
 
     private void processPrivateChatMessage(String args) {
-        Logger.getGlobal().info("Protocol Translator processedPrivateChatMessage: " + args);
         String[] parts = args.split("\\" + DELIMITER, 3); // Split into sender, receiver, message
         if (parts.length >= 2) {
             ChatMessageEvent event = new ChatMessageEvent(parts[0], parts[1], ChatMessageEvent.ChatType.PRIVATE);

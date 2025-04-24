@@ -266,24 +266,23 @@ public class ChatComponent extends UIComponent<BorderPane> {
         if (event.getSender() == null) {
             return;
         }
-        // Only display if the lobby tab is selected and it matches the current lobby
-        if (lobbyChatButton.isSelected() && currentLobbyId != null && currentLobbyId.equals(event.getLobbyId())) {
-            Platform.runLater(() -> {
-                String sender = event.getSender();
-                // Sender null check remains for safety
-                if (sender == null) {
-                    LOGGER.warning("Received LobbyChatEvent with null sender for lobby " + event.getLobbyId()
-                            + ". Content: " + event.getMessage());
-                    sender = "Unknown";
-                }
-                String formatted = String.format("[%s] %s: %s",
-                        TIME_FORMATTER.format(event.getTimestamp()),
-                        sender,
-                        event.getMessage());
-                messages.add(formatted);
-                scrollToBottom();
-            });
-        }
+    // Only display if the lobby tab is selected and it matches the current lobby
+        Platform.runLater(() -> {
+            String sender = event.getSender();
+            // Sender null check remains for safety
+            if (sender == null) {
+                LOGGER.warning("Received LobbyChatEvent with null sender for lobby " + event.getLobbyId()
+                        + ". Content: " + event.getMessage());
+                sender = "Unknown";
+            }
+            String formatted = String.format("[%s] %s: %s",
+                    TIME_FORMATTER.format(event.getTimestamp()),
+                    sender,
+                    event.getMessage());
+            messages.add(formatted);
+            scrollToBottom();
+        });
+
         // Log ignored messages for debugging if needed
         // else if (lobbyChatButton.isSelected() && currentLobbyId != null &&
         // !currentLobbyId.equals(event.getLobbyId())) {
@@ -299,7 +298,6 @@ public class ChatComponent extends UIComponent<BorderPane> {
      * Only display whispers that have a valid sender (i.e., received from server).
      */
     private void handleWhisperMessage(WhisperChatEvent event) {
-        Logger.getGlobal().log(Level.INFO, "ChatComponent Received WhisperChatEvent: " + event);
         Platform.runLater(() -> {
             // Ignore locally generated events (sender == null)
             if (event.getSender() == null) {
