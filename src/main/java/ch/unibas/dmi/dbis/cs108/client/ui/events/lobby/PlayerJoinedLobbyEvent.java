@@ -39,6 +39,11 @@ public class PlayerJoinedLobbyEvent implements UIEvent {
         return playerName;
     }
 
+    /**
+     * Returns the event type identifier.
+     *
+     * @return event type
+     */
     @Override
     public String getType() {
         return "PLAYER_JOINED_LOBBY";
