@@ -39,6 +39,11 @@ public class PlayerLeftLobbyEvent implements UIEvent {
         return playerName;
     }
 
+    /**
+     * Returns the event type identifier.
+     *
+     * @return event type
+     */
     @Override
     public String getType() {
         return "PLAYER_LEFT_LOBBY";
