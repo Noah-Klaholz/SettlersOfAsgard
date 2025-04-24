@@ -442,6 +442,22 @@ public class CommunicationMediator {
                     }
                 });
 
+        // End Turn Event
+        EventDispatcher.getInstance().registerListener(EndTurnEvent.class,
+                new EventDispatcher.EventListener<EndTurnEvent>() {
+                    @Override
+                    public void onEvent(EndTurnEvent event) {
+                        // Publish end turn event to UI
+                        UIEventBus.getInstance()
+                                .publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.game.EndTurnResponseEvent(
+                                        event.getNextPlayerName())); // TODO catch this event somewhere in the UI
+                    }
+
+                    @Override
+                    public Class<EndTurnEvent> getEventType() {
+                        return EndTurnEvent.class;
+                    }
+                });
     }
 
     // ToDo: Implement this method to update the game state and UI based on network
