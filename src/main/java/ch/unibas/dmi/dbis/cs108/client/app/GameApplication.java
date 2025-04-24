@@ -35,6 +35,10 @@ public class GameApplication extends Application {
      * access.
      */
     private static Player localPlayer;
+    /**
+     * The lobby ID for the current game session. Initialized to null.
+     */
+    private static String currentLobbyId = null;
 
     /**
      * The main entry point for the JavaFX application.
@@ -44,6 +48,24 @@ public class GameApplication extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+
+    /**
+     * Gets the lobby ID for the current game session.
+     *
+     * @return lobbyId The ID of the lobby.
+     */
+    public static String getCurrentLobbyId() {
+        return currentLobbyId;
+    }
+
+    /**
+     * Sets the lobby ID for the current game session.
+     *
+     * @param lobbyId The ID of the lobby to set.
+     */
+    public static void setCurrentLobbyId(String lobbyId) {
+        currentLobbyId = lobbyId;
     }
 
     /**

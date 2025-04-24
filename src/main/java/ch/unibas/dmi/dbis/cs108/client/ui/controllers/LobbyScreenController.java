@@ -382,6 +382,7 @@ public class LobbyScreenController extends BaseController {
         Objects.requireNonNull(event, "LobbyJoinedEvent cannot be null");
         Platform.runLater(() -> {
             currentLobbyId = event.getLobbyId();
+            GameApplication.setCurrentLobbyId(currentLobbyId);
             isHost = event.isHost();
             // Update the central player instance if the name from the server differs
             if (localPlayer != null && !localPlayer.getName().equals(event.getPlayerName())) {

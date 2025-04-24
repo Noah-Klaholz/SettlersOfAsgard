@@ -4,6 +4,7 @@ import ch.unibas.dmi.dbis.cs108.client.app.GameApplication;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeRequestEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyJoinedEvent;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
@@ -120,6 +121,7 @@ public class GameScreenController extends BaseController {
     private void initialize() {
         LOGGER.setLevel(Level.ALL);
         this.localPlayer = GameApplication.getLocalPlayer(); // Fetch player instance
+        this.currentLobbyId = GameApplication.getCurrentLobbyId(); // Fetch lobby ID
         if (this.localPlayer == null) {
             LOGGER.severe("LocalPlayer is null during MainMenuController initialization!");
             // Handle error appropriately, maybe show an error message and disable
@@ -138,18 +140,17 @@ public class GameScreenController extends BaseController {
         initialiseDescriptionDialog();
 
         // --- ChatComponent setup ---
+        chatContainer.getChildren().clear();
         chatComponentController = new ChatComponent();
-        chatComponentController.setPlayer(localPlayer);
-        chatComponentController.setCurrentLobbyId(currentLobbyId);
-        chatComponentController.addSystemMessage("Game interface initialized successfully!");
-        if (chatContainer != null) {
-            chatContainer.getChildren().clear();
-            Node chatView = chatComponentController.getView(); // Get the view Node
-            chatContainer.getChildren().add(chatView);
-            VBox.setVgrow(chatView, Priority.ALWAYS); // Make the chat component grow vertically
+        Node chatView = chatComponentController.getView(); // Get the view Node
+        chatContainer.getChildren().add(chatView);
+        VBox.setVgrow(chatView, Priority.ALWAYS); // Make the chat component grow vertically
+        if (localPlayer != null) { // Ensure localPlayer is set
+            chatComponentController.setPlayer(localPlayer);
         } else {
-            LOGGER.severe("chatContainer VBox is null! Check FXML for fx:id=\"chatContainer\"");
+            LOGGER.warning("Cannot set player in ChatComponent: localPlayer is null.");
         }
+        chatComponentController.setCurrentLobbyId(currentLobbyId);
         // --- end ChatComponent setup ---
     }
 
@@ -171,6 +172,7 @@ public class GameScreenController extends BaseController {
     private void subscribeEvents() {
         eventBus.subscribe(ConnectionStatusEvent.class, this::onConnectionStatus);
         eventBus.subscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
+        eventBus.subscribe(LobbyJoinedEvent.class, this::handleLobbyJoined);
         eventBus.subscribe(TileClickEvent.class, this::onTileClick);
     }
 
@@ -310,6 +312,24 @@ public class GameScreenController extends BaseController {
                 if (localPlayer != null) {
                     settingsDialog.playerNameProperty().set(localPlayer.getName());
                 }
+            }
+        });
+    }
+
+    /**
+     * Handles the event when a player joins a lobby.
+     *
+     * @param event The lobby joined event.
+     */
+    private void handleLobbyJoined(LobbyJoinedEvent event) {
+        Objects.requireNonNull(event, "LobbyJoinedEvent cannot be null");
+        Platform.runLater(() -> {
+            if (chatComponentController != null) {
+                if (localPlayer != null) { // Ensure player is set before updating chat
+                    chatComponentController.setPlayer(localPlayer);
+                }
+                chatComponentController.setCurrentLobbyId(currentLobbyId); // Set lobby ID for chat
+                chatComponentController.addSystemMessage("You joined lobby: " + event.getLobbyName());
             }
         });
     }
