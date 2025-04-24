@@ -207,7 +207,6 @@ public class CommunicationMediator {
                 new EventDispatcher.EventListener<ChatMessageEvent>() {
                     @Override
                     public void onEvent(ChatMessageEvent event) {
-                        Logger.getGlobal().info("Communication Mediator: ChatMessageEvent: " + event.getSender() + ": " + event.getContent());
                         switch (event.getType()) {
                             case INFO:
                                 UIEventBus.getInstance()

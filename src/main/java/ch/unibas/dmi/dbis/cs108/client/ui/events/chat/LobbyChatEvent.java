@@ -3,6 +3,7 @@ package ch.unibas.dmi.dbis.cs108.client.ui.events.chat;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
 
 import java.time.LocalDateTime;
+import java.util.logging.Logger;
 
 /**
  * UIEvent representing a chat message within a lobby.
@@ -21,6 +22,10 @@ public class LobbyChatEvent implements UIEvent {
      * @param message the message content
      */
     public LobbyChatEvent(String lobbyId, String sender, String message) {
+        Logger.getGlobal().info("Creating a new LobbyChatEvent" +
+                " with lobbyId: " + lobbyId +
+                ", sender: " + sender +
+                ", message: " + message);
         this.lobbyId = lobbyId;
         this.sender = sender;
         this.message = message;
