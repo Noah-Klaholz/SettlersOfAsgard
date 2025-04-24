@@ -61,15 +61,16 @@ public class StructureBehaviorRegistry {
 
         registerBehavior("Huginn and Muninn", (structure, gameState, player) -> {
             Tile[][] tiles = gameState.getBoardManager().getBoard().getTiles();
+            boolean b = false;  // true if there is an artifact to show, false otherwise
             for (Tile[] tile : tiles) {
                 for (Tile t : tile) {
                     if (t.getArtifact() != null) {
-                        gameState.sendNotification(player.getName(), "4$" + t.getX() + "$" + t.getY() + "$" + t.getArtifact().getName());
-                        return true;
+                        gameState.sendNotification(player.getName(), "4$" + t.getX() + "$" + t.getY() + "$" + t.getArtifact().getId());
+                        b = true;
                     }
                 }
             }
-            gameState.sendNotification(player.getName(), "4$Null");
+            if (!b) gameState.sendNotification(player.getName(), "4$Null");
             player.addEnergy((int)structure.getParams().get(0).getValue());
             return true;
         });

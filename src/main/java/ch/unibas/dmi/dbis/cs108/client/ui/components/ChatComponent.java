@@ -299,6 +299,7 @@ public class ChatComponent extends UIComponent<BorderPane> {
      * Only display whispers that have a valid sender (i.e., received from server).
      */
     private void handleWhisperMessage(WhisperChatEvent event) {
+        Logger.getGlobal().log(Level.INFO, "ChatComponent Received WhisperChatEvent: " + event);
         Platform.runLater(() -> {
             // Ignore locally generated events (sender == null)
             if (event.getSender() == null) {
