@@ -36,6 +36,8 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Constructor initializes game with proper components
+     *
+     * @param notifier the GameEventNotifier to notify game events
      */
     public GameLogic(GameEventNotifier notifier) {
         this.notifier = notifier;
@@ -131,6 +133,10 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Buy a tile on the board.
+     * @param x the x-coordinate of the tile.
+     * @param y the y-coordinate of the tile.
+     * @param playerName the name of the player buying the tile.
+     *
      * @return if the action was successful.
      */
     public boolean buyTile(int x, int y, String playerName) {
@@ -139,6 +145,9 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Place a structure on the board.
+     * @param x the x-coordinate of the tile.
+     * @param y the y-coordinate of the tile.
+     *
      * @return if the action was successful.
      */
     public boolean placeStructure(int x, int y, int structureId, String playerName) {
@@ -147,6 +156,11 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Use a structure on the board.
+     * @param x the x-coordinate of the tile.
+     * @param y the y-coordinate of the tile.
+     * @param structureId the ID of the structure.
+     * @param playerName the name of the player using the structure.
+     *
      * @return if the action was successful.
      */
     public boolean useStructure(int x, int y, int structureId, String playerName) {
@@ -155,6 +169,11 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Buy a statue.
+     * @param statueId the ID of the statue.
+     * @param playerName the name of the player buying the statue.
+     * @param x the x-coordinate of the tile.
+     * @param y the y-coordinate of the tile.
+     *
      * @return if the action was successful.
      */
     public boolean placeStatue(int x, int y, int statueId, String playerName) {
@@ -163,6 +182,11 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Upgrade a statue.
+     * @param statueId the ID of the statue.
+     * @param playerName the name of the player buying the statue.
+     * @param x the x-coordinate of the tile.
+     * @param y the y-coordinate of the tile.
+     *
      * @return if the action was successful.
      */
     public boolean upgradeStatue(int x, int y, int statueId, String playerName) {
@@ -171,6 +195,12 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Use a statue.
+     * @param statueId the ID of the statue.
+     * @param playerName the name of the player buying the statue.
+     * @param x the x-coordinate of the tile.
+     * @param y the y-coordinate of the tile.
+     * @param params the parameters for the statue action.
+     *
      * @return if the action was successful.
      */
     public boolean useStatue(int x, int y, int statueId, String playerName, String params) {
@@ -179,6 +209,12 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Use a field artifact
+     *
+     * @param artifactId the ID of the artifact.
+     * @param playerName the name of the player buying the statue.
+     * @param x the x-coordinate of the tile.
+     * @param y the y-coordinate of the tile.
+     *
      * @return if the action was successful.
      */
     public boolean useFieldArtifact(int x, int y, int artifactId, String playerName) {
@@ -187,6 +223,10 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Use a player artifact.
+     * @param artifactId the ID of the artifact.
+     * @param playerName the name of the player buying the statue.
+     * @param targetPlayer the name of the target player.
+     *
      * @return if the action was successful.
      */
     public boolean usePlayerArtifact(int artifactId, String targetPlayer, String playerName) {

@@ -141,6 +141,11 @@ public class Command {
         return command + "$" + args;
     }
 
+    /**
+     * Checks if the command is administrative
+     *
+     * @return true if the command is administrative, false otherwise
+     */
     public boolean isAdministrative() {
         return switch (commandType) {
             case LISTLOBBIES, START, SHUTDOWN, SYNCHRONIZE, REGISTER, LEAVE, CHANGENAME, PING, EXIT, JOIN, CHATGLOBAL, CHATLOBBY, CHATPRIVATE, CREATELOBBY, LISTPLAYERS -> true;

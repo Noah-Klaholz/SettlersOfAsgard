@@ -241,6 +241,8 @@ public class GameServer {
     /**
      * Removes the given lobby from the list of lobbies.
      *
+     * @param lobby The lobby to remove
+     *
      * @see Lobby
      */
     public void removeLobby(Lobby lobby) {

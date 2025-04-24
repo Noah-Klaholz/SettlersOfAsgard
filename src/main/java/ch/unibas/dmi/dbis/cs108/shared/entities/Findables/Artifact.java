@@ -92,6 +92,8 @@ public class Artifact extends FindableEntity {
      * @param name The name of this artifact
      * @param description The description of this artifact
      * @param useType The type of functionality this artifact provides
+     * @param chanceToFind The chance to find this artifact
+     * @param effect The effect of this artifact
      */
     public Artifact(int id, String name, String description, String useType, double chanceToFind, double effect) {
         super(id, name, description);

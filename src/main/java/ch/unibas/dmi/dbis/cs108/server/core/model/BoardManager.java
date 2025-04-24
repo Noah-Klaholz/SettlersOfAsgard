@@ -24,6 +24,8 @@ public class BoardManager {
 
     /**
      * Get the game board
+     *
+     * @return The game board
      */
     public Board getBoard() {
         return board;
@@ -31,6 +33,9 @@ public class BoardManager {
 
     /**
      * Initialize the board
+     *
+     * @param width  The width of the board
+     * @param height The height of the board
      */
     public void initializeBoard(int width, int height) {
         stateLock.writeLock().lock();
@@ -43,6 +48,11 @@ public class BoardManager {
 
     /**
      * Get a specific tile on the board
+     *
+     * @param x The x-coordinate of the tile
+     * @param y The y-coordinate of the tile
+     *
+     * @return The tile at the specified coordinates
      */
     public Tile getTile(int x, int y) {
         stateLock.readLock().lock();
@@ -55,6 +65,11 @@ public class BoardManager {
 
     /**
      * Set a specific tile on the board
+     *
+     * @param x The x-coordinate of the tile
+     * @param y The y-coordinate of the tile
+     *
+     * @param tile The tile to set
      */
     public boolean setTile(int x, int y, Tile tile) {
         stateLock.writeLock().lock();

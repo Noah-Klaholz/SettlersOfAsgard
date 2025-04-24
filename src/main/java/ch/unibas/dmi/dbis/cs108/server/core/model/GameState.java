@@ -34,6 +34,8 @@ public class GameState {
 
     /**
      * Creates a new gameState object. Initializes the Board- and TurnManager.
+     *
+     * @param notifier the GameEventNotifier to notify the game about events
      */
     public GameState(GameEventNotifier notifier) {
         this.boardManager = new BoardManager(stateLock);
