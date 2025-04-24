@@ -53,7 +53,7 @@ public class StructureBehaviorRegistry {
         });
 
         registerBehavior("ActiveTrap", (structure, gameState, player) -> {
-            player.addRunes(-(int)structure.getParams().get(0).getValue());
+            player.addRunes((int)structure.getParams().get(0).getValue());
             return true;
         });
 
