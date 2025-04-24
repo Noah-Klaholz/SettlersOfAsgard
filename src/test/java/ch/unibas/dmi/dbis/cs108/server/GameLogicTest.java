@@ -68,7 +68,7 @@ public class GameLogicTest {
             lobby.stopTurnScheduler();
         }
         if (gameLogic != null) {
-            gameLogic.endGame();
+            lobby.endGame();
         }
         lobby = null;
         gameLogic = null;
@@ -153,6 +153,33 @@ public class GameLogicTest {
         // Verify that the player owns this tile (and only this one)
         assertEquals(1, gameState.getPlayers().get(0).getOwnedTiles().size());
         assertEquals(t, gameState.getPlayers().get(0).getOwnedTiles().get(0));
+    }
+
+    /**
+     * This test checks the successful completion of a players request to place a structure. It verifies:
+     * - resource allocation
+     * - tile properties
+     * - player properties
+     */
+    @Test
+    void testPlaceStructure() {
+        int runesBefore = gameState.getPlayers().get(0).getRunes();
+        // Verify that the player is able to buy a tile and place a structure on it
+        assertTrue(gameLogic.buyTile(0, 0, "player1"));
+        assertTrue(gameLogic.placeStructure(0, 0, 1, "player1"));
+        // Verify
+        Tile t = gameState.getBoardManager().getTile(0, 0);
+
+
+
+
+
+
+
+
+
+
+
     }
 
 }
