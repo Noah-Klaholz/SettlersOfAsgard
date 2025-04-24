@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
-import ch.unibas.dmi.dbis.cs108.client.app.GameApplication; // Import GameApplication
-import ch.unibas.dmi.dbis.cs108.client.core.Player;
+import ch.unibas.dmi.dbis.cs108.client.app.GameApplication;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
@@ -25,7 +25,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.Priority; // Import Priority
+import javafx.scene.layout.Priority;
 
 import java.util.List;
 import java.util.Objects;
@@ -76,7 +76,7 @@ public class LobbyScreenController extends BaseController {
 
     private String currentLobbyId;
     private boolean isHost = false;
-    private Player localPlayer; // Keep the field, but don't initialize here
+    private Player localPlayer; // Use shared.game.Player
     private ChatComponent chatComponentController;
     private SettingsDialog settingsDialog; // Declare SettingsDialog
 

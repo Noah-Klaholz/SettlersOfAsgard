@@ -1,6 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.components;
 
-import ch.unibas.dmi.dbis.cs108.client.core.Player;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player; // Use shared Player
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.LobbyChatEvent;
@@ -34,7 +34,7 @@ public class ChatComponent extends UIComponent<BorderPane> {
     private final ObservableList<String> messages = FXCollections.observableArrayList();
     private final UIEventBus eventBus;
     private String currentLobbyId;
-    private Player localPlayer;
+    private Player localPlayer; // Use shared.game.Player
 
     @FXML
     private ListView<String> chatMessages;

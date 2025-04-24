@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
 import ch.unibas.dmi.dbis.cs108.client.app.GameApplication; // Import GameApplication
-import ch.unibas.dmi.dbis.cs108.client.core.Player;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player; // Use shared Player
 import ch.unibas.dmi.dbis.cs108.client.networking.ConnectionState;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.AboutDialog;
@@ -42,7 +42,7 @@ public class MainMenuController extends BaseController {
     private static final String VERSION = "1.0.0";
 
     private final AtomicBoolean isConnected = new AtomicBoolean(false);
-    private Player localPlayer; // Keep the field, but don't initialize here
+    private Player localPlayer; // Use shared.game.Player
     private int onlineUserCount = 0;
 
     @FXML
