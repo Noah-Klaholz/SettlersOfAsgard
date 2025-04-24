@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.networking.protocol;
 
 import ch.unibas.dmi.dbis.cs108.client.networking.events.*;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.game.EndTurnResponseEvent;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol.Commands;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.ErrorsAPI.Errors;
