@@ -147,6 +147,11 @@ public class Player {
         return ownedTiles.remove(tile);
     }
 
+    /**
+     * Returns a string representation of the Player object.
+     *
+     * @return A string containing the player's name, runes, energy, and number of owned tiles.
+     */
     @Override
     public String toString() {
         return "Player{" +
@@ -157,6 +162,12 @@ public class Player {
                 '}';
     }
 
+    /**
+     * Compares this Player object with another for equality.
+     *
+     * @param o The object to compare with.
+     * @return true if the names are equal, false otherwise.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -167,6 +178,11 @@ public class Player {
         return name.equals(player.name);
     }
 
+    /**
+     * Returns a hash code value for the Player object.
+     *
+     * @return An integer hash code based on the player's name.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(name);
