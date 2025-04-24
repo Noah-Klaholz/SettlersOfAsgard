@@ -1,7 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.events.game;
 
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
-
 import java.util.List;
 import java.util.Map;
 

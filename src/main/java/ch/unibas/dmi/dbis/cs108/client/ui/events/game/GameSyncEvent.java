@@ -1,37 +1,38 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.events.game;
 
-import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
+import ch.unibas.dmi.dbis.cs108.client.core.state.GameStateManager;
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
 
-/**
- * Carries a full snapshot of the current game state.
- * Used for initial synchronization when joining a game or reconnecting.
- */
+import java.time.Instant;
+
 public class GameSyncEvent implements UIEvent {
-
-    private final GameState gameState;
-
     /**
-     * Constructs a GameSyncEvent.
-     *
-     * @param gameState the game state containing the board state, players' state,
+     * The game state manager.
      */
-    public GameSyncEvent(GameState gameState) {
-        this.gameState = gameState;
+    private final GameStateManager gameStateManager;
+
+    public GameSyncEvent(String args, GameStateManager gameStateManager) {
+        this.gameStateManager = gameStateManager;
+        gameStateManager.updateGameState(args);
     }
 
     /**
-     * @return the game state
+     * Getter for the gameState.
+     *
+     * @return The game state.
      */
     public GameState getGameState() {
-        return gameState;
+        return gameStateManager.getGameState();
     }
 
     /**
-     * @return the event type identifier
+     * Returns the event type string.
+     *
+     * @return event type string
      */
     @Override
     public String getType() {
-        return "GAME_SYNC";
+        return "SyncEvent";
     }
 }
