@@ -121,6 +121,10 @@ public interface CommunicationAPI {
              */
             ENDTURN("ENDT"),
             /**
+             * Ends the game and shows the final score
+             */
+            ENDGAME("ENDG"),
+            /**
              * Request synchronization of the game
              */
             SYNCHRONIZE("SYNC"),

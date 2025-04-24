@@ -3,6 +3,7 @@ package ch.unibas.dmi.dbis.cs108.server.core.structures;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameEventNotifier;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
+import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -313,7 +314,7 @@ public class Lobby implements GameEventNotifier {
     public void endGame() {
         if (status == LobbyStatus.IN_GAME) {
             status = LobbyStatus.GAME_ENDED;
-            broadcastMessage("GAME_ENDED");
+            broadcastMessage(CommunicationAPI.NetworkProtocol.Commands.ENDGAME.getCommand() + "$" +  gameLogic.createFinalScoreMessage());
             gameLogic.getGameState().reset();
             stopTurnScheduler();
         }
