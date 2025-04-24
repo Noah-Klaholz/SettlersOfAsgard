@@ -5,6 +5,7 @@ import ch.unibas.dmi.dbis.cs108.client.networking.NetworkController;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.*;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.LobbyJoinedEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ServerCommandEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.PlaceStatueUIEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.*;
@@ -300,7 +301,7 @@ public class CommunicationMediator {
                 new EventDispatcher.EventListener<ConnectionEvent>() {
                     @Override
                     public void onEvent(ConnectionEvent event) {
-                        // ToDo: Handle connection events
+                        UIEventBus.getInstance().publish(new ConnectionStatusEvent(event.getState(), event.getMessage()));
                     }
 
                     @Override

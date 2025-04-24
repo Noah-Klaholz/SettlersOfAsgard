@@ -1,6 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.events.admin;
 
-import ch.unibas.dmi.dbis.cs108.client.networking.ConnectionState;
+import ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent.ConnectionState;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
 
 /**

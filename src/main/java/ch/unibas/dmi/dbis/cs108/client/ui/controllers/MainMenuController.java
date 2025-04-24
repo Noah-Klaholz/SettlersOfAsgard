@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
 import ch.unibas.dmi.dbis.cs108.client.app.GameApplication; // Import GameApplication
+import ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player; // Use shared Player
 import ch.unibas.dmi.dbis.cs108.client.networking.ConnectionState;
@@ -11,19 +12,15 @@ import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeRequestEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.Priority; // Import Priority
 
@@ -116,6 +113,8 @@ public class MainMenuController extends BaseController {
         // Set initial player name in settings dialog
         if (localPlayer != null) {
             settingsDialog.playerNameProperty().set(localPlayer.getName());
+            settingsDialog.setConnectionStatus(isConnected.get(),
+                    isConnected.get() ? "Connected" : "Disconnected");
         }
     }
 
@@ -185,11 +184,13 @@ public class MainMenuController extends BaseController {
      * @param event The connection status event.
      */
     private void handleConnectionStatus(ConnectionStatusEvent event) {
+        Logger.getGlobal().info("Main Menu Controller: Received connection status event: " + event);
         Objects.requireNonNull(event, "ConnectionStatusEvent cannot be null");
         Platform.runLater(() -> {
-            boolean currentlyConnected = event.getState() == ConnectionState.CONNECTED;
+            boolean currentlyConnected = event.getState() == ConnectionEvent.ConnectionState.CONNECTED;
             boolean wasConnected = isConnected.getAndSet(currentlyConnected);
             updateConnectionStatusLabel(currentlyConnected);
+            settingsDialog.setConnectionStatus(currentlyConnected, currentlyConnected ? "Connected" : "Disconnected");
 
             if (chatComponentController != null && event.getMessage() != null && !event.getMessage().isEmpty()) {
                 chatComponentController.addSystemMessage(event.getMessage());
@@ -200,7 +201,6 @@ public class MainMenuController extends BaseController {
             if (currentlyConnected && !wasConnected && chatComponentController != null) {
                 chatComponentController.addSystemMessage("Reconnected to the server.");
             }
-            settingsDialog.setConnectionStatus(currentlyConnected, currentlyConnected ? "Connected" : "Disconnected");
         });
     }
 
@@ -349,11 +349,11 @@ public class MainMenuController extends BaseController {
                     if (success) {
                         LOGGER.info("Successfully connected to server.");
                         eventBus.publish(
-                                new ConnectionStatusEvent(ConnectionState.CONNECTED, "Connection established."));
+                                new ConnectionStatusEvent(ConnectionEvent.ConnectionState.CONNECTED, "Connection established."));
                         updateOnlineUserCount(usersOnline);
                     } else {
                         LOGGER.warning("Failed to connect to server.");
-                        eventBus.publish(new ConnectionStatusEvent(ConnectionState.DISCONNECTED,
+                        eventBus.publish(new ConnectionStatusEvent(ConnectionEvent.ConnectionState.DISCONNECTED,
                                 "Failed to connect. Please check network or server status."));
                     }
                 });
@@ -361,12 +361,12 @@ public class MainMenuController extends BaseController {
                 Thread.currentThread().interrupt();
                 LOGGER.log(Level.WARNING, "Connection attempt interrupted.", e);
                 Platform.runLater(() -> eventBus
-                        .publish(new ConnectionStatusEvent(ConnectionState.DISCONNECTED,
+                        .publish(new ConnectionStatusEvent(ConnectionEvent.ConnectionState.DISCONNECTED,
                                 "Connection attempt cancelled.")));
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Error during simulated connection attempt.", e);
                 Platform.runLater(() -> eventBus
-                        .publish(new ConnectionStatusEvent(ConnectionState.DISCONNECTED,
+                        .publish(new ConnectionStatusEvent(ConnectionEvent.ConnectionState.DISCONNECTED,
                                 "Error connecting: " + e.getMessage())));
             }
         });

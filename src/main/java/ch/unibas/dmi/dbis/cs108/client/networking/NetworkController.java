@@ -55,6 +55,7 @@ public class NetworkController {
 
             @Override
             public void onDisconnect(Throwable cause) {
+                Logger.getGlobal().info("NetworkController: Disconnected from server: " + cause.getMessage());
                 stopPingScheduler();
                 eventDispatcher.dispatchEvent(new ConnectionEvent(
                         ConnectionEvent.ConnectionState.DISCONNECTED,

@@ -111,6 +111,7 @@ public class SocketNetworkClient implements NetworkClient {
             if (in != null) in.close();
             if (socket != null) socket.close();
             LOGGER.info("Disconnected from server");
+            notifyDisconnect(new IOException("Disconnected from server."));
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Error during disconnect", e);
         }

@@ -288,7 +288,6 @@ public class Tile {
          * Constructor for TileBuilder.
          *
          * @param x The x-coordinate of the tile
-         * @param y The y-coordinate of the tile
          */
         public TileBuilder setX(int x) {
             this.x = x;
