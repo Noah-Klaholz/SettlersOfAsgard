@@ -86,8 +86,8 @@ public class Board {
         if ((x <= 2 && y == 0) || (x <= 2 && y == 1)) return "Alfheim"; // Shining light
         if ((2 < x && x < 6 && y == 0) || (1 < x && x < 6 && y == 1) || (x == 3 && y == 2)) return "Asgard"; // Big church thing
         if ((x < 4 && (y  == 6 || y == 7))) return "Muspelheim"; // Flaming sword
-        if ((x >= 2  && x <= 4 && y <= 2)) return "Midgard"; // River green
-        if ((x == 2 && (y == 4 || y == 5)) || (x == 3 && (y >= 4 && y <= 6))) return "Vanaheim"; // lush green
+        if ((x >= 2  && x <= 4 && y <= 2)) return "Vanaheim"; // River green
+        if ((x == 2 && (y == 4 || y == 5)) || (x == 3 && (y >= 4 && y <= 6))) return "Midgard"; // lush green
         if ((x == 5 && y <= 2) || (x == 6 && y < 2)) return "Jotunheim"; // Mountain
         if ((x == 6 && y == 2) || (x >= 5 && y == 3) || (x >= 4 && y == 4)) return "Nilfheim"; // Ice
         if ((x >= 4 && y == 5) || (x == 6 && y >= 6)) return "Helheim"; // Dead tree
