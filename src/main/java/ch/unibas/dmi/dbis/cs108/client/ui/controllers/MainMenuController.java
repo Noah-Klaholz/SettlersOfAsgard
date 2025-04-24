@@ -184,7 +184,6 @@ public class MainMenuController extends BaseController {
      * @param event The connection status event.
      */
     private void handleConnectionStatus(ConnectionStatusEvent event) {
-        Logger.getGlobal().info("Main Menu Controller: Received connection status event: " + event);
         Objects.requireNonNull(event, "ConnectionStatusEvent cannot be null");
         Platform.runLater(() -> {
             boolean currentlyConnected = event.getState() == ConnectionEvent.ConnectionState.CONNECTED;

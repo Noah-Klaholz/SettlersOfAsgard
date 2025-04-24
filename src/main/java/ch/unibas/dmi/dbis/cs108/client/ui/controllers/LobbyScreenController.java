@@ -1,6 +1,9 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
 import ch.unibas.dmi.dbis.cs108.client.app.GameApplication;
+import ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
@@ -26,6 +29,7 @@ import javafx.scene.layout.Priority;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -46,6 +50,8 @@ public class LobbyScreenController extends BaseController {
     private BorderPane rootPane; // Add reference to the root pane
     @FXML
     private Label playerNameLabel;
+    @FXML
+    private Label connectionStatus;
     @FXML
     private TextField searchField;
     @FXML
@@ -76,6 +82,7 @@ public class LobbyScreenController extends BaseController {
     private Player localPlayer; // Use shared.game.Player
     private ChatComponent chatComponentController;
     private SettingsDialog settingsDialog; // Declare SettingsDialog
+    private final AtomicBoolean isConnected = new AtomicBoolean(false);
 
     /**
      * Constructs the controller, injecting dependencies via the BaseController.
@@ -100,6 +107,7 @@ public class LobbyScreenController extends BaseController {
                 // Handle error appropriately
                 this.localPlayer = new Player("ErrorGuest"); // Fallback
             }
+            isConnected.set(true); // When LobbyScreen gets initialized, we are connected, because it wouldnt get shown if not connected.
             setupLobbyTable();
             setupPlayerList();
             setupHostControls();
@@ -220,8 +228,7 @@ public class LobbyScreenController extends BaseController {
             settingsDialog.playerNameProperty().set("ErrorGuest"); // Fallback
         }
         settingsDialog.setOnSaveAction(this::handleSettingsSave);
-        // Optionally set connection status if needed in lobby settings
-        // settingsDialog.setConnectionStatus(true, "Connected"); // Example
+        settingsDialog.setConnectionStatus(isConnected.get(), isConnected.get() ? "Connected" : "Disconnected");
     }
 
     /**
@@ -237,6 +244,7 @@ public class LobbyScreenController extends BaseController {
         eventBus.subscribe(LobbyUpdateEvent.class, this::handleLobbyUpdate);
         eventBus.subscribe(ErrorEvent.class, this::handleError);
         eventBus.subscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
+        eventBus.subscribe(ConnectionStatusEvent.class, this::handleConnectionStatus);
     }
 
     /**
@@ -546,6 +554,31 @@ public class LobbyScreenController extends BaseController {
     }
 
     /**
+     * Handles ConnectionStatusEvent updates from the network layer.
+     *
+     * @param event The connection status event.
+     */
+    private void handleConnectionStatus(ConnectionStatusEvent event) {
+        Objects.requireNonNull(event, "ConnectionStatusEvent cannot be null");
+        Platform.runLater(() -> {
+            boolean currentlyConnected = event.getState() == ConnectionEvent.ConnectionState.CONNECTED;
+            boolean wasConnected = isConnected.getAndSet(currentlyConnected);
+            settingsDialog.setConnectionStatus(currentlyConnected, currentlyConnected ? "Connected" : "Disconnected");
+            updateConnectionStatusLabel(currentlyConnected);
+
+            if (chatComponentController != null && event.getMessage() != null && !event.getMessage().isEmpty()) {
+                chatComponentController.addSystemMessage(event.getMessage());
+            }
+            if (!currentlyConnected && wasConnected && chatComponentController != null) {
+                chatComponentController.addSystemMessage("Disconnected from server. Attempting to reconnect...");
+            }
+            if (currentlyConnected && !wasConnected && chatComponentController != null) {
+                chatComponentController.addSystemMessage("Reconnected to the server.");
+            }
+        });
+    }
+
+    /**
      * Sends a request to the server (via event bus) to get the latest lobby list.
      */
     private void requestLobbyList() {
@@ -601,6 +634,19 @@ public class LobbyScreenController extends BaseController {
     }
 
     /**
+     * Updates the connection status label's text and style class.
+     *
+     * @param connected {@code true} if connected, {@code false} otherwise.
+     */
+    private void updateConnectionStatusLabel(boolean connected) {
+        Platform.runLater(() -> {
+            connectionStatus.setText(connected ? "Connected" : "Disconnected");
+            connectionStatus.getStyleClass().removeAll("connected", "disconnected");
+            connectionStatus.getStyleClass().add(connected ? "connected" : "disconnected");
+        });
+    }
+
+    /**
      * Displays an error message in the dedicated error label.
      *
      * @param message The error message to display.
@@ -630,28 +676,57 @@ public class LobbyScreenController extends BaseController {
      */
     @FXML
     private void handleSettings() {
-        LOGGER.fine("Settings button clicked.");
-        if (settingsDialog == null) {
-            LOGGER.warning("SettingsDialog is not initialized.");
-            return;
-        }
-        if (rootPane == null) {
-            LOGGER.warning("Root pane is null, cannot display SettingsDialog.");
-            return;
-        }
+        LOGGER.info("Settings button clicked.");
 
+        settingsDialog.setConnectionStatus(isConnected.get(), isConnected.get() ? "Connected" : "Disconnected");
         if (localPlayer != null) {
-            settingsDialog.playerNameProperty().set(localPlayer.getName());
+            settingsDialog.playerNameProperty().set(this.localPlayer.getName());
         } else {
             LOGGER.warning("Cannot set player name in settings: localPlayer is null.");
             settingsDialog.playerNameProperty().set("ErrorGuest");
         }
+        settingsDialog.setConnectionStatus(isConnected.get(), isConnected.get() ? "Connected" : "Disconnected");
 
         settingsDialog.setOnSaveAction(() -> {
-            handleSettingsSave();
+            boolean muted = settingsDialog.muteProperty().get();
+            double volume = settingsDialog.volumeProperty().get();
+            String requestedName = settingsDialog.playerNameProperty().get();
+            LOGGER.info("Settings dialog save requested - Volume: " + volume + ", Muted: " + muted
+                    + ", Requested Name: " + requestedName);
+
+            if (localPlayer != null && requestedName != null && !requestedName.trim().isEmpty()
+                    && !requestedName.equals(localPlayer.getName())) {
+                requestNameChange(requestedName.trim());
+            } else if (requestedName != null && requestedName.trim().isEmpty()) {
+                LOGGER.warning("Attempted to save empty player name.");
+                if (chatComponentController != null) {
+                    chatComponentController.addSystemMessage("Error: Player name cannot be empty.");
+                }
+                if (localPlayer != null) {
+                    settingsDialog.playerNameProperty().set(localPlayer.getName());
+                }
+            }
+
+            if (chatComponentController != null) {
+                chatComponentController.addSystemMessage(
+                        "Audio settings saved. " + (muted ? "Muted." : "Volume: " + (int) volume + "%"));
+            }
         });
 
         showDialogAsOverlay(settingsDialog, rootPane);
+    }
+
+    /**
+     * Sends a name change request to the server via the event bus.
+     *
+     * @param newName The desired new player name.
+     */
+    private void requestNameChange(String newName) {
+        LOGGER.info("Requesting name change to: " + newName);
+        if (chatComponentController != null) {
+            chatComponentController.addSystemMessage("Requesting name change to: " + newName + "...");
+        }
+        eventBus.publish(new ChangeNameUIEvent(newName));
     }
 
     /**
@@ -691,6 +766,7 @@ public class LobbyScreenController extends BaseController {
         eventBus.unsubscribe(LobbyUpdateEvent.class, this::handleLobbyUpdate);
         eventBus.unsubscribe(ErrorEvent.class, this::handleError);
         eventBus.unsubscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
+        eventBus.unsubscribe(ConnectionStatusEvent.class, this::handleConnectionStatus);
 
         if (chatComponentController != null) {
             chatComponentController.cleanup();
