@@ -185,4 +185,25 @@ public class GameLogicTest {
         assertEquals(s.getId(), gameState.getPlayers().get(0).getPurchasableEntities().get(0).getId());
     }
 
+    /**
+     * This test verifies the correct functionality of the rune table structure.
+     */
+    @Test
+    void TestUseStructureRuneTable() {
+        Tile t = gameState.getBoardManager().getTile(0, 0);
+        Structure s = EntityRegistry.getStructure(1);
+        int runesBefore = gameState.getPlayers().get(0).getRunes();
+        assert s != null;
+        int price = t.getPrice() + s.getPrice();
+        assertTrue(gameLogic.buyTile(0, 0, "player1"));
+        assertTrue(gameLogic.placeStructure(0, 0, 1, "player1"));
+        int runesCurrently = runesBefore - price;
+        gameState.getPlayers().get(0).setEnergy(4); // manually set energy to 4 to test this structure
+        assertTrue(gameLogic.useStructure(0, 0, 1, "player1"));
+        int runesAfter = gameState.getPlayers().get(0).getRunes();
+        // Check rune and energy count
+        assertEquals(runesCurrently + s.getParams().get(1).getValue(), runesAfter);
+        int energyCount = gameState.getPlayers().get(0).getEnergy();
+        assertEquals(4 + s.getParams().get(0).getValue(), energyCount);
+    }
 }
