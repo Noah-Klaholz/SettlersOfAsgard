@@ -158,6 +158,7 @@ public class ProtocolTranslator implements CommunicationAPI {
     }
 
     private void processErrorMessage(String args) {
+        Logger.getGlobal().info("Processing error message: " + args);
         String errorCode;
         String errorMessage;
 

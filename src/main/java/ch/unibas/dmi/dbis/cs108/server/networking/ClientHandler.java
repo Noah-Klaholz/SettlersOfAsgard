@@ -376,8 +376,6 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             }
         if (answer && worked) {
             sendMessage("OK$" + cmd); // Echo the command back to the client with an OK response
-        } else {
-            logger.warning("ClientHandler: Invalid command: " + cmd);
         }
     }
 }
