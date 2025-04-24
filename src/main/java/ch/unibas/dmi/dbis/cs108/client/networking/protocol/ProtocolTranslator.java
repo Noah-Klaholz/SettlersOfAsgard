@@ -71,7 +71,7 @@ public class ProtocolTranslator implements CommunicationAPI {
 
     // Message handler methods
     public void processTurnMessage(String args) {
-        eventDispatcher.dispatchEvent(new EndTurnResponseEvent(
+        eventDispatcher.dispatchEvent(new ReceiveCommandEvent(
                 Commands.STARTTURN.getCommand() + DELIMITER + args,
                 Commands.STARTTURN
         ));
