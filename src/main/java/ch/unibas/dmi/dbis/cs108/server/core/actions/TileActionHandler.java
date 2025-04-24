@@ -76,6 +76,13 @@ public class TileActionHandler {
         }
     }
 
+    /**
+     * finds a player by name
+     *
+     * @param playerName name of the player
+     *
+     * @return the player if found, null otherwise
+     */
     private Player findPlayerByName(String playerName) {
         for (Player p : gameState.getPlayers()) {
             if (p.getName().equals(playerName)) {
