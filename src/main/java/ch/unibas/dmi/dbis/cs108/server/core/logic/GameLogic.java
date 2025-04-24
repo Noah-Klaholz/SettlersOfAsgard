@@ -104,23 +104,6 @@ public class GameLogic implements GameLogicInterface {
     }
 
     /**
-     * Finalizes and ends the current game with proper cleanup
-     */
-    @Override
-    public void endGame() {
-        gameLock.writeLock().lock();
-        try {
-            gameState.reset();
-            if (notifier != null) {
-                notifier.broadcastMessage("GAME_ENDED");
-                notifier.endGame();
-            }
-        } finally {
-            gameLock.writeLock().unlock();
-        }
-    }
-
-    /**
      * Creates the final score message without modifying the original player order.
      *
      * @return the final score message as a String in the format:
