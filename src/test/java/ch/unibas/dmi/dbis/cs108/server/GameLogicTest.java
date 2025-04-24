@@ -183,7 +183,7 @@ public class GameLogicTest {
     }
 
     /**
-     * This test verifies the correct functionality of the rune table structure.
+     * This test verifies the correct functionality of the rune table structure. (1)
      */
     @Test
     void TestUseStructureRuneTable() {
@@ -205,18 +205,62 @@ public class GameLogicTest {
     }
 
     /**
-     * This test verifies the correct functionality of the mimisbrunnr structure.
+     * This test verifies the correct functionality of the mimisbrunnr structure. (2)
      */
     @Test
     void TestUseStructureMimisbrunnr() {
         Tile t = gameState.getBoardManager().getTile(0, 0);
-        Structure s = EntityRegistry.getStructure(1);
+        Structure s = EntityRegistry.getStructure(2);
         assert s != null;
         assertTrue(gameLogic.buyTile(0, 0, "player1"));
-        assertTrue(gameLogic.placeStructure(0, 0, 2, "player1"));
-        assertTrue(gameLogic.useStructure(0, 0, 2, "player1"));
+        assertTrue(gameLogic.placeStructure(0, 0, s.getId(), "player1"));
+        assertTrue(gameLogic.useStructure(0, 0, s.getId(), "player1"));
         assertEquals(1, gameState.getPlayers().get(0).getArtifacts().size());
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     * This test verifies the correct functionality of the activeTrap structure. (8)
+     */
+    @Test
+    void TestUseStructureActiveTrap() {
+        Tile t = gameState.getBoardManager().getTile(0, 0);
+        Structure s = EntityRegistry.getStructure(8);
+        assert s != null;
+        assertTrue(gameLogic.buyTile(0, 0, "player1"));
+        assertTrue(gameLogic.placeStructure(0, 0, s.getId(), "player1"));
+        int runesBefore = gameState.getPlayers().get(0).getRunes();
+        assertTrue(gameLogic.useStructure(0, 0, s.getId(), "player1"));
+        int runesAfter = gameState.getPlayers().get(0).getRunes();
+        assertEquals(runesBefore + s.getParams().get(0).getValue(), runesAfter);
+    }
+
 
 
 }
