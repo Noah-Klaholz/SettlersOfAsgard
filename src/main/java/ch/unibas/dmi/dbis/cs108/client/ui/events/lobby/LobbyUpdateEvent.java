@@ -75,6 +75,11 @@ public class LobbyUpdateEvent implements UIEvent {
         return newHostName;
     }
 
+    /**
+     * Returns the type of this event.
+     *
+     * @return the type of this event
+     */
     @Override
     public String getType() {
         return "LOBBY_UPDATE";
