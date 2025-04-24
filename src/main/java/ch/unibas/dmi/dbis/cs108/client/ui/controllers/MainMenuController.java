@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
 import ch.unibas.dmi.dbis.cs108.client.app.GameApplication; // Import GameApplication
+import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player; // Use shared Player
 import ch.unibas.dmi.dbis.cs108.client.networking.ConnectionState;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
@@ -381,7 +382,7 @@ public class MainMenuController extends BaseController {
         if (chatComponentController != null) {
             chatComponentController.addSystemMessage("Requesting name change to: " + newName + "...");
         }
-        eventBus.publish(new NameChangeRequestEvent(newName));
+        eventBus.publish(new ChangeNameUIEvent(newName));
     }
 
     /**
