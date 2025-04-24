@@ -1,6 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
-import ch.unibas.dmi.dbis.cs108.client.core.Player;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.DescriptionDialog;
@@ -10,7 +10,6 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.TileClickEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
-import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -28,7 +27,6 @@ import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.util.Duration;
 import javafx.scene.Node; // Import Node
 import javafx.scene.layout.Priority; // Import Priority
 import javafx.scene.layout.Region; // Import Region
