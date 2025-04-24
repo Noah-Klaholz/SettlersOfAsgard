@@ -8,12 +8,10 @@ import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
+import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 
 import java.util.List;
 
-import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
-import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +30,6 @@ import static org.mockito.Mockito.*;
 public class GameLogicTest {
 
     private Lobby lobby;
-    private ClientHandler player1, player2, player3, player4;
     private GameLogic gameLogic;
     private GameState gameState;
     private TurnManager turnManager;
@@ -47,10 +44,10 @@ public class GameLogicTest {
     @BeforeEach
     void setUp(){
         lobby = new Lobby("testLobby", 4);
-        player1 = mock(ClientHandler.class);
-        player2 = mock(ClientHandler.class);
-        player3 = mock(ClientHandler.class);
-        player4 = mock(ClientHandler.class);
+        ClientHandler player1 = mock(ClientHandler.class);
+        ClientHandler player2 = mock(ClientHandler.class);
+        ClientHandler player3 = mock(ClientHandler.class);
+        ClientHandler player4 = mock(ClientHandler.class);
         when(player1.getPlayerName()).thenReturn("player1");
         when(player2.getPlayerName()).thenReturn("player2");
         when(player3.getPlayerName()).thenReturn("player3");
@@ -206,4 +203,20 @@ public class GameLogicTest {
         int energyCount = gameState.getPlayers().get(0).getEnergy();
         assertEquals(4 + s.getParams().get(0).getValue(), energyCount);
     }
+
+    /**
+     * This test verifies the correct functionality of the mimisbrunnr structure.
+     */
+    @Test
+    void TestUseStructureMimisbrunnr() {
+        Tile t = gameState.getBoardManager().getTile(0, 0);
+        Structure s = EntityRegistry.getStructure(1);
+        assert s != null;
+        assertTrue(gameLogic.buyTile(0, 0, "player1"));
+        assertTrue(gameLogic.placeStructure(0, 0, 2, "player1"));
+        assertTrue(gameLogic.useStructure(0, 0, 2, "player1"));
+        assertEquals(1, gameState.getPlayers().get(0).getArtifacts().size());
+    }
+
+
 }
