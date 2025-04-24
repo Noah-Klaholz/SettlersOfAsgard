@@ -27,6 +27,11 @@ public class LobbyLeftEvent implements UIEvent {
         return lobbyId;
     }
 
+    /**
+     * Returns the event type identifier.
+     *
+     * @return event type
+     */
     @Override
     public String getType() {
         return "LOBBY_LEFT";
