@@ -49,18 +49,13 @@ public class StructureBehaviorRegistry {
                 player.addArtifact(artifact);
                 return true;
             }
-            player.addEnergy(1);
+            player.addEnergy((int)structure.getParams().get(0).getValue());
             return false;
-        });
-
-        registerBehavior("ActiveTrap", (structure, gameState, player) -> {
-            player.addRunes((int)structure.getParams().get(0).getValue());
-            return true;
         });
 
         registerBehavior("Helgrindr", (structure, gameState, player) -> {
             player.addBuff(Status.BuffType.DEBUFFABLE, 0); // sets the player to non-debuffable
-            player.addEnergy(1);
+            player.addEnergy((int)structure.getParams().get(0).getValue());
             return true;
         });
 
@@ -75,6 +70,7 @@ public class StructureBehaviorRegistry {
                 }
             }
             gameState.sendNotification(player.getName(), "4$Null");
+            player.addEnergy((int)structure.getParams().get(0).getValue());
             return true;
         });
 
@@ -110,8 +106,10 @@ public class StructureBehaviorRegistry {
             return true;
         });
 
-        registerBehavior("Tree", (structure, gameState, player) -> {
-            player.addEnergy((int)structure.getParams().get(0).getValue());
+        registerBehavior("Tree", (structure, gameState, player) -> true);
+
+        registerBehavior("ActiveTrap", (structure, gameState, player) -> {
+            player.addRunes((int)structure.getParams().get(0).getValue());
             return true;
         });
 
