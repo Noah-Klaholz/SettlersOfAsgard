@@ -33,6 +33,9 @@ public class CommandProcessor {
         registerCommandHandlers();
     }
 
+    /**
+     * Register command handlers for various commands
+     */
     private void registerCommandHandlers() {
         commandHandlers.put(Commands.ENDTURN, this::handleEndTurn);
         commandHandlers.put(Commands.GETGAMESTATUS, this::handleGetGameStatus);
