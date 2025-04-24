@@ -1,4 +1,15 @@
 /* ===== Chat Component Styles ===== */
+* {
+    -color-accent-primary: #3498db; /* Define the primary accent color */
+}
+
+/* Fix the chat-toggle-button styling */
+.chat-toggle-button {
+    /* Fix the border-color format - use direct color or hex value instead of string */
+    -fx-border-color: #cccccc; /* Replace with your desired color */
+    -fx-text-fill: -color-accent-primary; /* Now this will work since we defined the variable */
+    /* Keep other existing styling */
+}
 
 /* Chat main container - Defines the component's look */
 .chat-panel {
