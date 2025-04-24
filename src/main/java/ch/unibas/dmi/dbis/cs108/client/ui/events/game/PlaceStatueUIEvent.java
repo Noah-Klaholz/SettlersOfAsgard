@@ -6,7 +6,15 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
  * Event representing the action of buying a statue in the game.
  * This event is triggered when a player attempts to purchase a statue.
  */
-public class BuyStatueUIEvent implements UIEvent {
+public class PlaceStatueUIEvent implements UIEvent {
+    /**
+     * The x-coordinate of the location where the statue is to be placed.
+     */
+    private final int x;
+    /**
+     * The y-coordinate of the location where the statue is to be placed.
+     */
+    private final int y;
     /**
      * The ID of the statue being purchased.
      */
@@ -17,7 +25,9 @@ public class BuyStatueUIEvent implements UIEvent {
      *
      * @param statueId The ID of the statue being purchased.
      */
-    public BuyStatueUIEvent(int statueId) {
+    public PlaceStatueUIEvent(int statueId, int x, int y) {
+        this.x = x;
+        this.y = y;
         this.statueId = statueId;
     }
 
@@ -28,6 +38,24 @@ public class BuyStatueUIEvent implements UIEvent {
      */
     public int getStatueId() {
         return statueId;
+    }
+
+    /**
+     * Returns the x-coordinate of the location where the statue is to be placed.
+     *
+     * @return The x-coordinate.
+     */
+    public int getX() {
+        return x;
+    }
+
+    /**
+     * Returns the y-coordinate of the location where the statue is to be placed.
+     *
+     * @return The y-coordinate.
+     */
+    public int getY() {
+        return y;
     }
 
     /**

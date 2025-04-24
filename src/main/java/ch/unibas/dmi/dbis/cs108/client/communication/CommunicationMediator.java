@@ -5,6 +5,7 @@ import ch.unibas.dmi.dbis.cs108.client.networking.events.*;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.LobbyJoinedEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ServerCommandEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.game.PlaceStatueUIEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.*;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 
@@ -148,13 +149,14 @@ public class CommunicationMediator {
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.game.UseStructureUIEvent.class,
                 event -> networkController.useStructure(event.getRow(), event.getCol(), event.getStructureId()));
 
-        // UIEventBus.getInstance().subscribe(PlaceStatueEvent.class) //TODO
+        UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.game.PlaceStatueUIEvent.class,
+                event -> networkController.placeStatue(event.getX(), event.getY(), event.getStatueId()));
+
+        UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.game.UpgradeStatueUIEvent.class,
+                event -> networkController.upgradeStatue(event.getX(), event.getY(), event.getStatueId()));
 
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.game.UseStatueUIEvent.class,
-                event -> networkController.useStatue(event.getX(), event.getY(), event.getStatueId(), // Use
-                        // getRow(),
-                        // getCol()
-                        event.getUseType()));
+                event -> networkController.useStatue(event.getX(), event.getY(), event.getStatueId(), event.getParams()));
 
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.game.UseFieldArtifactUIEvent.class,
                 event -> networkController.useFieldArtifact(event.getX(), event.getY(), event.getArtifactId()));
