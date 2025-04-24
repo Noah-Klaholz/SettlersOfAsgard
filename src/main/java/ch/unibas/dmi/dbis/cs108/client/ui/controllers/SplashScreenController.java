@@ -1,10 +1,13 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
+import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -25,6 +28,7 @@ import java.util.logging.Logger;
 
 public class SplashScreenController extends BaseController {
     private static final Logger LOGGER = Logger.getLogger(SplashScreenController.class.getName());
+    private static final int duration = SETTINGS.Config.SPLASH_SCREEN_DURATION.getValue();
 
     @FXML private StackPane splashRoot;
     @FXML private ImageView gameLogo;
@@ -86,17 +90,17 @@ public class SplashScreenController extends BaseController {
         lightStrip.setClip(imageClip);
 
         // Animate the light strip moving across the logo
-        TranslateTransition lightMove = new TranslateTransition(Duration.seconds(1.5), lightStrip);
+        TranslateTransition lightMove = new TranslateTransition(Duration.seconds((double) duration / 3), lightStrip);
         lightMove.setFromX(-gameLogo.getFitWidth() - 100);
         lightMove.setToX(gameLogo.getFitWidth() + 100);
 
         // Add a second reflection pass
-        TranslateTransition lightMoveReturn = new TranslateTransition(Duration.seconds(1.5), lightStrip);
+        TranslateTransition lightMoveReturn = new TranslateTransition(Duration.seconds((double) duration / 3), lightStrip);
         lightMoveReturn.setFromX(gameLogo.getFitWidth() + 100);
         lightMoveReturn.setToX(-gameLogo.getFitWidth() - 100);
 
         // Title animation
-        FadeTransition titleFade = new FadeTransition(Duration.seconds(1.5), titleLabel);
+        FadeTransition titleFade = new FadeTransition(Duration.seconds((double) duration / 3), titleLabel);
         titleFade.setFromValue(0);
         titleFade.setToValue(1);
         titleFade.setDelay(Duration.seconds(0.8));
@@ -110,7 +114,23 @@ public class SplashScreenController extends BaseController {
 
         sequence.setOnFinished(e -> {
             PauseTransition delay = new PauseTransition(Duration.seconds(1));
-            delay.setOnFinished(event -> sceneManager.switchToScene(SceneManager.SceneType.MAIN_MENU));
+            delay.setOnFinished(event -> {
+                sceneManager.switchToScene(SceneManager.SceneType.MAIN_MENU);
+
+                // Request focus after scene switch
+                Platform.runLater(() -> {
+                    // Small delay to ensure scene is fully loaded
+                    PauseTransition focusDelay = new PauseTransition(Duration.millis(100));
+                    focusDelay.setOnFinished(focusEvent -> {
+                        Scene currentScene = splashRoot.getScene();
+                        if (currentScene != null) {
+                            currentScene.getWindow().requestFocus();
+                            currentScene.getRoot().requestFocus();
+                        }
+                    });
+                    focusDelay.play();
+                });
+            });
             delay.play();
         });
 

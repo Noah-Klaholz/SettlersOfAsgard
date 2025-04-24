@@ -86,6 +86,12 @@ public class SceneManager {
         } else {
             switchToSceneInternal(sceneType);
         }
+        Platform.runLater(() -> {
+            if (primaryStage != null && primaryStage.getScene() != null) {
+                primaryStage.requestFocus();
+                primaryStage.getScene().getRoot().requestFocus();
+            }
+        });
     }
 
     /**

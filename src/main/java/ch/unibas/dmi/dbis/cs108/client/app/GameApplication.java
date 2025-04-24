@@ -1,6 +1,7 @@
 // File: GameApplication.java
 package ch.unibas.dmi.dbis.cs108.client.app;
 
+import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.client.communication.CommunicationMediator;
 // import ch.unibas.dmi.dbis.cs108.client.core.Game; // Unused import
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
@@ -10,11 +11,15 @@ import ch.unibas.dmi.dbis.cs108.client.networking.NetworkController;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
+import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -152,6 +157,7 @@ public class GameApplication extends Application {
         // Option 1: True Fullscreen Mode
         primaryStage.setFullScreen(true);
         primaryStage.setFullScreenExitHint(""); // Remove the exit hint text
+        primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 
         // Set minimum size fallbacks if exiting fullscreen
         primaryStage.setMinWidth(800);
@@ -168,20 +174,35 @@ public class GameApplication extends Application {
             // Allow the default close behavior to proceed
         });
 
+        primaryStage.setAlwaysOnTop(true);
+        AtomicBoolean splashActive = new AtomicBoolean(true);
+        primaryStage.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+            if (!isNowFocused && splashActive.get()) {
+                Platform.runLater(() -> {
+                    primaryStage.toFront();
+                    primaryStage.requestFocus();
+                });
+            }
+        });
+
         // Start with Splash Screen / Intro
         sceneManager.switchToScene(SceneManager.SceneType.SPLASH);
 
-        // Set the scene and show the primary stage
+        // show and schedule splash timeout
         primaryStage.show();
-        // Seems necessary to request focus twice to ensure it works (do not question it)
-        Platform.runLater(() -> {
-            primaryStage.requestFocus();
-            primaryStage.toFront();
+        PauseTransition delay = new PauseTransition(Duration.millis(SETTINGS.Config.SPLASH_SCREEN_DURATION.getValue()));
+        delay.setOnFinished(e -> {
+            splashActive.set(false);
+            primaryStage.setAlwaysOnTop(false);
         });
-        // Request focus for the primary stage
-        primaryStage.requestFocus();
-        primaryStage.toFront();
+        delay.play();
+
         LOGGER.info("Primary stage shown with Splash Screen / Intro.");
+        // final bring‑to‑front just in case
+        Platform.runLater(() -> {
+            primaryStage.toFront();
+            primaryStage.requestFocus();
+        });
     }
 
     /**
@@ -228,6 +249,8 @@ public class GameApplication extends Application {
             networkController = null; // Help GC
         }
         // Perform any additional cleanup tasks if necessary (e.g., closing resources)
+        Platform.exit();
+        System.exit(0);
         LOGGER.info("Cleanup complete.");
     }
 }

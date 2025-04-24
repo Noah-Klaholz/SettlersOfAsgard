@@ -5,6 +5,7 @@ package ch.unibas.dmi.dbis.cs108;
  */
 public class SETTINGS {
     public enum Config {
+        SPLASH_SCREEN_DURATION(3), // Seconds
         PING_INTERVAL(1000),
         TIMEOUT(2 * 1000), // Milliseconds
         MAX_ARTIFACTS(3),
