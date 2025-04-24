@@ -31,15 +31,6 @@ public class SplashScreenController extends BaseController {
         LOGGER.info("Initializing splash screen...");
         loadGameLogo();
 
-        // Set stage to fullscreen
-        splashRoot.sceneProperty().addListener((obs, oldScene, newScene) -> {
-            if (newScene != null) {
-                Stage stage = (Stage) newScene.getWindow();
-                stage.setFullScreen(true);
-                stage.requestFocus();
-            }
-        });
-
         // Start animations
         playIntroAnimations();
     }

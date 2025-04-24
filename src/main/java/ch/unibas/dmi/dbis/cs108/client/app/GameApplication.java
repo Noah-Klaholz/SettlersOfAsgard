@@ -148,10 +148,18 @@ public class GameApplication extends Application {
         SceneManager sceneManager = SceneManager.getInstance();
         sceneManager.setPrimaryStage(primaryStage);
         primaryStage.setTitle("Settlers of Asgard");
-        primaryStage.setWidth(1024);
-        primaryStage.setHeight(768);
+
+        // Option 1: True Fullscreen Mode
+        primaryStage.setFullScreen(true);
+        primaryStage.setFullScreenExitHint(""); // Remove the exit hint text
+
+        // Set minimum size fallbacks if exiting fullscreen
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
+
+        // Ensure window has focus
+        Platform.runLater(() -> {
+        });
 
         // Set handler for close request (e.g., clicking the window's X button)
         primaryStage.setOnCloseRequest(event -> {
@@ -160,9 +168,14 @@ public class GameApplication extends Application {
             // Allow the default close behavior to proceed
         });
 
-        // Start with MAIN_MENU
+        // Start with Splash Screen / Intro
         sceneManager.switchToScene(SceneManager.SceneType.SPLASH);
+
+        // Set the scene and show the primary stage
         primaryStage.show();
+        // Request focus for the primary stage
+        primaryStage.requestFocus();
+        primaryStage.toFront();
         LOGGER.info("Primary stage shown with Splash Screen / Intro.");
     }
 
