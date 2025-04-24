@@ -29,7 +29,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import ch.unibas.dmi.dbis.cs108.client.networking.ConnectionState; // Ensure this import exists
-import ch.unibas.dmi.dbis.cs108.client.core.entities.Player; // Import Player
+import ch.unibas.dmi.dbis.cs108.client.core.Player; // Import Player
 
 /**
  * Controller for the main menu screen.

@@ -239,7 +239,7 @@ public class CommandHandler {
         String lobbyId = cmd.getArgs()[1];
         int maxPlayers = 4; //currently, maxPlayers is set to 4 //TODO
         Lobby lobby = server.createLobby(lobbyId, maxPlayers);
-        return handleJoinLobby(new Command(CommunicationAPI.NetworkProtocol.Commands.JOIN.getCommand() + "$" + playerName + "$" + lobbyId));
+        return handleJoinLobby(new Command(CommunicationAPI.NetworkProtocol.Commands.JOIN.getCommand() + "$" + playerName + "$" + lobbyId, localPlayer));
     }
 
     /**
@@ -381,7 +381,7 @@ public class CommandHandler {
      *
      * @return the current game logic
      */
-    private GameLogic getGameLogic() {
+    public GameLogic getGameLogic() {
         // Refresh gameLogic if it's null but the lobby has one
         if (gameLogic == null && currentLobby != null) {
             gameLogic = currentLobby.getGameLogic();

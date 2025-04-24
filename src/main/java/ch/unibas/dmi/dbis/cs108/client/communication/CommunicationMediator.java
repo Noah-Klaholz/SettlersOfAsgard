@@ -146,13 +146,9 @@ public class CommunicationMediator {
                 event -> networkController.placeStructure(event.getX(), event.getY(), event.getStructureId()));
 
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.game.UseStructureUIEvent.class,
-                event -> networkController.useStructure(event.getRow(), event.getCol(), event.getStructureId(), // Use
-                        // getRow(),
-                        // getCol()
-                        event.getUseType()));
+                event -> networkController.useStructure(event.getRow(), event.getCol(), event.getStructureId()));
 
-        UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.game.BuyStatueUIEvent.class,
-                event -> networkController.buyStatue(event.getStatueId()));
+        // UIEventBus.getInstance().subscribe(PlaceStatueEvent.class) //TODO
 
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.game.UseStatueUIEvent.class,
                 event -> networkController.useStatue(event.getX(), event.getY(), event.getStatueId(), // Use
@@ -161,14 +157,11 @@ public class CommunicationMediator {
                         event.getUseType()));
 
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.game.UseFieldArtifactUIEvent.class,
-                event -> networkController.useFieldArtifact(event.getX(), event.getY(), event.getArtifactId(), // Use
-                        // getRow(),
-                        // getCol()
-                        event.getUseType()));
+                event -> networkController.useFieldArtifact(event.getX(), event.getY(), event.getArtifactId()));
 
         UIEventBus.getInstance().subscribe(
                 ch.unibas.dmi.dbis.cs108.client.ui.events.game.UsePlayerArtifactUIEvent.class,
-                event -> networkController.usePlayerArtifact(event.getArtifactId(), event.getUseType(),
+                event -> networkController.usePlayerArtifact(event.getArtifactId(),
                         event.getTargetPlayer().orElse(null)));
 
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.game.EndTurnUIEvent.class,

@@ -321,8 +321,8 @@ public class ProtocolTranslator implements CommunicationAPI {
         return Commands.BUYTILE.getCommand() + DELIMITER + x + DELIMITER + y;
     }
 
-    public String formatBuyStatue(int statueID) {
-        return Commands.BUYSTATUE.getCommand() + DELIMITER + statueID;
+    public String formatPlaceStatue(int x, int y, int statueID) {
+        return Commands.PLACESTATUE.getCommand() + DELIMITER + x + DELIMITER + y + DELIMITER + statueID;
     }
 
     public String formatUpgradeStatue(int x, int y, int statueID) {
