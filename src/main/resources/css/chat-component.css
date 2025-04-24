@@ -1,6 +1,6 @@
 /* ===== Chat Component Styles ===== */
 * {
-    -color-accent-primary: #3498db; /* Define the primary accent color */
+    -color-accent-primary: -color-accent-gold; /* Define the primary accent color */
 }
 
 /* Fix the chat-toggle-button styling */

@@ -61,7 +61,7 @@
                 <VBox spacing="10.0">
                     <HBox spacing="10" alignment="CENTER_LEFT">
                         <Label text="Lobby Name:" />
-                        <TextField fx:id="lobbyNameField" promptText="Enter lobby name" prefWidth="200" />
+                        <TextField fx:id="lobbyNameField" promptText="Enter lobby name" prefWidth="200" styleClass="lobby-name-field"/>
                         <Label text="Max Players:" />
                         <ComboBox fx:id="maxPlayersCombo" prefWidth="70" />
                         <Button text="Create Lobby" onAction="#handleCreateLobby" />

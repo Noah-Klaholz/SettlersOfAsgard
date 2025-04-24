@@ -88,6 +88,8 @@
 .lobby-name-field {
     /* Inherits .standard-text-field */
     -fx-padding: 6px 8px;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #aaaaaa;
     /* Adjusted padding */
 }
 
