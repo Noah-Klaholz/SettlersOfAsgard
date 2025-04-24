@@ -69,6 +69,8 @@ public class LobbyScreenController extends BaseController {
     @FXML
     private Label errorMessage;
     @FXML
+    private Button leaveLobbyButton;
+    @FXML
     private ListView<String> playerList;
     @FXML
     private VBox hostControlsPanel;
@@ -119,6 +121,7 @@ public class LobbyScreenController extends BaseController {
             setupSettingsDialog(); // Call after localPlayer is set
             setupEventHandlers();
             playerNameLabel.setText("Player: " + localPlayer.getName()); // Update label
+            leaveLobbyButton.setDisable(true); // Disabled by default until joining a lobby
             errorMessage.setVisible(false);
             errorMessage.setManaged(false);
             requestLobbyList();
@@ -275,6 +278,17 @@ public class LobbyScreenController extends BaseController {
     }
 
     /**
+     * Handles the "Leave Lobby" button click. Leaves the current lobby and
+     * refreshes the lobby list.
+     */
+    @FXML
+    private void handleLeaveLobby() {
+        LOGGER.info("Leave Lobby button clicked.");
+        leaveCurrentLobby();
+        // Don't switch to main menu, just stay on the lobby screen
+    }
+
+    /**
      * Handles the "Refresh" button click. Requests an updated list of lobbies.
      */
     @FXML
@@ -308,6 +322,7 @@ public class LobbyScreenController extends BaseController {
         clearError();
         eventBus.publish(new CreateLobbyRequestEvent(name, localPlayer.getName(), maxPlayers));
         lobbyNameField.clear();
+        requestLobbyList();
     }
 
     /**
@@ -332,6 +347,7 @@ public class LobbyScreenController extends BaseController {
         }
         clearError();
         eventBus.publish(new JoinLobbyRequestEvent(selectedLobby.getId(), localPlayer.getName()));
+        requestLobbyList();
     }
 
     /**
@@ -402,6 +418,7 @@ public class LobbyScreenController extends BaseController {
             playersInCurrentLobby.setAll(event.getPlayers());
             hostControlsPanel.setVisible(isHost);
             hostControlsPanel.setManaged(isHost);
+            leaveLobbyButton.setDisable(false);
             lobbyNameField.clear();
             clearError();
             if (chatComponentController != null) {
@@ -414,6 +431,7 @@ public class LobbyScreenController extends BaseController {
             lobbyNameField.setDisable(true);
             lobbyTable.getSelectionModel().clearSelection();
         });
+        requestLobbyList();
     }
 
     /**
@@ -436,6 +454,7 @@ public class LobbyScreenController extends BaseController {
                 }
             });
         }
+        requestLobbyList();
     }
 
     /**
@@ -457,6 +476,7 @@ public class LobbyScreenController extends BaseController {
                 }
             });
         }
+        requestLobbyList();
     }
 
     /**
@@ -478,6 +498,7 @@ public class LobbyScreenController extends BaseController {
                     + event.getLobbyId());
             Platform.runLater(this::resetLobbyState);
         }
+        requestLobbyList();
     }
 
     /**
@@ -628,6 +649,7 @@ public class LobbyScreenController extends BaseController {
         playersInCurrentLobby.clear();
         hostControlsPanel.setVisible(false);
         hostControlsPanel.setManaged(false);
+        leaveLobbyButton.setDisable(true);
         clearError();
         lobbyNameField.setDisable(false);
         if (chatComponentController != null) {

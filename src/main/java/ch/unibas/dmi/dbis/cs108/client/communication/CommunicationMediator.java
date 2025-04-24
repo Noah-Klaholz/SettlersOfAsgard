@@ -348,7 +348,19 @@ public class CommunicationMediator {
                     @Override
                     public void onEvent(LobbyEvent event) {
                         switch (event.getAction()) {
-                            // LEFT case removed as it's handled by PLAYERLEFT command
+                            case LEFT:
+                                // Lobby left event. This should be handled by the UI.
+                                LOGGER.log(Level.INFO, "Lobby Left Event (Network): Player={0}",
+                                        new Object[] { event.getPlayerName() });
+                                if (event.getPlayerName().equals(player.getName())) {
+                                    // Local player left the lobby
+                                    UIEventBus.getInstance().publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyLeftEvent(
+                                            event.getLobbyName()));
+                                } else {
+                                    UIEventBus.getInstance().publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.PlayerLeftLobbyEvent(
+                                            event.getPlayerName(), event.getLobbyName()));
+                                }
+                                break;
                             case CREATED:
                                 // Lobby creation confirmed. A LobbyJoinedEvent should follow for the creator.
                                 LOGGER.log(Level.INFO, "Lobby Created Event (Network): Player={0}",

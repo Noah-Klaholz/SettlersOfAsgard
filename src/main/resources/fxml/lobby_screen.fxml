@@ -65,9 +65,11 @@
                         <Label text="Max Players:" />
                         <ComboBox fx:id="maxPlayersCombo" prefWidth="70" />
                         <Button text="Create Lobby" onAction="#handleCreateLobby" />
+                        <Button fx:id="leaveLobbyButton" text="Leave" onAction="#handleLeaveLobby" styleClass="leave-button" disable="true"/>
                     </HBox>
                     <Button text="Join Selected Lobby" onAction="#handleJoinLobby"
                             maxWidth="Infinity" styleClass="join-button"/>
+
                 </VBox>
                 <Label fx:id="errorMessage" styleClass="error-message" wrapText="true"/>
             </VBox>
