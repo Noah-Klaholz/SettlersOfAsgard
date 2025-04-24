@@ -75,6 +75,8 @@ public class LobbyScreenController extends BaseController {
     @FXML
     private ComboBox<Integer> maxPlayersCombo;
     @FXML
+    private ComboBox<Integer> maxPlayersHostCombo;
+    @FXML
     private VBox chatContainer;
 
     private String currentLobbyId;
@@ -110,6 +112,7 @@ public class LobbyScreenController extends BaseController {
             isConnected.set(true); // When LobbyScreen gets initialized, we are connected, because it wouldnt get shown if not connected.
             setupLobbyTable();
             setupPlayerList();
+            setupLobbyControls();
             setupHostControls();
             setupSearchFilter();
             setupChatComponent(); // Call after localPlayer is set
@@ -163,7 +166,7 @@ public class LobbyScreenController extends BaseController {
     /**
      * Configures the host-specific controls, like the max players combo box.
      */
-    private void setupHostControls() {
+    private void setupLobbyControls() {
         maxPlayersCombo.setItems(FXCollections.observableArrayList(2, 3, 4, 5, 6, 8));
         maxPlayersCombo.getSelectionModel().select(Integer.valueOf(4));
         maxPlayersCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
@@ -174,6 +177,19 @@ public class LobbyScreenController extends BaseController {
         });
         hostControlsPanel.setVisible(false);
         hostControlsPanel.setManaged(false);
+    }
+
+    /**
+     * Configures the host controls, including showing the max players combo box.
+     */
+    private void setupHostControls() {
+        // Set up max players display in host controls (read-only)
+        maxPlayersHostCombo.setItems(FXCollections.observableArrayList(2, 3, 4, 5, 6, 8));
+        maxPlayersHostCombo.getSelectionModel().select(maxPlayersCombo.getValue());
+        maxPlayersHostCombo.setDisable(true); // Make it non-editable
+
+        maxPlayersHostCombo.setVisible(false);
+        maxPlayersHostCombo.setManaged(false);
     }
 
     /**
@@ -284,8 +300,13 @@ public class LobbyScreenController extends BaseController {
             showError("Lobby name cannot exceed 30 characters.");
             return;
         }
+        // Get selected max players value
+        Integer maxPlayers = maxPlayersCombo.getValue();
+        if (maxPlayers == null) {
+            maxPlayers = 4; // Fallback if somehow not selected
+        }
         clearError();
-        eventBus.publish(new CreateLobbyRequestEvent(name, localPlayer.getName()));
+        eventBus.publish(new CreateLobbyRequestEvent(name, localPlayer.getName(), maxPlayers));
         lobbyNameField.clear();
     }
 

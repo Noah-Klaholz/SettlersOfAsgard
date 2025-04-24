@@ -271,8 +271,8 @@ public class ProtocolTranslator implements CommunicationAPI {
         return Commands.CHATPRIVATE.getCommand() + DELIMITER + sender + DELIMITER + recipient + DELIMITER + content;
     }
 
-    public String formatCreateLobby(String playerName, String lobbyName) {
-        return Commands.CREATELOBBY.getCommand() + DELIMITER + playerName + DELIMITER + lobbyName;
+    public String formatCreateLobby(String playerName, String lobbyName, int maxPlayers) {
+        return Commands.CREATELOBBY.getCommand() + DELIMITER + playerName + DELIMITER + lobbyName + DELIMITER + maxPlayers;
     }
 
     public String formatJoinLobby(String playerName, String lobbyName) {

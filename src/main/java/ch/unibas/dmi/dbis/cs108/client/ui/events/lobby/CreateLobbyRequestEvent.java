@@ -8,16 +8,19 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
 public class CreateLobbyRequestEvent implements UIEvent {
     private final String lobbyName;
     private final String hostName;
+    private final int maxPlayers;
 
     /**
      * Constructs a CreateLobbyRequestEvent.
      *
      * @param lobbyName the name of the lobby to create
      * @param hostName  the name of the host (creator)
+     * @param maxPlayers the maximum number of players allowed in the lobby
      */
-    public CreateLobbyRequestEvent(String lobbyName, String hostName) {
+    public CreateLobbyRequestEvent(String lobbyName, String hostName, int maxPlayers) {
         this.lobbyName = lobbyName;
         this.hostName = hostName;
+        this.maxPlayers = maxPlayers;
     }
 
     /**
@@ -36,6 +39,15 @@ public class CreateLobbyRequestEvent implements UIEvent {
      */
     public String getHostName() {
         return hostName;
+    }
+
+    /**
+     * Returns the maximum number of players allowed in the lobby.
+     *
+     * @return maximum number of players
+     */
+    public int getMaxPlayers() {
+        return maxPlayers;
     }
 
     /**

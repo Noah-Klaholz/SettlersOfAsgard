@@ -83,8 +83,8 @@ public class Command {
         return switch (commandType) {
             case LISTLOBBIES, START, SHUTDOWN, SYNCHRONIZE, STARTTURN, ENDTURN, GETGAMESTATUS, GETPRICES -> args.length == 0;
             case REGISTER, LEAVE, CHANGENAME, PING, EXIT, BUYSTRUCTURE, BUYSTATUE, DISCONNECT  -> args.length == 1;
-            case JOIN, CHATGLOBAL, CHATLOBBY, CREATELOBBY, BUYTILE -> args.length == 2;
-            case CHATPRIVATE, PLACESTRUCTURE, USEPLAYERARTIFACT, UPGRADESTATUE -> args.length == 3;
+            case JOIN, CHATGLOBAL, CHATLOBBY, BUYTILE -> args.length == 2;
+            case CHATPRIVATE, PLACESTRUCTURE, USEPLAYERARTIFACT, UPGRADESTATUE, CREATELOBBY -> args.length == 3;
             case USESTATUE, USESTRUCTURE, USEFIELDARTIFACT -> args.length == 4;
             case LISTPLAYERS -> (args.length == 1 && args[0].equals("SERVER"))|| (args.length == 2 && args[0].equals("LOBBY"));
             default -> {

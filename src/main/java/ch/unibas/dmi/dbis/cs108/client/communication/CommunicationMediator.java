@@ -118,7 +118,7 @@ public class CommunicationMediator {
         // Lobby Events
         UIEventBus.getInstance().subscribe(
                 ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.CreateLobbyRequestEvent.class,
-                event -> networkController.createLobby(event.getLobbyName()));
+                event -> networkController.createLobby(event.getLobbyName(), event.getMaxPlayers()));
 
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.JoinLobbyRequestEvent.class,
                 event -> networkController.joinLobby(event.getLobbyId()));

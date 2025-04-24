@@ -24,7 +24,7 @@ Dieser Befehl bedeutet, dass Spieler PL01 eine Struktur vom Typ "Castle" auf das
 |--------|---------------|---------------------------------------------------------------|---------------------------------------|---------------------------------------|
 | `RGST` | **C→S**       | Spieler verbindet sich erstmals mit Server                    | `Spielername`                         | `RGST$ThorOdinson`                    |
 | `CHAN` | **C→S & S→C** | Spieler verändert seinen Namen (S→C: Notify NameChange)       | `neuerSpielername`                    | `CHAN$ThorOdinson`                    |
-| `CREA` | **C→S**       | Neue Lobby erstellen                                          | `Spielername$Lobbyname`               | `CREA$ThorOdinson$Lobby1`             |
+| `CREA` | **C→S**       | Neue Lobby erstellen                                          | `Spielername$Lobbyname$maxPlayers`    | `CREA$ThorOdinson$Lobby1$4`           |
 | `JOIN` | **C→S**       | Spieler tritt Lobby bei                                       | `Spielername$Lobbyname`               | `CREA$Lobby1$ThorOdinson`             |
 | `LEAV` | **C→S**       | Spieler verlässt Lobby                                        | `Spielername$Lobbyname`               | `LEAV$ThorOdinson$Lobby1`             |
 | `EXIT` | **C→S**       | Spieler disconnected                                          | `Spielername$`                        | `EXIT$ThorOdinson`                    |

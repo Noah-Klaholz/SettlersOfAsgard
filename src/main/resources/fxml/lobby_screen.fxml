@@ -59,11 +59,12 @@
                 </TableView>
 
                 <VBox spacing="10.0">
-                    <HBox spacing="10.0">
-                        <TextField fx:id="lobbyNameField" promptText="New Lobby Name"
-                                   HBox.hgrow="ALWAYS" styleClass="lobby-name-field"/>
-                        <Button text="Create Lobby" onAction="#handleCreateLobby"
-                                styleClass="create-button"/>
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Lobby Name:" />
+                        <TextField fx:id="lobbyNameField" promptText="Enter lobby name" prefWidth="200" />
+                        <Label text="Max Players:" />
+                        <ComboBox fx:id="maxPlayersCombo" prefWidth="70" />
+                        <Button text="Create Lobby" onAction="#handleCreateLobby" />
                     </HBox>
                     <Button text="Join Selected Lobby" onAction="#handleJoinLobby"
                             maxWidth="Infinity" styleClass="join-button"/>
@@ -95,9 +96,9 @@
                             <Separator/>
                             <Label text="Host Controls" styleClass="section-header"/>
 
-                            <HBox spacing="10.0" alignment="CENTER_LEFT">
-                                <Label text="Max Players:" styleClass="settings-label"/>
-                                <ComboBox fx:id="maxPlayersCombo" promptText="4" styleClass="settings-combo"/>
+                            <HBox spacing="10.0">
+                                <Label text="Max Players:"/>
+                                <ComboBox fx:id="maxPlayersHostCombo" prefWidth="70"/>
                             </HBox>
 
                             <Button text="Start Game" onAction="#handleStartGame" 

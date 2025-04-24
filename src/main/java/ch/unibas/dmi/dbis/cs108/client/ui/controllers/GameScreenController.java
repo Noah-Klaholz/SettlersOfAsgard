@@ -1,5 +1,9 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
+import ch.unibas.dmi.dbis.cs108.client.app.GameApplication;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeRequestEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
@@ -31,7 +35,9 @@ import javafx.scene.Node; // Import Node
 import javafx.scene.layout.Priority; // Import Priority
 import javafx.scene.layout.Region; // Import Region
 
+import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -104,7 +110,6 @@ public class GameScreenController extends BaseController {
      */
     public GameScreenController() {
         super(new ResourceLoader(), UIEventBus.getInstance(), SceneManager.getInstance());
-        this.localPlayer = new Player(System.getProperty("user.name", "Guest"));
     }
 
     /**
@@ -114,6 +119,13 @@ public class GameScreenController extends BaseController {
     @FXML
     private void initialize() {
         LOGGER.setLevel(Level.ALL);
+        this.localPlayer = GameApplication.getLocalPlayer(); // Fetch player instance
+        if (this.localPlayer == null) {
+            LOGGER.severe("LocalPlayer is null during MainMenuController initialization!");
+            // Handle error appropriately, maybe show an error message and disable
+            // functionality
+            this.localPlayer = new Player("ErrorGuest"); // Fallback to avoid NullPointerExceptions
+        }
         setupUI();
         subscribeEvents();
         loadMapImage();
@@ -158,6 +170,7 @@ public class GameScreenController extends BaseController {
      */
     private void subscribeEvents() {
         eventBus.subscribe(ConnectionStatusEvent.class, this::onConnectionStatus);
+        eventBus.subscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
         eventBus.subscribe(TileClickEvent.class, this::onTileClick);
     }
 
@@ -189,14 +202,12 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Opens the settings dialog overlay.
+     * Handles the "Settings" button click. Opens the SettingsDialog as an overlay.
      */
     @FXML
     private void handleSettings() {
-        if (settingsDialog == null) {
-            LOGGER.warning("Settings dialog is not initialised");
-            return;
-        }
+        LOGGER.info("Settings button clicked.");
+
         Pane root = (StackPane) gameCanvas.getParent();
         if (root == null) {
             LOGGER.warning("Cannot show settings: Root pane (StackPane) not found.");
@@ -204,8 +215,53 @@ public class GameScreenController extends BaseController {
         }
 
         updateSettingsConnectionStatus();
+        if (localPlayer != null) {
+            settingsDialog.playerNameProperty().set(this.localPlayer.getName());
+        } else {
+            LOGGER.warning("Cannot set player name in settings: localPlayer is null.");
+            settingsDialog.playerNameProperty().set("ErrorGuest");
+        }
+
+        settingsDialog.setOnSaveAction(() -> {
+            boolean muted = settingsDialog.muteProperty().get();
+            double volume = settingsDialog.volumeProperty().get();
+            String requestedName = settingsDialog.playerNameProperty().get();
+            LOGGER.info("Settings dialog save requested - Volume: " + volume + ", Muted: " + muted
+                    + ", Requested Name: " + requestedName);
+
+            if (localPlayer != null && requestedName != null && !requestedName.trim().isEmpty()
+                    && !requestedName.equals(localPlayer.getName())) {
+                requestNameChange(requestedName.trim());
+            } else if (requestedName != null && requestedName.trim().isEmpty()) {
+                LOGGER.warning("Attempted to save empty player name.");
+                if (chatComponentController != null) {
+                    chatComponentController.addSystemMessage("Error: Player name cannot be empty.");
+                }
+                if (localPlayer != null) {
+                    settingsDialog.playerNameProperty().set(localPlayer.getName());
+                }
+            }
+
+            if (chatComponentController != null) {
+                chatComponentController.addSystemMessage(
+                        "Audio settings saved. " + (muted ? "Muted." : "Volume: " + (int) volume + "%"));
+            }
+        });
 
         showDialogAsOverlay(settingsDialog, root);
+    }
+
+    /**
+     * Sends a name change request to the server via the event bus.
+     *
+     * @param newName The desired new player name.
+     */
+    private void requestNameChange(String newName) {
+        LOGGER.info("Requesting name change to: " + newName);
+        if (chatComponentController != null) {
+            chatComponentController.addSystemMessage("Requesting name change to: " + newName + "...");
+        }
+        eventBus.publish(new ChangeNameUIEvent(newName));
     }
 
     @FXML
@@ -218,6 +274,44 @@ public class GameScreenController extends BaseController {
 
     @FXML
     private void handleLeaderboard() {
+    }
+
+
+    /**
+     * Handles the response from a player name change request.
+     *
+     * @param event The name change response event.
+     */
+    private void handleNameChangeResponse(NameChangeResponseEvent event) {
+        Objects.requireNonNull(event, "NameChangeResponseEvent cannot be null");
+        Platform.runLater(() -> {
+            if (event.isSuccess()) {
+                String newName = event.getNewName();
+                // Update the central player instance
+                if (localPlayer != null) {
+                    localPlayer.setName(newName);
+                    LOGGER.info("Player name successfully changed to: " + localPlayer.getName());
+                    if (chatComponentController != null) {
+                        chatComponentController.setPlayer(localPlayer); // Update chat component's player context
+                        chatComponentController
+                                .addSystemMessage("Name successfully changed to: " + localPlayer.getName());
+                    }
+                    settingsDialog.playerNameProperty().set(localPlayer.getName()); // Update settings dialog
+                } else {
+                    LOGGER.severe("Cannot update player name: localPlayer is null.");
+                }
+            } else {
+                String failureMsg = event.getMessage() != null ? event.getMessage() : "Unknown reason.";
+                LOGGER.warning("Failed to change player name: " + failureMsg);
+                if (chatComponentController != null) {
+                    chatComponentController.addSystemMessage("Failed to change name: " + failureMsg);
+                }
+                // Revert name in settings dialog if change failed
+                if (localPlayer != null) {
+                    settingsDialog.playerNameProperty().set(localPlayer.getName());
+                }
+            }
+        });
     }
 
     /**
@@ -560,15 +654,23 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Creates the settings dialog instance. Does not add it to the scene graph yet.
+     * Initializes the SettingsDialog and adds it to the root pane.
      */
     private void initialiseSettingsDialog() {
         settingsDialog = new SettingsDialog();
-        // Set save action specific to game screen context
-        settingsDialog.setOnSaveAction(() -> LOGGER.info(() -> String.format(
-                "Settings saved in-game: Volume=%s, Mute=%s",
-                settingsDialog.volumeProperty().get(), settingsDialog.muteProperty().get())));
-        // BaseController's showDialogAsOverlay will handle the onCloseAction for layout
+        if (gameCanvas == null) {
+            LOGGER.warning("Root pane is null, cannot add SettingsDialog.");
+            return;
+        }
+
+        if (localPlayer != null) { // Ensure localPlayer is set
+            settingsDialog.playerNameProperty().set(localPlayer.getName());
+        } else {
+            LOGGER.warning("Cannot set initial player name in settings: localPlayer is null.");
+            settingsDialog.playerNameProperty().set("ErrorGuest"); // Fallback
+        }
+        settingsDialog.setOnSaveAction(this::handleSettingsSave);
+        updateSettingsConnectionStatus();
     }
 
     /**
@@ -578,6 +680,27 @@ public class GameScreenController extends BaseController {
         String status = connectionStatusLabel.getText();
         boolean isConnected = "Connected".equals(status);
         settingsDialog.setConnectionStatus(isConnected, status);
+    }
+
+    /**
+     * Handles the save action from the SettingsDialog.
+     * Checks if the player name has changed and sends an update request.
+     */
+    private void handleSettingsSave() {
+        LOGGER.fine("Settings save action triggered.");
+        if (settingsDialog == null) {
+            LOGGER.warning("SettingsDialog is null during save action.");
+            return;
+        }
+        String newName = settingsDialog.playerNameProperty().get().trim();
+        if (localPlayer != null && !newName.isEmpty() && !newName.equals(localPlayer.getName())) {
+            LOGGER.info("Requesting name change from settings dialog to: " + newName);
+            eventBus.publish(new NameChangeRequestEvent(newName));
+        } else if (localPlayer != null && newName.isEmpty()) {
+            LOGGER.warning("Attempted to save empty player name from settings.");
+            settingsDialog.playerNameProperty().set(localPlayer.getName()); // Revert in dialog
+        }
+        // Audio settings could be handled here if implemented
     }
 
     /**

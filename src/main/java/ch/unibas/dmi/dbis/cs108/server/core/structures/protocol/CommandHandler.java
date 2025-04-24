@@ -237,7 +237,7 @@ public class CommandHandler {
             handleLeaveLobby();
         }
         String lobbyId = cmd.getArgs()[1];
-        int maxPlayers = 4; //currently, maxPlayers is set to 4 //TODO
+        int maxPlayers = Integer.parseInt(cmd.getArgs()[2]);
         Lobby lobby = server.createLobby(lobbyId, maxPlayers);
         return handleJoinLobby(new Command(CommunicationAPI.NetworkProtocol.Commands.JOIN.getCommand() + "$" + playerName + "$" + lobbyId, localPlayer));
     }

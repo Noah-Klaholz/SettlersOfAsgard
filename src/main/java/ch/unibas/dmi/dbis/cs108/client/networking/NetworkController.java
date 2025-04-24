@@ -233,8 +233,8 @@ public class NetworkController {
      *
      * @param lobbyName The name of the lobby to create.
      */
-    public void createLobby(String lobbyName) {
-        String message = translator.formatCreateLobby(localPlayer.getName(), lobbyName);
+    public void createLobby(String lobbyName, int maxPlayers) {
+        String message = translator.formatCreateLobby(localPlayer.getName(), lobbyName, maxPlayers);
         networkClient.send(message);
     }
 
