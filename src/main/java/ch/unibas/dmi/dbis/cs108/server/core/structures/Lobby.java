@@ -262,6 +262,10 @@ public class Lobby implements GameEventNotifier {
                 return;
             }
             gameLogic.getTurnManager().nextTurn();
+            if (gameLogic.getGameState().getGameRound() > 4) {
+                endGame();
+                return;
+            }
             broadcastTurnUpdate();
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error while processing turn change", e);
@@ -309,6 +313,8 @@ public class Lobby implements GameEventNotifier {
     public void endGame() {
         if (status == LobbyStatus.IN_GAME) {
             status = LobbyStatus.GAME_ENDED;
+            broadcastMessage("GAME_ENDED");
+            gameLogic.getGameState().reset();
             stopTurnScheduler();
         }
     }
