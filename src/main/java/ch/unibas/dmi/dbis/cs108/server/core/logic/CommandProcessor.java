@@ -23,6 +23,11 @@ public class CommandProcessor {
     // Use a single lock for state-changing commands to ensure consistency
     private final Object commandExecutionLock = new Object();
 
+    /**
+     * Constructor for CommandProcessor
+     *
+     * @param gameLogic The game logic instance
+     */
     public CommandProcessor(GameLogic gameLogic) {
         this.gameLogic = gameLogic;
         registerCommandHandlers();
@@ -43,6 +48,9 @@ public class CommandProcessor {
 
     /**
      * Process a command message and return the response
+     *
+     * @param command The command to process
+     * @return The response message
      */
     public String processCommand(Command command) {
 

@@ -36,6 +36,8 @@ public class GameStateSerializer {
 
     /**
      * Create a detailed status message with complete state information
+     *
+     * @return the detailed status message
      */
     public String createDetailedStatusMessage() {
         ReadWriteLock lock = gameState.getStateLock();

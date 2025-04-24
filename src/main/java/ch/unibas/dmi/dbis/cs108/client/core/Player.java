@@ -102,7 +102,7 @@ public class Player {
     /**
      * Sets the owned tiles. Use with caution, prefer addOwnedTile/removeOwnedTile.
      *
-     * @param ownedTiles List<Tile>
+     * @param ownedTiles List of Tiles
      */
     public void setOwnedTiles(List<Tile> ownedTiles) {
         this.ownedTiles = (ownedTiles != null) ? new ArrayList<>(ownedTiles) : new ArrayList<>();

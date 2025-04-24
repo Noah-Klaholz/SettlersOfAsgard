@@ -351,6 +351,8 @@ public class GameScreenController extends BaseController {
 
     /**
      * Returns a formatted string with all grid parameters.
+     *
+     * @return A string with the current grid settings.
      */
     public String getGridSettings() {
         return String.format(
