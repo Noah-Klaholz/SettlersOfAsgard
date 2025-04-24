@@ -6,6 +6,4 @@ public interface GameLogicInterface {
     void startGame(String[] players);
 
     void processCommand(Command command);
-
-    void endGame();
 }
