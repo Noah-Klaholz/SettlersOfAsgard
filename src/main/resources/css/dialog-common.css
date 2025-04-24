@@ -1,0 +1,145 @@
+/* Common styles for dialog overlays and content boxes */
+
+.dialog-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.7);
+    /* Semi-transparent background */
+}
+
+.dialog-content-box {
+    -fx-background-color: -color-background-tertiary;
+    /* Use variable */
+    -fx-background-radius: 10px;
+    -fx-padding: 25px;
+    -fx-border-color: -color-border-primary;
+    /* Use variable */
+    -fx-border-width: 1px;
+    -fx-border-radius: 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 10, 0, 0, 4);
+    -fx-max-width: 500px;
+    -fx-max-height: 600px;
+    /* Increased max height slightly */
+}
+
+.dialog-title {
+    -fx-font-family: "Cinzel", serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 24px;
+    -fx-fill: -color-accent-gold;
+    /* Use variable */
+    -fx-text-fill: -color-accent-gold;
+    /* For Label */
+}
+
+.dialog-section-title {
+    -fx-font-family: "Roboto", sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-text-fill: -color-text-primary;
+    /* Use variable */
+}
+
+.dialog-label {
+    -fx-text-fill: -color-text-secondary;
+    /* Use variable */
+    -fx-min-width: 80px;
+    -fx-alignment: center-left;
+}
+
+.dialog-text {
+    -fx-font-family: "Roboto", sans-serif;
+    -fx-font-size: 14px;
+    -fx-fill: -color-text-primary;
+    /* Use variable */
+    -fx-text-fill: -color-text-primary;
+    /* For Label/Text */
+    -fx-text-alignment: center;
+}
+
+.dialog-note {
+    -fx-text-fill: -color-text-muted;
+    /* Use variable */
+    -fx-font-style: italic;
+    -fx-font-size: 12px;
+}
+
+.dialog-separator {
+    -fx-pref-height: 1px;
+    -fx-max-width: 450px;
+    -fx-background-color: -color-border-primary;
+    /* Use variable */
+    -fx-padding: 5px 0 5px 0;
+    /* Replaces VBox margin */
+}
+
+/* Base Dialog Button Style */
+.dialog-button {
+    -fx-font-size: 14px;
+    -fx-padding: 8px 16px;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-border-width: 1px;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    /* Make buttons bolder */
+}
+
+/* Save/Confirm Button Style */
+.dialog-button-save {
+    -fx-background-color: -color-button-primary-bg;
+    -fx-border-color: -color-button-primary-border;
+    -fx-text-fill: -color-button-primary-text;
+}
+
+.dialog-button-save:hover {
+    -fx-background-color: -color-button-primary-hover;
+}
+
+/* Cancel/Close Button Style */
+.dialog-button-cancel {
+    -fx-background-color: -color-button-cancel-bg;
+    -fx-border-color: -color-button-cancel-border;
+    -fx-text-fill: -color-button-cancel-text;
+}
+
+.dialog-button-cancel:hover {
+    -fx-background-color: -color-button-cancel-hover;
+}
+
+/* Standard/Secondary Button Style (if needed, e.g., for 'OK') */
+.dialog-button-standard {
+    -fx-background-color: -color-button-secondary-bg;
+    -fx-border-color: -color-button-secondary-border;
+    -fx-text-fill: -color-button-secondary-text;
+}
+
+.dialog-button-standard:hover {
+    -fx-background-color: -color-button-secondary-hover;
+}
+
+.dialog-textfield {
+    -fx-background-color: -fx-control-inner-background;
+    /* Use variable */
+    -fx-text-fill: -color-text-primary;
+    /* Use variable */
+    -fx-border-color: -color-border-secondary;
+    /* Use variable */
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+    -fx-prompt-text-fill: -color-text-secondary;
+}
+
+.dialog-textfield:focused {
+    -fx-border-color: -color-accent-gold;
+    -fx-effect: dropshadow(three-pass-box, -color-accent-gold-transparent, 5, 0, 0, 0);
+}
+
+.dialog-connection-status.connected {
+    -fx-text-fill: -color-accent-green;
+    /* Use variable */
+}
+
+.dialog-connection-status.disconnected {
+    -fx-text-fill: -color-accent-red;
+    /* Use variable */
+}

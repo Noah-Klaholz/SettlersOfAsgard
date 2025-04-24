@@ -1,34 +1,12 @@
 /* ===== Main Menu - Modern Norse Theme ===== */
 
-/* Base color variables for consistent theming and easy modifications */
-.root {
-    /* Main colors */
-    -color-background-primary: #1a2133;
-    -color-background-secondary: #1e2538;
-    -color-background-tertiary: #2c3347;
-
-    /* Accent colors */
-    -color-accent-gold: #e4c065;
-    -color-accent-blue: #6595e4;
-    -color-accent-green: #4eb34e;
-    -color-accent-red: #ff7070;
-
-    /* Text colors */
-    -color-text-primary: #e8e8e8;
-    -color-text-secondary: #9a9a9a;
-
-    /* Base JavaFX properties */
-    -fx-base: -color-background-secondary;
-    -fx-background: -color-background-primary;
-    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-}
-
 /* Main background */
 .main-menu-background {
     -fx-background-color: linear-gradient(to bottom right, -color-background-primary, -color-background-tertiary);
-    -fx-background-image: url("/images/background-texture.png");
-    -fx-background-repeat: repeat;
-    -fx-background-opacity: 0.2;
+    /* Removed background image/opacity for cleaner look, can be added back if desired */
+    /* -fx-background-image: url("/images/background-texture.png"); */
+    /* -fx-background-repeat: repeat; */
+    /* -fx-background-opacity: 0.2; */
 }
 
 /* Game title styling */
@@ -41,14 +19,14 @@
     -fx-padding: 10px 0;
 }
 
-/* Menu buttons - enhanced for better usability */
+/* Menu buttons - Use standard button variables */
 .menu-button {
-    -fx-background-color: rgba(44, 51, 71, 0.8);
-    -fx-text-fill: -color-accent-gold;
+    -fx-background-color: -color-button-secondary-bg;
+    -fx-text-fill: -color-button-secondary-text;
     -fx-font-size: 16px;
     -fx-font-weight: bold;
     -fx-padding: 12px;
-    -fx-border-color: -color-accent-gold;
+    -fx-border-color: -color-button-secondary-border;
     -fx-border-width: 1px;
     -fx-border-radius: 4px;
     -fx-background-radius: 4px;
@@ -60,17 +38,20 @@
 }
 
 .menu-button:hover {
-    -fx-background-color: rgba(228, 192, 101, 0.3);
+    -fx-background-color: -color-button-secondary-hover;
     -fx-effect: dropshadow(three-pass-box, rgba(228, 192, 101, 0.6), 8, 0, 0, 0);
+    /* Keep specific hover effect */
 }
 
 .menu-button:pressed {
-    -fx-background-color: rgba(228, 192, 101, 0.5);
+    -fx-background-color: -color-accent-gold-transparent-high;
+    /* Use variable */
     -fx-effect: innershadow(three-pass-box, rgba(0, 0, 0, 0.4), 4, 0, 0, 1);
 }
 
 .menu-button:focused {
-    -fx-border-color: white;
+    -fx-border-color: -color-accent-gold;
+    /* Use variable */
     -fx-border-width: 2px;
 }
 
@@ -79,175 +60,40 @@
     -fx-cursor: default;
 }
 
-/* Chat panel styling - REMOVED as it's handled by chat-component.css */
-/*
-.chat-panel {
-    -fx-background-color: rgba(26, 33, 51, 0.85);
-    -fx-background-radius: 8px;
-    -fx-border-color: rgba(228, 192, 101, 0.3);
-    -fx-border-radius: 8px;
-    -fx-min-height: 200px;
-    -fx-pref-height: 300px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 10, 0, 0, 3);
-    -fx-padding: 10px;
-}
-*/
-
-.section-header {
-    -fx-font-family: "Cinzel", serif;
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
+/* Style for the TitledPane containing the chat */
+.chat-titled-pane>.title {
+    -fx-background-color: -color-background-tertiary;
     -fx-text-fill: -color-accent-gold;
-    -fx-padding: 0 0 8 0;
+    -fx-font-family: "Cinzel", "Segoe UI", serif;
+    -fx-font-weight: bold;
+    -fx-border-color: -color-border-primary;
+    -fx-border-width: 0 0 1 0;
 }
 
-/* Improved chat list - REMOVED as it's handled by chat-component.css */
-/*
-.chat-list {
-    -fx-background-color: rgba(44, 51, 71, 0.7);
-    -fx-background-radius: 5px;
-    -fx-border-color: rgba(76, 83, 102, 0.8);
-    -fx-border-radius: 5px;
-    -fx-padding: 5px;
+.chat-titled-pane>.title>.arrow-button .arrow {
+    -fx-background-color: -color-accent-gold;
 }
 
-.chat-list .list-cell {
-    -fx-background-color: transparent;
-    -fx-text-fill: -color-text-primary;
-    -fx-padding: 8px 10px;
-    -fx-border-color: transparent transparent rgba(76, 83, 102, 0.5) transparent;
+.chat-titled-pane>*.content {
+    -fx-background-color: -color-background-secondary;
+    -fx-padding: 0;
+    -fx-border-color: -color-border-primary;
+    -fx-border-width: 0 1 1 1;
 }
 
-.chat-list .list-cell:odd {
-    -fx-background-color: rgba(44, 51, 71, 0.3);
-}
-
-.chat-list .list-cell:selected {
-    -fx-background-color: rgba(228, 192, 101, 0.2);
-}
-*/
-
-/* Text input fields */
-.text-field {
-    -fx-background-color: rgba(44, 51, 71, 0.7);
-    -fx-text-fill: -color-text-primary;
-    -fx-prompt-text-fill: -color-text-secondary;
-    -fx-border-color: rgba(76, 83, 102, 0.8);
-    -fx-border-radius: 3px;
-    -fx-background-radius: 3px;
-    -fx-padding: 8px;
-}
-
-.text-field:focused {
-    -fx-border-color: -color-accent-gold;
-    -fx-effect: dropshadow(three-pass-box, rgba(228, 192, 101, 0.3), 5, 0, 0, 0);
-}
-
-/* Button styling */
-.send-button {
-    -fx-background-color: rgba(101, 149, 228, 0.3);
-    -fx-text-fill: -color-text-primary;
-    -fx-border-color: -color-accent-blue;
-    -fx-border-width: 1px;
-    -fx-border-radius: 3px;
-    -fx-background-radius: 3px;
-    -fx-padding: 8px 12px;
-    -fx-cursor: hand;
-}
-
-.send-button:hover {
-    -fx-background-color: rgba(101, 149, 228, 0.5);
-}
-
-.send-button:pressed {
-    -fx-effect: innershadow(three-pass-box, rgba(0, 0, 0, 0.2), 2, 0, 0, 1);
-}
-
-.send-button:focused {
-    -fx-border-color: white;
-}
-
-/* Status indicators with improved visibility */
+/* Status indicators */
 .online-users-label,
 .version-label {
     -fx-text-fill: -color-text-secondary;
     -fx-font-size: 12px;
 }
 
-.status-label {
-    -fx-text-fill: -color-accent-green;
-    -fx-font-weight: bold;
-}
+/* .status-label styles inherited from common.css */
 
-.status-label.disconnected {
-    -fx-text-fill: -color-accent-red;
-}
-
-/* Footer styling */
+/* Footer styling (moved from common.css) */
 .footer {
     -fx-background-color: rgba(26, 33, 51, 0.8);
     -fx-border-width: 1px 0 0 0;
-    -fx-border-color: rgba(228, 192, 101, 0.3);
+    -fx-border-color: -color-border-primary;
     -fx-padding: 8px 16px;
-}
-
-/* Enhanced scrollbar styling */
-.scroll-bar {
-    -fx-background-color: rgba(26, 33, 51, 0.5);
-    -fx-background-radius: 2px;
-    -fx-pref-width: 10px;
-}
-
-.scroll-bar .thumb {
-    -fx-background-color: rgba(228, 192, 101, 0.3);
-    -fx-background-radius: 2px;
-}
-
-.scroll-bar .thumb:hover {
-    -fx-background-color: rgba(228, 192, 101, 0.5);
-}
-
-.scroll-bar .increment-button,
-.scroll-bar .decrement-button {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-    -fx-padding: 2px;
-}
-
-.scroll-bar .track {
-    -fx-background-color: rgba(44, 51, 71, 0.4);
-    -fx-background-radius: 2px;
-}
-
-/* Style for the JavaFX built-in dialog */
-.about-dialog-pane {
-    -fx-background-color: #2a2a2a;
-}
-
-.about-dialog-pane>*.header-panel {
-    -fx-background-color: #1a2133;
-}
-
-.about-dialog-pane>*.header-panel *.header-text {
-    -fx-font-family: "Cinzel", serif;
-    -fx-font-size: 22px;
-    -fx-font-weight: bold;
-    -fx-text-fill: -color-accent-gold;
-}
-
-.about-dialog-pane:header .header-panel .label {
-    -fx-text-fill: -color-accent-gold;
-}
-
-.about-dialog-pane .button {
-    -fx-background-color: rgba(44, 51, 71, 0.8);
-    -fx-text-fill: -color-accent-gold;
-    -fx-border-color: -color-accent-gold;
-    -fx-border-width: 1px;
-    -fx-border-radius: 4px;
-    -fx-background-radius: 4px;
-}
-
-.about-dialog-pane .button:hover {
-    -fx-background-color: rgba(228, 192, 101, 0.3);
 }

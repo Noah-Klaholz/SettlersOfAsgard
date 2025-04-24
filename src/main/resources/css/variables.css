@@ -1,0 +1,82 @@
+/* Global color variables and styles for consistent theming across components */
+
+.root {
+    /* Main colors - slightly adjusted for better readability */
+    -color-background-primary: #1a2133;
+    -color-background-secondary: #1e2538;
+    -color-background-tertiary: #2c3347;
+
+    /* Accent colors - enhanced for better contrast */
+    -color-accent-gold: #e4c065;
+    -color-accent-gold-transparent: rgba(228, 192, 101, 0.3);
+    -color-accent-gold-transparent-high: rgba(228, 192, 101, 0.7);
+    /* New */
+    -color-accent-gold-transparent-very-high: rgba(228, 192, 101, 0.8);
+    /* New */
+    -color-accent-gold-transparent-very-low: rgba(228, 192, 101, 0.1);
+    /* New */
+    -color-accent-blue: #6595e4;
+    -color-accent-blue-transparent-low: rgba(101, 149, 228, 0.2);
+    /* New */
+    -color-accent-blue-transparent-high: rgba(101, 149, 228, 0.7);
+    /* New */
+    -color-accent-green: #4eb34e;
+    -color-accent-red: #ff7070;
+    -color-accent-secondary: #8a9cb8;
+    /* Added for system messages */
+
+    /* Text colors - improved contrast ratio */
+    -color-text-primary: #f0f0f0;
+    /* Slightly brighter for better readability */
+    -color-text-secondary: #b8b8b8;
+    /* Slightly brighter */
+    -color-text-muted: #8a8a8a;
+    -color-text-button: #e4c065;
+    -color-text-button-inverted: #f0f0f0;
+    /* Match primary text */
+
+    /* Border colors */
+    -color-border-primary: rgba(228, 192, 101, 0.3);
+    -color-border-secondary: rgba(90, 98, 116, 0.8);
+    /* Slightly brighter for visibility */
+
+    /* Background transparent variations */
+    -color-background-primary-transparent-high: rgba(26, 33, 51, 0.7);
+    /* New */
+    -color-background-tertiary-transparent-low: rgba(44, 51, 71, 0.3);
+    /* New */
+    -color-background-tertiary-transparent-med: rgba(44, 51, 71, 0.6);
+    /* New */
+    -color-background-tertiary-transparent-high: rgba(44, 51, 71, 0.8);
+    /* New */
+
+    /* Button colors - adjusted for consistency */
+    -color-button-primary-bg: rgba(62, 142, 62, 0.3);
+    -color-button-primary-border: #4eb34e;
+    -color-button-primary-text: #c0f0c0;
+    /* Brighter for better readability */
+    -color-button-primary-hover: rgba(62, 142, 62, 0.5);
+
+    -color-button-secondary-bg: rgba(44, 51, 71, 0.8);
+    -color-button-secondary-border: #e4c065;
+    -color-button-secondary-text: #e4c065;
+    -color-button-secondary-hover: rgba(228, 192, 101, 0.3);
+
+    -color-button-cancel-bg: rgba(100, 100, 100, 0.3);
+    -color-button-cancel-border: #9a9a9a;
+    -color-button-cancel-text: #f0f0f0;
+    /* Match primary text */
+    -color-button-cancel-hover: rgba(120, 120, 120, 0.5);
+
+    /* Chat specific colors */
+    -color-whisper-bg: rgba(120, 80, 120, 0.2);
+    /* New */
+    -color-whisper-text: #e0b0ff;
+    /* New */
+
+    /* Base JavaFX properties */
+    -fx-base: -color-background-secondary;
+    -fx-background: -color-background-primary;
+    -fx-control-inner-background: -color-background-tertiary;
+    -fx-font-family: "Roboto", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}

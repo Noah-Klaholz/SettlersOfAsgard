@@ -1,166 +1,165 @@
 /* ===== Lobby Screen - Modern Norse Theme ===== */
 
-/* Base styles */
-.root {
-    -fx-base: #1e2538;
-    -fx-background: #1a2133;
-    -fx-control-inner-background: #2c3347;
-}
+/* Base styles inherited from common.css */
 
-/* Header styling */
+/* Header styling (moved from common.css) */
 .header-panel {
-    -fx-background-color: linear-gradient(to bottom, #2a2f40, #1a2133);
+    -fx-background-color: linear-gradient(to bottom, -color-background-tertiary, -color-background-primary);
+    /* Use variable */
     -fx-border-width: 0 0 2px 0;
-    -fx-border-color: #e4c065;
+    -fx-border-color: -color-accent-gold;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.5), 10, 0, 0, 3);
+    -fx-padding: 15px 20px;
+    /* Added padding */
 }
 
 .screen-title {
     -fx-font-family: "Cinzel", serif;
     -fx-font-size: 24px;
     -fx-font-weight: bold;
-    -fx-text-fill: #e4c065;
+    -fx-text-fill: -color-accent-gold;
 }
 
 .player-name {
     -fx-font-size: 14px;
-    -fx-text-fill: #e8e8e8;
+    -fx-text-fill: -color-text-primary;
 }
 
-.back-button {
-    -fx-background-color: rgba(228, 192, 101, 0.2);
-    -fx-text-fill: #e4c065;
-    -fx-border-color: #e4c065;
-    -fx-border-width: 1px;
-    -fx-border-radius: 3px;
-    -fx-background-radius: 3px;
+/* Use common button styles */
+.back-button,
+.settings-button {
+    /* Inherits .standard-button */
+    -fx-padding: 5 10 5 10;
+    /* Keep specific padding */
 }
 
-.back-button:hover {
-    -fx-background-color: rgba(228, 192, 101, 0.3);
+/* Style for the TitledPane containing the chat (Moved from common.css) */
+.chat-titled-pane>.title {
+    -fx-background-color: -color-background-tertiary;
+    -fx-text-fill: -color-accent-gold;
+    -fx-font-family: "Cinzel", "Segoe UI", serif;
+    -fx-font-weight: bold;
+    -fx-border-color: -color-border-primary;
+    -fx-border-width: 0 0 1 0;
 }
 
-/* Content styling */
+.chat-titled-pane>.title>.arrow-button .arrow {
+    -fx-background-color: -color-accent-gold;
+}
+
+.chat-titled-pane>*.content {
+    -fx-background-color: -color-background-secondary;
+    -fx-padding: 0;
+    /* Chat component itself has padding */
+    -fx-border-color: -color-border-primary;
+    -fx-border-width: 0 1 1 1;
+}
+
 .content-pane {
     -fx-background-color: transparent;
-    -fx-background: transparent;
+    /* -fx-background: transparent; Redundant */
 }
 
 .content-pane .split-pane-divider {
-    -fx-background-color: rgba(228, 192, 101, 0.3);
+    -fx-background-color: -color-border-primary;
     -fx-padding: 0 1px 0 1px;
 }
 
 /* Left panel - Available Games */
 .lobby-panel {
     -fx-background-color: rgba(26, 33, 51, 0.95);
+    /* Slightly less transparent */
     -fx-background-radius: 5px;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 8, 0, 0, 2);
+    -fx-padding: 15px;
+    /* Added padding */
 }
 
 .section-header {
     -fx-font-family: "Cinzel", serif;
     -fx-font-size: 16px;
     -fx-font-weight: bold;
-    -fx-text-fill: #e4c065;
+    -fx-text-fill: -color-accent-gold;
     -fx-padding: 0 0 5 0;
 }
 
-.search-field {
-    -fx-background-color: rgba(44, 51, 71, 0.7);
-    -fx-text-fill: #e8e8e8;
-    -fx-prompt-text-fill: #9a9a9a;
-    -fx-border-color: rgba(228, 192, 101, 0.3);
-    -fx-border-radius: 3px;
-    -fx-background-radius: 3px;
+/* Use common text field styles */
+.search-field,
+.lobby-name-field {
+    /* Inherits .standard-text-field */
+    -fx-padding: 6px 8px;
+    /* Adjusted padding */
 }
 
+/* Refresh button - Use standard button style */
 .refresh-button {
-    -fx-background-color: rgba(101, 149, 228, 0.3);
-    -fx-text-fill: #e8e8e8;
-    -fx-border-color: #6595e4;
-    -fx-border-radius: 3px;
-    -fx-background-radius: 3px;
+    /* Inherits .standard-button */
+    /* Remove specific blue overrides */
+    /* -fx-background-color: rgba(101, 149, 228, 0.3); */
+    /* -fx-border-color: -color-accent-blue; */
+    /* -fx-text-fill: -color-text-primary; */
 }
 
 .refresh-button:hover {
-    -fx-background-color: rgba(101, 149, 228, 0.5);
+    /* Inherits .standard-button:hover */
+    /* -fx-background-color: rgba(101, 149, 228, 0.5); */
 }
 
 /* Table styling */
 .lobby-table {
-    -fx-background-color: rgba(44, 51, 71, 0.7);
-    -fx-border-color: rgba(228, 192, 101, 0.3);
+    -fx-background-color: -fx-control-inner-background;
+    -fx-border-color: -color-border-primary;
     -fx-border-radius: 3px;
 }
 
 .lobby-table .column-header {
-    -fx-background-color: rgba(101, 149, 228, 0.2);
-    -fx-border-color: transparent transparent rgba(228, 192, 101, 0.3) transparent;
-    -fx-text-fill: #e4c065;
+    -fx-background-color: -color-accent-blue-transparent-low;
+    /* Use variable */
+    -fx-border-color: transparent transparent -color-border-primary transparent;
+    -fx-text-fill: -color-accent-gold;
     -fx-font-weight: bold;
+    -fx-padding: 8px 5px;
+    /* Added padding */
 }
 
 .lobby-table .table-cell {
-    -fx-text-fill: #e8e8e8;
-    -fx-border-color: transparent transparent rgba(76, 83, 102, 0.5) transparent;
+    -fx-text-fill: -color-text-primary;
+    -fx-border-color: transparent transparent -color-border-secondary transparent;
     -fx-padding: 5px;
 }
 
 .lobby-table .table-row-cell {
-    -fx-background-color: rgba(44, 51, 71, 0.4);
+    -fx-background-color: -color-background-tertiary-transparent-low;
+    /* Use variable */
 }
 
 .lobby-table .table-row-cell:odd {
-    -fx-background-color: rgba(44, 51, 71, 0.6);
+    -fx-background-color: -color-background-tertiary-transparent-med;
+    /* Use variable */
 }
 
 .lobby-table .table-row-cell:selected {
-    -fx-background-color: rgba(228, 192, 101, 0.3);
+    -fx-background-color: -color-accent-gold-transparent;
+    -fx-text-fill: -color-text-primary;
+    /* Ensure text is readable when selected */
 }
 
 .placeholder-label {
-    -fx-text-fill: #9a9a9a;
+    -fx-text-fill: -color-text-secondary;
     -fx-font-style: italic;
 }
 
-/* Lobby creation controls */
-.lobby-name-field {
-    -fx-background-color: rgba(44, 51, 71, 0.7);
-    -fx-text-fill: #e8e8e8;
-    -fx-prompt-text-fill: #9a9a9a;
-    -fx-border-color: rgba(228, 192, 101, 0.3);
-    -fx-border-radius: 3px;
-    -fx-background-radius: 3px;
-}
-
+/* Use common button styles */
 .create-button {
-    -fx-background-color: rgba(62, 142, 62, 0.3);
-    -fx-text-fill: #b8e8b8;
-    -fx-border-color: #4eb34e;
-    -fx-border-radius: 3px;
-    -fx-background-radius: 3px;
-}
-
-.create-button:hover {
-    -fx-background-color: rgba(62, 142, 62, 0.5);
+    /* Inherits .primary-button */
 }
 
 .join-button {
-    -fx-background-color: rgba(228, 192, 101, 0.3);
-    -fx-text-fill: #e4c065;
-    -fx-border-color: #e4c065;
-    -fx-border-radius: 3px;
-    -fx-background-radius: 3px;
-    -fx-font-weight: bold;
-}
-
-.join-button:hover {
-    -fx-background-color: rgba(228, 192, 101, 0.5);
+    /* Inherits .standard-button */
 }
 
 .error-message {
-    -fx-text-fill: #ff7070;
+    -fx-text-fill: -color-accent-red;
     -fx-font-size: 12px;
 }
 
@@ -168,61 +167,87 @@
 .right-panel {
     -fx-background-color: rgba(26, 33, 51, 0.95);
     -fx-background-radius: 5px;
+    -fx-padding: 15px;
+    /* Added padding */
 }
 
 /* Players section */
 .players-section {
-    -fx-background-color: rgba(44, 51, 71, 0.3);
+    -fx-background-color: -color-background-tertiary-transparent-low;
+    /* Use variable */
     -fx-background-radius: 5px;
-    -fx-border-color: rgba(228, 192, 101, 0.15);
+    -fx-border-color: -color-accent-gold-transparent-very-low;
+    /* Use variable */
     -fx-border-radius: 5px;
-    -fx-margin-top: 10px;
+    /* -fx-margin-top: 10px; Use VBox spacing instead */
+    -fx-padding: 10px;
+    /* Added padding */
 }
 
 .player-list {
-    -fx-background-color: rgba(44, 51, 71, 0.7);
+    -fx-background-color: -fx-control-inner-background;
     -fx-background-radius: 3px;
-    -fx-border-color: rgba(76, 83, 102, 0.8);
+    -fx-border-color: -color-border-secondary;
     -fx-border-radius: 3px;
 }
 
 .player-list .list-cell {
     -fx-background-color: transparent;
-    -fx-text-fill: #e8e8e8;
+    -fx-text-fill: -color-text-primary;
     -fx-padding: 6px 8px;
-    -fx-border-color: transparent transparent rgba(76, 83, 102, 0.5) transparent;
+    -fx-border-color: transparent transparent -color-border-secondary transparent;
 }
 
 /* Host controls */
 .host-controls {
-    -fx-background-color: rgba(228, 192, 101, 0.1);
+    -fx-background-color: -color-accent-gold-transparent-very-low;
+    /* Use variable */
     -fx-background-radius: 5px;
-    -fx-border-color: rgba(228, 192, 101, 0.3);
+    -fx-border-color: -color-border-primary;
     -fx-border-radius: 5px;
     -fx-padding: 10px;
 }
 
 .settings-label {
-    -fx-text-fill: #e4c065;
+    -fx-text-fill: -color-accent-gold;
 }
 
 .settings-combo {
-    -fx-background-color: rgba(44, 51, 71, 0.7);
-    -fx-text-fill: #e8e8e8;
-    -fx-prompt-text-fill: #e4c065;
-}
-
-.start-game-button {
-    -fx-background-color: rgba(62, 142, 62, 0.3);
-    -fx-text-fill: #b8e8b8;
-    -fx-border-color: #4eb34e;
-    -fx-border-width: 1px;
+    -fx-background-color: -fx-control-inner-background;
+    -fx-text-fill: -color-text-primary;
+    /* -fx-prompt-text-fill: -color-accent-gold; Prompt text fill is handled by JavaFX */
+    -fx-border-color: -color-border-primary;
     -fx-border-radius: 3px;
     -fx-background-radius: 3px;
-    -fx-font-weight: bold;
-    -fx-font-size: 14px;
+    /* Added */
 }
 
-.start-game-button:hover {
-    -fx-background-color: rgba(62, 142, 62, 0.5);
+.settings-combo .arrow-button {
+    -fx-background-color: -color-accent-gold-transparent;
+}
+
+.settings-combo .arrow {
+    -fx-background-color: -color-accent-gold;
+}
+
+.settings-combo .list-cell {
+    -fx-background-color: -fx-control-inner-background;
+    -fx-text-fill: -color-text-primary;
+}
+
+.settings-combo .list-cell:hover {
+    -fx-background-color: -color-accent-gold-transparent;
+}
+
+.settings-combo .list-view {
+    /* Style the dropdown list */
+    -fx-background-color: -color-background-tertiary;
+    -fx-border-color: -color-border-primary;
+}
+
+/* Use common button styles */
+.start-game-button {
+    /* Inherits .primary-button */
+    -fx-font-size: 14px;
+    /* Keep specific font size */
 }

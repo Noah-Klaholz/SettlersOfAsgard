@@ -1,30 +1,31 @@
-/* Styling for the Description Dialog */
+/* Styling specific to the Description Dialog */
 
-.description-dialog {
-    -fx-background-color: rgba(42, 42, 42, 0.95); /* Darker background for better readability */
-    -fx-background-radius: 8px;
-    -fx-padding: 15px;
-    -fx-border-color: #e4c065; /* Gold border */
-    -fx-border-width: 2px;
-    -fx-border-radius: 8px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 10, 0, 0, 2); /* Drop shadow */
-    -fx-alignment: top-left; /* Align content to top-left */
-    -fx-min-width: 250px;
-    -fx-max-width: 300px;
+/* Apply a specific style class to the root pane in FXML if needed, e.g., .description-dialog-pane */
+/* Otherwise, styles from dialog-common.css (.dialog-content-box) will apply */
+
+.description-dialog-pane {
+    /* Inherits from .dialog-content-box */
+    -fx-max-width: 350px;
+    /* Adjust max-width if needed */
+    -fx-max-height: 450px;
+    /* Adjust max-height if needed */
+    -fx-padding: 20px;
+    /* Adjust padding if needed */
 }
 
-.description-dialog .title-label {
-    -fx-font-family: "Cinzel", serif;
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #e4c065; /* Gold text */
-    -fx-padding: 0 0 12px 0;
+/* Override text alignment if needed (default in dialog-text is center) */
+.description-dialog-pane .dialog-text {
+    -fx-text-alignment: left;
 }
 
-.description-dialog .description-text {
-    -fx-font-family: "Roboto", sans-serif;
-    -fx-font-size: 14px;
-    -fx-text-fill: #e0e0e0; /* Light gray text */
+/* Ensure title wraps */
+.description-dialog-pane .dialog-title {
     -fx-wrap-text: true;
-    -fx-line-spacing: 1.2;
+    -fx-font-size: 18px;
+    /* Slightly smaller title */
+}
+
+/* Add specific styles for image view if necessary */
+.description-image {
+    -fx-padding: 10px 0;
 }

@@ -1,37 +1,4 @@
-/* Styling for the About Dialog */
+/* Styling specific to the About Dialog */
 
-#about-overlay {
-    -fx-background-color: rgba(0, 0, 0, 0.7);
-    -fx-alignment: center;
-    -fx-min-width: 100%;
-    -fx-min-height: 100%;
-    -fx-max-width: 100%;
-    -fx-max-height: 100%;
-    -fx-pref-width: 100%;
-    -fx-pref-height: 100%;
-}
-
-/* Use variables consistent with other CSS files if possible, otherwise use theme colors directly */
-/* Assuming variables might not be available here, using direct theme colors */
-.menu-button {
-    -fx-background-color: #2c3347; /* -color-background-secondary */
-    -fx-text-fill: #e4c065; /* -color-accent-gold */
-    -fx-font-family: "Cinzel", serif;
-    -fx-font-size: 14px;
-    -fx-padding: 8 16;
-    -fx-background-radius: 4px;
-    -fx-border-color: #e4c065; /* -color-accent-gold */
-    -fx-border-width: 1px;
-    -fx-border-radius: 4px;
-    -fx-cursor: hand;
-}
-
-.menu-button:hover {
-    -fx-background-color: #383f54; /* -color-background-tertiary */
-    -fx-border-color: #ffffff;
-}
-
-.menu-button:pressed {
-    -fx-background-color: rgba(228, 192, 101, 0.2); /* Lighter gold accent */
-    -fx-text-fill: #ffffff;
-}
+/* All styles are now handled by dialog-common.css */
+/* Add specific overrides below ONLY if absolutely necessary */

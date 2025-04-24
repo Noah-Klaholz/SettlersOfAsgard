@@ -1,115 +1,118 @@
 /* ===== Game Screen - Modern Norse Theme ===== */
 
-/* Color variables */
-.root {
-    /* Main colors */
-    -color-background-primary: #1a2133;
-    -color-background-secondary: #2c3347;
-    -color-background-tertiary: #383f54;
-
-    /* Accent colors */
-    -color-accent-primary: #e4c065;
-    /* Gold */
-    -color-accent-secondary: #6595e4;
-    /* Blue */
-    -color-accent-tertiary: #d16565;
-    /* Red */
-    -color-accent-success: #4eb34e;
-    /* Green */
-
-    /* Text colors */
-    -color-text-primary: #e8e8e8;
-    -color-text-secondary: #9a9a9a;
-    -color-text-accent: #e4c065;
-
-    /* Base JavaFX properties */
-    -fx-base: -color-background-primary;
-    -fx-background: -color-background-primary;
-    -fx-control-inner-background: -color-background-secondary;
-    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-}
+/* Base styles inherited from common.css */
 
 /* Main layout components */
 .side-panel,
-.chat-panel,
 .card-shop-panel {
     -fx-background-color: -color-background-secondary;
     -fx-background-radius: 8px;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0, 0, 4);
-    -fx-border-color: rgba(228, 192, 101, 0.3);
+    -fx-border-color: -color-border-primary;
     -fx-border-radius: 8px;
     -fx-border-width: 1px;
+    -fx-padding: 15px;
+    /* Added padding */
+}
+
+/* Style for the TitledPane containing the chat (Moved from common.css) */
+.chat-titled-pane>.title {
+    -fx-background-color: -color-background-tertiary;
+    -fx-text-fill: -color-accent-gold;
+    -fx-font-family: "Cinzel", "Segoe UI", serif;
+    -fx-font-weight: bold;
+    -fx-border-color: -color-border-primary;
+    -fx-border-width: 0 0 1 0;
+}
+
+.chat-titled-pane>.title>.arrow-button .arrow {
+    -fx-background-color: -color-accent-gold;
+}
+
+.chat-titled-pane>*.content {
+    -fx-background-color: -color-background-secondary;
+    -fx-padding: 0;
+    /* Chat component itself has padding */
+    -fx-border-color: -color-border-primary;
+    -fx-border-width: 0 1 1 1;
 }
 
 .game-board-container {
     -fx-background-color: -color-background-primary;
     -fx-background-radius: 8px;
     -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0, 0, 2);
+    -fx-padding: 10px;
+    /* Added padding */
 }
 
 /* Titles and headers */
 .section-title,
+/* Inherited from common.css */
 .panel-title,
 .card-category {
     -fx-font-family: "Cinzel", "Segoe UI", serif;
     -fx-font-weight: bold;
-    -fx-text-fill: -color-accent-primary;
+    -fx-text-fill: -color-accent-gold;
 }
 
-.section-title {
-    -fx-font-size: 16px;
-    -fx-padding: 0 0 5 0;
-}
+/* .section-title { ... } */
 
 .panel-title {
     -fx-font-size: 18px;
+    -fx-padding: 0 0 10px 0;
+    /* Added padding */
 }
 
 .card-category {
     -fx-font-size: 14px;
-    -fx-padding: 0 0 5 0;
+    -fx-padding: 0 0 5px 0;
 }
 
 /* Connection status */
 .connection-status-container {
     -fx-padding: 5px;
-    -fx-background-color: rgba(44, 51, 71, 0.6);
+    -fx-background-color: -color-background-tertiary-transparent-med;
+    /* Use variable */
     -fx-background-radius: 4px;
-    -fx-border-color: rgba(228, 192, 101, 0.2);
+    -fx-border-color: -color-accent-gold-transparent-very-low;
+    /* Use variable */
     -fx-border-radius: 4px;
 }
 
 .connection-indicator {
-    -fx-fill: #4eb34e;
+    -fx-fill: -color-accent-green;
     /* Connected by default */
 }
 
 .connection-indicator.disconnected {
-    -fx-fill: #d16565;
+    -fx-fill: -color-accent-red;
 }
 
 .connection-indicator.reconnecting {
-    -fx-fill: #e4c065;
+    -fx-fill: -color-accent-gold;
 }
 
 .connection-status-text {
-    -fx-text-fill: -color-accent-primary;
+    -fx-text-fill: -color-accent-gold;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
 
 /* Resource components */
 .resource-section {
-    -fx-background-color: rgba(44, 51, 71, 0.6);
+    -fx-background-color: -color-background-tertiary-transparent-med;
+    /* Use variable */
     -fx-background-radius: 6px;
     -fx-padding: 10px;
-    -fx-border-color: rgba(228, 192, 101, 0.2);
+    -fx-border-color: -color-accent-gold-transparent-very-low;
+    /* Use variable */
     -fx-border-radius: 6px;
 }
 
 .energy-bar {
-    -fx-accent: -color-accent-primary;
-    -fx-background-color: rgba(44, 51, 71, 0.8);
+    -fx-accent: -color-accent-gold;
+    /* Used for progress indication */
+    /* -fx-background-color: rgba(44, 51, 71, 0.8); Removed, handled by track */
     -fx-background-insets: 0;
     -fx-background-radius: 4;
     -fx-padding: 0;
@@ -117,21 +120,25 @@
 }
 
 .energy-bar .track {
-    -fx-background-color: rgba(44, 51, 71, 0.8);
+    -fx-background-color: -color-background-tertiary-transparent-high;
+    /* Use variable */
     -fx-background-radius: 4;
-    -fx-border-color: rgba(228, 192, 101, 0.3);
+    -fx-border-color: -color-border-primary;
     -fx-border-radius: 4;
     -fx-border-width: 1;
 }
 
 .energy-bar .bar {
-    -fx-background-color: linear-gradient(to right, #6595e4, #4eb34e);
+    -fx-background-color: linear-gradient(to right, -color-accent-blue, -color-accent-green);
     -fx-background-radius: 4;
     -fx-padding: 0;
+    /* Ensure bar fills track height */
+    -fx-background-insets: 1;
+    /* Inset slightly within the track */
 }
 
 .resource-value {
-    -fx-text-fill: -color-accent-primary;
+    -fx-text-fill: -color-accent-gold;
     -fx-font-size: 16px;
     -fx-font-weight: bold;
 }
@@ -142,15 +149,18 @@
 
 /* Players list */
 .players-section {
-    -fx-background-color: rgba(44, 51, 71, 0.6);
+    -fx-background-color: -color-background-tertiary-transparent-med;
+    /* Use variable */
     -fx-background-radius: 6px;
-    -fx-border-color: rgba(228, 192, 101, 0.2);
+    -fx-border-color: -color-accent-gold-transparent-very-low;
+    /* Use variable */
     -fx-border-radius: 6px;
     -fx-padding: 10px;
 }
 
 .players-list {
-    -fx-background-color: rgba(26, 33, 51, 0.7);
+    -fx-background-color: -color-background-primary-transparent-high;
+    /* Use variable */
     -fx-background-radius: 4px;
 }
 
@@ -161,50 +171,29 @@
 }
 
 .players-list .list-cell.current-player {
-    -fx-background-color: rgba(78, 179, 78, 0.3);
-    -fx-text-fill: #e8e8e8;
+    -fx-background-color: -color-button-primary-bg;
+    /* Use variable */
+    -fx-text-fill: -color-text-primary;
     -fx-font-weight: bold;
 }
 
 .players-list .list-cell.next-player {
-    -fx-background-color: rgba(228, 192, 101, 0.2);
+    -fx-background-color: -color-accent-gold-transparent;
 }
 
 /* Buttons */
-/* Keep general button styles, but remove specific overrides handled by chat-component.css */
+/* Use common button styles */
 .action-button,
-.send-button,
-.chat-toggle-button,
 .collapse-button {
-    -fx-background-color: rgba(44, 51, 71, 0.8);
-    -fx-text-fill: -color-accent-primary;
-    -fx-border-color: -color-accent-primary;
-    -fx-border-width: 1px;
-    -fx-border-radius: 4px;
-    -fx-background-radius: 4px;
-    -fx-font-weight: bold;
-    -fx-padding: 8px 12px;
+    /* Inherits .standard-button */
 }
 
-.action-button:hover,
-.send-button:hover,
-.chat-toggle-button:hover,
-.collapse-button:hover {
-    -fx-background-color: rgba(228, 192, 101, 0.2);
-    -fx-cursor: hand;
-}
-
-.action-button:pressed,
-.send-button:pressed,
-.chat-toggle-button:pressed,
-.collapse-button:pressed {
-    -fx-background-color: rgba(228, 192, 101, 0.4);
-    -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.2), 2, 0, 0, 1);
-}
+/* Chat buttons are styled in chat-component.css */
+/* .send-button, .chat-toggle-button ... */
 
 /* Card shop styling */
 .card-shop-panel {
-    -fx-background-color: -color-background-secondary;
+    /* Inherits base panel style */
 }
 
 .shop-scroll {
@@ -217,47 +206,57 @@
 }
 
 .card-section {
-    -fx-padding: 5px 10px;
+    -fx-padding: 10px;
 }
 
 .section-divider {
-    -fx-background-color: rgba(228, 192, 101, 0.3);
+    -fx-background-color: -color-border-primary;
     -fx-padding: 0 1px;
+    /* Use padding for thickness */
     -fx-pref-width: 1px;
+    -fx-min-width: 1px;
+    /* Ensure visibility */
 }
 
 /* Card styling */
 .card {
-    -fx-background-color: rgba(44, 51, 71, 0.7);
+    -fx-background-color: -fx-control-inner-background;
     -fx-background-radius: 6px;
-    -fx-border-color: rgba(76, 83, 102, 0.7);
+    -fx-border-color: -color-border-secondary;
     -fx-border-radius: 6px;
+    -fx-border-width: 1px;
+    /* Added default border width */
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 3, 0, 0, 1);
     -fx-cursor: hand;
+    -fx-padding: 5px;
+    /* Added padding inside card */
 }
 
 .artifact-card {
-    -fx-border-color: rgba(101, 149, 228, 0.7);
+    -fx-border-color: -color-accent-blue-transparent-high;
+    /* Use variable */
 }
 
 .structure-card {
-    -fx-border-color: rgba(228, 192, 101, 0.7);
+    -fx-border-color: -color-accent-gold-transparent-high;
+    /* Use variable */
 }
 
-/* New style for the selected card */
+/* Style for the selected card */
 .selected-card {
-    -fx-border-color: #e4c065;
+    -fx-border-color: -color-accent-gold;
     -fx-border-width: 3px;
-    -fx-effect: dropshadow(gaussian, rgba(228, 192, 101, 0.8), 10, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, -color-accent-gold-transparent-very-high, 10, 0, 0, 0);
+    /* Use variable */
 }
 
 .shop-card {
-    -fx-padding: 0 0 8 0;
+    /* -fx-padding: 0 0 8 0; Removed, handled by FlowPane gap */
 }
 
 .shop-card:hover {
     -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(228, 192, 101, 0.4), 8, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, -color-accent-gold-transparent, 8, 0, 0, 0);
 }
 
 .card-title {
@@ -272,54 +271,51 @@
 }
 
 .card-price {
-    -fx-text-fill: -color-accent-primary;
+    -fx-text-fill: -color-accent-gold;
     -fx-font-size: 12px;
 }
 
-/* Scrollbars */
-.scroll-bar {
-    -fx-background-color: rgba(26, 33, 51, 0.5);
-    -fx-background-radius: 2px;
-}
-
-.scroll-bar .thumb {
-    -fx-background-color: rgba(228, 192, 101, 0.3);
-    -fx-background-radius: 2px;
-}
-
-.scroll-bar .thumb:hover {
-    -fx-background-color: rgba(228, 192, 101, 0.5);
-}
-
-.scroll-bar .increment-button,
-.scroll-bar .decrement-button {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-}
+/* Scrollbars - Inherited from common.css */
+/* .scroll-bar ... */
 
 /* Resize improvements */
 .game-board-container {
     -fx-min-width: 400;
     -fx-min-height: 300;
-    -fx-background-color: -color-background-primary;
+    /* -fx-background-color: -color-background-primary; Already set */
 }
 
-/* Collapsible card panel */
+/* Collapsible card panel (TitledPane) */
 .titled-pane {
-    -fx-text-fill: -color-accent-primary;
+    /* General TitledPane style */
+    -fx-text-fill: -color-accent-gold;
     -fx-font-family: "Cinzel", "Segoe UI", serif;
     -fx-font-weight: bold;
 }
 
 .titled-pane>.title {
-    -fx-background-color: rgba(44, 51, 71, 0.8);
-    -fx-border-color: rgba(228, 192, 101, 0.3);
+    -fx-background-color: -fx-control-inner-background;
+    -fx-border-color: -color-border-primary;
+    -fx-border-width: 0 0 1px 0;
+    /* Bottom border only */
+}
+
+.titled-pane>.title>.arrow-button .arrow {
+    -fx-background-color: -color-accent-gold;
+}
+
+.titled-pane>*.content {
+    -fx-background-color: -color-background-secondary;
+    -fx-padding: 10px;
+    /* Add padding to content */
+    -fx-border-color: -color-border-primary;
+    -fx-border-width: 0 1px 1px 1px;
+    /* Border on sides and bottom */
 }
 
 /* Improve card layout */
-.card-section {
-    -fx-padding: 10px;
-}
+/* .card-section { -fx-padding: 10px; } */
+/* Already defined */
 
 /* FlowPane for structures to wrap properly */
 .flow-pane {

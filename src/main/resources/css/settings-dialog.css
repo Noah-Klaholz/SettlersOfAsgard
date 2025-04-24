@@ -1,82 +1,54 @@
-/* Styling for the Settings Dialog */
+/* Styling specific to the Settings Dialog */
 
-#settings-overlay {
-    -fx-background-color: rgba(0, 0, 0, 0.7);
-    -fx-alignment: center;
-    -fx-min-width: 100%;
-    -fx-min-height: 100%;
-    -fx-max-width: 100%;
-    -fx-max-height: 100%;
-    -fx-pref-width: 100%;
-    -fx-pref-height: 100%;
-}
-
-.settings-button {
-    -fx-background-color: #2c3347;
-    -fx-text-fill: #e4c065;
-    -fx-font-family: "Cinzel", serif;
-    -fx-font-size: 14px;
-    -fx-padding: 8 16;
-    -fx-background-radius: 4px;
-    -fx-border-color: #e4c065;
-    -fx-border-width: 1px;
-    -fx-border-radius: 4px;
-    -fx-cursor: hand;
-}
-
-.settings-button:hover {
-    -fx-background-color: #383f54;
-    -fx-border-color: #ffffff;
-}
-
-.settings-button:pressed {
-    -fx-background-color: rgba(228, 192, 101, 0.2);
-    -fx-text-fill: #ffffff;
-}
-
-.settings-button.save-button {
-    -fx-background-color: #3a5738;
-    -fx-border-color: #4eb34e;
-}
-
-.settings-button.save-button:hover {
-    -fx-background-color: #4a6748;
-    -fx-border-color: #ffffff;
-}
+/* Overlay style is handled by .dialog-overlay in dialog-common.css */
+/* Button base styles are handled by .dialog-button-* in dialog-common.css */
+/* Textfield style is handled by .dialog-textfield in dialog-common.css */
 
 /* Slider styling */
 .slider .track {
-    -fx-background-color: #2c3347;
+    -fx-background-color: -fx-control-inner-background;
+    /* Use base variable */
     -fx-background-radius: 4px;
+    -fx-border-color: -color-border-secondary;
+    -fx-border-radius: 4px;
 }
 
 .slider .thumb {
-    -fx-background-color: #e4c065;
+    -fx-background-color: -color-accent-gold;
     -fx-background-radius: 8px;
     -fx-pref-height: 16px;
     -fx-pref-width: 16px;
 }
 
 .slider:hover .thumb {
-    -fx-background-color: #ffffff;
+    -fx-background-color: derive(-color-accent-gold, 30%);
+    /* Slightly lighter gold on hover */
 }
 
 /* Checkbox styling */
 .check-box .box {
-    -fx-background-color: #2c3347;
-    -fx-border-color: #e4c065;
+    -fx-background-color: -fx-control-inner-background;
+    /* Use base variable */
+    -fx-border-color: -color-accent-gold;
     -fx-border-width: 1px;
     -fx-border-radius: 3px;
 }
 
 .check-box:selected .mark {
-    -fx-background-color: #e4c065;
+    -fx-background-color: -color-accent-gold;
 }
 
 .check-box:selected .box {
-    -fx-background-color: #2c3347;
+    -fx-background-color: -fx-control-inner-background;
+    /* Keep background consistent */
 }
 
 .check-box:hover .box {
-    -fx-border-color: #ffffff;
+    -fx-border-color: derive(-color-accent-gold, 50%);
+    /* Lighter gold border on hover */
 }
+
+/* Remove redundant button styles */
+/* .settings-button, .settings-button:hover, .settings-button:pressed, */
+/* .settings-button.save-button, .settings-button.save-button:hover are replaced by */
+/* .dialog-button, .dialog-button-save, .dialog-button-cancel and their hover states */
