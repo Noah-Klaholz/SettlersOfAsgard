@@ -117,7 +117,7 @@
     "params": [
       {
         "name": "Runes Lost",
-        "value": 20
+        "value": -20
       }
     ]
   },
