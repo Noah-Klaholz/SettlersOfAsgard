@@ -17,6 +17,11 @@ public class EndGameEvent implements Event{
      */
     private final HashMap<String, Integer> leaderboard;
 
+    /**
+     * Constructor for EndGameEvent.
+     *
+     * @param leaderboardStr The leaderboard string received from the server.
+     */
     public EndGameEvent(String leaderboardStr) {
         this.leaderboard = new HashMap<>();
 
