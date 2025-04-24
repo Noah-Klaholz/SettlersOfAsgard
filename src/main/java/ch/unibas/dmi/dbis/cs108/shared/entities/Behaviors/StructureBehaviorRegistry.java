@@ -65,7 +65,7 @@ public class StructureBehaviorRegistry {
             for (Tile[] tile : tiles) {
                 for (Tile t : tile) {
                     if (t.getArtifact() != null) {
-                        gameState.sendNotification(player.getName(), "4$" + t.getX() + "$" + t.getY() + "$" + t.getArtifact().getId());
+                        gameState.sendNotification(player.getName(), "4$" + t.getX() + "$" + t.getY() + "$" + t.getArtifact().getName());
                         b = true;
                     }
                 }
