@@ -60,6 +60,7 @@ public class StructureActionHandler {
             // Check if player can afford the structure
             if(!player.buy(structure.getPrice())) return false;
 
+            player.addPurchasableEntity(structure);
             tile.setEntity(structure);
 
             return true;
