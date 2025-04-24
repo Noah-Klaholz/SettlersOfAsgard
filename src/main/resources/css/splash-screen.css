@@ -1,0 +1,11 @@
+/* splash-screen.css */
+.splash-background {
+    -fx-background-color: #151a29;  /* Dark blue background */
+}
+
+.splash-title {
+    -fx-text-fill: white;
+    -fx-font-size: 48px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.7), 10, 0.5, 0, 0);
+}

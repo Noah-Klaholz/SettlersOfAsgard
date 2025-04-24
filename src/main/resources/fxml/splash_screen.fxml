@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+
+<StackPane fx:id="splashRoot" xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="ch.unibas.dmi.dbis.cs108.client.ui.controllers.SplashScreenController"
+           styleClass="splash-background"
+           stylesheets="/css/variables.css,/css/common.css,/css/splash-screen.css">
+
+    <VBox alignment="CENTER" spacing="30">
+        <ImageView fx:id="gameLogo" fitWidth="400" preserveRatio="true"
+                   cache="true" smooth="true"/>
+
+        <Label fx:id="titleLabel" text="Settlers of Asgard" styleClass="splash-title">
+            <font>
+                <Font name="System Bold" size="48.0"/>
+            </font>
+        </Label>
+    </VBox>
+</StackPane>

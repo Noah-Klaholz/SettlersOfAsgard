@@ -199,6 +199,7 @@ public class SceneManager {
      * and their corresponding FXML file paths.
      */
     public enum SceneType {
+        SPLASH(ResourceLoader.SPLASH_SCREEN_FXML),
         MAIN_MENU(ResourceLoader.MAIN_MENU_FXML),
         LOBBY(ResourceLoader.LOBBY_SCREEN_FXML),
         GAME(ResourceLoader.GAME_SCREEN_FXML);

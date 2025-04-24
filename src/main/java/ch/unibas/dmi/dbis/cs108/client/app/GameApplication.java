@@ -161,9 +161,9 @@ public class GameApplication extends Application {
         });
 
         // Start with MAIN_MENU
-        sceneManager.switchToScene(SceneManager.SceneType.MAIN_MENU);
+        sceneManager.switchToScene(SceneManager.SceneType.SPLASH);
         primaryStage.show();
-        LOGGER.info("Primary stage shown with Main Menu.");
+        LOGGER.info("Primary stage shown with Splash Screen / Intro.");
     }
 
     /**
