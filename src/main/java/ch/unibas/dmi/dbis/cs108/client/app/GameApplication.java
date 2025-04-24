@@ -3,6 +3,8 @@ package ch.unibas.dmi.dbis.cs108.client.app;
 
 import ch.unibas.dmi.dbis.cs108.client.communication.CommunicationMediator;
 // import ch.unibas.dmi.dbis.cs108.client.core.Game; // Unused import
+import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
+import ch.unibas.dmi.dbis.cs108.client.core.state.GameStateManager;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.client.networking.NetworkController;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher;
@@ -28,14 +30,6 @@ public class GameApplication extends Application {
      * The NetworkController instance for managing network communication.
      */
     private NetworkController networkController;
-    /**
-     * The UIEventBus instance for managing UI events.
-     */
-    private UIEventBus uiEventBus;
-    /**
-     * The EventDispatcher instance for managing network events.
-     */
-    private EventDispatcher networkEventDispatcher;
     /**
      * The Player instance representing the local player. Made static for global
      * access.
@@ -121,11 +115,11 @@ public class GameApplication extends Application {
             System.exit(1);
         }
 
-        uiEventBus = UIEventBus.getInstance();
-        networkEventDispatcher = EventDispatcher.getInstance();
+        GameState gameState = new GameState();
+        GameStateManager gameStateManager = new GameStateManager(gameState);
 
         // Initialize CommunicationMediator to wire UI and network messages.
-        new CommunicationMediator(networkController);
+        new CommunicationMediator(networkController, gameStateManager);
         LOGGER.info("CommunicationMediator initialized.");
 
         // Initialize and display the main menu scene.
