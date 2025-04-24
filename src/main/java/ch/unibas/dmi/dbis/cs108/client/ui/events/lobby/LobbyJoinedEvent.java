@@ -77,6 +77,11 @@ public class LobbyJoinedEvent implements UIEvent {
         return players;
     }
 
+    /**
+     * Returns the type of the event.
+     *
+     * @return event type
+     */
     @Override
     public String getType() {
         return "LOBBY_JOINED";
