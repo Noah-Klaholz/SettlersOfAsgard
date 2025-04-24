@@ -112,7 +112,6 @@
 .energy-bar {
     -fx-accent: -color-accent-gold;
     /* Used for progress indication */
-    /* -fx-background-color: rgba(44, 51, 71, 0.8); Removed, handled by track */
     -fx-background-insets: 0;
     -fx-background-radius: 4;
     -fx-padding: 0;
@@ -250,39 +249,14 @@
     /* Use variable */
 }
 
-.shop-card {
-    /* -fx-padding: 0 0 8 0; Removed, handled by FlowPane gap */
-}
-
-.shop-card:hover {
-    -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, -color-accent-gold-transparent, 8, 0, 0, 0);
-}
-
-.card-title {
-    -fx-font-weight: bold;
-    -fx-text-fill: -color-text-primary;
-    -fx-padding: 8px 4px 0 4px;
-    -fx-font-size: 13px;
-}
-
-.card-price-container {
-    -fx-padding: 5px 0 0 0;
-}
-
-.card-price {
-    -fx-text-fill: -color-accent-gold;
-    -fx-font-size: 12px;
-}
+.shop-card {}
 
 /* Scrollbars - Inherited from common.css */
-/* .scroll-bar ... */
 
 /* Resize improvements */
 .game-board-container {
     -fx-min-width: 400;
     -fx-min-height: 300;
-    /* -fx-background-color: -color-background-primary; Already set */
 }
 
 /* Collapsible card panel (TitledPane) */
@@ -321,5 +295,4 @@
 .flow-pane {
     -fx-hgap: 8;
     -fx-vgap: 8;
-    -fx-max-width: infinity;
 }

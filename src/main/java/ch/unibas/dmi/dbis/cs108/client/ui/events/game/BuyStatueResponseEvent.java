@@ -5,15 +5,8 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
 /**
  * Represents the response/result of a BuyStatue action.
  */
-public class PlaceStatueResponseEvent implements UIEvent {
-    /**
-     * The x-coordinate of the location where the statue is to be placed.
-     */
-    private final int x;
-    /**
-     * The y-coordinate of the location where the statue is to be placed.
-     */
-    private final int y;
+public class BuyStatueResponseEvent implements UIEvent {
+
     private final boolean success;
     private final String message;
     private final String statueId;
@@ -25,9 +18,7 @@ public class PlaceStatueResponseEvent implements UIEvent {
      * @param message  optional message for success/failure
      * @param statueId the ID of the statue
      */
-    public PlaceStatueResponseEvent(boolean success, String message, String statueId, int x, int y) {
-        this.x = x;
-        this.y = y;
+    public BuyStatueResponseEvent(boolean success, String message, String statueId) {
         this.success = success;
         this.message = message;
         this.statueId = statueId;
@@ -52,24 +43,6 @@ public class PlaceStatueResponseEvent implements UIEvent {
      */
     public String getStatueId() {
         return statueId;
-    }
-
-    /**
-     * Returns the x-coordinate of the location where the statue is to be placed.
-     *
-     * @return The x-coordinate.
-     */
-    public int getX() {
-        return x;
-    }
-
-    /**
-     * Returns the y-coordinate of the location where the statue is to be placed.
-     *
-     * @return The y-coordinate.
-     */
-    public int getY() {
-        return y;
     }
 
     /**

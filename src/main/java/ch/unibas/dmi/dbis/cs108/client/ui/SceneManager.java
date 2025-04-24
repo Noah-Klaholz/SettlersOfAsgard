@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.scene.paint.Color; // Import Color
 
 import java.io.IOException;
 import java.net.URL;
@@ -31,6 +32,7 @@ public class SceneManager {
     private final Map<SceneType, NodeHolder> nodeCache = new ConcurrentHashMap<>();
     private final ResourceLoader resourceLoader;
     private Stage primaryStage;
+    private static final Color BACKGROUND_COLOR = Color.rgb(30, 30, 40); // Dark blue-grey background
 
     /**
      * Private constructor for singleton.
@@ -102,6 +104,7 @@ public class SceneManager {
 
         if (currentScene == null) {
             Scene scene = new Scene(newRoot);
+            scene.setFill(BACKGROUND_COLOR); // Set background color for new scene
             primaryStage.setScene(scene);
             ThemeManager.getInstance().registerScene(scene);
             LOGGER.info("Initial scene set: " + sceneType);
@@ -113,6 +116,7 @@ public class SceneManager {
                 LOGGER.fine("Attempted to switch to the same scene: " + sceneType);
                 return;
             }
+            currentScene.setFill(BACKGROUND_COLOR); // Ensure background color is set on existing scene
             FadeTransition fadeOut = createFadeTransition(oldRoot, 1.0, 0.0, 150);
             FadeTransition fadeIn = createFadeTransition(newRoot, 0.0, 1.0, 200);
             newRoot.setOpacity(0.0);

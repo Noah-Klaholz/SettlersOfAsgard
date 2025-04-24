@@ -5,6 +5,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.DescriptionDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
+import ch.unibas.dmi.dbis.cs108.client.ui.components.game.GridAdjustmentManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.TileClickEvent;
@@ -19,13 +20,18 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.util.Duration;
+import javafx.scene.Node; // Import Node
+import javafx.scene.layout.Priority; // Import Priority
+import javafx.scene.layout.Region; // Import Region
 
 import java.util.Optional;
 import java.util.logging.Level;
@@ -38,51 +44,25 @@ import java.util.logging.Logger;
  * dispatching user interactions (tile clicks, chat input, etc.) through the
  * {@link UIEventBus},
  * and managing overlays such as settings and card descriptions.
+ * Grid adjustment logic is handled by {@link GridAdjustmentManager}.
  */
 public class GameScreenController extends BaseController {
 
     private static final Logger LOGGER = Logger.getLogger(GameScreenController.class.getName());
-    private static final int HEX_ROWS = 7;
-    private static final int HEX_COLS = 8;
-
-    // Default grid parameters
-    private static final double DEF_GRID_SCALE = 0.85;
-    private static final double DEF_GRID_H_OFFSET = 0.00;
-    private static final double DEF_GRID_V_OFFSET = 0.15;
-    private static final double DEF_GRID_WIDTH_PCT = 0.90;
-    private static final double DEF_GRID_HEIGHT_PCT = 2.06;
-    private static final double DEF_ROTATION_DEG = 30.0;
-    private static final double DEF_H_SPACING = 1.80;
-    private static final double DEF_V_SPACING = 1.33;
-    private static final double DEF_H_SQUISH = 1.00;
-    private static final double DEF_V_SQUISH = 0.80;
+    static final int HEX_ROWS = 7;
+    static final int HEX_COLS = 8;
 
     private Player localPlayer;
-
     private final ObservableList<String> players = FXCollections.observableArrayList();
 
+    // Keep map/drawing related fields
     private double scaledMapWidth;
     private double scaledMapHeight;
     private double mapOffsetX;
     private double mapOffsetY;
-    private double effectiveHexSize;
-    private double gridOffsetX;
-    private double gridOffsetY;
-
-    private double gridScaleFactor = DEF_GRID_SCALE;
-    private double gridHorizontalOffset = DEF_GRID_H_OFFSET;
-    private double gridVerticalOffset = DEF_GRID_V_OFFSET;
-    private double gridWidthPercentage = DEF_GRID_WIDTH_PCT;
-    private double gridHeightPercentage = DEF_GRID_HEIGHT_PCT;
-    private double hexRotationDegrees = DEF_ROTATION_DEG;
-    private double horizontalSpacingFactor = DEF_H_SPACING;
-    private double verticalSpacingFactor = DEF_V_SPACING;
-    private double horizontalSquishFactor = DEF_H_SQUISH;
-    private double verticalSquishFactor = DEF_V_SQUISH;
-
-    private boolean gridAdjustmentModeActive;
-    private Label adjustmentModeIndicator;
-    private Label adjustmentValuesLabel;
+    double effectiveHexSize; // Made package-private or public for GridAdjustmentManager
+    double gridOffsetX; // Made package-private or public for GridAdjustmentManager
+    double gridOffsetY; // Made package-private or public for GridAdjustmentManager
 
     private int selectedRow = -1;
     private int selectedCol = -1;
@@ -94,6 +74,9 @@ public class GameScreenController extends BaseController {
     private SettingsDialog settingsDialog;
     private DescriptionDialog descriptionDialog;
     private Pane currentlySelectedCard;
+
+    // Add field for the GridAdjustmentManager
+    private GridAdjustmentManager gridAdjustmentManager;
 
     @FXML
     private Canvas gameCanvas;
@@ -114,6 +97,10 @@ public class GameScreenController extends BaseController {
 
     private ChatComponent chatComponentController; // Now managed programmatically
 
+    // Add these fields for grid adjustment UI
+    private Label adjustmentModeIndicator;
+    private Label adjustmentValuesLabel;
+
     /**
      * Creates a new controller instance and wires the shared singletons.
      */
@@ -132,8 +119,11 @@ public class GameScreenController extends BaseController {
         setupUI();
         subscribeEvents();
         loadMapImage();
-        setupCanvasListeners();
-        createAdjustmentUI();
+        createAdjustmentUI(); // Create UI elements first
+        // Instantiate GridAdjustmentManager after UI elements are created
+        this.gridAdjustmentManager = new GridAdjustmentManager(this, adjustmentModeIndicator, adjustmentValuesLabel,
+                this::drawMapAndGrid);
+        setupCanvasListeners(); // Setup listeners after manager is created
         initialiseSettingsDialog();
         initialiseDescriptionDialog();
 
@@ -144,7 +134,9 @@ public class GameScreenController extends BaseController {
         chatComponentController.addSystemMessage("Game interface initialized successfully!");
         if (chatContainer != null) {
             chatContainer.getChildren().clear();
-            chatContainer.getChildren().add(chatComponentController.getView());
+            Node chatView = chatComponentController.getView(); // Get the view Node
+            chatContainer.getChildren().add(chatView);
+            VBox.setVgrow(chatView, Priority.ALWAYS); // Make the chat component grow vertically
         } else {
             LOGGER.severe("chatContainer VBox is null! Check FXML for fx:id=\"chatContainer\"");
         }
@@ -203,11 +195,19 @@ public class GameScreenController extends BaseController {
      */
     @FXML
     private void handleSettings() {
-        if (settingsDialog != null) {
-            settingsDialog.show();
-        } else {
+        if (settingsDialog == null) {
             LOGGER.warning("Settings dialog is not initialised");
+            return;
         }
+        Pane root = (StackPane) gameCanvas.getParent();
+        if (root == null) {
+            LOGGER.warning("Cannot show settings: Root pane (StackPane) not found.");
+            return;
+        }
+
+        updateSettingsConnectionStatus();
+
+        showDialogAsOverlay(settingsDialog, root);
     }
 
     @FXML
@@ -267,119 +267,51 @@ public class GameScreenController extends BaseController {
         if (settingsDialog != null)
             settingsDialog.close();
         if (descriptionDialog != null)
-            descriptionDialog.hide();
+            descriptionDialog.close();
         LOGGER.info("GameScreenController resources cleaned up");
     }
 
     /**
-     * Toggles grid-adjustment mode on/off.
+     * Toggles grid-adjustment mode on/off using the GridAdjustmentManager.
      */
     public void toggleGridAdjustmentMode() {
-        setGridAdjustmentMode(!gridAdjustmentModeActive);
+        gridAdjustmentManager.toggleGridAdjustmentMode();
     }
 
     /**
-     * Enables or disables grid-adjustment mode.
+     * Enables or disables grid-adjustment mode using the GridAdjustmentManager.
      *
      * @param active {@code true} to enter adjustment mode, {@code false} to leave
      *               it.
      */
     public void setGridAdjustmentMode(boolean active) {
-        gridAdjustmentModeActive = active;
-        adjustmentModeIndicator.setVisible(active);
-        adjustmentValuesLabel.setVisible(active);
-        if (active) {
-            gameCanvas.requestFocus();
-            updateAdjustmentFeedback();
-        }
-        drawMapAndGrid();
-    }
-
-    public void setGridScaleFactor(double f) {
-        if (f > 0.3 && f < 1.5) {
-            gridScaleFactor = f;
-            drawMapAndGrid();
-        }
-    }
-
-    public void setGridHorizontalOffset(double p) {
-        if (p >= -0.3 && p <= 0.3) {
-            gridHorizontalOffset = p;
-            drawMapAndGrid();
-        }
-    }
-
-    public void setGridVerticalOffset(double p) {
-        if (p >= -0.3 && p <= 0.3) {
-            gridVerticalOffset = p;
-            drawMapAndGrid();
-        }
-    }
-
-    public void setHexRotation(double d) {
-        hexRotationDegrees = Math.max(0, Math.min(60, d));
-        drawMapAndGrid();
-    }
-
-    public void setHorizontalSpacing(double f) {
-        if (f >= 1) {
-            horizontalSpacingFactor = f;
-            drawMapAndGrid();
-        }
-    }
-
-    public void setVerticalSpacing(double f) {
-        if (f >= 1) {
-            verticalSpacingFactor = f;
-            drawMapAndGrid();
-        }
-    }
-
-    public void setHorizontalSquish(double f) {
-        if (f >= 0.5 && f <= 2) {
-            horizontalSquishFactor = f;
-            drawMapAndGrid();
-        }
-    }
-
-    public void setVerticalSquish(double f) {
-        if (f >= 0.5 && f <= 2) {
-            verticalSquishFactor = f;
-            drawMapAndGrid();
-        }
+        gridAdjustmentManager.setGridAdjustmentMode(active);
     }
 
     /**
-     * Returns a formatted string with all grid parameters.
-     *
-     * @return A string with the current grid settings.
+     * Returns a formatted string with all grid parameters from the
+     * GridAdjustmentManager.
      */
     public String getGridSettings() {
-        return String.format(
-                "Grid settings: scale=%.2f, hOffset=%.2f, vOffset=%.2f, width=%.2f%%, height=%.2f%%, rotation=%.1f°, " +
-                        "hSpacing=%.2f, vSpacing=%.2f, hSquish=%.2f, vSquish=%.2f",
-                gridScaleFactor, gridHorizontalOffset, gridVerticalOffset, gridWidthPercentage * 100,
-                gridHeightPercentage * 100, hexRotationDegrees, horizontalSpacingFactor, verticalSpacingFactor,
-                horizontalSquishFactor, verticalSquishFactor);
+        return gridAdjustmentManager.getGridSettings();
     }
 
     /**
      * Handles shortcuts registered on the parent FXML root.
+     * Delegates grid adjustment toggling to the manager.
      */
     @FXML
     private void handleKeyboardShortcut(KeyEvent e) {
-        if (e.getCode() == KeyCode.ESCAPE && gridAdjustmentModeActive) {
-            setGridAdjustmentMode(false);
+        // Delegate grid adjustment toggle
+        if (gridAdjustmentManager.handleKeyboardShortcut(e)) {
             e.consume();
         }
-        if (e.isControlDown() && e.getCode() == KeyCode.G) {
-            toggleGridAdjustmentMode();
-            e.consume();
-        }
+        // Handle other shortcuts if needed
     }
 
     /**
      * Adds the translucent info panel used while in adjustment mode.
+     * Stores the created labels in fields.
      */
     private void createAdjustmentUI() {
         adjustmentModeIndicator = new Label("GRID ADJUSTMENT MODE (Press G to exit)");
@@ -415,6 +347,7 @@ public class GameScreenController extends BaseController {
     /**
      * Installs listeners so that the grid is redrawn when the canvas size changes
      * and so that mouse/keyboard events are captured.
+     * Delegates key presses to GridAdjustmentManager.
      */
     private void setupCanvasListeners() {
         gameCanvas.widthProperty().addListener((o, ov, nv) -> drawMapAndGrid());
@@ -431,7 +364,9 @@ public class GameScreenController extends BaseController {
                 }
             });
         }
-        gameCanvas.setOnKeyPressed(this::handleGridAdjustmentKeys);
+
+        // Delegate key presses to the manager
+        gameCanvas.setOnKeyPressed(gridAdjustmentManager::handleGridAdjustmentKeys);
     }
 
     /**
@@ -449,94 +384,12 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Processes key presses while in grid-adjustment mode.
-     */
-    @FXML
-    private void handleGridAdjustmentKeys(KeyEvent e) {
-        if (!gridAdjustmentModeActive && !(e.isControlDown() && e.getCode() == KeyCode.G)) {
-            return;
-        }
-        switch (e.getCode()) {
-            case UP -> gridVerticalOffset -= 0.01;
-            case DOWN -> gridVerticalOffset += 0.01;
-            case LEFT -> gridHorizontalOffset -= 0.01;
-            case RIGHT -> gridHorizontalOffset += 0.01;
-            case PLUS, ADD -> gridScaleFactor += 0.05;
-            case MINUS, SUBTRACT -> gridScaleFactor -= 0.05;
-            case W -> gridHeightPercentage -= 0.02;
-            case S -> gridHeightPercentage += 0.02;
-            case A -> gridWidthPercentage -= 0.02;
-            case D -> gridWidthPercentage += 0.02;
-            case R -> hexRotationDegrees = (hexRotationDegrees + 10) % 60;
-            case T -> hexRotationDegrees = (hexRotationDegrees - 10 + 60) % 60;
-            case F -> horizontalSpacingFactor = Math.max(1, horizontalSpacingFactor - 0.1);
-            case G -> horizontalSpacingFactor += 0.1;
-            case V -> verticalSpacingFactor = Math.max(1, verticalSpacingFactor - 0.1);
-            case B -> verticalSpacingFactor += 0.1;
-            case H -> horizontalSquishFactor = Math.max(0.5, horizontalSquishFactor - 0.1);
-            case J -> horizontalSquishFactor = Math.min(2, horizontalSquishFactor + 0.1);
-            case K -> verticalSquishFactor = Math.max(0.5, verticalSquishFactor - 0.1);
-            case L -> verticalSquishFactor = Math.min(2, verticalSquishFactor + 0.1);
-            case BACK_SPACE -> resetDefaults();
-            case P -> LOGGER.info(getGridSettings());
-            case C -> copyGridSettingsToClipboard();
-            default -> {
-                return;
-            }
-        }
-        drawMapAndGrid();
-        updateAdjustmentFeedback();
-        e.consume();
-    }
-
-    /**
-     * Restores all grid parameters to their factory defaults.
-     */
-    private void resetDefaults() {
-        gridScaleFactor = DEF_GRID_SCALE;
-        gridHorizontalOffset = DEF_GRID_H_OFFSET;
-        gridVerticalOffset = DEF_GRID_V_OFFSET;
-        gridWidthPercentage = DEF_GRID_WIDTH_PCT;
-        gridHeightPercentage = DEF_GRID_HEIGHT_PCT;
-        hexRotationDegrees = DEF_ROTATION_DEG;
-        horizontalSpacingFactor = DEF_H_SPACING;
-        verticalSpacingFactor = DEF_V_SPACING;
-        horizontalSquishFactor = DEF_H_SQUISH;
-        verticalSquishFactor = DEF_V_SQUISH;
-    }
-
-    /**
-     * Presents the current parameter values while adjusting.
-     */
-    private void updateAdjustmentFeedback() {
-        adjustmentValuesLabel.setText(String.format(
-                "Scale: %.2f | Offset:(%.2f,%.2f) | Size: %.0f%%x%.0f%% | Rot: %.1f° | " +
-                        "Spacing:(%.2f,%.2f) | Squish:(%.2f,%.2f)",
-                gridScaleFactor, gridHorizontalOffset, gridVerticalOffset,
-                gridWidthPercentage * 100, gridHeightPercentage * 100, hexRotationDegrees,
-                horizontalSpacingFactor, verticalSpacingFactor, horizontalSquishFactor, verticalSquishFactor));
-    }
-
-    /**
-     * Copies the grid parameter string to the system clipboard and flashes a green
-     * background as feedback.
-     */
-    private void copyGridSettingsToClipboard() {
-        ClipboardContent content = new ClipboardContent();
-        content.putString(getGridSettings());
-        Clipboard.getSystemClipboard().setContent(content);
-
-        adjustmentValuesLabel.setStyle(adjustmentValuesLabel.getStyle() + "-fx-background-color:rgba(0,128,0,0.8);");
-        PauseTransition flash = new PauseTransition(Duration.seconds(0.5));
-        flash.setOnFinished(ev -> adjustmentValuesLabel.setStyle("-fx-background-color: rgba(0,0,0,0.7);"));
-        flash.play();
-    }
-
-    /**
      * Redraws the background image and the hex overlay using the current
-     * parameters.
+     * parameters from GridAdjustmentManager.
      */
-    private void drawMapAndGrid() {
+    // Make drawMapAndGrid public or package-private if needed by
+    // GridAdjustmentManager
+    void drawMapAndGrid() {
         if (!isMapLoaded) {
             return;
         }
@@ -562,21 +415,28 @@ public class GameScreenController extends BaseController {
 
         gc.drawImage(mapImage, mapOffsetX, mapOffsetY, scaledMapWidth, scaledMapHeight);
 
-        double gridW = scaledMapWidth * gridWidthPercentage;
-        double gridH = scaledMapHeight * gridHeightPercentage;
+        // Get parameters from the manager
+        double gridW = scaledMapWidth * gridAdjustmentManager.getGridWidthPercentage();
+        double gridH = scaledMapHeight * gridAdjustmentManager.getGridHeightPercentage();
         double hLim = gridW / ((HEX_COLS - 1) * 0.75 + 1);
         double vLim = gridH / ((HEX_ROWS - 0.5) * 0.866 * 2);
-        effectiveHexSize = Math.min(hLim, vLim) * 0.5 * gridScaleFactor;
+        effectiveHexSize = Math.min(hLim, vLim) * 0.5 * gridAdjustmentManager.getGridScaleFactor();
 
-        double addHX = gridHorizontalOffset * scaledMapWidth;
-        double addHY = gridVerticalOffset * scaledMapHeight;
+        double addHX = gridAdjustmentManager.getGridHorizontalOffset() * scaledMapWidth;
+        double addHY = gridAdjustmentManager.getGridVerticalOffset() * scaledMapHeight;
 
         drawHexGrid(gc, effectiveHexSize, gridW, gridH, addHX, addHY);
+
+        // Ensure adjustment UI is visible if mode is active
+        if (gridAdjustmentManager.isGridAdjustmentModeActive()) {
+            adjustmentModeIndicator.setVisible(true);
+            adjustmentValuesLabel.setVisible(true);
+        }
     }
 
     /**
      * Iterates over the logical grid, draws each hex and highlights the currently
-     * selected one.
+     * selected one. Uses parameters from GridAdjustmentManager.
      */
     private void drawHexGrid(GraphicsContext gc,
             double size,
@@ -588,8 +448,9 @@ public class GameScreenController extends BaseController {
         gc.setLineWidth(1.5);
         gc.setGlobalAlpha(0.7);
 
-        double hSpacing = size * horizontalSpacingFactor;
-        double vSpacing = size * verticalSpacingFactor;
+        // Get parameters from the manager
+        double hSpacing = size * gridAdjustmentManager.getHorizontalSpacingFactor();
+        double vSpacing = size * gridAdjustmentManager.getVerticalSpacingFactor();
 
         double totW = hSpacing * (HEX_COLS - 0.5);
         double totH = vSpacing * HEX_ROWS;
@@ -610,16 +471,21 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Draws a single hexagon centred at the given coordinates.
+     * Draws a single hexagon centred at the given coordinates. Uses parameters from
+     * GridAdjustmentManager.
      */
     private void drawHex(GraphicsContext gc, double cx, double cy, double size, boolean selected) {
         double[] xs = new double[6];
         double[] ys = new double[6];
-        double rot = Math.toRadians(hexRotationDegrees);
+        // Get parameters from the manager
+        double rot = Math.toRadians(gridAdjustmentManager.getHexRotationDegrees());
+        double hSquish = gridAdjustmentManager.getHorizontalSquishFactor();
+        double vSquish = gridAdjustmentManager.getVerticalSquishFactor();
+
         for (int i = 0; i < 6; i++) {
             double a = rot + 2 * Math.PI / 6 * i;
-            xs[i] = cx + size * Math.cos(a) * horizontalSquishFactor;
-            ys[i] = cy + size * Math.sin(a) * verticalSquishFactor;
+            xs[i] = cx + size * Math.cos(a) * hSquish;
+            ys[i] = cy + size * Math.sin(a) * vSquish;
         }
 
         gc.beginPath();
@@ -643,14 +509,17 @@ public class GameScreenController extends BaseController {
 
     /**
      * Returns the row/column index of the hex at the given canvas coordinates or
-     * {@code null} when the point is not inside any tile.
+     * {@code null} when the point is not inside any tile. Uses parameters from
+     * GridAdjustmentManager.
      */
-    private int[] getHexAt(double px, double py) {
+    // Make package-private or public if needed by GridAdjustmentManager
+    int[] getHexAt(double px, double py) {
         if (!isMapLoaded || effectiveHexSize <= 0) {
             return null;
         }
-        double hSpacing = effectiveHexSize * horizontalSpacingFactor;
-        double vSpacing = effectiveHexSize * verticalSpacingFactor;
+        // Get parameters from the manager
+        double hSpacing = effectiveHexSize * gridAdjustmentManager.getHorizontalSpacingFactor();
+        double vSpacing = effectiveHexSize * gridAdjustmentManager.getVerticalSpacingFactor();
         for (int r = 0; r < HEX_ROWS; r++) {
             for (int c = 0; c < HEX_COLS; c++) {
                 double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2);
@@ -664,16 +533,22 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Standard ray-casting point-in-polygon test for the current hex shape.
+     * Standard ray-casting point-in-polygon test for the current hex shape. Uses
+     * parameters from GridAdjustmentManager.
      */
-    private boolean pointInHex(double px, double py, double cx, double cy, double size) {
-        double rot = Math.toRadians(hexRotationDegrees);
+    // Make package-private or public if needed by GridAdjustmentManager
+    boolean pointInHex(double px, double py, double cx, double cy, double size) {
+        // Get parameters from the manager
+        double rot = Math.toRadians(gridAdjustmentManager.getHexRotationDegrees());
+        double hSquish = gridAdjustmentManager.getHorizontalSquishFactor();
+        double vSquish = gridAdjustmentManager.getVerticalSquishFactor();
+
         double[] xs = new double[6];
         double[] ys = new double[6];
         for (int i = 0; i < 6; i++) {
             double a = rot + 2 * Math.PI / 6 * i;
-            xs[i] = cx + size * Math.cos(a) * horizontalSquishFactor;
-            ys[i] = cy + size * Math.sin(a) * verticalSquishFactor;
+            xs[i] = cx + size * Math.cos(a) * hSquish;
+            ys[i] = cy + size * Math.sin(a) * vSquish;
         }
 
         boolean inside = false;
@@ -687,19 +562,15 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Creates the settings dialog instance and adds it as an overlay to the root
-     * StackPane.
+     * Creates the settings dialog instance. Does not add it to the scene graph yet.
      */
     private void initialiseSettingsDialog() {
         settingsDialog = new SettingsDialog();
-        StackPane root = (StackPane) gameCanvas.getParent();
-        if (!root.getChildren().contains(settingsDialog.getView())) {
-            root.getChildren().add(settingsDialog.getView());
-        }
-        updateSettingsConnectionStatus();
+        // Set save action specific to game screen context
         settingsDialog.setOnSaveAction(() -> LOGGER.info(() -> String.format(
-                "Settings saved: Volume=%s, Mute=%s",
+                "Settings saved in-game: Volume=%s, Mute=%s",
                 settingsDialog.volumeProperty().get(), settingsDialog.muteProperty().get())));
+        // BaseController's showDialogAsOverlay will handle the onCloseAction for layout
     }
 
     /**
@@ -867,5 +738,9 @@ public class GameScreenController extends BaseController {
         // Complete the drag-and-drop gesture
         event.setDropCompleted(success);
         event.consume();
+    }
+
+    public Canvas getGameCanvas() {
+        return gameCanvas;
     }
 }

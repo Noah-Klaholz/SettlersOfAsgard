@@ -55,37 +55,62 @@
 }
 
 /* Common scrollbar styling */
-.scroll-bar {
-    -fx-background-color: rgba(26, 33, 51, 0.5);
+.scroll-bar:vertical,
+.scroll-bar:horizontal {
+    -fx-background-color: transparent;
+    /* Make background transparent */
     -fx-background-radius: 2px;
+    -fx-padding: 2;
+    /* Add slight padding */
+}
+
+.scroll-bar:vertical {
     -fx-pref-width: 10px;
+    -fx-min-width: 10px;
+}
+
+.scroll-bar:horizontal {
+    -fx-pref-height: 10px;
+    -fx-min-height: 10px;
 }
 
 .scroll-bar .thumb {
     -fx-background-color: -color-accent-gold-transparent;
-    -fx-background-radius: 2px;
+    -fx-background-radius: 4px;
+    /* Slightly rounder */
+    -fx-background-insets: 0;
 }
 
 .scroll-bar .thumb:hover {
-    -fx-background-color: derive(-color-accent-gold-transparent, 50%);
+    -fx-background-color: -color-accent-gold-transparent-high;
+    /* Use high transparency variable */
 }
 
 .scroll-bar .increment-button,
 .scroll-bar .decrement-button {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
-    -fx-padding: 2px;
+    -fx-padding: 0;
+    /* Remove padding */
+    -fx-pref-width: 10;
+    /* Ensure buttons have size */
+    -fx-pref-height: 10;
 }
 
 .scroll-bar .increment-arrow,
 .scroll-bar .decrement-arrow {
     -fx-shape: " ";
+    /* Hide default arrows */
     -fx-padding: 0;
 }
 
 .scroll-bar .track {
     -fx-background-color: rgba(44, 51, 71, 0.4);
-    -fx-background-radius: 2px;
+    -fx-background-radius: 4px;
+    /* Match thumb radius */
+    -fx-border-radius: 4px;
+    /* Match thumb radius */
+    -fx-background-insets: 0;
 }
 
 /* Common button styles */
@@ -106,11 +131,13 @@
 }
 
 .standard-button:pressed {
-    -fx-background-color: derive(-color-button-secondary-hover, 20%);
+    -fx-background-color: -color-accent-gold-transparent-high;
+    /* Use variable for pressed state */
     -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.2), 2, 0, 0, 1);
 }
 
 .primary-button {
+    /* Inherits .standard-button styles */
     -fx-background-color: -color-button-primary-bg;
     -fx-text-fill: -color-button-primary-text;
     -fx-border-color: -color-button-primary-border;
@@ -118,4 +145,10 @@
 
 .primary-button:hover {
     -fx-background-color: -color-button-primary-hover;
+}
+
+.primary-button:pressed {
+    -fx-background-color: derive(-color-button-primary-hover, 20%);
+    /* Darken hover color */
+    -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.2), 2, 0, 0, 1);
 }

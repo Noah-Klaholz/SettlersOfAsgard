@@ -48,7 +48,4 @@
     /* Lighter gold border on hover */
 }
 
-/* Remove redundant button styles */
-/* .settings-button, .settings-button:hover, .settings-button:pressed, */
-/* .settings-button.save-button, .settings-button.save-button:hover are replaced by */
-/* .dialog-button, .dialog-button-save, .dialog-button-cancel and their hover states */
+/* Removed redundant button styles comments */

@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <BorderPane xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController"
-            stylesheets="/css/game-screen.css"
+            stylesheets="/css/variables.css,/css/common.css,/css/game-screen.css"
             minWidth="900" minHeight="600" prefWidth="1200" prefHeight="768" maxWidth="1920" maxHeight="1080"
             onKeyPressed="#handleKeyboardShortcut">
 
@@ -104,9 +104,14 @@
         </VBox>
     </bottom>
 
+    <!-- Add the right section for the chat -->
     <right>
-        <VBox fx:id="chatContainer" spacing="10" prefWidth="280.0" minWidth="250.0">
-            <!-- ChatComponent will be added here programmatically - Removed styleClass="chat-panel" -->
-        </VBox>
+        <!-- Wrap chat in a TitledPane for collapsibility and consistent look -->
+        <TitledPane text="Chat" collapsible="true" expanded="true" VBox.vgrow="ALWAYS" styleClass="chat-titled-pane">
+            <VBox fx:id="chatContainer" spacing="5.0" VBox.vgrow="ALWAYS" prefWidth="280.0" minWidth="250.0">
+                <!-- ChatComponent will be added here programmatically -->
+                <!-- Ensure VBox.setVgrow is called on the added ChatComponent view in the controller -->
+            </VBox>
+        </TitledPane>
     </right>
 </BorderPane>

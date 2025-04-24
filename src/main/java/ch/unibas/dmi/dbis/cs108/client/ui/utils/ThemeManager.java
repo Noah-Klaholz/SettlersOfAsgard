@@ -82,12 +82,12 @@ public class ThemeManager {
         Objects.requireNonNull(scene);
         Platform.runLater(() -> {
             scene.getStylesheets().clear();
-            URL commonCss = getClass().getResource(ResourceLoader.COMMON_CSS);
-            URL themeCss = getClass().getResource(currentTheme);
-            if (commonCss != null)
-                scene.getStylesheets().add(commonCss.toExternalForm());
-            if (themeCss != null)
-                scene.getStylesheets().add(themeCss.toExternalForm());
+
+            // Use StylesheetLoader to load base styles and theme
+            scene.getStylesheets().clear();
+            StylesheetLoader.loadStylesheet(scene.getRoot(), ResourceLoader.VARIABLES_CSS);
+            StylesheetLoader.loadStylesheet(scene.getRoot(), ResourceLoader.COMMON_CSS);
+            StylesheetLoader.loadStylesheet(scene.getRoot(), currentTheme);
         });
     }
 

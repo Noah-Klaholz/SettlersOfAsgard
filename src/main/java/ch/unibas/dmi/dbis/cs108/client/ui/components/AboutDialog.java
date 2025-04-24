@@ -1,18 +1,18 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.components;
 
+import ch.unibas.dmi.dbis.cs108.client.ui.utils.StylesheetLoader;
 import javafx.animation.FadeTransition;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
+
 import java.util.logging.Logger;
 
 /**
@@ -31,7 +31,6 @@ public class AboutDialog extends UIComponent<StackPane> {
     private static final String COPYRIGHT = "© 2024 University of Basel";
 
     private final VBox dialogContent;
-    private Runnable onCloseAction;
 
     /**
      * Creates a new AboutDialog component.
@@ -40,29 +39,16 @@ public class AboutDialog extends UIComponent<StackPane> {
         super("");
         this.view = new StackPane();
         this.view.setId("about-overlay");
-        try {
-            String cssPath = "/css/about-dialog.css";
-            var cssResource = getClass().getResource(cssPath);
-            if (cssResource != null) {
-                this.view.getStylesheets().add(cssResource.toExternalForm());
-            } else {
-                LOGGER.warning("Could not find CSS resource: " + cssPath);
-                this.view.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);");
-            }
-        } catch (Exception e) {
-            LOGGER.warning("Error loading CSS for AboutDialog: " + e.getMessage());
-            this.view.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);");
-        }
+        this.view.getStyleClass().add("dialog-overlay"); // Add style class
+
+        // Load stylesheets using the StylesheetLoader utility
+        StylesheetLoader.loadDialogStylesheets(this.view);
+        StylesheetLoader.loadStylesheet(this.view, "/css/about-dialog.css");
+
         this.view.setAlignment(Pos.CENTER);
         dialogContent = createDialogContent();
         StackPane.setAlignment(dialogContent, Pos.CENTER);
         this.view.getChildren().add(dialogContent);
-        this.view.setPrefSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        this.view.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        AnchorPane.setTopAnchor(this.view, 0.0);
-        AnchorPane.setRightAnchor(this.view, 0.0);
-        AnchorPane.setBottomAnchor(this.view, 0.0);
-        AnchorPane.setLeftAnchor(this.view, 0.0);
         this.view.setViewOrder(-100);
         this.view.setOnMouseClicked(event -> {
             if (event.getTarget() == this.view) {
@@ -81,47 +67,42 @@ public class AboutDialog extends UIComponent<StackPane> {
      */
     private VBox createDialogContent() {
         VBox content = new VBox(15);
+        content.getStyleClass().add("dialog-content-box"); // Use style class
         content.setAlignment(Pos.CENTER);
-        content.setMaxWidth(500);
-        content.setMaxHeight(400);
-        content.setPadding(new Insets(25));
-        content.setStyle("-fx-background-color: #2a2a2a; -fx-background-radius: 10;");
         content.setOnMouseClicked(event -> event.consume());
-        DropShadow shadow = new DropShadow();
-        shadow.setRadius(10);
-        shadow.setColor(Color.rgb(0, 0, 0, 0.5));
-        content.setEffect(shadow);
+
         Text title = new Text(GAME_TITLE);
-        title.setFont(Font.font("Cinzel", FontWeight.BOLD, 28));
-        title.setFill(Color.GOLD);
+        title.getStyleClass().add("dialog-title"); // Use style class
+
         Label version = new Label(GAME_VERSION);
-        version.setTextFill(Color.LIGHTGRAY);
+        version.getStyleClass().add("dialog-label"); // Use style class
+
         Text description = new Text(GAME_DESCRIPTION);
-        description.setFont(Font.font("Roboto", 14));
-        description.setFill(Color.WHITE);
-        description.setTextAlignment(TextAlignment.CENTER);
-        description.setWrappingWidth(450);
+        description.getStyleClass().add("dialog-text"); // Use style class
+        description.setTextAlignment(TextAlignment.CENTER); // Keep alignment
+        description.setWrappingWidth(450); // Keep wrapping width
+
         Text team = new Text(DEVELOPMENT_TEAM);
-        team.setFont(Font.font("Roboto", 12));
-        team.setFill(Color.LIGHTGRAY);
+        team.getStyleClass().add("dialog-text"); // Use style class
         team.setTextAlignment(TextAlignment.CENTER);
         team.setWrappingWidth(450);
+
         Label copyright = new Label(COPYRIGHT);
-        copyright.setTextFill(Color.GRAY);
+        copyright.getStyleClass().add("dialog-note"); // Use style class
+
         Button closeButton = new Button("Close");
-        closeButton.getStyleClass().add("menu-button");
-        closeButton.setStyle(
-                "-fx-background-color: #4a3f35; -fx-text-fill: #e8e8e8; -fx-font-size: 14px; -fx-padding: 8 16; -fx-background-radius: 5;");
+        closeButton.getStyleClass().addAll("dialog-button", "dialog-button-cancel"); // Use style classes
         closeButton.setOnAction(e -> {
             close();
             e.consume();
         });
+
         content.getChildren().addAll(
                 title,
                 version,
-                new Separator(),
+                new DialogSeparator(), // Use custom styled separator
                 description,
-                new Separator(),
+                new DialogSeparator(),
                 team,
                 copyright,
                 closeButton);
@@ -131,6 +112,7 @@ public class AboutDialog extends UIComponent<StackPane> {
     /**
      * Shows the about dialog with a fade-in animation.
      */
+    @Override
     public void show() {
         this.view.setVisible(true);
         this.view.setManaged(true);
@@ -144,6 +126,7 @@ public class AboutDialog extends UIComponent<StackPane> {
 
     /**
      * Closes the about dialog with a fade-out animation.
+     * Calls the onCloseAction if set.
      */
     public void close() {
         FadeTransition fadeOut = new FadeTransition(Duration.millis(200), this.view);
@@ -152,8 +135,14 @@ public class AboutDialog extends UIComponent<StackPane> {
         fadeOut.setOnFinished(e -> {
             this.view.setVisible(false);
             this.view.setManaged(false);
-            if (onCloseAction != null) {
-                onCloseAction.run();
+            // Remove the view from its parent after fade out
+            if (this.view.getParent() instanceof Pane parentPane) {
+                parentPane.getChildren().remove(this.view);
+            }
+            // Use the inherited getter
+            Runnable action = getOnCloseAction();
+            if (action != null) {
+                action.run();
             }
         });
         fadeOut.play();
@@ -161,22 +150,21 @@ public class AboutDialog extends UIComponent<StackPane> {
 
     /**
      * Sets an action to be executed when the dialog is closed.
+     * This method now correctly calls the superclass setter.
      *
      * @param action The action to execute on close.
      */
+    @Override
     public void setOnCloseAction(Runnable action) {
-        this.onCloseAction = action;
+        super.setOnCloseAction(action); // Call superclass method
     }
 
     /**
-     * Custom separator with styling.
+     * Custom separator using CSS styling.
      */
-    private static class Separator extends Region {
-        public Separator() {
-            setPrefHeight(1);
-            setMaxWidth(450);
-            setStyle("-fx-background-color: #555555;");
-            VBox.setMargin(this, new Insets(5, 0, 5, 0));
+    private static class DialogSeparator extends Region {
+        public DialogSeparator() {
+            getStyleClass().add("dialog-separator"); // Use style class
         }
     }
 }
