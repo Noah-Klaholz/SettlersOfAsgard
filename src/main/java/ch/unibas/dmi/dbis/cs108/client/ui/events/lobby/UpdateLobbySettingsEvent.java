@@ -51,6 +51,11 @@ public class UpdateLobbySettingsEvent implements UIEvent {
         return settingValue;
     }
 
+    /**
+     * Returns the event type identifier.
+     *
+     * @return event type
+     */
     @Override
     public String getType() {
         return "UPDATE_LOBBY_SETTINGS";
