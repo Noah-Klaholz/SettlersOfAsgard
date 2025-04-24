@@ -738,6 +738,11 @@ public class GameScreenController extends BaseController {
         event.consume();
     }
 
+    /**
+     * Returns the game canvas used for drawing the map and grid.
+     *
+     * @return The game canvas.
+     */
     public Canvas getGameCanvas() {
         return gameCanvas;
     }
