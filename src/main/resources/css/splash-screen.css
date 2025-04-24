@@ -1,7 +1,8 @@
 /* splash-screen.css */
 .splash-background {
-    -fx-background-color: #151a29;  /* Dark blue background */
+    -fx-background-color: rgb(26, 21, 66);
 }
+
 
 .splash-title {
     -fx-text-fill: white;

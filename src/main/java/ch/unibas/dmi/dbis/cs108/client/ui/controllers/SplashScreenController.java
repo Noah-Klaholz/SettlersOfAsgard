@@ -3,14 +3,22 @@ package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
-import javafx.animation.*;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.effect.BlendMode;
+import javafx.animation.TranslateTransition;
+import javafx.scene.Group;
+import javafx.animation.SequentialTransition;
+import javafx.animation.PauseTransition;
+import javafx.animation.FadeTransition;
+import javafx.scene.shape.Circle;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,7 +39,7 @@ public class SplashScreenController extends BaseController {
         LOGGER.info("Initializing splash screen...");
         loadGameLogo();
 
-        // Start animations
+        // Start animations - logo is already at full size
         playIntroAnimations();
     }
 
@@ -48,21 +56,44 @@ public class SplashScreenController extends BaseController {
 
     private void playIntroAnimations() {
         // Initial setup - hide elements
-        gameLogo.setOpacity(0);
-        gameLogo.setScaleX(0.5);
-        gameLogo.setScaleY(0.5);
         titleLabel.setOpacity(0);
 
-        // Logo animations
-        FadeTransition logoFade = new FadeTransition(Duration.seconds(1.5), gameLogo);
-        logoFade.setFromValue(0);
-        logoFade.setToValue(1);
+        // Create a white rectangle for the light effect
+        Rectangle lightStrip = new Rectangle();
+        lightStrip.setWidth(50);  // Narrower strip for more focused reflection
+        lightStrip.setHeight(gameLogo.getFitHeight() * 1.5);
+        lightStrip.setFill(new Color(1, 1, 1, 0.7));  // Slightly more transparent
+        lightStrip.setBlendMode(BlendMode.ADD);
+        lightStrip.setRotate(15);  // Angled light reflection
 
-        ScaleTransition logoScale = new ScaleTransition(Duration.seconds(2), gameLogo);
-        logoScale.setFromX(0.5);
-        logoScale.setFromY(0.5);
-        logoScale.setToX(1.0);
-        logoScale.setToY(1.0);
+        // Position it properly
+        StackPane.setAlignment(lightStrip, Pos.CENTER);
+        splashRoot.getChildren().add(lightStrip);
+
+        // Create a proper clip that matches the actual image, not just a circle
+        javafx.scene.shape.Rectangle imageClip = new javafx.scene.shape.Rectangle(
+                gameLogo.getFitWidth(),
+                gameLogo.getFitHeight()
+        );
+        imageClip.setArcWidth(20);  // Rounded corners if needed
+        imageClip.setArcHeight(20);
+
+        // Bind the clip to the actual image view position and size
+        imageClip.xProperty().bind(gameLogo.layoutXProperty());
+        imageClip.yProperty().bind(gameLogo.layoutYProperty());
+
+        // Apply the clip to the light strip
+        lightStrip.setClip(imageClip);
+
+        // Animate the light strip moving across the logo
+        TranslateTransition lightMove = new TranslateTransition(Duration.seconds(1.5), lightStrip);
+        lightMove.setFromX(-gameLogo.getFitWidth() - 100);
+        lightMove.setToX(gameLogo.getFitWidth() + 100);
+
+        // Add a second reflection pass
+        TranslateTransition lightMoveReturn = new TranslateTransition(Duration.seconds(1.5), lightStrip);
+        lightMoveReturn.setFromX(gameLogo.getFitWidth() + 100);
+        lightMoveReturn.setToX(-gameLogo.getFitWidth() - 100);
 
         // Title animation
         FadeTransition titleFade = new FadeTransition(Duration.seconds(1.5), titleLabel);
@@ -70,16 +101,20 @@ public class SplashScreenController extends BaseController {
         titleFade.setToValue(1);
         titleFade.setDelay(Duration.seconds(0.8));
 
-        // Play all animations together
-        ParallelTransition parallel = new ParallelTransition(logoFade, logoScale, titleFade);
+        // Create a sequence with both light passes
+        SequentialTransition sequence = new SequentialTransition(
+                lightMove,
+                new PauseTransition(Duration.seconds(0.5)),
+                lightMoveReturn
+        );
 
-        // After animations, switch to main menu
-        parallel.setOnFinished(e -> {
+        sequence.setOnFinished(e -> {
             PauseTransition delay = new PauseTransition(Duration.seconds(1));
             delay.setOnFinished(event -> sceneManager.switchToScene(SceneManager.SceneType.MAIN_MENU));
             delay.play();
         });
 
-        parallel.play();
+        sequence.play();
+        titleFade.play();
     }
 }

@@ -403,6 +403,8 @@ public class GameScreenController extends BaseController {
     /**
      * Returns a formatted string with all grid parameters from the
      * GridAdjustmentManager.
+     *
+     * @return A string with the current grid settings.
      */
     public String getGridSettings() {
         return gridAdjustmentManager.getGridSettings();

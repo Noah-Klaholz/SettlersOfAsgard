@@ -173,6 +173,11 @@ public class GameApplication extends Application {
 
         // Set the scene and show the primary stage
         primaryStage.show();
+        // Seems necessary to request focus twice to ensure it works (do not question it)
+        Platform.runLater(() -> {
+            primaryStage.requestFocus();
+            primaryStage.toFront();
+        });
         // Request focus for the primary stage
         primaryStage.requestFocus();
         primaryStage.toFront();
