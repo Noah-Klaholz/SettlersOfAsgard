@@ -10,7 +10,7 @@
             fx:controller="ch.unibas.dmi.dbis.cs108.client.ui.controllers.MainMenuController"
             fx:id="mainMenuRoot"
             styleClass="main-menu-background"
-            stylesheets="/css/main-menu.css"
+            stylesheets="/css/variables.css,/css/common.css,/css/main-menu.css"
             prefWidth="1024" prefHeight="768">
 
     <center>
@@ -51,14 +51,16 @@
     </center>
 
     <right>
-        <!-- Container for the ChatComponent -->
-        <VBox fx:id="chatContainer" spacing="10.0" prefWidth="280.0" minWidth="250.0" VBox.vgrow="ALWAYS">
-             <padding>
-                <Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/>
-            </padding>
-             <Label fx:id="onlineUsersLabel" text="Online: 0" styleClass="online-users"/>
-             <!-- ChatComponent will be added here programmatically -->
-        </VBox>
+        <!-- Wrap chat in a TitledPane for collapsibility and consistent look -->
+        <TitledPane text="Chat" collapsible="true" expanded="true" VBox.vgrow="ALWAYS" styleClass="chat-titled-pane">
+            <!-- Container for the ChatComponent -->
+            <VBox fx:id="chatContainer" spacing="5.0" VBox.vgrow="ALWAYS" prefWidth="280.0" minWidth="250.0">
+                 <!-- Removed padding -->
+                 <Label fx:id="onlineUsersLabel" text="Online: 0" styleClass="online-users"/>
+                 <!-- ChatComponent will be added here programmatically -->
+                 <!-- Ensure VBox.setVgrow is called on the added ChatComponent view in the controller -->
+            </VBox>
+        </TitledPane>
     </right>
 
     <bottom>

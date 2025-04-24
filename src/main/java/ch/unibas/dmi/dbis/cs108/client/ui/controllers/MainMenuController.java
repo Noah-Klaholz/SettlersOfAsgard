@@ -1,5 +1,8 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
+import ch.unibas.dmi.dbis.cs108.client.app.GameApplication; // Import GameApplication
+import ch.unibas.dmi.dbis.cs108.client.core.Player;
+import ch.unibas.dmi.dbis.cs108.client.networking.ConnectionState;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.AboutDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
@@ -7,7 +10,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeRequestEvent; // Assuming this event exists
+import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeRequestEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import javafx.application.Platform;
@@ -18,20 +21,16 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.Priority; // Import Priority
 
-// Add specific exception imports if needed, e.g., java.io.IOException
-import java.io.IOException; // Example if FXML loading could throw this directly
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import ch.unibas.dmi.dbis.cs108.client.networking.ConnectionState; // Ensure this import exists
-import ch.unibas.dmi.dbis.cs108.client.core.Player; // Import Player
 
 /**
  * Controller for the main menu screen.
@@ -40,11 +39,10 @@ import ch.unibas.dmi.dbis.cs108.client.core.Player; // Import Player
  */
 public class MainMenuController extends BaseController {
     private static final Logger LOGGER = Logger.getLogger(MainMenuController.class.getName());
-    private static final String DEFAULT_USERNAME = "Guest";
     private static final String VERSION = "1.0.0";
 
     private final AtomicBoolean isConnected = new AtomicBoolean(false);
-    private Player localPlayer;
+    private Player localPlayer; // Keep the field, but don't initialize here
     private int onlineUserCount = 0;
 
     @FXML
@@ -70,7 +68,6 @@ public class MainMenuController extends BaseController {
     public MainMenuController() {
         super(new ResourceLoader(), UIEventBus.getInstance(), SceneManager.getInstance());
         LOGGER.finer("MainMenuController instance created.");
-        this.localPlayer = new Player(System.getProperty("user.name", DEFAULT_USERNAME));
     }
 
     /**
@@ -80,20 +77,21 @@ public class MainMenuController extends BaseController {
     private void initialize() {
         LOGGER.info("Initializing MainMenuController...");
         try {
+            this.localPlayer = GameApplication.getLocalPlayer(); // Fetch player instance
+            if (this.localPlayer == null) {
+                LOGGER.severe("LocalPlayer is null during MainMenuController initialization!");
+                // Handle error appropriately, maybe show an error message and disable
+                // functionality
+                this.localPlayer = new Player("ErrorGuest"); // Fallback to avoid NullPointerExceptions
+            }
             initializeUI();
             initializeDialogs();
             setupEventHandlers();
-            setupChatComponent();
+            setupChatComponent(); // Call this after localPlayer is set
             establishServerConnection();
-            // Catch more specific exceptions if possible, or keep Exception as a last
-            // resort
-        } catch (IllegalStateException | NullPointerException e) {
-            // Example: Catching potential runtime issues during setup
-            LOGGER.log(Level.SEVERE, "Runtime error during MainMenuController initialization", e);
-            displayInitializationError("Error initializing main menu interface: " + e.getMessage());
-        } catch (Exception e) { // General fallback
-            LOGGER.log(Level.SEVERE, "Unexpected error during MainMenuController initialization", e);
-            displayInitializationError("An unexpected error occurred during initialization.");
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Critical error during MainMenuController initialization", e);
+            displayInitializationError("Error initializing main menu interface.");
         }
         LOGGER.info("MainMenuController initialization complete.");
     }
@@ -114,6 +112,10 @@ public class MainMenuController extends BaseController {
     private void initializeDialogs() {
         aboutDialog = new AboutDialog();
         settingsDialog = new SettingsDialog();
+        // Set initial player name in settings dialog
+        if (localPlayer != null) {
+            settingsDialog.playerNameProperty().set(localPlayer.getName());
+        }
     }
 
     /**
@@ -171,8 +173,14 @@ public class MainMenuController extends BaseController {
     private void setupChatComponent() {
         chatContainer.getChildren().clear();
         chatComponentController = new ChatComponent();
-        chatContainer.getChildren().add(chatComponentController.getView());
-        chatComponentController.setPlayer(localPlayer);
+        Node chatView = chatComponentController.getView(); // Get the view Node
+        chatContainer.getChildren().add(chatView);
+        VBox.setVgrow(chatView, Priority.ALWAYS); // Make the chat component grow vertically
+        if (localPlayer != null) { // Ensure localPlayer is set before passing
+            chatComponentController.setPlayer(localPlayer);
+        } else {
+            LOGGER.warning("Cannot set player in ChatComponent: localPlayer is null.");
+        }
         chatComponentController.addSystemMessage("Welcome to Settlers of Asgard!");
     }
 
@@ -227,20 +235,29 @@ public class MainMenuController extends BaseController {
         Platform.runLater(() -> {
             if (event.isSuccess()) {
                 String newName = event.getNewName();
-                localPlayer.setName(newName);
-                LOGGER.info("Player name successfully changed to: " + localPlayer.getName());
-                if (chatComponentController != null) {
-                    chatComponentController.setPlayer(localPlayer);
-                    chatComponentController.addSystemMessage("Name successfully changed to: " + localPlayer.getName());
+                // Update the central player instance
+                if (localPlayer != null) {
+                    localPlayer.setName(newName);
+                    LOGGER.info("Player name successfully changed to: " + localPlayer.getName());
+                    if (chatComponentController != null) {
+                        chatComponentController.setPlayer(localPlayer); // Update chat component's player context
+                        chatComponentController
+                                .addSystemMessage("Name successfully changed to: " + localPlayer.getName());
+                    }
+                    settingsDialog.playerNameProperty().set(localPlayer.getName()); // Update settings dialog
+                } else {
+                    LOGGER.severe("Cannot update player name: localPlayer is null.");
                 }
-                settingsDialog.playerNameProperty().set(localPlayer.getName());
             } else {
                 String failureMsg = event.getMessage() != null ? event.getMessage() : "Unknown reason.";
                 LOGGER.warning("Failed to change player name: " + failureMsg);
                 if (chatComponentController != null) {
                     chatComponentController.addSystemMessage("Failed to change name: " + failureMsg);
                 }
-                settingsDialog.playerNameProperty().set(localPlayer.getName());
+                // Revert name in settings dialog if change failed
+                if (localPlayer != null) {
+                    settingsDialog.playerNameProperty().set(localPlayer.getName());
+                }
             }
         });
     }
@@ -268,69 +285,48 @@ public class MainMenuController extends BaseController {
     @FXML
     private void handleSettings() {
         LOGGER.info("Settings button clicked.");
-        // Prevent opening if already showing the settings dialog in the center stack
-        // pane
-        if (mainMenuRoot.getCenter() instanceof StackPane
-                && ((StackPane) mainMenuRoot.getCenter()).getChildren().contains(settingsDialog.getView())) {
-            LOGGER.fine("Settings dialog is already showing.");
-            return;
-        }
 
         settingsDialog.setConnectionStatus(isConnected.get(), isConnected.get() ? "Connected" : "Disconnected");
-        settingsDialog.playerNameProperty().set(this.localPlayer.getName());
-
-        Node previousCenter = mainMenuRoot.getCenter();
-        // Ensure previousCenter is not null before adding to StackPane
-        if (previousCenter == null) {
-            LOGGER.severe("Cannot show settings dialog, main menu center node is null.");
-            return;
+        if (localPlayer != null) {
+            settingsDialog.playerNameProperty().set(this.localPlayer.getName());
+        } else {
+            LOGGER.warning("Cannot set player name in settings: localPlayer is null.");
+            settingsDialog.playerNameProperty().set("ErrorGuest");
         }
-        StackPane container = new StackPane(previousCenter, settingsDialog.getView());
-        StackPane.setAlignment(settingsDialog.getView(), Pos.CENTER);
-        mainMenuRoot.setCenter(container);
 
-        settingsDialog.setOnCloseAction(() -> mainMenuRoot.setCenter(previousCenter));
         settingsDialog.setOnSaveAction(() -> {
             boolean muted = settingsDialog.muteProperty().get();
             double volume = settingsDialog.volumeProperty().get();
             String requestedName = settingsDialog.playerNameProperty().get();
             LOGGER.info("Settings dialog save requested - Volume: " + volume + ", Muted: " + muted
                     + ", Requested Name: " + requestedName);
+
+            if (localPlayer != null && requestedName != null && !requestedName.trim().isEmpty()
+                    && !requestedName.equals(localPlayer.getName())) {
+                requestNameChange(requestedName.trim());
+            } else if (requestedName != null && requestedName.trim().isEmpty()) {
+                LOGGER.warning("Attempted to save empty player name.");
+                if (chatComponentController != null) {
+                    chatComponentController.addSystemMessage("Error: Player name cannot be empty.");
+                }
+                if (localPlayer != null) {
+                    settingsDialog.playerNameProperty().set(localPlayer.getName());
+                }
+            }
+
             if (chatComponentController != null) {
                 chatComponentController.addSystemMessage(
                         "Audio settings saved. " + (muted ? "Muted." : "Volume: " + (int) volume + "%"));
             }
-            mainMenuRoot.setCenter(previousCenter);
         });
 
-        settingsDialog.show(); // Assuming show() makes it visible if needed, or handles focus
+        showDialogAsOverlay(settingsDialog, mainMenuRoot);
     }
 
-    /**
-     * Handles the "About" button click. Opens the AboutDialog as an overlay.
-     */
     @FXML
     private void handleAbout() {
         LOGGER.info("About button clicked.");
-        // Prevent opening if already showing the about dialog in the center stack pane
-        if (mainMenuRoot.getCenter() instanceof StackPane
-                && ((StackPane) mainMenuRoot.getCenter()).getChildren().contains(aboutDialog.getView())) {
-            LOGGER.fine("About dialog is already showing.");
-            return;
-        }
-
-        Node previousCenter = mainMenuRoot.getCenter();
-        // Ensure previousCenter is not null before adding to StackPane
-        if (previousCenter == null) {
-            LOGGER.severe("Cannot show about dialog, main menu center node is null.");
-            return;
-        }
-        StackPane container = new StackPane(previousCenter, aboutDialog.getView());
-        StackPane.setAlignment(aboutDialog.getView(), Pos.CENTER);
-        mainMenuRoot.setCenter(container);
-
-        aboutDialog.setOnCloseAction(() -> mainMenuRoot.setCenter(previousCenter));
-        aboutDialog.show(); // Assuming show() makes it visible if needed, or handles focus
+        showDialogAsOverlay(aboutDialog, mainMenuRoot);
     }
 
     /**
@@ -440,22 +436,5 @@ public class MainMenuController extends BaseController {
             chatComponentController.cleanup();
         }
         LOGGER.info("MainMenuController cleanup finished.");
-    }
-
-    /**
-     * Sets the local player object for this controller.
-     *
-     * @param player The Player object.
-     */
-    public void setLocalPlayer(Player player) {
-        if (player != null) {
-            this.localPlayer = player;
-            if (chatComponentController != null) {
-                chatComponentController.setPlayer(this.localPlayer);
-            }
-            if (settingsDialog != null) {
-                settingsDialog.playerNameProperty().set(this.localPlayer.getName());
-            }
-        }
     }
 }

@@ -3,10 +3,7 @@
 /* Main background */
 .main-menu-background {
     -fx-background-color: linear-gradient(to bottom right, -color-background-primary, -color-background-tertiary);
-    /* Removed background image/opacity for cleaner look, can be added back if desired */
-    /* -fx-background-image: url("/images/background-texture.png"); */
-    /* -fx-background-repeat: repeat; */
-    /* -fx-background-opacity: 0.2; */
+    /* Removed background image properties */
 }
 
 /* Game title styling */

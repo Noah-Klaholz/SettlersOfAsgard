@@ -28,16 +28,19 @@
     /* Text colors - improved contrast ratio */
     -color-text-primary: #f0f0f0;
     /* Slightly brighter for better readability */
-    -color-text-secondary: #b8b8b8;
+    -color-text-secondary: #c8c8c8;
+    /* Brightened */
     /* Slightly brighter */
-    -color-text-muted: #8a8a8a;
+    -color-text-muted: #9a9a9a;
+    /* Brightened */
     -color-text-button: #e4c065;
     -color-text-button-inverted: #f0f0f0;
     /* Match primary text */
 
     /* Border colors */
     -color-border-primary: rgba(228, 192, 101, 0.3);
-    -color-border-secondary: rgba(90, 98, 116, 0.8);
+    -color-border-secondary: rgba(110, 118, 136, 0.9);
+    /* Brighter and more opaque */
     /* Slightly brighter for visibility */
 
     /* Background transparent variations */
@@ -53,7 +56,8 @@
     /* Button colors - adjusted for consistency */
     -color-button-primary-bg: rgba(62, 142, 62, 0.3);
     -color-button-primary-border: #4eb34e;
-    -color-button-primary-text: #c0f0c0;
+    -color-button-primary-text: #d0ffd0;
+    /* Brightened for better readability */
     /* Brighter for better readability */
     -color-button-primary-hover: rgba(62, 142, 62, 0.5);
 

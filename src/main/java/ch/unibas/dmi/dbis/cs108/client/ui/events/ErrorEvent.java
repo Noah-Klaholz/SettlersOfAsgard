@@ -1,7 +1,8 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.events;
 
-import java.time.Instant;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.ErrorEvent.ErrorSeverity;
+
+import java.time.Instant;
 
 /**
  * UIEvent representing an error in the application.

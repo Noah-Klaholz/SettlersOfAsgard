@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.events.chat;
 
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
+
 import java.time.LocalDateTime;
 
 /**

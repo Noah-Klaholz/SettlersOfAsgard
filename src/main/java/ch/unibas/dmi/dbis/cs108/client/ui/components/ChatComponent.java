@@ -12,7 +12,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.Priority; // Import Priority
+import javafx.scene.layout.VBox;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -54,7 +55,6 @@ public class ChatComponent extends UIComponent<BorderPane> {
     public ChatComponent() {
         super("/fxml/components/ChatComponent.fxml");
         this.eventBus = UIEventBus.getInstance();
-        this.localPlayer = new Player("Guest");
         try {
             LOGGER.info("Chat component FXML loaded, initializing...");
             initializeComponent();
@@ -99,39 +99,51 @@ public class ChatComponent extends UIComponent<BorderPane> {
             LOGGER.severe("chatMessages ListView is null - FXML not loaded correctly");
             return;
         }
-        String cssPath = getClass().getResource("/css/chat-component.css").toExternalForm();
-        view.getStylesheets().add(cssPath);
+
         view.setEffect(null);
         chatMessages.setItems(messages);
+        VBox.setVgrow(chatMessages, Priority.ALWAYS); // Ensure ListView grows vertically
+        BorderPane.setMargin(chatMessages, new javafx.geometry.Insets(0)); // Remove margin if needed
         chatMessages.setCellFactory(list -> new ListCell<>() {
             private final Label label = new Label();
             {
                 label.setWrapText(true);
-                label.setTextFill(Color.valueOf("#e8e8e8"));
                 label.setMaxWidth(Double.MAX_VALUE);
                 label.setPadding(new javafx.geometry.Insets(2, 5, 2, 5));
+                // Apply default text fill from variables.css
+                label.setStyle("-fx-text-fill: -color-text-primary;");
             }
 
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
+                // Clear previous styles from the cell itself
+                getStyleClass().removeAll("system-message", "whisper-message");
+                // Reset label style in case it was changed by specific message types
+                label.setStyle("-fx-text-fill: -color-text-primary; -fx-font-style: normal;");
+
                 if (empty || item == null) {
                     setGraphic(null);
                     setText(null);
-                    setStyle("");
+                    // Ensure empty cells also clear styles
+                    getStyleClass().removeAll("system-message", "whisper-message");
                 } else {
                     label.setText(item);
-                    label.setMaxWidth(getListView().getWidth() - 20);
+                    // Ensure label resizes with cell width
+                    label.setMaxWidth(getListView().getWidth() - 20); // Adjust padding as needed
+
+                    // Apply CSS classes to the ListCell based on content
                     if (item.contains("Whisper to") || item.contains("Whisper from")) {
-                        label.setTextFill(Color.MAGENTA);
-                        setStyle("-fx-background-color: #3a3a4a;");
+                        getStyleClass().add("whisper-message");
+                        // Specific label style for whispers can be handled in CSS using
+                        // .whisper-message .label
                     } else if (item.contains("System:")) {
-                        label.setTextFill(Color.LIGHTSKYBLUE);
-                        setStyle("");
-                    } else {
-                        label.setTextFill(Color.valueOf("#e8e8e8"));
-                        setStyle("");
+                        getStyleClass().add("system-message");
+                        // Specific label style for system can be handled in CSS using .system-message
+                        // .label
                     }
+                    // Default style is handled by .chat-list .list-cell in CSS
+
                     setGraphic(label);
                 }
             }
@@ -177,22 +189,27 @@ public class ChatComponent extends UIComponent<BorderPane> {
             if (whisperMatcher.matches()) {
                 String recipient = whisperMatcher.group(1);
                 String msg = whisperMatcher.group(2);
-                if (recipient != null && !recipient.isEmpty() && msg != null && !msg.isEmpty()) {
-                    LOGGER.fine("Sending whisper to " + recipient + ": " + msg);
-                    eventBus.publish(new WhisperChatEvent(recipient, msg));
-                    addWhisperMessage(LocalDateTime.now(), localPlayer.getName(), recipient, msg, true);
+                if (recipient != null && !recipient.trim().isEmpty() && msg != null && !msg.trim().isEmpty()) {
+                    if (localPlayer.getName().equalsIgnoreCase(recipient.trim())) {
+                        addSystemMessage("You cannot whisper to yourself.");
+                    } else {
+                        LOGGER.fine("Sending whisper to " + recipient.trim() + ": " + msg.trim());
+                        eventBus.publish(new WhisperChatEvent(recipient.trim(), msg.trim()));
+                    }
                 } else {
-                    addSystemMessage("Invalid whisper format. Use /w <username> <message>");
+                    if (recipient == null || recipient.trim().isEmpty()) {
+                        addSystemMessage("Invalid whisper format. Missing recipient. Use /w <username> <message>");
+                    } else {
+                        addSystemMessage("Invalid whisper format. Missing message. Use /w <username> <message>");
+                    }
                 }
             } else if (globalChatButton.isSelected()) {
                 LOGGER.fine("Sending global message: " + input);
                 eventBus.publish(new GlobalChatEvent(input, GlobalChatEvent.ChatType.GLOBAL));
-                addChatMessage(LocalDateTime.now(), localPlayer.getName(), input, true);
             } else if (lobbyChatButton.isSelected()) {
                 if (currentLobbyId != null && !currentLobbyId.isEmpty()) {
                     LOGGER.fine("Sending lobby message: " + input + " to lobby: " + currentLobbyId);
                     eventBus.publish(new LobbyChatEvent(currentLobbyId, input));
-                    addChatMessage(LocalDateTime.now(), localPlayer.getName(), input, false);
                 } else {
                     addSystemMessage("Cannot send lobby message: Not in a lobby.");
                     globalChatButton.setSelected(true);
@@ -200,7 +217,6 @@ public class ChatComponent extends UIComponent<BorderPane> {
             } else {
                 LOGGER.warning("No chat type selected, defaulting to GLOBAL");
                 eventBus.publish(new GlobalChatEvent(input, GlobalChatEvent.ChatType.GLOBAL));
-                addChatMessage(LocalDateTime.now(), localPlayer.getName(), input, true);
             }
             chatInput.clear();
         } catch (Exception e) {
@@ -209,70 +225,112 @@ public class ChatComponent extends UIComponent<BorderPane> {
         }
     }
 
+    /**
+     * Handles incoming global chat messages.
+     */
     private void handleGlobalChatMessage(GlobalChatEvent event) {
-        boolean isOwnMessage = localPlayer != null && event.getSender() != null
-                && localPlayer.getName().equals(event.getSender());
-        if (!isOwnMessage || event.getChatType() == GlobalChatEvent.ChatType.SYSTEM) {
-            Platform.runLater(() -> {
-                String formatted;
-                if (event.getChatType() == GlobalChatEvent.ChatType.SYSTEM) {
-                    formatted = String.format("[%s] System: %s",
-                            TIME_FORMATTER.format(event.getTimestamp()),
-                            event.getContent());
-                } else {
-                    formatted = String.format("[%s] %s: %s",
-                            TIME_FORMATTER.format(event.getTimestamp()),
-                            event.getSender(),
-                            event.getContent());
-                }
-                messages.add(formatted);
-                scrollToBottom();
-            });
+        // Ignore locally generated events before server echo
+        if (event.getSender() == null && event.getChatType() != GlobalChatEvent.ChatType.SYSTEM) {
+            return;
         }
+        Platform.runLater(() -> {
+            String formatted;
+            String sender = event.getSender();
+            if (event.getChatType() == GlobalChatEvent.ChatType.SYSTEM) {
+                formatted = String.format("[%s] System: %s",
+                        TIME_FORMATTER.format(event.getTimestamp()),
+                        event.getContent());
+            } else {
+                // Sender null check remains for safety, though ideally wouldn't happen for
+                // non-system server messages
+                if (sender == null) {
+                    LOGGER.warning(
+                            "Received GlobalChatEvent (non-system) with null sender. Content: " + event.getContent());
+                    sender = "Unknown";
+                }
+                formatted = String.format("[%s] %s: %s",
+                        TIME_FORMATTER.format(event.getTimestamp()),
+                        sender,
+                        event.getContent());
+            }
+            messages.add(formatted);
+            scrollToBottom();
+        });
     }
 
+    /**
+     * Handles incoming lobby chat messages.
+     */
     private void handleLobbyChatMessage(LobbyChatEvent event) {
-        boolean isOwnMessage = localPlayer != null && event.getSender() != null
-                && localPlayer.getName().equals(event.getSender());
-
-        if (!isOwnMessage && currentLobbyId != null && currentLobbyId.equals(event.getLobbyId())) {
+        // Ignore locally generated events before server echo
+        if (event.getSender() == null) {
+            return;
+        }
+        // Only display if the lobby tab is selected and it matches the current lobby
+        if (lobbyChatButton.isSelected() && currentLobbyId != null && currentLobbyId.equals(event.getLobbyId())) {
             Platform.runLater(() -> {
+                String sender = event.getSender();
+                // Sender null check remains for safety
+                if (sender == null) {
+                    LOGGER.warning("Received LobbyChatEvent with null sender for lobby " + event.getLobbyId()
+                            + ". Content: " + event.getMessage());
+                    sender = "Unknown";
+                }
                 String formatted = String.format("[%s] %s: %s",
                         TIME_FORMATTER.format(event.getTimestamp()),
-                        event.getSender(),
+                        sender,
                         event.getMessage());
                 messages.add(formatted);
                 scrollToBottom();
             });
-        } else if (!isOwnMessage) {
-            LOGGER.finer("Received lobby chat message for a different lobby (Current: " + currentLobbyId + ", Event: "
-                    + event.getLobbyId() + ")");
         }
+        // Log ignored messages for debugging if needed
+        // else if (lobbyChatButton.isSelected() && currentLobbyId != null &&
+        // !currentLobbyId.equals(event.getLobbyId())) {
+        // LOGGER.fine("Ignored lobby message from different lobby: " +
+        // event.getLobbyId() + " (Current: " + currentLobbyId + ")");
+        // } else if (!lobbyChatButton.isSelected()) {
+        // LOGGER.fine("Ignored lobby message while global tab selected.");
+        // }
     }
 
     /**
      * Handles incoming whisper messages from the UIEventBus.
-     *
-     * @param event The WhisperChatEvent received.
+     * Only display whispers that have a valid sender (i.e., received from server).
      */
     private void handleWhisperMessage(WhisperChatEvent event) {
-        boolean isOwnMessage = localPlayer != null && event.getSender() != null
-                && localPlayer.getName().equals(event.getSender());
-        if (!isOwnMessage && event.getSender() != null) {
-            Platform.runLater(() -> {
+        Platform.runLater(() -> {
+            // Ignore locally generated events (sender == null)
+            if (event.getSender() == null) {
+                return;
+            }
+            // Check if it's an echo of a message sent by the local player
+            boolean isEchoOfSent = localPlayer != null && event.getSender().equals(localPlayer.getName());
+            // Check if the message is addressed to the local player
+            boolean isAddressedToSelf = localPlayer != null && event.getRecipient().equals(localPlayer.getName());
+
+            if (isEchoOfSent) {
+                // Display outgoing whisper echo
+                addWhisperMessage(event.getTimestamp(), event.getSender(), event.getRecipient(), event.getMessage(),
+                        true);
+            } else if (isAddressedToSelf) {
+                // Display incoming whisper
                 addWhisperMessage(event.getTimestamp(), event.getSender(), event.getRecipient(), event.getMessage(),
                         false);
-            });
-        }
+            } else {
+                // Log whispers not involving the local player (shouldn't happen with correct
+                // server logic)
+                LOGGER.fine("Ignored whisper message not involving local player: From=" + event.getSender() + ", To="
+                        + event.getRecipient());
+            }
+        });
     }
 
     /**
      * Adds a standard (global or lobby) chat message directly to the display.
-     *
-     * @param timestamp When the message was sent/received.
-     * @param sender    Who sent the message.
-     * @param message   The message content.
-     * @param isGlobal  Whether it's a global chat message.
+     * This method is now primarily intended for SYSTEM messages or potentially
+     * debugging,
+     * as regular messages rely on server echo.
      */
     private void addChatMessage(LocalDateTime timestamp, String sender, String message, boolean isGlobal) {
         Platform.runLater(() -> {
@@ -287,26 +345,22 @@ public class ChatComponent extends UIComponent<BorderPane> {
 
     /**
      * Adds a whisper message directly to the display with special formatting.
-     *
-     * @param timestamp  When the message was sent/received.
-     * @param sender     Who sent the message.
-     * @param recipient  Who received the message.
-     * @param message    The message content.
-     * @param sentBySelf True if this client sent the whisper, false if received.
      */
     private void addWhisperMessage(LocalDateTime timestamp, String sender, String recipient, String message,
             boolean sentBySelf) {
         Platform.runLater(() -> {
             String formatted;
             if (sentBySelf) {
+                String displayRecipient = recipient != null ? recipient : "Unknown";
                 formatted = String.format("[%s] Whisper to %s: %s",
                         TIME_FORMATTER.format(timestamp),
-                        recipient,
+                        displayRecipient,
                         message);
             } else {
+                String displaySender = sender != null ? sender : "Unknown";
                 formatted = String.format("[%s] Whisper from %s: %s",
                         TIME_FORMATTER.format(timestamp),
-                        sender,
+                        displaySender,
                         message);
             }
             messages.add(formatted);
@@ -316,8 +370,6 @@ public class ChatComponent extends UIComponent<BorderPane> {
 
     /**
      * Adds a system message directly to the chat display.
-     *
-     * @param message The system message content.
      */
     public void addSystemMessage(String message) {
         Platform.runLater(() -> {
@@ -329,8 +381,6 @@ public class ChatComponent extends UIComponent<BorderPane> {
 
     /**
      * Sets the current lobby ID for sending/receiving lobby messages.
-     *
-     * @param lobbyId The ID of the current lobby, or null if not in a lobby.
      */
     public void setCurrentLobbyId(String lobbyId) {
         this.currentLobbyId = lobbyId;
@@ -346,9 +396,9 @@ public class ChatComponent extends UIComponent<BorderPane> {
     }
 
     /**
-     * Sets the local player object for display purposes.
+     * Sets the player context for the chat component.
      *
-     * @param player The Player object representing the local user.
+     * @param player The local player.
      */
     public void setPlayer(Player player) {
         if (player != null) {
@@ -356,7 +406,6 @@ public class ChatComponent extends UIComponent<BorderPane> {
             LOGGER.fine("ChatComponent player context updated to: " + player.getName());
         } else {
             LOGGER.warning("Attempted to set null player in ChatComponent");
-            this.localPlayer = new Player("Guest");
         }
     }
 
@@ -384,6 +433,22 @@ public class ChatComponent extends UIComponent<BorderPane> {
     private void scrollToBottom() {
         if (!messages.isEmpty() && chatMessages != null) {
             chatMessages.scrollTo(messages.size() - 1);
+        }
+    }
+
+    /**
+     * Makes the chat component visible and managed within its parent container.
+     * This is typically called when the parent view containing the chat becomes
+     * active.
+     */
+    @Override
+    public void show() {
+        if (getView() != null) {
+            getView().setVisible(true);
+            getView().setManaged(true);
+            LOGGER.fine("ChatComponent shown (visible and managed).");
+        } else {
+            LOGGER.warning("Attempted to show ChatComponent, but view is null.");
         }
     }
 }

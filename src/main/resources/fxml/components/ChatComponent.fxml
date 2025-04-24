@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.ToggleButton?>
-<?import javafx.scene.control.ToggleGroup?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <BorderPane xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/1"
-            prefHeight="400.0" prefWidth="300.0" styleClass="chat-panel"
-            stylesheets="/css/chat-component.css">
+            styleClass="chat-panel"
+            stylesheets="/css/variables.css,/css/common.css,/css/chat-component.css">
     <top>
         <HBox alignment="CENTER" spacing="5.0" styleClass="chat-selector" BorderPane.alignment="CENTER">
             <padding>
@@ -28,10 +21,10 @@
         </HBox>
     </top>
     <center>
-        <ListView fx:id="chatMessages" BorderPane.alignment="CENTER" styleClass="chat-list"/>
+        <ListView fx:id="chatMessages" BorderPane.alignment="CENTER" styleClass="chat-list" VBox.vgrow="ALWAYS"/>
     </center>
     <bottom>
-        <HBox spacing="5.0" BorderPane.alignment="CENTER">
+        <HBox spacing="5.0" BorderPane.alignment="CENTER" styleClass="chat-input-area">
             <padding>
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
             </padding>

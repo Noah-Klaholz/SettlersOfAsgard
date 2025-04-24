@@ -9,7 +9,7 @@ public class UseStatueUIEvent implements UIEvent {
     private final int x;
     private final int y;
     private final int statueId;
-    private final String params;
+    private final String useType;
 
     /**
      * Constructs a UseStatueUIEvent.
@@ -17,13 +17,13 @@ public class UseStatueUIEvent implements UIEvent {
      * @param x        the x-coordinate
      * @param y        the y-coordinate
      * @param statueId the ID of the statue
-     * @param params  the type of use
+     * @param useType  the type of use
      */
-    public UseStatueUIEvent(int x, int y, int statueId, String params) {
+    public UseStatueUIEvent(int x, int y, int statueId, String useType) {
         this.x = x;
         this.y = y;
         this.statueId = statueId;
-        this.params = params;
+        this.useType = useType;
     }
 
     /**
@@ -48,14 +48,17 @@ public class UseStatueUIEvent implements UIEvent {
     }
 
     /**
+     * @return the use type
+     */
+    public String getUseType() {
+        return useType;
+    }
+
+    /**
      * @return the event type identifier
      */
     @Override
     public String getType() {
         return "USE_STATUE";
-    }
-
-    public String getParams() {
-        return params;
     }
 }

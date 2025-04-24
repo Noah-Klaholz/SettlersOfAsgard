@@ -9,6 +9,7 @@ import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
+import ch.unibas.dmi.dbis.cs108.shared.utils.RandomGenerator;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -44,21 +45,22 @@ public class StructureBehaviorRegistry {
 
         registerBehavior("Mimisbrunnr", (structure, gameState, player) -> {
             if(player.getArtifacts().size() < SETTINGS.Config.MAX_ARTIFACTS.getValue()) {
-                int randomId = (int)(Math.random() * 12) + 10;
-                Artifact artifact = EntityRegistry.getArtifact(randomId);
+                Artifact artifact = EntityRegistry.getRandomArtifact();
                 player.addArtifact(artifact);
                 return true;
             }
+            player.addEnergy(1);
             return false;
         });
 
         registerBehavior("ActiveTrap", (structure, gameState, player) -> {
-            player.addRunes(-(int)structure.getParams().get(0).getValue());
+            player.addRunes((int)structure.getParams().get(0).getValue());
             return true;
         });
 
         registerBehavior("Helgrindr", (structure, gameState, player) -> {
             player.addBuff(Status.BuffType.DEBUFFABLE, 0); // sets the player to non-debuffable
+            player.addEnergy(1);
             return true;
         });
 

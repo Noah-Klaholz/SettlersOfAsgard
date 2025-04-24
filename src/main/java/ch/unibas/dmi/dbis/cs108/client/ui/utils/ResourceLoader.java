@@ -17,11 +17,25 @@ public class ResourceLoader {
     public static final String GAME_SCREEN_FXML = "/fxml/game_screen.fxml";
     public static final String MAP_IMAGE = "/images/map.png";
     public static final String GAME_LOGO = "/images/game-logo.png";
+    // CSS Paths
+    public static final String VARIABLES_CSS = "/css/variables.css";
     public static final String COMMON_CSS = "/css/common.css";
-    public static final String DEFAULT_THEME_CSS = "/css/default-theme.css";
+    public static final String DEFAULT_THEME_CSS = "/css/main-menu.css";
     public static final String DARK_THEME_CSS = "/css/dark-theme.css";
     public static final String CINZEL_REGULAR = "/fonts/Cinzel/static/Cinzel-Regular.ttf";
     public static final String ROBOTO_REGULAR = "/fonts/Roboto/static/Roboto-Regular.ttf";
+    public static final String DIALOG_COMMON_CSS = "/css/dialog-common.css";
+    public static final String MAIN_MENU_CSS = "/css/main-menu.css";
+    public static final String LOBBY_SCREEN_CSS = "/css/lobby-screen.css";
+    public static final String GAME_SCREEN_CSS = "/css/game-screen.css";
+    public static final String CHAT_COMPONENT_CSS = "/css/chat-component.css";
+    public static final String SETTINGS_DIALOG_CSS = "/css/settings-dialog.css";
+    public static final String ABOUT_DIALOG_CSS = "/css/about-dialog.css";
+    public static final String DESCRIPTION_DIALOG_CSS = "/css/description-dialog.css";
+
+    // Private constructor to prevent instantiation
+    public ResourceLoader() {
+    }
 
     /**
      * Loads an image from the given resource path.

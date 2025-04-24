@@ -1,23 +1,22 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.components;
 
+import ch.unibas.dmi.dbis.cs108.client.ui.utils.StylesheetLoader;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Base class for reusable UI components, optionally loading their layout from
- * FXML.
- *
- * @param <T> The type of JavaFX Node encapsulated by the component.
- */
 public abstract class UIComponent<T extends Node> {
     private static final Logger logger = Logger.getLogger(UIComponent.class.getName());
     /** The root JavaFX Node of this component. */
     protected T view;
+
+    // Add onCloseAction support for dialog overlays
+    private Runnable onCloseAction;
 
     /**
      * Constructs a UIComponent, optionally loading its view from the specified FXML
@@ -43,6 +42,11 @@ public abstract class UIComponent<T extends Node> {
             loader.setController(this);
             this.view = loader.load();
             logger.fine("Successfully loaded component from: " + fxmlPath);
+
+            // Apply core stylesheets if view has been loaded successfully
+            if (view instanceof Parent) {
+                StylesheetLoader.loadCoreStylesheets((Parent) view);
+            }
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Failed to load component from: " + fxmlPath, e);
             throw new RuntimeException("Failed to load component from: " + fxmlPath, e);
@@ -56,5 +60,28 @@ public abstract class UIComponent<T extends Node> {
      */
     public T getView() {
         return view;
+    }
+
+    /**
+     * Makes the component visible. Subclasses must implement how visibility is
+     * handled (e.g., setting properties, adding to parent, animations).
+     * This method is called by BaseController.showDialogAsOverlay.
+     */
+    public abstract void show();
+
+    /**
+     * Sets an action to be executed when the dialog/component is closed.
+     * Used by BaseController to restore overlays/layouts.
+     * Subclasses should call this action when closing.
+     */
+    public void setOnCloseAction(Runnable action) {
+        this.onCloseAction = action;
+    }
+
+    /**
+     * Gets the current onCloseAction (may be null).
+     */
+    public Runnable getOnCloseAction() {
+        return onCloseAction;
     }
 }

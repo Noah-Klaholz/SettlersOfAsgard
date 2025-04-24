@@ -1,19 +1,12 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.components;
 
+import ch.unibas.dmi.dbis.cs108.client.ui.utils.StylesheetLoader;
 import javafx.animation.FadeTransition;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.geometry.Insets;
+import javafx.application.Platform;
+import javafx.beans.property.*;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
@@ -29,7 +22,6 @@ public class SettingsDialog extends UIComponent<StackPane> {
     private static final String SETTINGS_TITLE = "Game Settings";
 
     private final VBox dialogContent;
-    private Runnable onCloseAction;
     private Runnable onSaveAction;
 
     private final SimpleDoubleProperty volumeProperty = new SimpleDoubleProperty(50);
@@ -37,6 +29,7 @@ public class SettingsDialog extends UIComponent<StackPane> {
     private final StringProperty playerNameProperty = new SimpleStringProperty("Guest");
     private boolean isConnected = false;
     private String connectionStatusText = "Disconnected";
+    private Label statusValueLabel; // Keep reference to update style class
 
     /**
      * Creates a new SettingsDialog component.
@@ -45,29 +38,16 @@ public class SettingsDialog extends UIComponent<StackPane> {
         super("");
         this.view = new StackPane();
         this.view.setId("settings-overlay");
-        try {
-            String cssPath = "/css/settings-dialog.css";
-            var cssResource = getClass().getResource(cssPath);
-            if (cssResource != null) {
-                this.view.getStylesheets().add(cssResource.toExternalForm());
-            } else {
-                LOGGER.warning("Could not find CSS resource: " + cssPath);
-                this.view.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);");
-            }
-        } catch (Exception e) {
-            LOGGER.warning("Error loading CSS for SettingsDialog: " + e.getMessage());
-            this.view.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);");
-        }
+        this.view.getStyleClass().add("dialog-overlay"); // Add style class
+
+        // Load stylesheets using the StylesheetLoader utility
+        StylesheetLoader.loadDialogStylesheets(this.view);
+        StylesheetLoader.loadStylesheet(this.view, "/css/settings-dialog.css");
+
         this.view.setAlignment(Pos.CENTER);
         dialogContent = createDialogContent();
         StackPane.setAlignment(dialogContent, Pos.CENTER);
         this.view.getChildren().add(dialogContent);
-        this.view.setPrefSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        this.view.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        AnchorPane.setTopAnchor(this.view, 0.0);
-        AnchorPane.setRightAnchor(this.view, 0.0);
-        AnchorPane.setBottomAnchor(this.view, 0.0);
-        AnchorPane.setLeftAnchor(this.view, 0.0);
         this.view.setViewOrder(-100);
         this.view.setOnMouseClicked(event -> {
             if (event.getTarget() == this.view) {
@@ -86,32 +66,27 @@ public class SettingsDialog extends UIComponent<StackPane> {
      */
     private VBox createDialogContent() {
         VBox content = new VBox(15);
+        content.getStyleClass().add("dialog-content-box"); // Use style class
         content.setAlignment(Pos.CENTER);
-        content.setMaxWidth(500);
-        content.setMaxHeight(500);
-        content.setPadding(new Insets(25));
-        content.setStyle("-fx-background-color: #2a2a2a; -fx-background-radius: 10;");
         content.setOnMouseClicked(event -> event.consume());
-        DropShadow shadow = new DropShadow();
-        shadow.setRadius(10);
-        shadow.setColor(Color.rgb(0, 0, 0, 0.5));
-        content.setEffect(shadow);
+
         Text title = new Text(SETTINGS_TITLE);
-        title.setFont(Font.font("Cinzel", FontWeight.BOLD, 24));
-        title.setFill(Color.GOLD);
+        title.getStyleClass().add("dialog-title"); // Use style class
+
         VBox playerSection = createPlayerSection();
         VBox audioSection = createAudioSection();
         VBox connectionSection = createConnectionSection();
         HBox buttonsRow = createButtonsRow();
+
         content.getChildren().addAll(
                 title,
-                new Separator(),
+                new DialogSeparator(), // Use custom styled separator
                 playerSection,
-                new Separator(),
+                new DialogSeparator(),
                 audioSection,
-                new Separator(),
+                new DialogSeparator(),
                 connectionSection,
-                new Separator(),
+                new DialogSeparator(),
                 buttonsRow);
         return content;
     }
@@ -124,24 +99,26 @@ public class SettingsDialog extends UIComponent<StackPane> {
     private VBox createPlayerSection() {
         VBox playerSection = new VBox(10);
         playerSection.setAlignment(Pos.CENTER_LEFT);
+
         Label sectionTitle = new Label("Player Settings");
-        sectionTitle.setFont(Font.font("Roboto", FontWeight.BOLD, 16));
-        sectionTitle.setTextFill(Color.WHITE);
+        sectionTitle.getStyleClass().add("dialog-section-title"); // Use style class
+
         HBox nameRow = new HBox(10);
         nameRow.setAlignment(Pos.CENTER_LEFT);
         Label nameLabel = new Label("Name:");
-        nameLabel.setTextFill(Color.LIGHTGRAY);
-        nameLabel.setMinWidth(80);
+        nameLabel.getStyleClass().add("dialog-label"); // Use style class
+
         TextField nameField = new TextField(playerNameProperty.get());
         nameField.textProperty().bindBidirectional(playerNameProperty);
-        nameField.setMaxWidth(300);
+        nameField.setMaxWidth(300); // Keep max width for layout control
         nameField.setPromptText("Enter your player name");
-        nameField.setStyle(
-                "-fx-background-color: #2c3347; -fx-text-fill: #e4c065; -fx-border-color: #e4c065; -fx-border-width: 1px; -fx-border-radius: 3px;");
+        nameField.getStyleClass().add("dialog-textfield"); // Use style class
+
         nameRow.getChildren().addAll(nameLabel, nameField);
+
         Label nameNoteLabel = new Label("Name changes will be applied when you save settings.");
-        nameNoteLabel.setTextFill(Color.GRAY);
-        nameNoteLabel.setStyle("-fx-font-style: italic;");
+        nameNoteLabel.getStyleClass().add("dialog-note"); // Use style class
+
         playerSection.getChildren().addAll(sectionTitle, nameRow, nameNoteLabel);
         return playerSection;
     }
@@ -154,40 +131,43 @@ public class SettingsDialog extends UIComponent<StackPane> {
     private VBox createAudioSection() {
         VBox audioSection = new VBox(10);
         audioSection.setAlignment(Pos.CENTER_LEFT);
+
         Label sectionTitle = new Label("Audio Settings");
-        sectionTitle.setFont(Font.font("Roboto", FontWeight.BOLD, 16));
-        sectionTitle.setTextFill(Color.WHITE);
+        sectionTitle.getStyleClass().add("dialog-section-title");
+
         HBox volumeRow = new HBox(10);
         volumeRow.setAlignment(Pos.CENTER_LEFT);
         Label volumeLabel = new Label("Volume:");
-        volumeLabel.setTextFill(Color.LIGHTGRAY);
-        volumeLabel.setMinWidth(80);
+        volumeLabel.getStyleClass().add("dialog-label");
+
         Slider volumeSlider = new Slider(0, 100, volumeProperty.get());
         volumeSlider.valueProperty().bindBidirectional(volumeProperty);
-        volumeSlider.setMinWidth(200);
+        volumeSlider.setMinWidth(200); // Keep min width
         volumeSlider.setDisable(muteProperty.get());
+
         Label volumeValue = new Label(String.format("%.0f%%", volumeProperty.get()));
-        volumeValue.setTextFill(Color.LIGHTGRAY);
-        volumeValue.setMinWidth(50);
+        volumeValue.getStyleClass().add("dialog-label"); // Use dialog-label for consistency
+        volumeValue.setMinWidth(50); // Keep min width
         volumeProperty.addListener((obs, oldVal, newVal) -> {
             volumeValue.setText(String.format("%.0f%%", newVal.doubleValue()));
         });
         volumeRow.getChildren().addAll(volumeLabel, volumeSlider, volumeValue);
+
         HBox muteRow = new HBox(10);
         muteRow.setAlignment(Pos.CENTER_LEFT);
         Label muteLabel = new Label("Mute Audio:");
-        muteLabel.setTextFill(Color.LIGHTGRAY);
-        muteLabel.setMinWidth(80);
+        muteLabel.getStyleClass().add("dialog-label");
+
         CheckBox muteCheckbox = new CheckBox();
         muteCheckbox.selectedProperty().bindBidirectional(muteProperty);
-        muteCheckbox.setTextFill(Color.LIGHTGRAY);
         muteProperty.addListener((obs, oldVal, newVal) -> {
             volumeSlider.setDisable(newVal);
         });
         muteRow.getChildren().addAll(muteLabel, muteCheckbox);
+
         Label audioNoteLabel = new Label("Note: Audio is not yet implemented in this version.");
-        audioNoteLabel.setTextFill(Color.GRAY);
-        audioNoteLabel.setStyle("-fx-font-style: italic;");
+        audioNoteLabel.getStyleClass().add("dialog-note");
+
         audioSection.getChildren().addAll(sectionTitle, volumeRow, muteRow, audioNoteLabel);
         return audioSection;
     }
@@ -200,17 +180,20 @@ public class SettingsDialog extends UIComponent<StackPane> {
     private VBox createConnectionSection() {
         VBox connectionSection = new VBox(10);
         connectionSection.setAlignment(Pos.CENTER_LEFT);
+
         Label sectionTitle = new Label("Connection Status");
-        sectionTitle.setFont(Font.font("Roboto", FontWeight.BOLD, 16));
-        sectionTitle.setTextFill(Color.WHITE);
+        sectionTitle.getStyleClass().add("dialog-section-title");
+
         HBox statusRow = new HBox(10);
         statusRow.setAlignment(Pos.CENTER_LEFT);
         Label statusLabel = new Label("Status:");
-        statusLabel.setTextFill(Color.LIGHTGRAY);
-        statusLabel.setMinWidth(80);
-        Label statusValue = new Label(connectionStatusText);
-        statusValue.setTextFill(isConnected ? Color.LIGHTGREEN : Color.LIGHTCORAL);
-        statusRow.getChildren().addAll(statusLabel, statusValue);
+        statusLabel.getStyleClass().add("dialog-label");
+
+        statusValueLabel = new Label(connectionStatusText); // Assign to field
+        statusValueLabel.getStyleClass().add("dialog-connection-status"); // Add base class
+        statusValueLabel.getStyleClass().add(isConnected ? "connected" : "disconnected"); // Add specific class
+
+        statusRow.getChildren().addAll(statusLabel, statusValueLabel);
         connectionSection.getChildren().addAll(sectionTitle, statusRow);
         return connectionSection;
     }
@@ -223,22 +206,20 @@ public class SettingsDialog extends UIComponent<StackPane> {
     private HBox createButtonsRow() {
         HBox buttonsRow = new HBox(10);
         buttonsRow.setAlignment(Pos.CENTER_RIGHT);
+
         Button saveButton = new Button("Save Settings");
-        saveButton.getStyleClass().add("settings-button");
-        saveButton.getStyleClass().add("save-button");
-        saveButton.setStyle(
-                "-fx-background-color: #4a7a28; -fx-text-fill: #e8e8e8; -fx-font-size: 14px; -fx-padding: 8 16; -fx-background-radius: 5;");
+        saveButton.getStyleClass().addAll("dialog-button", "dialog-button-save"); // Use style classes
         saveButton.setOnAction(e -> {
             if (onSaveAction != null) {
                 onSaveAction.run();
             }
             close();
         });
+
         Button cancelButton = new Button("Cancel");
-        cancelButton.getStyleClass().add("settings-button");
-        cancelButton.setStyle(
-                "-fx-background-color: #4a3f35; -fx-text-fill: #e8e8e8; -fx-font-size: 14px; -fx-padding: 8 16; -fx-background-radius: 5;");
+        cancelButton.getStyleClass().addAll("dialog-button", "dialog-button-cancel"); // Use style classes
         cancelButton.setOnAction(e -> close());
+
         buttonsRow.getChildren().addAll(cancelButton, saveButton);
         return buttonsRow;
     }
@@ -246,6 +227,7 @@ public class SettingsDialog extends UIComponent<StackPane> {
     /**
      * Shows the settings dialog with a fade-in animation.
      */
+    @Override
     public void show() {
         this.view.setVisible(true);
         this.view.setManaged(true);
@@ -259,6 +241,7 @@ public class SettingsDialog extends UIComponent<StackPane> {
 
     /**
      * Closes the settings dialog with a fade-out animation.
+     * Calls the onCloseAction if set.
      */
     public void close() {
         FadeTransition fadeOut = new FadeTransition(Duration.millis(200), this.view);
@@ -267,8 +250,14 @@ public class SettingsDialog extends UIComponent<StackPane> {
         fadeOut.setOnFinished(e -> {
             this.view.setVisible(false);
             this.view.setManaged(false);
-            if (onCloseAction != null) {
-                onCloseAction.run();
+            // Remove the view from its parent after fade out
+            if (this.view.getParent() instanceof Pane parentPane) {
+                parentPane.getChildren().remove(this.view);
+            }
+            // Use the inherited getter
+            Runnable action = getOnCloseAction();
+            if (action != null) {
+                action.run();
             }
         });
         fadeOut.play();
@@ -283,15 +272,13 @@ public class SettingsDialog extends UIComponent<StackPane> {
     public void setConnectionStatus(boolean connected, String statusText) {
         this.isConnected = connected;
         this.connectionStatusText = statusText;
-        if (this.view.isVisible()) {
-            dialogContent.lookupAll(".label").stream()
-                    .filter(node -> node instanceof Label && ((Label) node).getText().equals(this.connectionStatusText))
-                    .map(node -> (Label) node)
-                    .findFirst()
-                    .ifPresent(label -> {
-                        label.setText(statusText);
-                        label.setTextFill(connected ? Color.LIGHTGREEN : Color.LIGHTCORAL);
-                    });
+        // Update label text and style classes when status changes
+        if (statusValueLabel != null) {
+            Platform.runLater(() -> {
+                statusValueLabel.setText(statusText);
+                statusValueLabel.getStyleClass().removeAll("connected", "disconnected");
+                statusValueLabel.getStyleClass().add(connected ? "connected" : "disconnected");
+            });
         }
     }
 
@@ -323,15 +310,6 @@ public class SettingsDialog extends UIComponent<StackPane> {
     }
 
     /**
-     * Sets an action to be executed when the dialog is closed.
-     *
-     * @param action The action to execute on close.
-     */
-    public void setOnCloseAction(Runnable action) {
-        this.onCloseAction = action;
-    }
-
-    /**
      * Sets an action to be executed when the save button is clicked.
      *
      * @param action The action to execute on save.
@@ -341,14 +319,11 @@ public class SettingsDialog extends UIComponent<StackPane> {
     }
 
     /**
-     * Custom separator with styling.
+     * Custom separator using CSS styling.
      */
-    private static class Separator extends Region {
-        public Separator() {
-            setPrefHeight(1);
-            setMaxWidth(450);
-            setStyle("-fx-background-color: #555555;");
-            VBox.setMargin(this, new Insets(5, 0, 5, 0));
+    private static class DialogSeparator extends Region {
+        public DialogSeparator() {
+            getStyleClass().add("dialog-separator"); // Use style class
         }
     }
 }

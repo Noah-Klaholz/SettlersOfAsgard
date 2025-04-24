@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.events.game;
 
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
-import java.util.Map;
+import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
 
 /**
  * Carries a full snapshot of the current game state.
@@ -9,53 +9,22 @@ import java.util.Map;
  */
 public class GameSyncEvent implements UIEvent {
 
-    private final Map<String, Object> boardState;
-    private final Map<String, Map<String, Object>> playersState;
-    private final String currentPlayerTurn;
-    private final int currentTurnNumber;
+    private final GameState gameState;
 
     /**
      * Constructs a GameSyncEvent.
      *
-     * @param boardState        the state of the board
-     * @param playersState      the state of all players
-     * @param currentPlayerTurn the player whose turn it is
-     * @param currentTurnNumber the current turn number
+     * @param gameState the game state containing the board state, players' state,
      */
-    public GameSyncEvent(Map<String, Object> boardState, Map<String, Map<String, Object>> playersState,
-            String currentPlayerTurn, int currentTurnNumber) {
-        this.boardState = boardState;
-        this.playersState = playersState;
-        this.currentPlayerTurn = currentPlayerTurn;
-        this.currentTurnNumber = currentTurnNumber;
+    public GameSyncEvent(GameState gameState) {
+        this.gameState = gameState;
     }
 
     /**
-     * @return the board state
+     * @return the game state
      */
-    public Map<String, Object> getBoardState() {
-        return boardState;
-    }
-
-    /**
-     * @return the players' state
-     */
-    public Map<String, Map<String, Object>> getPlayersState() {
-        return playersState;
-    }
-
-    /**
-     * @return the current player's turn
-     */
-    public String getCurrentPlayerTurn() {
-        return currentPlayerTurn;
-    }
-
-    /**
-     * @return the current turn number
-     */
-    public int getCurrentTurnNumber() {
-        return currentTurnNumber;
+    public GameState getGameState() {
+        return gameState;
     }
 
     /**

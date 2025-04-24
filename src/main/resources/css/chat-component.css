@@ -1,26 +1,5 @@
 /* ===== Chat Component Styles ===== */
 
-/* Use the same color variables as the main theme */
-.root {
-    /* Main colors */
-    -color-background-primary: #1a2133;
-    -color-background-secondary: #2c3347;
-    -color-background-tertiary: #383f54;
-
-    /* Accent colors */
-    -color-accent-primary: #e4c065;
-    /* Gold */
-    -color-accent-secondary: #6595e4;
-    /* Blue */
-    -color-accent-tertiary: #d16565;
-    /* Red */
-
-    /* Text colors */
-    -color-text-primary: #e8e8e8;
-    -color-text-secondary: #9a9a9a;
-    -color-text-accent: #e4c065;
-}
-
 /* Chat main container - Defines the component's look */
 .chat-panel {
     -fx-background-color: -color-background-secondary;
@@ -85,11 +64,38 @@
     -fx-background-color: rgba(44, 51, 71, 0.3);
 }
 
+/* Style for whisper messages */
+.chat-list .list-cell.whisper-message {
+    -fx-background-color: -color-whisper-bg;
+    /* Use whisper background variable */
+}
+
+.chat-list .list-cell.whisper-message .label {
+    /* Target label within whisper cell */
+    -fx-text-fill: -color-whisper-text;
+    /* Use whisper text variable */
+}
+
+/* Style for system messages */
+.chat-list .list-cell.system-message {
+    -fx-background-color: -color-background-tertiary-transparent-med;
+    /* Use a subtle background */
+}
+
+.chat-list .list-cell.system-message .label {
+    /* Target label within system cell */
+    -fx-text-fill: -color-accent-secondary;
+    /* Use accent secondary color for system messages */
+    -fx-font-style: italic;
+}
+
+
 /* Chat input field */
 .chat-input {
     -fx-background-color: rgba(44, 51, 71, 0.7);
     -fx-text-fill: -color-text-primary;
     -fx-prompt-text-fill: -color-text-secondary;
+    /* Use updated variable */
     -fx-border-color: rgba(76, 83, 102, 0.5);
     -fx-border-radius: 4px;
     -fx-background-radius: 4px;

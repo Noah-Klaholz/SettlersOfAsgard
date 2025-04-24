@@ -94,15 +94,11 @@
 /* Refresh button - Use standard button style */
 .refresh-button {
     /* Inherits .standard-button */
-    /* Remove specific blue overrides */
-    /* -fx-background-color: rgba(101, 149, 228, 0.3); */
-    /* -fx-border-color: -color-accent-blue; */
-    /* -fx-text-fill: -color-text-primary; */
+    /* Removed specific blue overrides */
 }
 
 .refresh-button:hover {
     /* Inherits .standard-button:hover */
-    /* -fx-background-color: rgba(101, 149, 228, 0.5); */
 }
 
 /* Table styling */

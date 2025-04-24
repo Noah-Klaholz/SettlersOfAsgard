@@ -13,7 +13,7 @@
       },
       {
         "name": "Runes exchanged",
-        "value": 20
+        "value": 100
       }
     ]
   },
@@ -27,8 +27,8 @@
   },
   {
     "name": "Helgrindr",
-    "usage": "",
-    "description": "Prevents Player-Debuffs and gives 1 Energy per Round",
+    "usage": "Prevents Player-Debuffs and gives 1 Energy per Round",
+    "description": "",
     "id": 3,
     "price": 50,
     "resourceValue": 5
@@ -117,7 +117,7 @@
     "params": [
       {
         "name": "Runes Lost",
-        "value": 20
+        "value": -20
       }
     ]
   },

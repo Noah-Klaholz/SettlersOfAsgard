@@ -30,26 +30,10 @@ public class DescriptionDialog extends UIComponent<VBox> {
      */
     public DescriptionDialog() {
         super(FXML_PATH);
-        loadStylesheets();
         setupDynamicWidthBinding();
+        // Initial state is invisible - the controller will handle visibility
         getView().setVisible(false);
         getView().setManaged(false);
-    }
-
-    /**
-     * Loads the CSS stylesheet for this component.
-     */
-    private void loadStylesheets() {
-        try {
-            var cssResource = getClass().getResource(CSS_PATH);
-            if (cssResource != null) {
-                getView().getStylesheets().add(cssResource.toExternalForm());
-            } else {
-                LOGGER.warning("Could not find CSS resource: " + CSS_PATH);
-            }
-        } catch (Exception e) {
-            LOGGER.warning("Error loading CSS for DescriptionDialog: " + e.getMessage());
-        }
     }
 
     /**
@@ -64,24 +48,58 @@ public class DescriptionDialog extends UIComponent<VBox> {
     }
 
     /**
-     * Shows the dialog with the given title and description.
+     * Updates dialog content without changing visibility.
+     * Use this when the controller manages visibility and animations.
      *
      * @param title       The title to display.
      * @param description The description text.
      */
-    public void show(String title, String description) {
+    public void setContent(String title, String description) {
+        if (titleLabel == null || descriptionText == null) {
+            LOGGER.severe("Cannot update content: FXML elements not injected correctly.");
+            return;
+        }
         titleLabel.setText(title);
         descriptionText.setText(description);
+    }
+
+    /**
+     * Makes the dialog visible. This is typically called by the BaseController
+     * or when the dialog is not managed as an overlay.
+     */
+    @Override
+    public void show() {
         getView().setVisible(true);
         getView().setManaged(true);
         getView().toFront();
     }
 
     /**
-     * Hides the dialog.
+     * Shows the dialog with the given title and description.
+     * Sets content and makes the view visible.
+     *
+     * @param title       The title to display.
+     * @param description The description text.
+     * @deprecated Use setContent() and show() separately, or use BaseController's
+     *             overlay management.
      */
-    public void hide() {
+    @Deprecated
+    public void show(String title, String description) {
+        setContent(title, description);
+        show(); // Call the new show() method
+    }
+
+    /**
+     * Hides the dialog and calls the onCloseAction if set.
+     * Renamed from hide() for consistency.
+     */
+    public void close() {
         getView().setVisible(false);
         getView().setManaged(false);
+        // Call the onCloseAction if it's set
+        Runnable action = getOnCloseAction();
+        if (action != null) {
+            action.run();
+        }
     }
 }
