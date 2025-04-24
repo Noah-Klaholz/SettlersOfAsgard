@@ -13,6 +13,11 @@ public class LobbyListRequestEvent implements UIEvent {
     public LobbyListRequestEvent() {
     }
 
+    /**
+     * Returns the event type identifier.
+     *
+     * @return the event type
+     */
     @Override
     public String getType() {
         return "LOBBY_LIST_REQUEST";
