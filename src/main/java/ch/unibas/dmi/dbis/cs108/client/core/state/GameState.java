@@ -2,10 +2,14 @@ package ch.unibas.dmi.dbis.cs108.client.core.state;
 
 import ch.unibas.dmi.dbis.cs108.server.core.model.BoardManager;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
+
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Logger;
+import java.io.*;
+import java.nio.file.*;
+import java.util.stream.Collectors;
 
 /**
  * This class saves the current state of the game. It contains:
@@ -28,6 +32,10 @@ public class GameState {
     private int gameRound;
     /** The name of the players whose turn it is */
     private String playerTurn;
+    /** Leaderboard: playerName -> points (runes) */
+    private final Map<String, Integer> leaderboard = new HashMap<>();
+    /** Path to the Leaderboard file */
+    private static final String LEADERBOARD_FILE = "Leaderboard.txt";
 
     /**
      * Creates a new GameState. Initializes the BoardManager.
@@ -164,6 +172,92 @@ public class GameState {
             players.forEach(Player::reset);
             boardManager.reset();
         } finally {
+            stateLock.writeLock().unlock();
+        }
+    }
+
+    /**
+     * Updates the leaderboard with the points of one player.
+     * @param playerName name of the player
+     * @param points points of the player
+     */
+    public void updateLeaderboard(String playerName, int points) {
+        stateLock.writeLock().lock();
+        try {
+            leaderboard.merge(playerName, points, Integer::sum);
+            saveLeaderboardToFile();
+        }
+        finally {
+            stateLock.writeLock().unlock();
+        }
+    }
+
+    /**
+     * Saves the leaderboard to a file (sorted by points).
+     */
+    public void saveLeaderboardToFile() {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(LEADERBOARD_FILE))) {
+            leaderboard.entrySet().stream()
+                    .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                    .forEach(entry -> {
+                        try {
+                            writer.write(entry.getKey() + ": " + entry.getValue() + "\n");
+                        }
+                        catch (IOException e){
+                            LOGGER.severe("Could not write Leaderboard to file: "+ e.getMessage());
+                        }
+                    });
+        }
+        catch (IOException e) {
+            LOGGER.severe("Could not save leaderboard: "+ e.getMessage());
+        }
+    }
+
+    /**
+     * Loads the leaderboard from the file. Called at the start.
+     */
+    public void loadLeaderboard() {
+        stateLock.readLock().lock();
+        try {
+            if(!Files.exists(Paths.get(LEADERBOARD_FILE))) {
+                return;
+            }
+            try (BufferedReader reader = Files.newBufferedReader(Paths.get(LEADERBOARD_FILE))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] parts = line.split(": ");
+                    if (parts.length == 2) {
+                        leaderboard.put(parts[0], Integer.parseInt(parts[1]));
+                    }
+                }
+            }
+        }
+        catch (IOException e) {
+            LOGGER.severe("Could not read Leaderboard file: "+ e.getMessage());
+        }
+        finally {
+            stateLock.writeLock().unlock();
+        }
+    }
+
+    /**
+     * Returns the leaderboard (sorted).
+     *
+     * @return the leaderboard.
+     */
+    public Map<String, Integer> getLeaderboard() {
+        stateLock.readLock().lock();
+        try {
+            return leaderboard.entrySet().stream()
+                    .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            Map.Entry::getValue,
+                            (e1, e2) -> e1,
+                            LinkedHashMap::new
+                    ));
+        }
+        finally {
             stateLock.writeLock().unlock();
         }
     }
