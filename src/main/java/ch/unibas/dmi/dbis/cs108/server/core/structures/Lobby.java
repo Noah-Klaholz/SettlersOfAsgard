@@ -2,6 +2,7 @@ package ch.unibas.dmi.dbis.cs108.server.core.structures;
 
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameEventNotifier;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
+import ch.unibas.dmi.dbis.cs108.server.core.model.Leaderboard;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 
@@ -23,52 +24,35 @@ import java.util.stream.Collectors;
  */
 public class Lobby implements GameEventNotifier {
 
-    /**
-     * Logger to log logging.
-     */
+    /** Logger to log logging */
     private static final Logger logger = Logger.getLogger(Lobby.class.getName());
-
-    /**
-     * Name of the Lobby (unique), serves as an ID.
-     */
+    /** Name of the Lobby (unique), serves as an ID. */
     private final String id;
-
-    /**
-     * The players, stored in a List of ClientHandlers.
-     */
+    /** The players, stored in a List of ClientHandlers. */
     private final List<ClientHandler> players;
-
-    /**
-     * The number of maximal Players allowed (currently always 4).
-     */
+    /** The number of maximal Players allowed (currently always 4). */
     private final int maxPlayers;
-
-    /**
-     * The status of the Lobby (In lobby, in game or game ended).
-     */
+    /** The status of the Lobby (In lobby, in game or game ended). */
     private LobbyStatus status;
-
-    /**
-     * The GameLogic corresponding to the game ongoing in the Lobby (only initialized when game starts).
-     */
+    /** The GameLogic corresponding to the game ongoing in the Lobby (only initialized when game starts). */
     private GameLogic gameLogic;
-
-    /**
-     * The turnScheduler responsible for automatically calling TurnManager.nextTurn() after a fixed time.
-     */
+    /** * The turnScheduler responsible for automatically calling TurnManager.nextTurn() after a fixed time. */
     private ScheduledExecutorService turnScheduler; // For automatic turns
+    /** Global leaderboard (gets it from the server) */
+    private final Leaderboard leaderboard;
 
     /**
      * Creates the Lobby object and instantiates fields.
      * @param id The name of the Lobby as a String.
      * @param maxPlayers The number of maximum players as an Integer.
      */
-    public Lobby(String id, int maxPlayers) {
+    public Lobby(String id, int maxPlayers, Leaderboard leaderboard) {
         this.id = id;
         this.maxPlayers = maxPlayers;
         this.players = new CopyOnWriteArrayList<>();
         this.status = LobbyStatus.IN_LOBBY;
         this.turnScheduler = Executors.newSingleThreadScheduledExecutor();
+        this.leaderboard = leaderboard;
     }
 
     /**
@@ -315,6 +299,9 @@ public class Lobby implements GameEventNotifier {
         if (status == LobbyStatus.IN_GAME) {
             status = LobbyStatus.GAME_ENDED;
             broadcastMessage(CommunicationAPI.NetworkProtocol.Commands.ENDGAME.getCommand() + "$" +  gameLogic.createFinalScoreMessage());
+            gameLogic.getGameState().getPlayers().forEach(player -> {
+                leaderboard.update(player.getName(), player.getRunes());
+            });
             gameLogic.getGameState().reset();
             stopTurnScheduler();
         }

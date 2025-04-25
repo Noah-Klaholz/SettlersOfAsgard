@@ -102,42 +102,50 @@
                                   onMouseClicked="#handleCardClick"
                                   onDragDetected="#handleCardDragDetected"
                                   onMouseEntered="#handleCardMouseEntered"
-                                  onMouseExited="#handleCardMouseExited"/>
+                                  onMouseExited="#handleCardMouseExited"
+                                  onDragDone="#handleCardDragDone"/>
                             <Pane fx:id="structure2" styleClass="card,structure-card" prefWidth="80" prefHeight="120"
                                   onMouseClicked="#handleCardClick"
                                   onDragDetected="#handleCardDragDetected"
                                   onMouseEntered="#handleCardMouseEntered"
-                                  onMouseExited="#handleCardMouseExited"/>
+                                  onMouseExited="#handleCardMouseExited"
+                                  onDragDone="#handleCardDragDone"/>
                             <Pane fx:id="structure3" styleClass="card,structure-card" prefWidth="80" prefHeight="120"
                                   onMouseClicked="#handleCardClick"
                                   onDragDetected="#handleCardDragDetected"
                                   onMouseEntered="#handleCardMouseEntered"
-                                  onMouseExited="#handleCardMouseExited"/>
+                                  onMouseExited="#handleCardMouseExited"
+                                  onDragDone="#handleCardDragDone"/>
                             <Pane fx:id="structure4" styleClass="card,structure-card" prefWidth="80" prefHeight="120"
                                   onMouseClicked="#handleCardClick"
                                   onDragDetected="#handleCardDragDetected"
                                   onMouseEntered="#handleCardMouseEntered"
-                                  onMouseExited="#handleCardMouseExited"/>
+                                  onMouseExited="#handleCardMouseExited"
+                                  onDragDone="#handleCardDragDone"/>
                             <Pane fx:id="structure5" styleClass="card,structure-card" prefWidth="80" prefHeight="120"
                                   onMouseClicked="#handleCardClick"
                                   onDragDetected="#handleCardDragDetected"
                                   onMouseEntered="#handleCardMouseEntered"
-                                  onMouseExited="#handleCardMouseExited"/>
+                                  onMouseExited="#handleCardMouseExited"
+                                  onDragDone="#handleCardDragDone"/>
                             <Pane fx:id="structure6" styleClass="card,structure-card" prefWidth="80" prefHeight="120"
                                   onMouseClicked="#handleCardClick"
                                   onDragDetected="#handleCardDragDetected"
                                   onMouseEntered="#handleCardMouseEntered"
-                                  onMouseExited="#handleCardMouseExited"/>
+                                  onMouseExited="#handleCardMouseExited"
+                                  onDragDone="#handleCardDragDone"/>
                             <Pane fx:id="structure7" styleClass="card,structure-card" prefWidth="80" prefHeight="120"
                                   onMouseClicked="#handleCardClick"
                                   onDragDetected="#handleCardDragDetected"
                                   onMouseEntered="#handleCardMouseEntered"
-                                  onMouseExited="#handleCardMouseExited"/>
+                                  onMouseExited="#handleCardMouseExited"
+                                  onDragDone="#handleCardDragDone"/>
                             <Pane fx:id="structure8" styleClass="card,structure-card" prefWidth="80" prefHeight="120"
                                   onMouseClicked="#handleCardClick"
                                   onDragDetected="#handleCardDragDetected"
                                   onMouseEntered="#handleCardMouseEntered"
-                                  onMouseExited="#handleCardMouseExited"/>
+                                  onMouseExited="#handleCardMouseExited"
+                                  onDragDone="#handleCardDragDone"/>
                         </FlowPane>
                     </VBox>
                 </HBox>
