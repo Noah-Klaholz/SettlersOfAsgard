@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.networking;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
+import ch.unibas.dmi.dbis.cs108.server.core.model.Leaderboard;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.PingFilter;
 
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 public class GameServer {
     /** Logger instance for server logging */
     private static final Logger logger = Logger.getLogger(GameServer.class.getName());
-    /** Scheduler for periodic ping tasks to check client conncetion */
+    /** Scheduler for periodic ping tasks to check client connection */
     private final ScheduledExecutorService pingScheduler = Executors.newScheduledThreadPool(1);
     /** The port number on which the server listens for connections. */
     private final int port;
@@ -33,6 +34,8 @@ public class GameServer {
     private boolean running;
     /** The server socket used to accept client connections */
     private ServerSocket serverSocket;
+    /** Leaderboard (global) */
+    private final Leaderboard leaderboard;
 
     /**
      * Constructs a new GameServer instance that will listen on the specified port.
@@ -45,6 +48,8 @@ public class GameServer {
         clients = new CopyOnWriteArrayList<>();
         executor = Executors.newCachedThreadPool();
         this.lobbies = new CopyOnWriteArrayList<>();
+        this.leaderboard = new Leaderboard();
+        this.leaderboard.load();
     }
 
     /**
@@ -198,7 +203,7 @@ public class GameServer {
             logger.warning("Lobby with id " + id + " already exists");
             return null;
         }
-        Lobby lobby = new Lobby(id, maxPlayers);
+        Lobby lobby = new Lobby(id, maxPlayers, leaderboard);
         lobbies.add(lobby);
         logger.info("Created new Lobby: " + id);
         return lobby;
@@ -296,5 +301,14 @@ public class GameServer {
      */
     public ScheduledExecutorService getPingScheduler() {
         return pingScheduler;
+    }
+
+    /**
+     * Gets the global leaderboard
+     *
+     * @return the leaderboard
+     */
+    public Leaderboard getLeaderboard() {
+        return leaderboard;
     }
 }
