@@ -991,7 +991,7 @@ public class GameScreenController extends BaseController {
         GameEntity entity = EntityRegistry.getGameEntityOriginalById(entityID); // DO NOT Make changes to this entity, READ-ONLY
         String URL = EntityRegistry.getURL(entityID, true);
         if (URL == null) {
-            URL = "resources/images/game-logo.png";
+            URL = "";
         }
         String title = entity.getName();
         String description = entity.getUsage();

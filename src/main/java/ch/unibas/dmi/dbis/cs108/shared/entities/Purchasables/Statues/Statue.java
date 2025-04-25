@@ -37,8 +37,8 @@ public class Statue extends PurchasableEntity {
      * @param name The name of this statue
      * @param description The description of this statue
      */
-    public Statue(int id, String name, int price, int ressourceValue, int upgradePrice, String description, String usage, String world) {
-        super(id, name, description, usage, price, ressourceValue);
+    public Statue(int id, String name, int price, int ressourceValue, int upgradePrice, String description, String usage, String world, String cardImagePath, String mapImagePath) {
+        super(id, name, description, usage, price, ressourceValue, cardImagePath, mapImagePath);
         this.world = world;
         this.upgradePrice = upgradePrice;
     }

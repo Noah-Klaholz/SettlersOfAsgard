@@ -311,8 +311,6 @@ public class EntityRegistry {
                 return art.getCardImagePath();
             } else if (entity instanceof PurchasableEntity pe) {
                 return pe.getMapImagePath();
-            } else if (entity instanceof Monument mon && !isCard) {
-                return mon.getMapImagePath();
             }
         }
         return null;

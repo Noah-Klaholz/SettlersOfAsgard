@@ -34,11 +34,6 @@ public class Monument extends FindableEntity {
     private boolean setBonus;
 
     /**
-     * The path to the image representing this entity on the map.
-     */
-    protected String mapImagePath;
-
-    /**
      * Indicates whether this entity has been disabled last turn.
      * Value above 0 means it was disabled
      * Value of 0 means it was not
@@ -69,13 +64,12 @@ public class Monument extends FindableEntity {
      * @param runes how many runes this entity farms each round
      * @param setBonus states wether this entity is part of a set
      */
-    public Monument(int id, String name, String description, String usage, int runes, boolean setBonus, List<Coordinates> tiles, String world, String mapImagePath) {
+    public Monument(int id, String name, String description, String usage, int runes, boolean setBonus, List<Coordinates> tiles, String world) {
         super(id, name, description, usage);
         this.runes = runes;
         this.setBonus = setBonus;
         this.tiles = tiles;
         this.world = world;
-        this.mapImagePath = mapImagePath;
     }
 
     /**
@@ -103,15 +97,6 @@ public class Monument extends FindableEntity {
      */
     public void setTiles(List<Coordinates> tiles) {
         this.tiles = tiles;
-    }
-
-    /**
-     * Gets the path to the image representing this entity as a game piece.
-     *
-     * @return The path to the image
-     */
-    public String getMapImagePath() {
-        return mapImagePath;
     }
 
     /**
@@ -148,15 +133,6 @@ public class Monument extends FindableEntity {
      */
     public boolean isSet() {
         return setBonus;
-    }
-
-    /**
-     * Sets the mapImagePath of this Monument
-     *
-     * @param mapImagePath The path to the image representing this entity as a game piece
-     */
-    public void setMapImagePath(String mapImagePath) {
-        this.mapImagePath = mapImagePath;
     }
 
     /**
@@ -216,7 +192,6 @@ public class Monument extends FindableEntity {
         super.loadFromJson(json);
         this.runes = json.get("runes").getAsInt();
         this.world = json.get("world").getAsString();
-        this.mapImagePath = json.get("mapImagePath").getAsString();
         JsonArray jArr = json.get("tiles").getAsJsonArray();
         this.tiles = gson.fromJson(jArr, listType);
         this.setBonus = tiles.size() > 1;
@@ -246,7 +221,6 @@ public class Monument extends FindableEntity {
 
         clone.setRunes(this.runes);
         clone.setWorld(this.world);
-        clone.setMapImagePath(this.mapImagePath);
         clone.setTiles(new ArrayList<>(this.tiles));
 
         return (Monument) copyTo(clone);

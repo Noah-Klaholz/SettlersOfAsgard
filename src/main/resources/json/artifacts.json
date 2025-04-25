@@ -4,6 +4,7 @@
     "usage": "Once you find one, you can use it to achieve incredible things.",
     "description": "Artifacts are mystical items that can be found in the world of the Norse Gods. They are powerful and can be used to enhance your abilities or to gain advantages over other players.",
     "useType": "Descriptor",
+    "cardImagePath": "",
     "id": 22,
     "chance": 0.0,
     "effect": 0.0
@@ -14,6 +15,7 @@
     "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "description": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "useType": "Field",
+    "cardImagePath": "resources/images/cards/a_freyjasnecklace_card.png",
     "id": 10,
     "chance": 0.3,
     "effect": 1.0
@@ -23,6 +25,7 @@
     "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "description": "Energie (flat)",
     "useType": "Player",
+    "cardImagePath": "resources/images/cards/a_freyrsgoldenapple_card.png",
     "id": 11,
     "chance": 0.3,
     "effect": 4
@@ -32,6 +35,7 @@
     "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "description": "Anderer Spieler - Energie (flat)",
     "useType": "Player",
+    "cardImagePath": "resources/images/cards/a_yggdrasilstear_card.png",
     "id": 12,
     "chance": 0.3,
     "effect": -4
@@ -41,6 +45,7 @@
     "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "description": "Erhöht Chance auf Artefakte",
     "useType": "Player",
+    "cardImagePath": "resources/images/cards/a_mjoelnircharm_card.png",
     "id": 13,
     "chance": 0.3,
     "effect": 5.0
@@ -50,6 +55,7 @@
     "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "description": "Erhöht Effizienz von Energy generation auf einem Feld",
     "useType": "Field",
+    "cardImagePath": "resources/images/cards/a_fenrirsbones_card.png",
     "id": 14,
     "chance": 0.3,
     "effect": 0.5
@@ -59,6 +65,7 @@
     "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "description": "Anderer Spieler - Effizienz Runen Farmen",
     "useType": "Player",
+    "cardImagePath": "resources/images/cards/a_helsshadow_card.png",
     "id": 15,
     "chance": 0.3,
     "effect": -0.1
@@ -68,6 +75,7 @@
     "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "description": "Preissenkung kaufbares für nächste Runde (wird multipliziert)",
     "useType": "Player",
+    "cardImagePath": "resources/images/cards/a_muspelheimsflame_card.png",
     "id": 16,
     "chance": 0.3,
     "effect": 0.5
@@ -77,6 +85,7 @@
     "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "description": "Andere Spieler - Effizienz Energie Farmen",
     "useType": "Player",
+    "cardImagePath": "resources/images/cards/a_nilfheimsicesplinter_card.png",
     "id": 17,
     "chance": 0.3,
     "effect": -0.5
@@ -86,6 +95,7 @@
     "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "description": "Erhöht Effizienz Farmen am Fluss",
     "useType": "Field",
+    "cardImagePath": "resources/images/cards/a_joermungandrsblood_card.png",
     "id": 18,
     "chance": 0.3,
     "effect": 0.2
@@ -95,6 +105,7 @@
     "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "description": "Andere Spieler - Preissteigerung kaufbares für nächste Runde (wird multipliziert)",
     "useType": "Player",
+    "cardImagePath": "resources/images/cards/a_surtursashes_card.png",
     "id": 19,
     "chance": 0.3,
     "effect": -0.5
@@ -104,6 +115,7 @@
     "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "description": "überprüft ein Tile und alle angrenzenden auf Fallen und deckt diese ggbf. auf",
     "useType": "Field",
+    "cardImagePath": "resources/images/cards/a_odinseye_card.png",
     "id": 20,
     "chance": 0.3,
     "effect": 0
@@ -113,6 +125,7 @@
     "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "description": "Can be found and used to trap a field",
     "useType": "Trap",
+    "cardImagePath": "resources/images/cards/a_fenrirschains_card.png",
     "id": 21,
     "chance": 0.3,
     "effect": 8
