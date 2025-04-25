@@ -11,6 +11,8 @@ public class CardDetails {
     final String description;
     /**Map of card IDs to CardDetails objects.*/
     final String lore;
+    /**URL for the image associated with the card.*/
+    final String imageUrl;
 
     /**
      * Constructor for CardDetails.
@@ -19,10 +21,11 @@ public class CardDetails {
      * @param description The description of the card.
      * @param lore        The lore of the card.
      */
-    public CardDetails(String title, String description, String lore) {
+    public CardDetails(String title, String description, String lore, String cardImagePath) {
         this.title = title;
         this.description = description;
         this.lore = lore;
+        this.imageUrl = cardImagePath;
     }
 
     /**
@@ -50,5 +53,14 @@ public class CardDetails {
      */
     public String getLore() {
         return lore;
+    }
+
+    /**
+     * Retrieves the image URL of the card.
+     *
+     * @return The image URL of the card.
+     */
+    public String getImageUrl() {
+        return imageUrl;
     }
 }

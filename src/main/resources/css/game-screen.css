@@ -334,3 +334,10 @@
     -fx-background-radius: 4px;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
 }
+
+.game-card {
+    -fx-border-color: rgba(255, 255, 255, 0.3);
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 5, 0, 0, 0);
+}

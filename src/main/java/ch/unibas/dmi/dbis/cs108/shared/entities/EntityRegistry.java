@@ -293,4 +293,16 @@ public class EntityRegistry {
         }
         return entity;
     }
+
+    public static String getURL(int id, boolean isCard) {
+        GameEntity entity = getGameEntityOriginalById(id);
+        if (entity != null) {
+            if ((entity instanceof PurchasableEntity || entity instanceof Artifact) && isCard) {
+                return entity.getCardImagePath();
+            } else if ((entity instanceof PurchasableEntity || entity instanceof Monument) && !isCard) {
+                return entity.getMapImagePath();
+            }
+        }
+        return null;
+    }
 }

@@ -85,6 +85,11 @@ public class Artifact extends FindableEntity {
     private double effect;
 
     /**
+     * The path to the image representing this entity as a card.
+     */
+    private String cardImagePath;
+
+    /**
      * Default constructor for Artifact.
      */
     public Artifact() {}
@@ -99,11 +104,12 @@ public class Artifact extends FindableEntity {
      * @param chanceToFind The chance to find this artifact
      * @param effect The effect of this artifact
      */
-    public Artifact(int id, String name, String description, String usage, String useType, double chanceToFind, double effect) {
+    public Artifact(int id, String name, String description, String usage, String useType, double chanceToFind, double effect, String cardImagePath) {
         super(id, name, description, usage);
         this.chanceToFind = chanceToFind;
         this.effect = effect;
         this.useType = UseType.fromString(useType);
+        this.cardImagePath = cardImagePath;
     }
 
     /**
@@ -134,12 +140,30 @@ public class Artifact extends FindableEntity {
     }
 
     /**
+     * Sets the path to the image representing this artifact as a card.
+     *
+     * @param cardImagePath The path to the card image
+     */
+    public void setCardImagePath(String cardImagePath) {
+        this.cardImagePath = cardImagePath;
+    }
+
+    /**
      * Returns the target type of this findable entity.
      *
      * @return The target type (FIELD or PLAYER)
      */
     public UseType getUseType() {
         return useType;
+    }
+
+    /**
+     * Returns the path to the image representing this entity as a card.
+     *
+     * @return The path to the card image
+     */
+    public String getCardImagePath() {
+        return cardImagePath;
     }
 
     /**
@@ -195,6 +219,7 @@ public class Artifact extends FindableEntity {
         }
         this.chanceToFind = json.get("chance").getAsDouble();
         this.effect = json.get("effect").getAsDouble();
+        this.cardImagePath = json.get("cardImagePath").getAsString();
     }
 
     /**
@@ -222,6 +247,7 @@ public class Artifact extends FindableEntity {
         clone.setUseType(this.useType);
         clone.setChanceToFind(this.chanceToFind);
         clone.setEffect(this.effect);
+        clone.setCardImagePath(this.cardImagePath);
 
         return (Artifact) copyTo(clone);
     }

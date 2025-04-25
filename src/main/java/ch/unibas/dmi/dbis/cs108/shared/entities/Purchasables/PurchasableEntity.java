@@ -20,6 +20,16 @@ public abstract class PurchasableEntity extends GameEntity {
     protected int resourceValue;
 
     /**
+     * The path to the image representing this entity as a card.
+     */
+    protected String cardImagePath;
+
+    /**
+     * The path to the image representing this entity as a game piece.
+     */
+    protected String mapImagePath;
+
+    /**
      * Indicates whether this entity has already been activated this turn.
      */
     protected boolean activated = false;
@@ -30,6 +40,7 @@ public abstract class PurchasableEntity extends GameEntity {
      * Value of 0 means it was not
      */
     protected int disabled = 0;
+
 
     /**
      * Default constructor for PurchasableEntity.
@@ -44,10 +55,12 @@ public abstract class PurchasableEntity extends GameEntity {
      * @param description The description of this entity
      * @param price The purchase price of this entity
      */
-    public PurchasableEntity(int id, String name, String description, String usage, int price, int resourceValue) {
+    public PurchasableEntity(int id, String name, String description, String usage, int price, int resourceValue, String cardImagePath, String mapImagePath) {
         super(id, name, description, usage);
         this.price = price;
         this.resourceValue = resourceValue;
+        this.cardImagePath = cardImagePath;
+        this.mapImagePath = mapImagePath;
     }
 
     /**
@@ -67,6 +80,20 @@ public abstract class PurchasableEntity extends GameEntity {
     public int getResourceValue() { return resourceValue; }
 
     /**
+     * Returns the path to the image representing this entity as a card.
+     *
+     * @return The card image path
+     */
+    public String getCardImagePath() { return cardImagePath; }
+
+    /**
+     * Returns the path to the image representing this entity as a game piece.
+     *
+     * @return The map image path
+     */
+    public String getMapImagePath() { return mapImagePath; }
+
+    /**
      * Loads entity data from a JSON object.
      * Extends the parent method to also load price data.
      *
@@ -77,6 +104,8 @@ public abstract class PurchasableEntity extends GameEntity {
         super.loadFromJson(json);
         this.price = json.get("price").getAsInt();
         this.resourceValue = json.get("resourceValue").getAsInt();
+        this.cardImagePath = json.get("cardImagePath").getAsString();
+        this.mapImagePath = json.get("mapImagePath").getAsString();
     }
 
     /**
@@ -168,6 +197,8 @@ public abstract class PurchasableEntity extends GameEntity {
         clone.resourceValue = this.resourceValue;
         clone.activated = this.activated;
         clone.disabled = this.disabled;
+        clone.cardImagePath = this.cardImagePath;
+        clone.mapImagePath = this.mapImagePath;
 
         return clone;
     }

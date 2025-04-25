@@ -198,6 +198,7 @@ public class GameScreenController extends BaseController {
         initialiseSettingsDialog();
         initialiseChatComponent();
         initialiseTestPlayerColours();
+        updateCardImages();
     }
 
     /*
@@ -308,8 +309,15 @@ public class GameScreenController extends BaseController {
     private void handleGameSync(GameSyncEvent e) {
         if (e == null || e.getGameState() == null)
             return;
+        // Update the game State with the new game state
         gameState = e.getGameState();
+
+        // Update the artifacts list
         artifacts = gameState.findPlayerByName(localPlayer.getName()).getArtifacts();
+
+        // Update card images after game state changes
+        Platform.runLater(this::updateCardImages);
+
         // TODO handle game state sync (show player turn, update energy bar, etc.)
     }
 
@@ -981,10 +989,14 @@ public class GameScreenController extends BaseController {
     public CardDetails getCardDetails(String id) {
         int entityID = getEntityID(id);
         GameEntity entity = EntityRegistry.getGameEntityOriginalById(entityID); // DO NOT Make changes to this entity, READ-ONLY
+        String URL = EntityRegistry.getURL(entityID, true);
+        if (URL == null) {
+            URL = "resources/images/game-logo.png";
+        }
         String title = entity.getName();
         String description = entity.getUsage();
         String lore = entity.getDescription();
-        return new CardDetails(title, description, lore);
+        return new CardDetails(title, description, lore, URL);
     }
 
     /**
@@ -996,7 +1008,7 @@ public class GameScreenController extends BaseController {
     private int getEntityID(String id) {
         if (id.startsWith("artifact")) {
             int i = Integer.parseInt(id.replace("artifact", ""));
-            if (i < 0 || i >= artifacts.size() || artifacts == null || artifacts.isEmpty()) {
+            if (i < 0 || i >= artifacts.size() || artifacts.isEmpty()) {
                 Logger.getGlobal().fine("Invalid artifact ID or artifacts are null: " + id); // This is expected, since the player might not have all artifact slots filled
                 return 22; // ID of the artifact which holds the description for the card (should the slot be empty)
             } else {
@@ -1013,23 +1025,67 @@ public class GameScreenController extends BaseController {
 
     /*
      * --------------------------------------------------
-     * Placeholder logic (replace with proper game‑state look‑ups)
+     * Card Image loading and helpers
      * --------------------------------------------------
      */
 
     /**
-     * Returns a {@link CardDetails} object for the given card ID. This is a
-     * placeholder
-     *
-     * @param cardId the ID of the card
-     * @return a {@link CardDetails} object containing the title, description, and lore
+     * Updates the cards in the hands with the correct images.
      */
-    private String getCardDescription(String cardId) {
-        if (cardId.startsWith("artifact")) {
-            return "Artifact Card\n\nA powerful Norse artifact.\nEffect: Grants special abilities to the owner.";
+    private void updateCardImages() {
+        // Update artifact cards
+        for (Node card : artifactHand.getChildren()) {
+            if (card.getId() != null && card.getId().startsWith("artifact")) {
+                updateCardImage(card);
+            }
         }
-        return "Structure Card\n\nA building that can be placed on the board.\nCost: 5 Runes\nProvides: +2 Energy per turn";
+
+        // Update structure cards
+        for (Node card : structureHand.getChildren()) {
+            if (card.getId() != null && card.getId().startsWith("structure")) {
+                updateCardImage(card);
+            }
+        }
     }
+
+    /**
+     * Updates a single card with the correct image.
+     */
+    private void updateCardImage(Node card) {
+        String id = card.getId();
+        if (id == null) return;
+
+        try {
+            CardDetails details = getCardDetails(id);
+            String imageUrl = details.getImageUrl();
+
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                Image image = resourceLoader.loadImage(imageUrl);
+
+                if (card instanceof Pane) {
+                    // Clear existing background
+                    card.setStyle(null);
+
+                    // Set the new background image
+                    BackgroundImage backgroundImage = new BackgroundImage(
+                            image,
+                            BackgroundRepeat.NO_REPEAT,
+                            BackgroundRepeat.NO_REPEAT,
+                            BackgroundPosition.CENTER,
+                            new BackgroundSize(100, 100, true, true, true, false)
+                    );
+
+                    ((Pane) card).setBackground(new Background(backgroundImage));
+
+                    // Add minimal styling for visibility
+                    card.getStyleClass().add("game-card");
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.warning("Failed to load image for card " + id + ": " + e.getMessage());
+        }
+    }
+
 
     // --- Placeholder methods for game state; keep until real model is wired ---
 
