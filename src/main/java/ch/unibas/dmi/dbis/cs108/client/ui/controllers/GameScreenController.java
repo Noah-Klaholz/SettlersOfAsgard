@@ -19,6 +19,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -696,6 +697,13 @@ public class GameScreenController extends BaseController {
     }
 
     /**
+     * Creates and initializes the description dialog.
+     */
+    private void initialiseDescriptionDialog() {
+
+    }
+
+    /**
      * Updates the connection status indicator inside the settings overlay.
      */
     private void updateSettingsConnectionStatus() {
@@ -726,6 +734,73 @@ public class GameScreenController extends BaseController {
     }
 
     /**
+     * Handles mouse entered event on a card in the player's hand.
+     *
+     * @param event The mouse event from the hovered card.
+     */
+    @FXML
+    private void handleCardMouseEntered(MouseEvent event) {
+        if (!(event.getSource() instanceof Pane hoveredCard)) {
+            return;
+        }
+
+        String cardId = hoveredCard.getId();
+        boolean isArtifact = cardId.startsWith("artifact");
+        String cardType = isArtifact ? "Artifact" : "Structure";
+        int cardIndex = Integer.parseInt(cardId.replaceAll("[^0-9]", ""));
+        String title = cardType + " #" + cardIndex;
+        String description = getMockCardDescription(cardType, cardIndex);
+
+        // Configure dialog content
+        descriptionDialog.setTitle(title);
+        descriptionDialog.setDescription(description);
+
+        // Position relative to mouse rather than card for simplicity
+        Node view = descriptionDialog.getView();
+        if (view != null) {
+            // Get mouse screen coordinates
+            double mouseX = event.getScreenX();
+            double mouseY = event.getScreenY();
+
+            // Convert to parent coordinates
+            Point2D parentCoords = view.getParent().screenToLocal(mouseX + 15, mouseY);
+
+            // Position with offset from mouse
+            StackPane.setAlignment(view, Pos.TOP_LEFT);
+            StackPane.setMargin(view, new Insets(parentCoords.getY(), 0, 0, parentCoords.getX()));
+
+            // Ensure visibility
+            view.setVisible(true);
+            view.toFront();
+        }
+
+        // Show dialog
+        descriptionDialog.show();
+
+        LOGGER.info("Description dialog shown for card: " + cardId);
+        event.consume();
+    }
+
+    /**
+     * Handles mouse exited event on a card in the player's hand.
+     * Closes the description dialog.
+     *
+     * @param event The mouse event from the exited card.
+     */
+    @FXML
+    private void handleCardMouseExited(MouseEvent event) {
+        Node view = descriptionDialog.getView();
+        if (view != null) {
+            view.setVisible(false);
+        }
+        descriptionDialog.close();
+
+        LOGGER.info("Description dialog hidden");
+
+        event.consume();
+    }
+
+    /**
      * Handles a click on a card in the player's hand.
      *
      * @param event The mouse event from the clicked card.
@@ -746,7 +821,7 @@ public class GameScreenController extends BaseController {
         int cardIndex = Integer.parseInt(cardId.replaceAll("[^0-9]", ""));
         String title = cardType + " #" + cardIndex;
         String description = getMockCardDescription(cardType, cardIndex);
-        showCardDescription(title, description);
+        // showCardDescription(title, description);
         event.consume();
     }
 
@@ -788,7 +863,9 @@ public class GameScreenController extends BaseController {
      */
     private void showCardDescription(String title, String description) {
         if (descriptionDialog != null) {
-            descriptionDialog.show(title, description);
+            descriptionDialog.setTitle(title);
+            descriptionDialog.setDescription(description);
+            descriptionDialog.show();
         }
     }
 
@@ -816,23 +893,6 @@ public class GameScreenController extends BaseController {
                 case 8 -> "Wall: Improves settlement defense against raids.";
                 default -> "A basic structure that provides shelter.";
             };
-        }
-    }
-
-    /**
-     * Creates and initializes the description dialog.
-     */
-    private void initialiseDescriptionDialog() {
-        descriptionDialog = new DescriptionDialog();
-        StackPane root = (StackPane) gameCanvas.getParent();
-        if (descriptionDialog.getView() != null && root != null) {
-            if (!root.getChildren().contains(descriptionDialog.getView())) {
-                root.getChildren().add(descriptionDialog.getView());
-            }
-            StackPane.setAlignment(descriptionDialog.getView(), Pos.TOP_RIGHT);
-            StackPane.setMargin(descriptionDialog.getView(), new Insets(10, 300, 10, 10));
-        } else {
-            LOGGER.severe("Failed to add description dialog to root pane");
         }
     }
 

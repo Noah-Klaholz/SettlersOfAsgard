@@ -48,22 +48,6 @@ public class DescriptionDialog extends UIComponent<VBox> {
     }
 
     /**
-     * Updates dialog content without changing visibility.
-     * Use this when the controller manages visibility and animations.
-     *
-     * @param title       The title to display.
-     * @param description The description text.
-     */
-    public void setContent(String title, String description) {
-        if (titleLabel == null || descriptionText == null) {
-            LOGGER.severe("Cannot update content: FXML elements not injected correctly.");
-            return;
-        }
-        titleLabel.setText(title);
-        descriptionText.setText(description);
-    }
-
-    /**
      * Makes the dialog visible. This is typically called by the BaseController
      * or when the dialog is not managed as an overlay.
      */
@@ -72,21 +56,6 @@ public class DescriptionDialog extends UIComponent<VBox> {
         getView().setVisible(true);
         getView().setManaged(true);
         getView().toFront();
-    }
-
-    /**
-     * Shows the dialog with the given title and description.
-     * Sets content and makes the view visible.
-     *
-     * @param title       The title to display.
-     * @param description The description text.
-     * @deprecated Use setContent() and show() separately, or use BaseController's
-     *             overlay management.
-     */
-    @Deprecated
-    public void show(String title, String description) {
-        setContent(title, description);
-        show(); // Call the new show() method
     }
 
     /**
@@ -101,5 +70,21 @@ public class DescriptionDialog extends UIComponent<VBox> {
         if (action != null) {
             action.run();
         }
+    }
+
+    public void setTitle(String title) {
+        if (titleLabel == null) {
+            LOGGER.severe("Cannot set title: FXML elements not injected correctly.");
+            return;
+        }
+        titleLabel.setText(title);
+    }
+
+    public void setDescription(String description) {
+        if (descriptionText == null) {
+            LOGGER.severe("Cannot set description: FXML elements not injected correctly.");
+            return;
+        }
+        descriptionText.setText(description);
     }
 }

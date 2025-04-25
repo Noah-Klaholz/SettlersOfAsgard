@@ -78,9 +78,18 @@
                     <VBox spacing="5">
                         <Label text="Artifacts:" styleClass="card-category"/>
                         <HBox fx:id="artifactHand" spacing="8">
-                            <Pane fx:id="artifact1" styleClass="card,artifact-card" prefWidth="80" prefHeight="120" onMouseClicked="#handleCardClick"/>
-                            <Pane fx:id="artifact2" styleClass="card,artifact-card" prefWidth="80" prefHeight="120" onMouseClicked="#handleCardClick"/>
-                            <Pane fx:id="artifact3" styleClass="card,artifact-card" prefWidth="80" prefHeight="120" onMouseClicked="#handleCardClick"/>
+                            <Pane fx:id="artifact1" styleClass="card,artifact-card" prefWidth="80" prefHeight="120"
+                                  onMouseClicked="#handleCardClick"
+                                  onMouseEntered="#handleCardMouseEntered"
+                                  onMouseExited="#handleCardMouseExited"/>
+                            <Pane fx:id="artifact2" styleClass="card,artifact-card" prefWidth="80" prefHeight="120"
+                                  onMouseClicked="#handleCardClick"
+                                  onMouseEntered="#handleCardMouseEntered"
+                                  onMouseExited="#handleCardMouseExited"/>
+                            <Pane fx:id="artifact3" styleClass="card,artifact-card" prefWidth="80" prefHeight="120"
+                                  onMouseClicked="#handleCardClick"
+                                  onMouseEntered="#handleCardMouseEntered"
+                                  onMouseExited="#handleCardMouseExited"/>
                         </HBox>
                     </VBox>
 
@@ -89,14 +98,46 @@
                     <VBox spacing="5" HBox.hgrow="ALWAYS">
                         <Label text="Structures:" styleClass="card-category"/>
                         <FlowPane fx:id="structureHand" hgap="8" vgap="8">
-                            <Pane fx:id="structure1" styleClass="card,structure-card" prefWidth="80" prefHeight="120" onMouseClicked="#handleCardClick" onDragDetected="#handleCardDragDetected"/>
-                            <Pane fx:id="structure2" styleClass="card,structure-card" prefWidth="80" prefHeight="120" onMouseClicked="#handleCardClick" onDragDetected="#handleCardDragDetected"/>
-                            <Pane fx:id="structure3" styleClass="card,structure-card" prefWidth="80" prefHeight="120" onMouseClicked="#handleCardClick" onDragDetected="#handleCardDragDetected"/>
-                            <Pane fx:id="structure4" styleClass="card,structure-card" prefWidth="80" prefHeight="120" onMouseClicked="#handleCardClick" onDragDetected="#handleCardDragDetected"/>
-                            <Pane fx:id="structure5" styleClass="card,structure-card" prefWidth="80" prefHeight="120" onMouseClicked="#handleCardClick" onDragDetected="#handleCardDragDetected"/>
-                            <Pane fx:id="structure6" styleClass="card,structure-card" prefWidth="80" prefHeight="120" onMouseClicked="#handleCardClick" onDragDetected="#handleCardDragDetected"/>
-                            <Pane fx:id="structure7" styleClass="card,structure-card" prefWidth="80" prefHeight="120" onMouseClicked="#handleCardClick" onDragDetected="#handleCardDragDetected"/>
-                            <Pane fx:id="structure8" styleClass="card,structure-card" prefWidth="80" prefHeight="120" onMouseClicked="#handleCardClick" onDragDetected="#handleCardDragDetected"/>
+                            <Pane fx:id="structure1" styleClass="card,structure-card" prefWidth="80" prefHeight="120"
+                                  onMouseClicked="#handleCardClick"
+                                  onDragDetected="#handleCardDragDetected"
+                                  onMouseEntered="#handleCardMouseEntered"
+                                  onMouseExited="#handleCardMouseExited"/>
+                            <Pane fx:id="structure2" styleClass="card,structure-card" prefWidth="80" prefHeight="120"
+                                  onMouseClicked="#handleCardClick"
+                                  onDragDetected="#handleCardDragDetected"
+                                  onMouseEntered="#handleCardMouseEntered"
+                                  onMouseExited="#handleCardMouseExited"/>
+                            <Pane fx:id="structure3" styleClass="card,structure-card" prefWidth="80" prefHeight="120"
+                                  onMouseClicked="#handleCardClick"
+                                  onDragDetected="#handleCardDragDetected"
+                                  onMouseEntered="#handleCardMouseEntered"
+                                  onMouseExited="#handleCardMouseExited"/>
+                            <Pane fx:id="structure4" styleClass="card,structure-card" prefWidth="80" prefHeight="120"
+                                  onMouseClicked="#handleCardClick"
+                                  onDragDetected="#handleCardDragDetected"
+                                  onMouseEntered="#handleCardMouseEntered"
+                                  onMouseExited="#handleCardMouseExited"/>
+                            <Pane fx:id="structure5" styleClass="card,structure-card" prefWidth="80" prefHeight="120"
+                                  onMouseClicked="#handleCardClick"
+                                  onDragDetected="#handleCardDragDetected"
+                                  onMouseEntered="#handleCardMouseEntered"
+                                  onMouseExited="#handleCardMouseExited"/>
+                            <Pane fx:id="structure6" styleClass="card,structure-card" prefWidth="80" prefHeight="120"
+                                  onMouseClicked="#handleCardClick"
+                                  onDragDetected="#handleCardDragDetected"
+                                  onMouseEntered="#handleCardMouseEntered"
+                                  onMouseExited="#handleCardMouseExited"/>
+                            <Pane fx:id="structure7" styleClass="card,structure-card" prefWidth="80" prefHeight="120"
+                                  onMouseClicked="#handleCardClick"
+                                  onDragDetected="#handleCardDragDetected"
+                                  onMouseEntered="#handleCardMouseEntered"
+                                  onMouseExited="#handleCardMouseExited"/>
+                            <Pane fx:id="structure8" styleClass="card,structure-card" prefWidth="80" prefHeight="120"
+                                  onMouseClicked="#handleCardClick"
+                                  onDragDetected="#handleCardDragDetected"
+                                  onMouseEntered="#handleCardMouseEntered"
+                                  onMouseExited="#handleCardMouseExited"/>
                         </FlowPane>
                     </VBox>
                 </HBox>
