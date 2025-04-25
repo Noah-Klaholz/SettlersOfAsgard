@@ -13,6 +13,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.GridAdjustmentManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.game.PlaceStructureUIEvent; // Import the event
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.TileClickEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import javafx.animation.PauseTransition;
@@ -24,6 +25,7 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
@@ -31,6 +33,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -39,7 +42,6 @@ import javafx.scene.Node; // Import Node
 import javafx.scene.layout.Priority; // Import Priority
 import javafx.scene.layout.Region; // Import Region
 import javafx.util.Duration;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -87,7 +89,6 @@ public class GameScreenController extends BaseController {
     // For tooltip display with delay
     private final Map<Node, Tooltip> cardTooltips = new HashMap<>();
 
-
     // Add field for the GridAdjustmentManager
     private GridAdjustmentManager gridAdjustmentManager;
 
@@ -113,6 +114,9 @@ public class GameScreenController extends BaseController {
     // Add these fields for grid adjustment UI
     private Label adjustmentModeIndicator;
     private Label adjustmentValuesLabel;
+
+    // Keep track of the original card node being dragged
+    private Node draggedCardSource = null;
 
     /**
      * Creates a new controller instance and wires the shared singletons.
@@ -275,14 +279,17 @@ public class GameScreenController extends BaseController {
 
     @FXML
     private void handleResourceOverview() {
+        // TODO: Implement resource overview logic
     }
 
     @FXML
     private void handleGameRound() {
+        // TODO: Implement end turn logic
     }
 
     @FXML
     private void handleLeaderboard() {
+        // TODO: Implement leaderboard logic
     }
 
     /**
@@ -311,7 +318,8 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Handles mouse entering a card - shows tooltip using JavaFX's built-in mechanism
+     * Handles mouse entering a card - shows tooltip using JavaFX's built-in
+     * mechanism
      */
     @FXML
     public void handleCardMouseEntered(MouseEvent event) {
@@ -341,7 +349,6 @@ public class GameScreenController extends BaseController {
 
         event.consume();
     }
-
 
     /**
      * Handles the response from a player name change request.
@@ -757,7 +764,6 @@ public class GameScreenController extends BaseController {
         updateSettingsConnectionStatus();
     }
 
-
     /**
      * Updates the connection status indicator inside the settings overlay.
      */
@@ -822,80 +828,86 @@ public class GameScreenController extends BaseController {
 
     /**
      * Handles the start of a drag operation on a card.
-     * Puts the card's ID onto the dragboard.
+     * Puts the card's ID onto the dragboard and sets a drag view.
      *
      * @param event The mouse event that triggered the drag detection.
      */
     @FXML
     private void handleCardDragDetected(MouseEvent event) {
-        if (!(event.getSource() instanceof Pane draggedCard)) {
+        if (!(event.getSource() instanceof Pane sourcePane)) {
             return;
         }
-        String cardId = draggedCard.getId();
+        String cardId = sourcePane.getId();
         if (cardId == null || cardId.isEmpty()) {
             LOGGER.warning("Dragged card has no ID.");
             return;
         }
 
+        // Only allow dragging structure cards for now
+        if (!cardId.startsWith("structure")) {
+            LOGGER.fine("Dragging non-structure card (" + cardId + ") is not implemented yet.");
+            return;
+        }
+
         LOGGER.fine("Drag detected on card: " + cardId);
-        Dragboard db = draggedCard.startDragAndDrop(TransferMode.MOVE);
+        draggedCardSource = sourcePane; // Store the source node
+        Dragboard db = sourcePane.startDragAndDrop(TransferMode.MOVE);
 
         ClipboardContent content = new ClipboardContent();
         content.putString(cardId); // Put the card's ID onto the dragboard
         db.setContent(content);
 
-        // Optional: Set a drag view (snapshot of the card)
-        // db.setDragView(draggedCard.snapshot(null, null));
+        // Create a snapshot of the card for the drag view
+        SnapshotParameters params = new SnapshotParameters();
+        params.setFill(Color.TRANSPARENT);
+        WritableImage snapshot = sourcePane.snapshot(params, null);
+        db.setDragView(snapshot, event.getX(), event.getY()); // Offset relative to cursor
+
+        // Optionally hide the original card while dragging (can cause flicker, consider
+        // alternatives)
+        // sourcePane.setVisible(false);
 
         event.consume();
     }
 
     /**
-     * Provides mock card descriptions for demonstration purposes.
-     */
-    private String getMockCardDescription(String cardType, int index) {
-        if ("Artifact".equals(cardType)) {
-            return switch (index) {
-                case 1 ->
-                    "Mjölnir, the legendary hammer of Thor. Grants +2 attack power and the ability to strike enemies with lightning.";
-                case 2 -> "Gungnir, Odin's enchanted spear. Never misses its target and grants wisdom to its bearer.";
-                case 3 -> "Draupnir, the magical ring that creates eight duplicates of itself every ninth night.";
-                default -> "A mysterious artifact with unknown powers.";
-            };
-        } else {
-            return switch (index) {
-                case 1 -> "Mead Hall: Increases morale and provides +1 rune per turn.";
-                case 2 -> "Forge: Allows crafting of enhanced weapons and tools.";
-                case 3 -> "Watchtower: Improves visibility and provides early warning of attacks.";
-                case 4 -> "Runestone: Increases magical energy production by 15%.";
-                case 5 -> "Barracks: Allows training of elite warriors.";
-                case 6 -> "Market: Enables trading with other settlements.";
-                case 7 -> "Temple: Provides divine blessings and special abilities.";
-                case 8 -> "Wall: Improves settlement defense against raids.";
-                default -> "A basic structure that provides shelter.";
-            };
-        }
-    }
-
-    /**
      * Handles drag events over the game canvas.
-     * Accepts the transfer if it contains a string (e.g., card ID).
+     * Accepts the transfer if it contains a string (card ID) and the tile is valid.
      *
      * @param event The drag event.
      */
     @FXML
     private void handleDragOver(DragEvent event) {
         if (event.getGestureSource() != gameCanvas && event.getDragboard().hasString()) {
-            // Allow for moving
-            event.acceptTransferModes(TransferMode.MOVE);
+            // Check if the tile under the cursor is valid for dropping
+            int[] targetTile = getHexAt(event.getX(), event.getY());
+            // Check if the card being dragged is a structure card (or implement logic for
+            // other types)
+            String cardId = event.getDragboard().getString();
+            boolean isStructureCard = cardId != null && cardId.startsWith("structure");
+
+            if (targetTile != null && isStructureCard && isTileOwnedByPlayer(targetTile[0], targetTile[1])) {
+                // Optional: Add visual feedback, e.g., highlight the hex
+                // drawMapAndGrid(); // Redraw to potentially show highlight
+                // drawHighlight(targetTile[0], targetTile[1], Color.GREEN); // Example
+                // highlight
+                event.acceptTransferModes(TransferMode.MOVE);
+            } else {
+                // Optional: Visual feedback for invalid tile (e.g., red highlight or default
+                // cursor)
+                // drawMapAndGrid(); // Redraw to clear previous highlight
+                // drawHighlight(targetTile[0], targetTile[1], Color.RED); // Example highlight
+                event.acceptTransferModes(TransferMode.NONE); // Indicate invalid drop target
+            }
         }
         event.consume();
     }
 
     /**
      * Handles dropped events on the game canvas.
-     * If a card was dropped, determines the target tile and potentially triggers a
-     * game action.
+     * If a card was dropped, determines the target tile, checks ownership and
+     * affordability,
+     * and potentially triggers a game action by publishing an event.
      *
      * @param event The drag event.
      */
@@ -910,13 +922,48 @@ public class GameScreenController extends BaseController {
             int[] targetTile = getHexAt(dropX, dropY);
 
             if (targetTile != null) {
-                LOGGER.info("Card " + cardId + " dropped on tile: row=" + targetTile[0] + ", col=" + targetTile[1]);
-                // TODO: Implement logic to handle card drop on tile (e.g., publish an event)
-                // Example: eventBus.publish(new CardDroppedOnTileEvent(cardId, targetTile[0],
-                // targetTile[1]));
-                success = true;
+                int row = targetTile[0];
+                int col = targetTile[1];
+                LOGGER.fine("Card " + cardId + " dropped on potential tile: row=" + row + ", col=" + col);
+
+                // 1. Check Tile Ownership
+                if (isTileOwnedByPlayer(row, col)) {
+                    // 2. Check Affordability
+                    if (canAffordCard(cardId)) {
+                        LOGGER.info(
+                                "Card " + cardId + " successfully placed on owned tile: row=" + row + ", col=" + col);
+
+                        // 3. Publish event to place the structure/use the card
+                        // Assuming cardId maps to a structureId for PlaceStructureUIEvent
+                        try {
+                            // Placeholder: Extract structure ID from card ID (e.g., "structure1" -> 1)
+                            // Adjust parsing based on your actual card ID format
+                            int structureId = Integer.parseInt(cardId.replace("structure", ""));
+                            eventBus.publish(new PlaceStructureUIEvent(row, col, structureId));
+                            success = true; // Mark drop as successful
+                        } catch (NumberFormatException | IndexOutOfBoundsException e) {
+                            LOGGER.severe("Could not parse structure ID from card ID: " + cardId);
+                            if (chatComponentController != null) {
+                                chatComponentController.addSystemMessage("Error placing card: Invalid card data.");
+                            }
+                        }
+
+                    } else {
+                        LOGGER.warning("Cannot place card " + cardId + ": Not enough resources (Cost: "
+                                + getCardCost(cardId) + ", Have: " + getPlayerRunes() + ")");
+                        if (chatComponentController != null) {
+                            chatComponentController.addSystemMessage("Cannot place card: Not enough runes.");
+                        }
+                    }
+                } else {
+                    LOGGER.warning("Cannot place card " + cardId + ": Tile (row=" + row + ", col=" + col
+                            + ") is not owned by the player.");
+                    if (chatComponentController != null) {
+                        chatComponentController.addSystemMessage("Cannot place card: You do not own this tile.");
+                    }
+                }
             } else {
-                LOGGER.warning("Card " + cardId + " dropped outside of any valid tile.");
+                LOGGER.fine("Card " + cardId + " dropped outside of any valid tile.");
             }
         }
         // Complete the drag-and-drop gesture
@@ -925,7 +972,119 @@ public class GameScreenController extends BaseController {
     }
 
     /**
+     * Handles the completion of a drag-and-drop operation originating from a card.
+     * If the drop was successful (MOVE transfer mode), remove the card from the
+     * hand.
+     * If it failed, make the original card visible again (if it was hidden).
+     *
+     * @param event The drag event.
+     */
+    @FXML
+    private void handleCardDragDone(DragEvent event) {
+        LOGGER.fine("Drag done for card. Transfer mode: " + event.getTransferMode());
+        if (draggedCardSource != null) {
+            if (event.getTransferMode() == TransferMode.MOVE) {
+                // Drop was successful, remove card from hand visually
+                Pane parentPane = (Pane) draggedCardSource.getParent();
+                if (parentPane != null) {
+                    parentPane.getChildren().remove(draggedCardSource);
+                    LOGGER.fine("Removed successfully placed card (" + draggedCardSource.getId() + ") from hand.");
+                    // TODO: Update game state model to reflect card removal from hand
+                } else {
+                    LOGGER.warning("Could not find parent pane to remove dragged card from.");
+                }
+            } else {
+                // Drop failed or was cancelled, make original card visible again if it was
+                // hidden
+                // draggedCardSource.setVisible(true); // Uncomment if you hide the card during
+                // drag
+                LOGGER.fine("Card drop failed or cancelled, card (" + draggedCardSource.getId() + ") remains in hand.");
+            }
+            draggedCardSource = null; // Reset the tracked source
+        }
+        event.consume();
+    }
+
+    // --- Placeholder Methods for Game State ---
+
+    /**
+     * Placeholder: Checks if the tile at the given coordinates is owned by the
+     * local player.
+     * Replace with actual game state logic.
+     *
+     * @param row The tile row.
+     * @param col The tile column.
+     * @return True if the player owns the tile, false otherwise.
+     */
+    private boolean isTileOwnedByPlayer(int row, int col) {
+        // TODO: Implement actual check against GameStateManager or similar
+        LOGGER.finer("Placeholder check: Is tile (" + row + "," + col + ") owned? Returning true for now.");
+        // Example: return GameStateManager.getInstance().getTile(row,
+        // col).getOwnerId().equals(localPlayer.getId());
+        return true; // Placeholder
+    }
+
+    /**
+     * Placeholder: Checks if the player can afford the card with the given ID.
+     * Replace with actual game state logic.
+     *
+     * @param cardId The ID of the card.
+     * @return True if the player has enough resources, false otherwise.
+     */
+    private boolean canAffordCard(String cardId) {
+        // TODO: Implement actual check against player resources and card cost
+        int cost = getCardCost(cardId);
+        int playerRunes = getPlayerRunes();
+        boolean canAfford = playerRunes >= cost;
+        LOGGER.finer("Placeholder check: Can afford card " + cardId + "? Cost=" + cost + ", Have=" + playerRunes
+                + " -> " + canAfford);
+        // Example: return
+        // GameStateManager.getInstance().getLocalPlayerState().getRunes() >=
+        // CardDatabase.getCard(cardId).getCost();
+        return canAfford; // Placeholder
+    }
+
+    /**
+     * Placeholder: Gets the cost of the card with the given ID.
+     * Replace with actual game data lookup.
+     *
+     * @param cardId The ID of the card.
+     * @return The cost of the card (e.g., in runes).
+     */
+    private int getCardCost(String cardId) {
+        // TODO: Implement actual lookup for card cost from game data/model
+        // Example: return CardDatabase.getCard(cardId).getCost();
+        if (cardId != null && cardId.startsWith("structure")) {
+            return 5; // Placeholder cost for structure cards
+        }
+        return 10; // Placeholder cost for other cards (e.g., artifacts if implemented)
+    }
+
+    /**
+     * Placeholder: Gets the current amount of runes (or relevant currency) the
+     * local player has.
+     * Replace with actual game state logic.
+     *
+     * @return The player's current rune count.
+     */
+    private int getPlayerRunes() {
+        // TODO: Implement actual check against GameStateManager or PlayerState object
+        // Example: return
+        // GameStateManager.getInstance().getLocalPlayerState().getRunes();
+        try {
+            // Attempt to read from the label if it's updated elsewhere
+            return Integer.parseInt(runesLabel.getText());
+        } catch (NumberFormatException e) {
+            LOGGER.warning("Could not parse runes from label, returning placeholder value.");
+            return 100; // Placeholder value if label parsing fails
+        }
+    }
+
+    // --- End Placeholder Methods ---
+
+    /**
      * Returns the game canvas used for drawing the map and grid.
+     * Needed by GridAdjustmentManager.
      *
      * @return The game canvas.
      */
