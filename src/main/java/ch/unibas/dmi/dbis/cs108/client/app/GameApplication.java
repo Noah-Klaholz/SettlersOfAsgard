@@ -154,18 +154,56 @@ public class GameApplication extends Application {
         sceneManager.setPrimaryStage(primaryStage);
         primaryStage.setTitle("Settlers of Asgard");
 
-        // Option 1: True Fullscreen Mode
-        primaryStage.setFullScreen(true);
-        primaryStage.setFullScreenExitHint(""); // Remove the exit hint text
-        primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+        if (SETTINGS.Config.SHOW_SPLASH_SCREEN.getValue() == 1) {
+            LOGGER.info("Splash screen is enabled.");
+
+            // True Fullscreen Mode
+            primaryStage.setFullScreen(true);
+            primaryStage.setFullScreenExitHint(""); // Remove the exit hint text
+            primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+
+            // Set the focus to the primary stage for the duration of the splash screen
+            primaryStage.setAlwaysOnTop(true);
+            AtomicBoolean splashActive = new AtomicBoolean(true);
+            primaryStage.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused && splashActive.get()) {
+                    Platform.runLater(() -> {
+                        primaryStage.toFront();
+                        primaryStage.requestFocus();
+                    });
+                }
+            });
+
+            // Start with Splash Screen / Intro
+            sceneManager.switchToScene(SceneManager.SceneType.SPLASH);
+
+            // show and schedule splash timeout
+            primaryStage.show();
+            PauseTransition delay = new PauseTransition(Duration.millis(SETTINGS.Config.SPLASH_SCREEN_DURATION.getValue()));
+            delay.setOnFinished(e -> {
+                splashActive.set(false);
+                primaryStage.setAlwaysOnTop(false);
+            });
+            delay.play();
+        } else {
+            LOGGER.info("Splash screen is disabled.");
+
+            // Windowed Mode
+            primaryStage.setFullScreen(false);
+            primaryStage.setWidth(1024);
+            primaryStage.setHeight(720);
+
+
+            // Start with MAIN_MENU
+            sceneManager.switchToScene(SceneManager.SceneType.MAIN_MENU);
+
+            // Show the primary stage
+            primaryStage.show();
+        }
 
         // Set minimum size fallbacks if exiting fullscreen
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
-
-        // Ensure window has focus
-        Platform.runLater(() -> {
-        });
 
         // Set handler for close request (e.g., clicking the window's X button)
         primaryStage.setOnCloseRequest(event -> {
@@ -174,30 +212,6 @@ public class GameApplication extends Application {
             // Allow the default close behavior to proceed
         });
 
-        primaryStage.setAlwaysOnTop(true);
-        AtomicBoolean splashActive = new AtomicBoolean(true);
-        primaryStage.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-            if (!isNowFocused && splashActive.get()) {
-                Platform.runLater(() -> {
-                    primaryStage.toFront();
-                    primaryStage.requestFocus();
-                });
-            }
-        });
-
-        // Start with Splash Screen / Intro
-        sceneManager.switchToScene(SceneManager.SceneType.SPLASH);
-
-        // show and schedule splash timeout
-        primaryStage.show();
-        PauseTransition delay = new PauseTransition(Duration.millis(SETTINGS.Config.SPLASH_SCREEN_DURATION.getValue()));
-        delay.setOnFinished(e -> {
-            splashActive.set(false);
-            primaryStage.setAlwaysOnTop(false);
-        });
-        delay.play();
-
-        LOGGER.info("Primary stage shown with Splash Screen / Intro.");
         // final bring‑to‑front just in case
         Platform.runLater(() -> {
             primaryStage.toFront();

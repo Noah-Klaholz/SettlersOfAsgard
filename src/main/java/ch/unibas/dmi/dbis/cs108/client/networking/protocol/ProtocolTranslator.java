@@ -41,7 +41,7 @@ public class ProtocolTranslator implements CommunicationAPI {
         commandHandlers.put(Commands.CHATPRIVATE.getCommand(), this::processPrivateChatMessage);
         commandHandlers.put(Commands.JOIN.getCommand(), this::processJoinMessage);
         commandHandlers.put(Commands.LEAVE.getCommand(), this::processLeaveMessage);
-        commandHandlers.put(Commands.INFO.getCommand(), this::processNotificationMessage); // Not in Commands enum
+        commandHandlers.put(Commands.INFO.getCommand(), this::processNotificationMessage);
         commandHandlers.put(Commands.ERROR.getCommand(), this::processErrorMessage);
         commandHandlers.put(Commands.LISTLOBBIES.getCommand(), this::processLobbyListMessage);
         commandHandlers.put(Commands.OK.getCommand(), this::processSuccessMessage);
@@ -52,7 +52,7 @@ public class ProtocolTranslator implements CommunicationAPI {
         commandHandlers.put(Commands.START.getCommand(), this::processStartGameMessage);
         commandHandlers.put(Commands.CREATELOBBY.getCommand(), this::processCreateLobbyMessage);
         commandHandlers.put(Commands.DISCONNECT.getCommand(), this::processDisconnectMessage);
-        commandHandlers.put(Commands.ENDGAME.getCommand(), this::processEndGameMessage); // Not in Commands enum
+        commandHandlers.put(Commands.ENDGAME.getCommand(), this::processEndGameMessage);
         commandHandlers.put(Commands.SYNCHRONIZE.getCommand(), this::processSyncMessage);
     }
 

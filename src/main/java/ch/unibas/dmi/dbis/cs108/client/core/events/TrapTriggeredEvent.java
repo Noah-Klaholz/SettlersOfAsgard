@@ -10,6 +10,7 @@ import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 public class TrapTriggeredEvent implements GameEvent {
     private final Player triggeredPlayer;
     //todo: private final sth trap;
+    // This event should only be triggered as a result of a change in gameState (not directly by the client). DO NOT focus on this, its not necessary.
     private final Tile tile;
 
     /**

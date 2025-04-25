@@ -437,6 +437,7 @@ public class CommunicationMediator {
                     @Override
                     public void onEvent(NotificationEvent event) {
                         // Publish as a system chat message
+                        // TODO : Handle INFO in UI (show artifacts, etc.)
                         UIEventBus.getInstance()
                                 .publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent(
                                         event.getMessage(), null, // Sender is null for system messages
