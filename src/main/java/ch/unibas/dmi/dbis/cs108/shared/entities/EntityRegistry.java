@@ -294,13 +294,25 @@ public class EntityRegistry {
         return entity;
     }
 
+    /**
+     * Returns the URL of the image associated with a GameEntity.
+     * The URL depends on whether the entity is a card or not.
+     *
+     * @param id The ID of the entity
+     * @param isCard True if the URL should be for a card, false for a map image
+     * @return The URL of the image, or null if the entity is not found
+     */
     public static String getURL(int id, boolean isCard) {
         GameEntity entity = getGameEntityOriginalById(id);
         if (entity != null) {
-            if ((entity instanceof PurchasableEntity || entity instanceof Artifact) && isCard) {
-                return entity.getCardImagePath();
-            } else if ((entity instanceof PurchasableEntity || entity instanceof Monument) && !isCard) {
-                return entity.getMapImagePath();
+            if (entity instanceof PurchasableEntity pe && isCard) {
+                return pe.getCardImagePath();
+            } else if (entity instanceof Artifact art && isCard) {
+                return art.getCardImagePath();
+            } else if (entity instanceof PurchasableEntity pe) {
+                return pe.getMapImagePath();
+            } else if (entity instanceof Monument mon && !isCard) {
+                return mon.getMapImagePath();
             }
         }
         return null;
