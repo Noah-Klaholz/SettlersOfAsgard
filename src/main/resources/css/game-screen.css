@@ -296,3 +296,22 @@
     -fx-hgap: 8;
     -fx-vgap: 8;
 }
+
+/* Selected card styling with golden frame */
+.selected-card {
+    -fx-border-color: -color-accent-gold;
+    -fx-border-width: 3px;
+    -fx-effect: dropshadow(three-pass-box, -color-accent-gold-transparent, 10, 0, 0, 0);
+}
+
+/* Card tooltip styling */
+.card-tooltip {
+    -fx-font-size: 14px;
+    -fx-background-color: -color-background-primary;
+    -fx-text-fill: -color-text-primary;
+    -fx-padding: 10px;
+    -fx-border-color: -color-accent-gold;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
