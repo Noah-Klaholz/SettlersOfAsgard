@@ -36,6 +36,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
@@ -1061,36 +1062,41 @@ public class GameScreenController extends BaseController {
             LOGGER.info("Processing card " + id + " with image URL: " + imageUrl);
 
             if (card instanceof Pane pane) {
+                // Clear existing content first
+                pane.getChildren().clear();
+
+                // Set fixed dimensions
+                pane.setMinSize(80, 120);
+                pane.setPrefSize(80, 120);
+                pane.setMaxSize(80, 120);
+
+                // Add a border
+                pane.setStyle("-fx-border-color: #444444; -fx-border-width: 1px; -fx-border-radius: 5px;");
+
                 if (imageUrl != null && !imageUrl.isEmpty()) {
-
-                    // Set fixed dimensions for ALL cards regardless of image
-                    pane.setMaxSize(80, 120);
-                    pane.setPrefSize(80, 120);
-
-                    // Clear any previous backgrounds
-                    pane.setBackground(null);
-
                     Image image = resourceLoader.loadImage(imageUrl);
 
                     if (image != null && !image.isError()) {
-
-                        // Create background with proper sizing parameters
-                        BackgroundImage backgroundImage = new BackgroundImage(
-                                image,
-                                BackgroundRepeat.NO_REPEAT,
-                                BackgroundRepeat.NO_REPEAT,
-                                BackgroundPosition.CENTER,
-                                new BackgroundSize(1.0, 1.0, true, true, false, false)
-                        );
-
-                        Background background = new Background(backgroundImage);
-                        pane.setBackground(background);
                         LOGGER.info("Successfully loaded image for card " + id);
+
+                        // Create an ImageView with proper sizing
+                        ImageView imageView = new ImageView(image);
+                        imageView.setPreserveRatio(true);
+                        imageView.setFitWidth(78);
+                        imageView.setFitHeight(118);
+
+                        // Center image in pane
+                        StackPane wrapper = new StackPane(imageView);
+                        wrapper.setPrefSize(78, 118);
+
+                        pane.getChildren().add(wrapper);
                     } else {
                         LOGGER.warning("Failed to load image for card " + id);
+                        addPlaceholder(pane, details.getTitle());
                     }
                 } else {
                     LOGGER.warning("No image URL for card " + id);
+                    addPlaceholder(pane, details.getTitle());
                 }
 
                 // Ensure card is visible
@@ -1099,8 +1105,17 @@ public class GameScreenController extends BaseController {
             }
         } catch (Exception e) {
             LOGGER.warning("Failed to update card " + id + ": " + e.getMessage());
-            e.printStackTrace();
         }
+    }
+
+    private void addPlaceholder(Pane pane, String title) {
+        Label placeholder = new Label(title != null ? title : "Card");
+        placeholder.setWrapText(true);
+        placeholder.setAlignment(Pos.CENTER);
+        placeholder.setPrefSize(78, 118);
+        placeholder.setStyle("-fx-background-color: #333344; -fx-text-fill: white; -fx-alignment: center;");
+
+        pane.getChildren().add(placeholder);
     }
 
     // --- Placeholder methods for game state; keep until real model is wired ---
