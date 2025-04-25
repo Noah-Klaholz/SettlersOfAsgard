@@ -7,6 +7,7 @@ import ch.unibas.dmi.dbis.cs108.server.core.actions.StructureActionHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.TileActionHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
+import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -96,7 +97,12 @@ public class GameLogic implements GameLogicInterface {
             String response = commandProcessor.processCommand(command);
             if (notifier != null && response != null) {
                 // Send the response of the command (e.g. Error or Ok message)
-                // notifier.broadcastMessage(response); // Uncomment this line if you want to send the response to all players
+                if (response.startsWith(CommunicationAPI.NetworkProtocol.Commands.ERROR.getCommand())) {
+                    LOGGER.warning("Error processing command: " + response);
+                    notifier.sendMessageToPlayer(command.getPlayer().getName(), response);
+                } else {
+                    LOGGER.info("Command processed successfully: " + response);
+                }
                 // Send an updated version of the GameState to all players
                 notifier.broadcastMessage(gameState.createDetailedStatusMessage());
             }
