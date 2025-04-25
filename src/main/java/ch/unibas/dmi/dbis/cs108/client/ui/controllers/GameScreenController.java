@@ -1064,9 +1064,8 @@ public class GameScreenController extends BaseController {
                 if (imageUrl != null && !imageUrl.isEmpty()) {
 
                     // Set fixed dimensions for ALL cards regardless of image
-                    pane.setMinSize(120, 180);
-                    pane.setPrefSize(120, 180);
-                    pane.setMaxSize(120, 180);
+                    pane.setMaxSize(80, 120);
+                    pane.setPrefSize(80, 120);
 
                     // Clear any previous backgrounds
                     pane.setBackground(null);
