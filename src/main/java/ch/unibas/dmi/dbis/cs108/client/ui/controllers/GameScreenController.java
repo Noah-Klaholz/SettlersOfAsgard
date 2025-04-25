@@ -983,24 +983,30 @@ public class GameScreenController extends BaseController {
     private void handleCardDragDone(DragEvent event) {
         LOGGER.fine("Drag done for card. Transfer mode: " + event.getTransferMode());
         if (draggedCardSource != null) {
+            // Check if the drop was successful.
+            // TransferMode.MOVE indicates that the drop was accepted by a valid target
+            // in handleDragOver and successfully completed in handleDragDropped
+            // (where setDropCompleted(true) was called).
             if (event.getTransferMode() == TransferMode.MOVE) {
-                // Drop was successful, remove card from hand visually
+                // *** Drop was successful ***
+                LOGGER.info("handleCardDragDone: Drop SUCCESSFUL (TransferMode=MOVE). Removing card: "
+                        + draggedCardSource.getId()); // Added log
                 Pane parentPane = (Pane) draggedCardSource.getParent();
                 if (parentPane != null) {
                     parentPane.getChildren().remove(draggedCardSource);
-                    LOGGER.fine("Removed successfully placed card (" + draggedCardSource.getId() + ") from hand.");
                     // TODO: Update game state model to reflect card removal from hand
                 } else {
                     LOGGER.warning("Could not find parent pane to remove dragged card from.");
                 }
             } else {
-                // Drop failed or was cancelled, make original card visible again if it was
-                // hidden
+                // *** Drop failed or was cancelled ***
+                LOGGER.info("handleCardDragDone: Drop FAILED or CANCELLED (TransferMode=" + event.getTransferMode()
+                        + "). Card remains: " + draggedCardSource.getId()); // Added log
+                // Make original card visible again if it was hidden during the drag.
                 // draggedCardSource.setVisible(true); // Uncomment if you hide the card during
                 // drag
-                LOGGER.fine("Card drop failed or cancelled, card (" + draggedCardSource.getId() + ") remains in hand.");
             }
-            draggedCardSource = null; // Reset the tracked source
+            draggedCardSource = null; // Reset the tracked source regardless of success
         }
         event.consume();
     }
@@ -1011,6 +1017,7 @@ public class GameScreenController extends BaseController {
      * Placeholder: Checks if the tile at the given coordinates is owned by the
      * local player.
      * Replace with actual game state logic.
+     * TEST MODIFICATION: Return false for even rows to simulate unowned tiles.
      *
      * @param row The tile row.
      * @param col The tile column.
@@ -1018,15 +1025,18 @@ public class GameScreenController extends BaseController {
      */
     private boolean isTileOwnedByPlayer(int row, int col) {
         // TODO: Implement actual check against GameStateManager or similar
-        LOGGER.finer("Placeholder check: Is tile (" + row + "," + col + ") owned? Returning true for now.");
+        boolean owned = row % 2 != 0; // TEST: Only odd rows are "owned"
+        LOGGER.finer(
+                "Placeholder check: Is tile (" + row + "," + col + ") owned? Returning " + owned + " for testing.");
         // Example: return GameStateManager.getInstance().getTile(row,
         // col).getOwnerId().equals(localPlayer.getId());
-        return true; // Placeholder
+        return owned; // TEST Placeholder
     }
 
     /**
      * Placeholder: Checks if the player can afford the card with the given ID.
      * Replace with actual game state logic.
+     * TEST MODIFICATION: Uses test value from getPlayerRunes().
      *
      * @param cardId The ID of the card.
      * @return True if the player has enough resources, false otherwise.
@@ -1034,14 +1044,14 @@ public class GameScreenController extends BaseController {
     private boolean canAffordCard(String cardId) {
         // TODO: Implement actual check against player resources and card cost
         int cost = getCardCost(cardId);
-        int playerRunes = getPlayerRunes();
+        int playerRunes = getPlayerRunes(); // Uses the potentially modified test value
         boolean canAfford = playerRunes >= cost;
         LOGGER.finer("Placeholder check: Can afford card " + cardId + "? Cost=" + cost + ", Have=" + playerRunes
                 + " -> " + canAfford);
         // Example: return
         // GameStateManager.getInstance().getLocalPlayerState().getRunes() >=
         // CardDatabase.getCard(cardId).getCost();
-        return canAfford; // Placeholder
+        return canAfford; // TEST Placeholder
     }
 
     /**
@@ -1064,6 +1074,8 @@ public class GameScreenController extends BaseController {
      * Placeholder: Gets the current amount of runes (or relevant currency) the
      * local player has.
      * Replace with actual game state logic.
+     * TEST MODIFICATION: Return a fixed low value (3) to test affordability
+     * failure.
      *
      * @return The player's current rune count.
      */
@@ -1071,13 +1083,21 @@ public class GameScreenController extends BaseController {
         // TODO: Implement actual check against GameStateManager or PlayerState object
         // Example: return
         // GameStateManager.getInstance().getLocalPlayerState().getRunes();
-        try {
-            // Attempt to read from the label if it's updated elsewhere
-            return Integer.parseInt(runesLabel.getText());
-        } catch (NumberFormatException e) {
-            LOGGER.warning("Could not parse runes from label, returning placeholder value.");
-            return 100; // Placeholder value if label parsing fails
-        }
+        int testRunes = 3; // TEST: Set a low value to fail affordability check (cost is 5)
+        // int testRunes = 100; // TEST: Set a high value to pass affordability check
+        LOGGER.finer("Placeholder check: Returning " + testRunes + " runes for testing.");
+        return testRunes; // TEST Placeholder value
+        /*
+         * // Original placeholder reading from label (commented out for testing)
+         * try {
+         * // Attempt to read from the label if it's updated elsewhere
+         * return Integer.parseInt(runesLabel.getText());
+         * } catch (NumberFormatException e) {
+         * LOGGER.
+         * warning("Could not parse runes from label, returning placeholder value.");
+         * return 100; // Placeholder value if label parsing fails
+         * }
+         */
     }
 
     // --- End Placeholder Methods ---
