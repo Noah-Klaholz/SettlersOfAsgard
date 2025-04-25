@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
+import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.client.app.GameApplication;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeRequestEvent;
@@ -8,13 +9,13 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyJoinedEvent;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
-import ch.unibas.dmi.dbis.cs108.client.ui.components.DescriptionDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.GridAdjustmentManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.TileClickEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -28,6 +29,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
@@ -36,10 +38,12 @@ import javafx.scene.paint.Paint;
 import javafx.scene.Node; // Import Node
 import javafx.scene.layout.Priority; // Import Priority
 import javafx.scene.layout.Region; // Import Region
+import javafx.util.Duration;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -78,8 +82,11 @@ public class GameScreenController extends BaseController {
     private boolean isMapLoaded;
 
     private SettingsDialog settingsDialog;
-    private DescriptionDialog descriptionDialog;
-    private Pane currentlySelectedCard;
+    private Node selectedCard;
+
+    // For tooltip display with delay
+    private final Map<Node, Tooltip> cardTooltips = new HashMap<>();
+
 
     // Add field for the GridAdjustmentManager
     private GridAdjustmentManager gridAdjustmentManager;
@@ -138,7 +145,6 @@ public class GameScreenController extends BaseController {
                 this::drawMapAndGrid);
         setupCanvasListeners(); // Setup listeners after manager is created
         initialiseSettingsDialog();
-        initialiseDescriptionDialog();
 
         // --- ChatComponent setup ---
         chatContainer.getChildren().clear();
@@ -279,6 +285,63 @@ public class GameScreenController extends BaseController {
     private void handleLeaderboard() {
     }
 
+    /**
+     * Handles card click events - toggles selection with golden frame
+     */
+    @FXML
+    public void handleCardClick(MouseEvent event) {
+        Node clickedCard = (Node) event.getSource();
+
+        // Toggle selection - if clicking already selected card, deselect it
+        if (clickedCard == selectedCard) {
+            clickedCard.getStyleClass().remove("selected-card");
+            selectedCard = null;
+        } else {
+            // Deselect previous card if any
+            if (selectedCard != null) {
+                selectedCard.getStyleClass().remove("selected-card");
+            }
+
+            // Select new card
+            clickedCard.getStyleClass().add("selected-card");
+            selectedCard = clickedCard;
+        }
+
+        event.consume();
+    }
+
+    /**
+     * Handles mouse entering a card - shows tooltip using JavaFX's built-in mechanism
+     */
+    @FXML
+    public void handleCardMouseEntered(MouseEvent event) {
+        Node card = (Node) event.getSource();
+
+        // Get or create tooltip for this card
+        Tooltip tooltip = cardTooltips.computeIfAbsent(card, this::createTooltipForCard);
+
+        // Install tooltip if not already installed
+        Tooltip.install(card, tooltip);
+
+        event.consume();
+    }
+
+    /**
+     * Handles mouse exiting a card - hides tooltip
+     */
+    @FXML
+    public void handleCardMouseExited(MouseEvent event) {
+        Node card = (Node) event.getSource();
+
+        // Uninstall tooltip
+        Tooltip tooltip = cardTooltips.get(card);
+        if (tooltip != null) {
+            Tooltip.uninstall(card, tooltip);
+        }
+
+        event.consume();
+    }
+
 
     /**
      * Handles the response from a player name change request.
@@ -379,8 +442,6 @@ public class GameScreenController extends BaseController {
         }
         if (settingsDialog != null)
             settingsDialog.close();
-        if (descriptionDialog != null)
-            descriptionDialog.close();
         LOGGER.info("GameScreenController resources cleaned up");
     }
 
@@ -696,12 +757,6 @@ public class GameScreenController extends BaseController {
         updateSettingsConnectionStatus();
     }
 
-    /**
-     * Creates and initializes the description dialog.
-     */
-    private void initialiseDescriptionDialog() {
-
-    }
 
     /**
      * Updates the connection status indicator inside the settings overlay.
@@ -734,95 +789,35 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Handles mouse entered event on a card in the player's hand.
-     *
-     * @param event The mouse event from the hovered card.
+     * Creates an appropriate tooltip for a card based on its type
      */
-    @FXML
-    private void handleCardMouseEntered(MouseEvent event) {
-        if (!(event.getSource() instanceof Pane hoveredCard)) {
-            return;
-        }
+    private Tooltip createTooltipForCard(Node card) {
+        Tooltip tooltip = new Tooltip();
 
-        String cardId = hoveredCard.getId();
-        boolean isArtifact = cardId.startsWith("artifact");
-        String cardType = isArtifact ? "Artifact" : "Structure";
-        int cardIndex = Integer.parseInt(cardId.replaceAll("[^0-9]", ""));
-        String title = cardType + " #" + cardIndex;
-        String description = getMockCardDescription(cardType, cardIndex);
+        // Use JavaFX's built-in delay mechanism (500ms is standard)
+        tooltip.setShowDelay(Duration.millis(500));
+        tooltip.setHideDelay(Duration.millis(200)); // Quick hide when mouse exits
 
-        // Configure dialog content
-        descriptionDialog.setTitle(title);
-        descriptionDialog.setDescription(description);
+        String id = card.getId();
+        String description = getCardDescription(id);
 
-        // Position relative to mouse rather than card for simplicity
-        Node view = descriptionDialog.getView();
-        if (view != null) {
-            // Get mouse screen coordinates
-            double mouseX = event.getScreenX();
-            double mouseY = event.getScreenY();
+        tooltip.setText(description);
+        tooltip.getStyleClass().add("card-tooltip");
 
-            // Convert to parent coordinates
-            Point2D parentCoords = view.getParent().screenToLocal(mouseX + 15, mouseY);
-
-            // Position with offset from mouse
-            StackPane.setAlignment(view, Pos.TOP_LEFT);
-            StackPane.setMargin(view, new Insets(parentCoords.getY(), 0, 0, parentCoords.getX()));
-
-            // Ensure visibility
-            view.setVisible(true);
-            view.toFront();
-        }
-
-        // Show dialog
-        descriptionDialog.show();
-
-        LOGGER.info("Description dialog shown for card: " + cardId);
-        event.consume();
+        return tooltip;
     }
 
     /**
-     * Handles mouse exited event on a card in the player's hand.
-     * Closes the description dialog.
-     *
-     * @param event The mouse event from the exited card.
+     * Gets card description based on its ID
+     * In a real implementation, this would pull from your game data
      */
-    @FXML
-    private void handleCardMouseExited(MouseEvent event) {
-        Node view = descriptionDialog.getView();
-        if (view != null) {
-            view.setVisible(false);
+    private String getCardDescription(String cardId) {
+        // Replace with actual card data from your game model
+        if (cardId.startsWith("artifact")) {
+            return "Artifact Card\n\nA powerful Norse artifact.\nEffect: Grants special abilities to the owner.";
+        } else {
+            return "Structure Card\n\nA building that can be placed on the board.\nCost: 5 Runes\nProvides: +2 Energy per turn";
         }
-        descriptionDialog.close();
-
-        LOGGER.info("Description dialog hidden");
-
-        event.consume();
-    }
-
-    /**
-     * Handles a click on a card in the player's hand.
-     *
-     * @param event The mouse event from the clicked card.
-     */
-    @FXML
-    private void handleCardClick(MouseEvent event) {
-        if (!(event.getSource() instanceof Pane clickedCard)) {
-            return;
-        }
-        if (currentlySelectedCard != null) {
-            currentlySelectedCard.getStyleClass().remove("selected-card");
-        }
-        currentlySelectedCard = clickedCard;
-        clickedCard.getStyleClass().add("selected-card");
-        String cardId = clickedCard.getId();
-        boolean isArtifact = cardId.startsWith("artifact");
-        String cardType = isArtifact ? "Artifact" : "Structure";
-        int cardIndex = Integer.parseInt(cardId.replaceAll("[^0-9]", ""));
-        String title = cardType + " #" + cardIndex;
-        String description = getMockCardDescription(cardType, cardIndex);
-        // showCardDescription(title, description);
-        event.consume();
     }
 
     /**
@@ -853,20 +848,6 @@ public class GameScreenController extends BaseController {
         // db.setDragView(draggedCard.snapshot(null, null));
 
         event.consume();
-    }
-
-    /**
-     * Shows the card description dialog on top of the chat panel.
-     *
-     * @param title       The card title
-     * @param description The card description text
-     */
-    private void showCardDescription(String title, String description) {
-        if (descriptionDialog != null) {
-            descriptionDialog.setTitle(title);
-            descriptionDialog.setDescription(description);
-            descriptionDialog.show();
-        }
     }
 
     /**
