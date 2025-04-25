@@ -63,7 +63,7 @@ public class ProtocolTranslator implements CommunicationAPI {
         String args = (parts.length > 1) ? parts[1] : ""; // Handle messages with no arguments
         Consumer<String> handler = commandHandlers.get(command);
         if (handler != null) {
-            handler.accept(args); // Pass only arguments to the handler
+            handler.accept(args);
         } else {
             LOGGER.warning("Unknown message type: " + message);
         }

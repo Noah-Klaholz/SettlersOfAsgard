@@ -96,7 +96,7 @@ public class GameLogic implements GameLogicInterface {
             String response = commandProcessor.processCommand(command);
             if (notifier != null && response != null) {
                 // Send the response of the command (e.g. Error or Ok message)
-                notifier.broadcastMessage(response);
+                // notifier.broadcastMessage(response); // Uncomment this line if you want to send the response to all players
                 // Send an updated version of the GameState to all players
                 notifier.broadcastMessage(gameState.createDetailedStatusMessage());
             }
