@@ -1,11 +1,16 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
-import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.client.app.GameApplication;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeRequestEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyJoinedEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.utils.CardDetails;
+import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
@@ -15,21 +20,16 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.TileClickEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
-import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
@@ -40,10 +40,7 @@ import javafx.scene.layout.Priority; // Import Priority
 import javafx.scene.layout.Region; // Import Region
 import javafx.util.Duration;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -86,7 +83,10 @@ public class GameScreenController extends BaseController {
 
     // For tooltip display with delay
     private final Map<Node, Tooltip> cardTooltips = new HashMap<>();
-
+    private final Collection<Structure> structures = EntityRegistry.getAllStructures();
+    private final Collection<Artifact> artifacts = EntityRegistry.getAllArtifacts();
+    private final Collection<Statue> statues = EntityRegistry.getAllStatues();
+    private final Collection<Monument> monuments = EntityRegistry.getAllMonuments();
 
     // Add field for the GridAdjustmentManager
     private GridAdjustmentManager gridAdjustmentManager;
@@ -793,18 +793,58 @@ public class GameScreenController extends BaseController {
      */
     private Tooltip createTooltipForCard(Node card) {
         Tooltip tooltip = new Tooltip();
-
-        // Use JavaFX's built-in delay mechanism (500ms is standard)
         tooltip.setShowDelay(Duration.millis(500));
-        tooltip.setHideDelay(Duration.millis(200)); // Quick hide when mouse exits
+        tooltip.setHideDelay(Duration.millis(200));
 
         String id = card.getId();
-        String description = getCardDescription(id);
+        CardDetails details = getCardDetails(id);
 
-        tooltip.setText(description);
+        // Create a layout with styled sections
+        VBox content = new VBox(5); // 5px spacing
+        content.setPadding(new Insets(8));
+        content.setMaxWidth(300);
+
+        // Title - golden
+        Label titleLabel = new Label(details.getTitle());
+        titleLabel.setStyle("-fx-text-fill: -color-accent-gold; -fx-font-weight: bold; -fx-font-size: 14px;");
+        titleLabel.setWrapText(true);
+
+        // Description - white
+        Label descLabel = new Label(details.getDescription());
+        descLabel.setStyle("-fx-text-fill: -color-text-primary; -fx-font-size: 12px;");
+        descLabel.setWrapText(true);
+
+        // Lore - beige
+        Label loreLabel = new Label(details.getLore());
+        loreLabel.setStyle("-fx-text-fill: -color-text-secondary; -fx-font-style: italic; -fx-font-size: 12px;");
+        loreLabel.setWrapText(true);
+
+        content.getChildren().addAll(titleLabel, new Separator(), descLabel, new Separator(), loreLabel);
+
+        tooltip.setGraphic(content);
+        tooltip.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         tooltip.getStyleClass().add("card-tooltip");
 
         return tooltip;
+    }
+
+    /**
+     * Gets detailed card information based on its ID
+     */
+    private CardDetails getCardDetails(String cardId) {
+        if (cardId.startsWith("artifact")) {
+            return new CardDetails(
+                    "Artifact: Mjölnir",
+                    "A powerful Norse artifact that grants special abilities to its owner.",
+                    "Thor's hammer, capable of controlling lightning and returning to the wielder's hand."
+            );
+        } else {
+            return new CardDetails(
+                    "Structure: Longhouse",
+                    "A sturdy Norse building that provides resources and shelter. Cost: 5 Runes",
+                    "The heart of Norse settlements, where warriors gather to feast and plan raids."
+            );
+        }
     }
 
     /**
@@ -848,33 +888,6 @@ public class GameScreenController extends BaseController {
         // db.setDragView(draggedCard.snapshot(null, null));
 
         event.consume();
-    }
-
-    /**
-     * Provides mock card descriptions for demonstration purposes.
-     */
-    private String getMockCardDescription(String cardType, int index) {
-        if ("Artifact".equals(cardType)) {
-            return switch (index) {
-                case 1 ->
-                    "Mjölnir, the legendary hammer of Thor. Grants +2 attack power and the ability to strike enemies with lightning.";
-                case 2 -> "Gungnir, Odin's enchanted spear. Never misses its target and grants wisdom to its bearer.";
-                case 3 -> "Draupnir, the magical ring that creates eight duplicates of itself every ninth night.";
-                default -> "A mysterious artifact with unknown powers.";
-            };
-        } else {
-            return switch (index) {
-                case 1 -> "Mead Hall: Increases morale and provides +1 rune per turn.";
-                case 2 -> "Forge: Allows crafting of enhanced weapons and tools.";
-                case 3 -> "Watchtower: Improves visibility and provides early warning of attacks.";
-                case 4 -> "Runestone: Increases magical energy production by 15%.";
-                case 5 -> "Barracks: Allows training of elite warriors.";
-                case 6 -> "Market: Enables trading with other settlements.";
-                case 7 -> "Temple: Provides divine blessings and special abilities.";
-                case 8 -> "Wall: Improves settlement defense against raids.";
-                default -> "A basic structure that provides shelter.";
-            };
-        }
     }
 
     /**
