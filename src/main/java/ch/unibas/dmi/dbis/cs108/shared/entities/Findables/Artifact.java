@@ -23,7 +23,11 @@ public class Artifact extends FindableEntity {
         /**
          * A trap entity. Can be used to set a trap on a non-owned empty field.
          */
-        TRAP("Trap");
+        TRAP("Trap"),
+        /**
+         * A descriptor entity. Can be used to describe artifacts in general.
+         */
+        DESCRIPTOR("Descriptor");
 
         /**
          *  The type of this entity.
@@ -95,8 +99,8 @@ public class Artifact extends FindableEntity {
      * @param chanceToFind The chance to find this artifact
      * @param effect The effect of this artifact
      */
-    public Artifact(int id, String name, String description, String useType, double chanceToFind, double effect) {
-        super(id, name, description);
+    public Artifact(int id, String name, String description, String usage, String useType, double chanceToFind, double effect) {
+        super(id, name, description, usage);
         this.chanceToFind = chanceToFind;
         this.effect = effect;
         this.useType = UseType.fromString(useType);

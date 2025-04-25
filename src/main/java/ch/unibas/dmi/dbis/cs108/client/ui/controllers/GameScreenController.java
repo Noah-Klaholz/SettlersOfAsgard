@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
 import ch.unibas.dmi.dbis.cs108.client.app.GameApplication;
+import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
@@ -10,11 +11,16 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeRequestEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.game.GameSyncEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyJoinedEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.BuyTileUIEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.PlaceStructureUIEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.TileClickEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
+import ch.unibas.dmi.dbis.cs108.client.ui.utils.CardDetails;
+import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -27,13 +33,8 @@ import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
@@ -41,10 +42,8 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.util.Duration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -83,6 +82,8 @@ public class GameScreenController extends BaseController {
      */
     private Player localPlayer;
     private final ObservableList<String> players = FXCollections.observableArrayList();
+    private GameState gameState;
+    private List<Artifact> artifacts = new ArrayList<>();
 
     // Map and grid dimensions calculated at runtime
     private double scaledMapWidth;
@@ -175,6 +176,7 @@ public class GameScreenController extends BaseController {
 
         localPlayer = GameApplication.getLocalPlayer();
         currentLobbyId = GameApplication.getCurrentLobbyId();
+        gameState = new GameState();
 
         if (localPlayer == null) {
             LOGGER.severe("LocalPlayer is null during GameScreenController initialisation!");
@@ -226,6 +228,7 @@ public class GameScreenController extends BaseController {
         eventBus.subscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
         eventBus.subscribe(LobbyJoinedEvent.class, this::handleLobbyJoined);
         eventBus.subscribe(TileClickEvent.class, this::onTileClick);
+        eventBus.subscribe(GameSyncEvent.class, this::handleGameSync);
     }
 
     /**
@@ -249,8 +252,7 @@ public class GameScreenController extends BaseController {
      * that ownership highlighting works while developing/debugging.
      */
     private void initialiseTestPlayerColours() {
-        playerColors.put(localPlayer.getName(), "#0000FF".equals("#0000FF") ? Color.BLUE : Color.BLUE); // NOP for
-                                                                                                        // clarity
+        playerColors.put(localPlayer.getName(), Color.BLUE);
         playerColors.put("player2_id", Color.RED);
         playerColors.put("player3_id", Color.GREEN);
     }
@@ -298,6 +300,17 @@ public class GameScreenController extends BaseController {
 
     private void onTileClick(TileClickEvent e) {
         LOGGER.fine(() -> String.format("Tile clicked externally (row=%d,col=%d)", e.getRow(), e.getCol()));
+    }
+
+    /**
+     * Handles the game sync event and updates the game state accordingly.
+     */
+    private void handleGameSync(GameSyncEvent e) {
+        if (e == null || e.getGameState() == null)
+            return;
+        gameState = e.getGameState();
+        artifacts = gameState.findPlayerByName(localPlayer.getName()).getArtifacts();
+        // TODO handle game state sync (show player turn, update energy bar, etc.)
     }
 
     /*
@@ -889,13 +902,113 @@ public class GameScreenController extends BaseController {
      * --------------------------------------------------
      */
 
+    /**
+     * Creates an appropriate tooltip for a card based on its type
+     */
     private Tooltip createTooltipForCard(Node card) {
-        Tooltip tip = new Tooltip();
-        tip.setShowDelay(Duration.millis(500));
-        tip.setHideDelay(Duration.millis(200));
-        tip.setText(getCardDescription(card.getId()));
-        tip.getStyleClass().add("card-tooltip");
-        return tip;
+        Tooltip tooltip = new Tooltip();
+        tooltip.setShowDelay(Duration.millis(500));
+        tooltip.setHideDelay(Duration.millis(200));
+
+        String id = card.getId();
+        CardDetails details = getCardDetails(id);
+
+        // Create a layout with styled sections
+        VBox content = new VBox(5);
+        content.setPadding(new Insets(8));
+        content.setMaxWidth(300);
+        content.getStyleClass().add("tooltip-content");
+
+        // Only add components with actual content
+        if (details.getTitle() != null && !details.getTitle().isEmpty()) {
+            Label titleLabel = new Label(details.getTitle());
+            titleLabel.getStyleClass().add("tooltip-title");
+            titleLabel.setWrapText(true);
+            content.getChildren().add(titleLabel);
+
+            // Only add separator if next section has content
+            if (details.getDescription() != null && !details.getDescription().isEmpty()) {
+                content.getChildren().add(new Separator());
+            }
+        }
+
+        if (details.getDescription() != null && !details.getDescription().isEmpty()) {
+            Label descLabel = new Label(details.getDescription());
+            descLabel.getStyleClass().add("tooltip-description");
+            descLabel.setWrapText(true);
+            content.getChildren().add(descLabel);
+
+            // Only add separator if next section has content
+            if (details.getLore() != null && !details.getLore().isEmpty()) {
+                content.getChildren().add(new Separator());
+            }
+        }
+
+        if (details.getLore() != null && !details.getLore().isEmpty()) {
+            Label loreLabel = new Label(details.getLore());
+            loreLabel.getStyleClass().add("tooltip-lore");
+            loreLabel.setWrapText(true);
+            content.getChildren().add(loreLabel);
+        }
+
+        // If no content was added, show a default message
+        if (content.getChildren().isEmpty()) {
+            Label defaultLabel = new Label("No information available");
+            defaultLabel.getStyleClass().add("tooltip-description");
+            content.getChildren().add(defaultLabel);
+        }
+
+        // Set the tooltip properties
+        tooltip.setMaxWidth(300);
+        tooltip.setMaxHeight(200);
+        content.setMinHeight(Region.USE_PREF_SIZE);
+        content.setPrefHeight(Region.USE_COMPUTED_SIZE);
+        content.setMaxHeight(Region.USE_PREF_SIZE);
+
+        tooltip.setGraphic(content);
+        tooltip.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        tooltip.getStyleClass().add("card-tooltip");
+
+        return tooltip;
+    }
+
+    /**
+     * Retrieves the card details for a given card ID.
+     *
+     * @param id The ID of the card.
+     * @return The CardDetails object containing the card's details.
+     */
+    public CardDetails getCardDetails(String id) {
+        int entityID = getEntityID(id);
+        GameEntity entity = EntityRegistry.getGameEntityOriginalById(entityID); // DO NOT Make changes to this entity, READ-ONLY
+        String title = entity.getName();
+        String description = entity.getUsage();
+        String lore = entity.getDescription();
+        return new CardDetails(title, description, lore);
+    }
+
+    /**
+     * Maps card IDs to their corresponding entity IDs.
+     *
+     * @param id The ID of the card.
+     * @return The corresponding entity ID.
+     */
+    private int getEntityID(String id) {
+        if (id.startsWith("artifact")) {
+            int i = Integer.parseInt(id.replace("artifact", ""));
+            if (i < 0 || i >= artifacts.size() || artifacts == null || artifacts.isEmpty()) {
+                Logger.getGlobal().fine("Invalid artifact ID or artifacts are null: " + id); // This is expected, since the player might not have all artifact slots filled
+                return 22; // ID of the artifact which holds the description for the card (should the slot be empty)
+            } else {
+                return artifacts.get(i).getId();
+            }
+        } else if (id.startsWith("structure")) {
+            return Integer.parseInt(id.replace("structure", "")); // Structure IDs are numbered 1-9 (but 7-9 cannot be bought)
+        } else if (id.startsWith("statue")) {
+            return 38; // ID of the statue which holds the description for the card
+        } else {
+            throw new IllegalArgumentException("Invalid card ID: " + id);
+        }
     }
 
     /*
@@ -904,6 +1017,13 @@ public class GameScreenController extends BaseController {
      * --------------------------------------------------
      */
 
+    /**
+     * Returns a {@link CardDetails} object for the given card ID. This is a
+     * placeholder
+     *
+     * @param cardId the ID of the card
+     * @return a {@link CardDetails} object containing the title, description, and lore
+     */
     private String getCardDescription(String cardId) {
         if (cardId.startsWith("artifact")) {
             return "Artifact Card\n\nA powerful Norse artifact.\nEffect: Grants special abilities to the owner.";

@@ -44,8 +44,8 @@ public abstract class PurchasableEntity extends GameEntity {
      * @param description The description of this entity
      * @param price The purchase price of this entity
      */
-    public PurchasableEntity(int id, String name, String description, int price, int resourceValue) {
-        super(id, name, description);
+    public PurchasableEntity(int id, String name, String description, String usage, int price, int resourceValue) {
+        super(id, name, description, usage);
         this.price = price;
         this.resourceValue = resourceValue;
     }

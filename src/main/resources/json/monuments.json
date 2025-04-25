@@ -1,6 +1,7 @@
 [
   {
     "name": "Light",
+    "usage": "",
     "description": "",
     "id": 40,
     "runes": 10,
@@ -11,6 +12,7 @@
   },
   {
   "name": "Castle",
+    "usage": "",
   "description": "",
   "id": 41,
   "runes": 10,
@@ -23,6 +25,7 @@
   },
   {
   "name": "Flaming Sword",
+    "usage": "",
   "description": "",
   "id": 42,
   "runes": 10,
@@ -33,6 +36,7 @@
   },
   {
     "name": "Skull",
+    "usage": "",
     "description": "",
     "id": 43,
     "runes": 10,
@@ -43,6 +47,7 @@
   },
   {
   "name": "Dwarfen Forge",
+    "usage": "",
   "description": "",
   "id": 44,
   "runes": 10,
@@ -53,6 +58,7 @@
   },
   {
     "name": "Mountain",
+    "usage": "",
     "description": "",
     "id": 45,
     "runes": 10,
@@ -63,6 +69,7 @@
   },
   {
     "name": "Ice",
+    "usage": "",
     "description": "",
     "id": 46,
     "runes": 10,
@@ -73,6 +80,7 @@
   },
   {
     "name": "Death Tree",
+    "usage": "",
     "description": "",
     "id": 47,
     "runes": 10,

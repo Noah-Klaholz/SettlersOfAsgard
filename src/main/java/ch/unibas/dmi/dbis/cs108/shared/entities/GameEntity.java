@@ -33,6 +33,11 @@ public abstract class GameEntity {
     protected String description;
 
     /**
+     * Usage of the entity.
+     */
+    protected String usage;
+
+    /**
      * List for storing other parameters (e.g. how strong an effect is).
      */
     protected List<Parameter> params = new ArrayList<>();
@@ -49,10 +54,11 @@ public abstract class GameEntity {
      * @param name The name of this entity
      * @param description The description of this entity
      */
-    public GameEntity(int id, String name, String description) {
+    public GameEntity(int id, String name, String description, String usage) {
         this.id = id;
         this.name = name;
         this.description = description;
+        this.usage = usage;
     }
 
     /**
@@ -76,6 +82,14 @@ public abstract class GameEntity {
      */
     public String getDescription() { return description; }
 
+    /**
+     * Returns the usage of this entity.
+     *
+     * @return The entity's usage
+     */
+    public String getUsage() {
+        return usage;
+    }
 
     /**
      * Returns the list of parameters associated with this entity.
@@ -135,6 +149,7 @@ public abstract class GameEntity {
         this.id = json.get("id").getAsInt();
         this.name = json.get("name").getAsString();
         this.description = json.get("description").getAsString();
+        this.usage = json.get("usage").getAsString();
 
         if (json.has("params")) {
             JsonArray jsonParams = json.getAsJsonArray("params");
@@ -168,6 +183,7 @@ public abstract class GameEntity {
         clone.id = this.id;
         clone.name = this.name;
         clone.description = this.description;
+        clone.usage = this.usage;
 
         // Deep copy parameters
         clone.params = new ArrayList<>();

@@ -64,8 +64,8 @@ public class Monument extends FindableEntity {
      * @param runes how many runes this entity farms each round
      * @param setBonus states wether this entity is part of a set
      */
-    public Monument(int id, String name, String description, int runes, boolean setBonus, List<Coordinates> tiles, String world) {
-        super(id, name, description);
+    public Monument(int id, String name, String description, String usage, int runes, boolean setBonus, List<Coordinates> tiles, String world) {
+        super(id, name, description, usage);
         this.runes = runes;
         this.setBonus = setBonus;
         this.tiles = tiles;

@@ -23,8 +23,8 @@ public abstract class FindableEntity extends GameEntity {
      * @param name The name of this entity
      * @param description The description of this entity
      */
-    public FindableEntity(int id, String name, String description) {
-        super(id, name, description);
+    public FindableEntity(int id, String name, String description, String usage) {
+        super(id, name, description, usage);
     }
 
     /**

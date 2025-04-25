@@ -1,6 +1,17 @@
 [
   {
+    "name": "Artifact of the Gods",
+    "usage": "Once you find one, you can use it to achieve incredible things.",
+    "description": "Artifacts are mystical items that can be found in the world of the Norse Gods. They are powerful and can be used to enhance your abilities or to gain advantages over other players.",
+    "useType": "Descriptor",
+    "id": 22,
+    "chance": 0.0,
+    "effect": 0.0
+
+  },
+  {
     "name": "Freyja's Necklace",
+    "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "description": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "useType": "Field",
     "id": 10,
@@ -9,6 +20,7 @@
   },
   {
     "name": "Freyr's Golden Apple",
+    "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "description": "Energie (flat)",
     "useType": "Player",
     "id": 11,
@@ -17,6 +29,7 @@
   },
   {
     "name": "Tear of Yggdrasil",
+    "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "description": "Anderer Spieler - Energie (flat)",
     "useType": "Player",
     "id": 12,
@@ -25,6 +38,7 @@
   },
   {
     "name": "Fragment of Mjölnir",
+    "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "description": "Erhöht Chance auf Artefakte",
     "useType": "Player",
     "id": 13,
@@ -33,6 +47,7 @@
   },
   {
     "name": "Fenrir's Bones",
+    "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "description": "Erhöht Effizienz von Energy generation auf einem Feld",
     "useType": "Field",
     "id": 14,
@@ -41,6 +56,7 @@
   },
   {
     "name": "Hel's Shadow",
+    "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "description": "Anderer Spieler - Effizienz Runen Farmen",
     "useType": "Player",
     "id": 15,
@@ -49,6 +65,7 @@
   },
   {
     "name": "Flame of Muspelheim",
+    "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "description": "Preissenkung kaufbares für nächste Runde (wird multipliziert)",
     "useType": "Player",
     "id": 16,
@@ -57,6 +74,7 @@
   },
   {
     "name": "Ice Splinter of Niflheim",
+    "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "description": "Andere Spieler - Effizienz Energie Farmen",
     "useType": "Player",
     "id": 17,
@@ -65,6 +83,7 @@
   },
   {
     "name": "Blood of Jörmungandr",
+    "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "description": "Erhöht Effizienz Farmen am Fluss",
     "useType": "Field",
     "id": 18,
@@ -73,6 +92,7 @@
   },
   {
     "name": "Ashes of Surtr",
+    "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "description": "Andere Spieler - Preissteigerung kaufbares für nächste Runde (wird multipliziert)",
     "useType": "Player",
     "id": 19,
@@ -81,6 +101,7 @@
   },
   {
     "name": "Odin's Eye",
+    "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "description": "überprüft ein Tile und alle angrenzenden auf Fallen und deckt diese ggbf. auf",
     "useType": "Field",
     "id": 20,
@@ -89,6 +110,7 @@
   },
   {
     "name": "Fenrir's Chains",
+    "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
     "description": "Can be found and used to trap a field",
     "useType": "Trap",
     "id": 21,

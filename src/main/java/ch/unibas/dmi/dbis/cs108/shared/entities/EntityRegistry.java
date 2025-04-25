@@ -5,6 +5,7 @@ import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
+import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.utils.RandomGenerator;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -14,10 +15,7 @@ import com.google.gson.reflect.TypeToken;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Central registry for all game entities.
@@ -275,5 +273,24 @@ public class EntityRegistry {
     public static Artifact getRandomArtifact() {
         int id = RandomGenerator.pickRandomElement(getAllArtifacts().stream().toList()).getId();
         return getArtifact(id);
+    }
+
+    /**
+     * Returns the original GameEntity object by its ID.
+     *
+     * @return The original GameEntity object with the given ID, or null if not found
+     */
+    public static GameEntity getGameEntityOriginalById(int id) {
+        GameEntity entity = structures.get(id);
+        if (entity == null) {
+            entity = statues.get(id);
+        }
+        if (entity == null) {
+            entity = artifacts.get(id);
+        }
+        if (entity == null) {
+            entity = monuments.get(id);
+        }
+        return entity;
     }
 }

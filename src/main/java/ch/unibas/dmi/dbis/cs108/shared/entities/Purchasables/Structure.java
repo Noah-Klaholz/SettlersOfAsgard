@@ -21,8 +21,8 @@ public class Structure extends PurchasableEntity {
      * @param description The description of this structure
      * @param price The purchase price of this structure
      */
-    public Structure(int id, String name, String description, int price, int resourceValue) {
-        super(id, name, description, price, resourceValue);
+    public Structure(int id, String name, String description, String usage, int price, int resourceValue) {
+        super(id, name, description, usage, price, resourceValue);
     }
     /**
      * Loads structure data from a JSON object.

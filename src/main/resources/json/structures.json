@@ -2,7 +2,7 @@
   {
     "name": "Rune Table",
     "usage": "Converts 4 Energy to 100 Runes",
-    "description": "",
+    "description": "The rune table was used to craft ancient runes. It is said that the runes were used to communicate with the gods.",
     "id": 1,
     "price": 10,
     "resourceValue": 5,
