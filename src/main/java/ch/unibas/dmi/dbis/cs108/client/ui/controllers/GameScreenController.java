@@ -27,6 +27,9 @@ import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
@@ -507,22 +510,28 @@ public class GameScreenController extends BaseController {
         drawMapAndGrid();
         eventBus.publish(new TileClickEvent(row, col));
 
-        // --- Purchase logic (placeholder) --------------------------------------
+        // --- Purchase logic (with confirmation popup) -------------------------
         String ownerId = getTileOwnerId(row, col);
 
         if (ownerId == null) {
             int price = getTilePrice(row, col);
-            boolean confirmed = true; // TODO replace with confirmation dialog
 
-            if (confirmed) {
-                int gold = getPlayerGold();
-                if (gold >= price) {
-                    eventBus.publish(new BuyTileUIEvent(row, col));
-                } else {
-                    showNotification("Not enough gold to buy this tile (Cost: " + price + ").");
+            // Show confirmation dialog
+            Alert alert = new Alert(AlertType.CONFIRMATION, "Buy this tile for " + price + " gold?", ButtonType.YES, ButtonType.NO);
+            alert.setHeaderText("Purchase Tile");
+            alert.setTitle("Confirm Purchase");
+            alert.showAndWait().ifPresent(result -> {
+                if (result == ButtonType.YES) {
+                    int gold = getPlayerGold();
+                    if (gold >= price) {
+                        // Deduct gold and assign ownership would be handled by server after BuyTileUIEvent
+                        eventBus.publish(new BuyTileUIEvent(row, col));
+                    } else {
+                        showNotification("Not enough gold to buy this tile (Cost: " + price + ").");
+                    }
                 }
-            }
-        } else if (ownerId.equals(localPlayer.getId())) {
+            });
+        } else if (localPlayer != null && ownerId.equals(localPlayer.getId())) {
             showNotification("You already own this tile.");
         } else {
             showNotification("This tile is owned by another player.");
