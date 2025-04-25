@@ -990,13 +990,11 @@ public class GameScreenController extends BaseController {
         int entityID = getEntityID(id);
         GameEntity entity = EntityRegistry.getGameEntityOriginalById(entityID); // DO NOT Make changes to this entity, READ-ONLY
         String URL = EntityRegistry.getURL(entityID, true);
-        if (URL == null) {
-            URL = "";
-        }
         String title = entity.getName();
         String description = entity.getUsage();
         String lore = entity.getDescription();
-        return new CardDetails(title, description, lore, URL);
+        int price = entity.getPrice();
+        return new CardDetails(title, description, lore, URL, price);
     }
 
     /**
@@ -1042,7 +1040,7 @@ public class GameScreenController extends BaseController {
 
         // Update structure cards
         for (Node card : structureHand.getChildren()) {
-            if (card.getId() != null && card.getId().startsWith("structure")) {
+            if (card.getId() != null && (card.getId().startsWith("structure") || card.getId().startsWith("statue"))) {
                 updateCardImage(card);
             }
         }
@@ -1050,6 +1048,8 @@ public class GameScreenController extends BaseController {
 
     /**
      * Updates a single card with the correct image.
+     *
+     * @param card The card node to update.
      */
     private void updateCardImage(Node card) {
         String id = card.getId();
@@ -1058,34 +1058,51 @@ public class GameScreenController extends BaseController {
         try {
             CardDetails details = getCardDetails(id);
             String imageUrl = details.getImageUrl();
+            LOGGER.info("Processing card " + id + " with image URL: " + imageUrl);
 
-            if (imageUrl != null && !imageUrl.isEmpty()) {
-                Image image = resourceLoader.loadImage(imageUrl);
+            if (card instanceof Pane pane) {
+                if (imageUrl != null && !imageUrl.isEmpty()) {
 
-                if (card instanceof Pane) {
-                    // Clear existing background
-                    card.setStyle(null);
+                    // Set fixed dimensions for ALL cards regardless of image
+                    pane.setMinSize(120, 180);
+                    pane.setPrefSize(120, 180);
+                    pane.setMaxSize(120, 180);
 
-                    // Set the new background image
-                    BackgroundImage backgroundImage = new BackgroundImage(
-                            image,
-                            BackgroundRepeat.NO_REPEAT,
-                            BackgroundRepeat.NO_REPEAT,
-                            BackgroundPosition.CENTER,
-                            new BackgroundSize(100, 100, true, true, true, false)
-                    );
+                    // Clear any previous backgrounds
+                    pane.setBackground(null);
 
-                    ((Pane) card).setBackground(new Background(backgroundImage));
+                    Image image = resourceLoader.loadImage(imageUrl);
 
-                    // Add minimal styling for visibility
-                    card.getStyleClass().add("game-card");
+                    if (image != null && !image.isError()) {
+
+                        // Create background with proper sizing parameters
+                        BackgroundImage backgroundImage = new BackgroundImage(
+                                image,
+                                BackgroundRepeat.NO_REPEAT,
+                                BackgroundRepeat.NO_REPEAT,
+                                BackgroundPosition.CENTER,
+                                new BackgroundSize(1.0, 1.0, true, true, false, false)
+                        );
+
+                        Background background = new Background(backgroundImage);
+                        pane.setBackground(background);
+                        LOGGER.info("Successfully loaded image for card " + id);
+                    } else {
+                        LOGGER.warning("Failed to load image for card " + id);
+                    }
+                } else {
+                    LOGGER.warning("No image URL for card " + id);
                 }
+
+                // Ensure card is visible
+                pane.setVisible(true);
+                pane.setOpacity(1.0);
             }
         } catch (Exception e) {
-            LOGGER.warning("Failed to load image for card " + id + ": " + e.getMessage());
+            LOGGER.warning("Failed to update card " + id + ": " + e.getMessage());
+            e.printStackTrace();
         }
     }
-
 
     // --- Placeholder methods for game state; keep until real model is wired ---
 

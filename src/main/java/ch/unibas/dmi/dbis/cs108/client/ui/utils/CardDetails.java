@@ -13,6 +13,8 @@ public class CardDetails {
     final String lore;
     /**URL for the image associated with the card.*/
     final String imageUrl;
+    /**Price of the card in runes.*/
+    final int price;
 
     /**
      * Constructor for CardDetails.
@@ -21,11 +23,12 @@ public class CardDetails {
      * @param description The description of the card.
      * @param lore        The lore of the card.
      */
-    public CardDetails(String title, String description, String lore, String cardImagePath) {
+    public CardDetails(String title, String description, String lore, String cardImagePath, int price) {
         this.title = title;
         this.description = description;
         this.lore = lore;
         this.imageUrl = cardImagePath;
+        this.price = price;
     }
 
     /**
@@ -62,5 +65,14 @@ public class CardDetails {
      */
     public String getImageUrl() {
         return imageUrl;
+    }
+
+    /**
+     * Retrieves the price of the card.
+     *
+     * @return The price of the card.
+     */
+    public int getPrice() {
+        return price;
     }
 }

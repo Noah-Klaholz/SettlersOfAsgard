@@ -2,6 +2,7 @@ package ch.unibas.dmi.dbis.cs108.shared.entities;
 
 import ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors.Parameter;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import com.google.gson.JsonArray;
@@ -192,5 +193,19 @@ public abstract class GameEntity {
         }
 
         return clone;
+    }
+
+    /**
+     * Returns the price of this entity.
+     * If the entity is a Structure or Statue, it retrieves the price from that class.
+     * If not, it returns 0.
+     *
+     * @return The price of the entity
+     */
+    public int getPrice() {
+        if (this instanceof PurchasableEntity pe) {
+            return pe.getPrice();
+        }
+        return 0;
     }
 }

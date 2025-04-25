@@ -40,22 +40,62 @@ public class ResourceLoader {
 
     /**
      * Loads an image from the given resource path.
-     * 
+     *
      * @param path Resource path
      * @return Image or null if not found
      */
     public Image loadImage(String path) {
-        if (path == null || path.isBlank())
+        if (path == null || path.isEmpty()) {
+            LOGGER.warning("Empty image path provided");
             return null;
+        }
+
         try {
-            URL url = getClass().getResource(path);
-            if (url == null) {
-                LOGGER.warning("Image not found: " + path);
-                return null;
+            // Remove "resources/" prefix if it exists
+            String correctedPath = path;
+            if (correctedPath.startsWith("resources/")) {
+                correctedPath = correctedPath.substring("resources/".length());
             }
-            return new Image(url.openStream());
+
+            // Ensure path starts with a single slash
+            if (!correctedPath.startsWith("/")) {
+                correctedPath = "/" + correctedPath;
+            } else if (correctedPath.startsWith("//")) {
+                correctedPath = correctedPath.substring(1); // Remove one of the slashes
+            }
+
+            LOGGER.info("Loading image from: " + correctedPath);
+
+            // First approach: direct loading via getResourceAsStream
+            URL resourceUrl = getClass().getResource(correctedPath);
+            if (resourceUrl != null) {
+                return new Image(resourceUrl.toExternalForm());
+            }
+
+            // Second approach: fallback to input stream
+            var inputStream = getClass().getResourceAsStream(correctedPath);
+            if (inputStream != null) {
+                Image image = new Image(inputStream);
+                inputStream.close();
+                return image;
+            }
+
+            // Third approach: try without slash
+            if (correctedPath.startsWith("/")) {
+                String pathWithoutSlash = correctedPath.substring(1);
+                inputStream = getClass().getResourceAsStream(pathWithoutSlash);
+                if (inputStream != null) {
+                    Image image = new Image(inputStream);
+                    inputStream.close();
+                    return image;
+                }
+            }
+
+            LOGGER.warning("Image not found after all attempts: " + path);
+            return null;
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error loading image: " + path, e);
+            LOGGER.warning("Error loading image: " + path + " (" + e.getMessage() + ")");
+            e.printStackTrace();
             return null;
         }
     }

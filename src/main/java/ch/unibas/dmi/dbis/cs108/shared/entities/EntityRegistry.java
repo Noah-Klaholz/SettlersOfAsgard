@@ -304,15 +304,21 @@ public class EntityRegistry {
      */
     public static String getURL(int id, boolean isCard) {
         GameEntity entity = getGameEntityOriginalById(id);
+        String path = "";
         if (entity != null) {
             if (entity instanceof PurchasableEntity pe && isCard) {
-                return pe.getCardImagePath();
+                path = pe.getCardImagePath();
             } else if (entity instanceof Artifact art && isCard) {
-                return art.getCardImagePath();
+                path = art.getCardImagePath();
             } else if (entity instanceof PurchasableEntity pe) {
-                return pe.getMapImagePath();
+                path = pe.getMapImagePath();
             }
         }
-        return null;
+        if (path == null || path.isEmpty()) {
+            System.err.println("Image path is empty or null for entity ID: " + id + " entityname " + (entity != null ? entity.getName() : "Entity was not created properly"));
+            return "";
+        } else {
+            return path.replace("resources/", "");
+        }
     }
 }
