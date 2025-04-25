@@ -184,9 +184,6 @@ public class CommunicationMediator {
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.game.EndTurnUIEvent.class,
                 event -> networkController.endTurn());
 
-        UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.game.PricesUIEvent.class,
-                event -> networkController.getPrices());
-
         // Admin Events
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent.class,
                 event -> networkController.changeName(event.getNewName()));
