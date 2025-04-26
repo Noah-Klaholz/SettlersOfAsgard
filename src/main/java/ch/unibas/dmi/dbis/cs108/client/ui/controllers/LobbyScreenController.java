@@ -507,6 +507,7 @@ public class LobbyScreenController extends BaseController {
     private void handleGameStarted(GameStartedEvent event) {
         // Objects.requireNonNull(event, "GameStart edEvent cannot be null");
         LOGGER.info("Game started for lobby: " + currentLobbyId + ". Switching to game screen.");
+        GameApplication.setPlayers(playersInCurrentLobby.stream().toList());
         Platform.runLater(() -> {
             sceneManager.switchToScene(SceneManager.SceneType.GAME);
         });

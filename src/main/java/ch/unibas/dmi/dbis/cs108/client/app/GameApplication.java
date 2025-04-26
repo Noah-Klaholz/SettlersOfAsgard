@@ -8,9 +8,7 @@ import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameStateManager;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.client.networking.NetworkController;
-import ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -18,6 +16,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
@@ -40,6 +39,8 @@ public class GameApplication extends Application {
      * access.
      */
     private static Player localPlayer;
+
+    private static List<String> players;
     /**
      * The lobby ID for the current game session. Initialized to null.
      */
@@ -71,6 +72,50 @@ public class GameApplication extends Application {
      */
     public static void setCurrentLobbyId(String lobbyId) {
         currentLobbyId = lobbyId;
+    }
+
+    /**
+     * Gets the list of players in the current game session.
+     *
+     * @return players The list of players.
+     */
+    public static List<String> getPlayers() {
+        if (players == null) {
+            LOGGER.warning("Players list is not initialized. Returning empty List.");
+            new ArrayList<>();
+        }
+        return players;
+    }
+
+    /**
+     * Sets the list of players in the current game session.
+     *
+     * @param players The list of players to set.
+     */
+    public static void setPlayers(List<String> players) {
+        GameApplication.players = players;
+    }
+
+    /**
+     * Provides safe access to the static localPlayer instance.
+     * Throws an IllegalStateException if accessed before initialization.
+     *
+     * @return The static Player instance representing the local player.
+     */
+    public static Player getLocalPlayer() {
+        if (localPlayer == null) {
+            // This should ideally not happen if initialization order is correct,
+            // but provides a safeguard or indicates a logic error.
+            LOGGER.severe("Attempted to access localPlayer before it was initialized!");
+            // Optionally, initialize with a default or throw an exception
+            // For now, let's create a default to avoid NullPointerExceptions downstream,
+            // but log heavily.
+            localPlayer = new Player("LateInitGuest");
+            LOGGER.warning("Created a default 'LateInitGuest' player due to access before start().");
+            // throw new IllegalStateException("Local player has not been initialized
+            // yet.");
+        }
+        return localPlayer;
     }
 
     /**
@@ -217,28 +262,6 @@ public class GameApplication extends Application {
             primaryStage.toFront();
             primaryStage.requestFocus();
         });
-    }
-
-    /**
-     * Provides safe access to the static localPlayer instance.
-     * Throws an IllegalStateException if accessed before initialization.
-     *
-     * @return The static Player instance representing the local player.
-     */
-    public static Player getLocalPlayer() {
-        if (localPlayer == null) {
-            // This should ideally not happen if initialization order is correct,
-            // but provides a safeguard or indicates a logic error.
-            LOGGER.severe("Attempted to access localPlayer before it was initialized!");
-            // Optionally, initialize with a default or throw an exception
-            // For now, let's create a default to avoid NullPointerExceptions downstream,
-            // but log heavily.
-            localPlayer = new Player("LateInitGuest");
-            LOGGER.warning("Created a default 'LateInitGuest' player due to access before start().");
-            // throw new IllegalStateException("Local player has not been initialized
-            // yet.");
-        }
-        return localPlayer;
     }
 
     /**

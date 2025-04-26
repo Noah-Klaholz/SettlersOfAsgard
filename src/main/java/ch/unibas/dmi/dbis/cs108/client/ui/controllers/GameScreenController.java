@@ -88,6 +88,7 @@ public class GameScreenController extends BaseController {
     private final ObservableList<String> players = FXCollections.observableArrayList();
     private GameState gameState;
     private List<Artifact> artifacts = new ArrayList<>();
+    List<Color> playerColours;
 
     // Map and grid dimensions calculated at runtime
     private double scaledMapWidth;
@@ -202,7 +203,7 @@ public class GameScreenController extends BaseController {
         setupCanvasListeners();
         initialiseSettingsDialog();
         initialiseChatComponent();
-        initialiseTestPlayerColours();
+        initialisePlayerColours();
         updateCardImages();
     }
 
@@ -254,13 +255,24 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * In absence of real player data this method seeds a small colour table so
-     * that ownership highlighting works while developing/debugging.
+     * initialises the player colours used for the hex grid.
      */
-    private void initialiseTestPlayerColours() {
-        playerColors.put(localPlayer.getName(), Color.BLUE);
-        playerColors.put("player2_id", Color.RED);
-        playerColors.put("player3_id", Color.GREEN);
+    private void initialisePlayerColours() {
+        // Create a list of possible player colours
+        playerColours = new ArrayList<>();
+        playerColours.add(Color.RED);
+        playerColours.add(Color.BLUE);
+        playerColours.add(Color.GREEN);
+        playerColours.add(Color.YELLOW);
+        playerColours.add(Color.PURPLE);
+        playerColours.add(Color.ORANGE);
+        playerColours.add(Color.CYAN);
+        playerColours.add(Color.MAGENTA);
+
+        for (String playerName : GameApplication.getPlayers()) {
+            Color color = playerColours.remove(0);
+            playerColors.put(playerName, color);
+        }
     }
 
     /**
