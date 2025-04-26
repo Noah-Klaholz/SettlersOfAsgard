@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server;
 
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
+import ch.unibas.dmi.dbis.cs108.server.core.model.Leaderboard;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.TurnManager;
@@ -32,7 +33,7 @@ public class LobbyTest {
      */
     @BeforeEach
     void setUp() {
-        lobby = new Lobby("testLobby", 2);
+        lobby = new Lobby("testLobby", 2, mock(Leaderboard.class));
         player1 = mock(ClientHandler.class);
         player2 = mock(ClientHandler.class);
     }
