@@ -562,14 +562,15 @@ public class GameScreenController extends BaseController {
             int price = getTilePrice(row, col);
 
             // Show confirmation dialog
-            Alert alert = new Alert(AlertType.CONFIRMATION, "Buy this tile for " + price + " gold?", ButtonType.YES, ButtonType.NO);
+            Alert alert = new Alert(AlertType.CONFIRMATION, "Buy this tile for " + price + " gold?", ButtonType.YES,
+                    ButtonType.NO);
             alert.setHeaderText("Purchase Tile");
             alert.setTitle("Confirm Purchase");
             alert.showAndWait().ifPresent(result -> {
                 if (result == ButtonType.YES) {
                     int runes = getPlayerRunes();
                     if (runes >= price) {
-                        // Deduct gold and assign ownership would be handled by server after BuyTileUIEvent
+                        // Deduct runes and assign ownership would be handled by server after BuyTileUIEvent
                         eventBus.publish(new BuyTileUIEvent(row, col));
                     } else {
                         showNotification("Not enough gold to buy this tile (Cost: " + price + ").");
