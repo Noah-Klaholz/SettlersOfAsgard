@@ -35,6 +35,8 @@ public class GameState {
     private int gameRound;
     /** The name of the players whose turn it is */
     private String playerTurn;
+    /** A list of notifications (used for special effects) */
+    private List<String> notifications = new ArrayList<>();
 
     /**
      * Creates a new gameState object. Initializes the Board- and TurnManager.
@@ -117,6 +119,7 @@ public class GameState {
     public void reset() {
         stateLock.writeLock().lock();
         try {
+            notifications.clear();
             players.forEach(Player::reset);
             boardManager.reset();
         } finally {
@@ -134,6 +137,7 @@ public class GameState {
     }
 
     public void sendNotification(String player, String s) {
+        notifications.add(s);
         notifier.sendMessageToPlayer(player, CommunicationAPI.NetworkProtocol.Commands.INFO.getCommand() + s);
     }
 
@@ -193,5 +197,14 @@ public class GameState {
 
     public GameEventNotifier getNotifier() {
         return notifier;
+    }
+
+    /**
+     * Gets the list of notifications.
+     *
+     * @return the list
+     */
+    public List<String> getNotifications() {
+        return notifications;
     }
 }
