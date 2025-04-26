@@ -332,4 +332,30 @@ public class GameLogicTest {
         assertEquals("player1", t.getOwner());
     }
 
+    // ----- Edge Cases -----
+
+    /**
+     * This test verifies the correct handling for edge cases when placing a structure
+     */
+    @Test
+    void testPlaceStructure_InvalidCases() {
+        // Test placing on invalid coordinates
+        assertFalse(gameLogic.placeStructure(-1, 0, 1, "player1"), "Should fail - negative X");
+        assertFalse(gameLogic.placeStructure(0, -1, 1, "player1"), "Should fail - negative Y");
+        assertFalse(gameLogic.placeStructure(100, 0, 1, "player1"), "Should fail - X out of bounds");
+        assertFalse(gameLogic.placeStructure(0, 100, 1, "player1"), "Should fail - Y out of bounds");
+
+        // Test invalid structure ID
+        assertFalse(gameLogic.placeStructure(0, 0, -1, "player1"), "Should fail - invalid structure ID");
+        assertFalse(gameLogic.placeStructure(0, 0, 999, "player1"), "Should fail - non-existent structure");
+
+        // Test placing on unowned tile (for non-trap structures)
+        assertFalse(gameLogic.placeStructure(1, 1, 1, "player1"), "Should fail - tile not owned");
+
+        // Test placing on tile with existing entity
+        gameLogic.buyTile(0, 0, "player1");
+        gameLogic.placeStructure(0, 0, 1, "player1");
+        assertFalse(gameLogic.placeStructure(0, 0, 2, "player1"), "Should fail - tile already has structure");
+    }
+
 }
