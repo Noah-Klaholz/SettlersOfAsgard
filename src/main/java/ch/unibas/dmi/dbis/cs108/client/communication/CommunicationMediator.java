@@ -131,29 +131,6 @@ public class CommunicationMediator {
 
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.StartGameRequestEvent.class,
                 event -> networkController.startGame());
-
-        UIEventBus.getInstance().subscribe(
-                ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.UpdateLobbySettingsEvent.class,
-                event -> {
-                    // Assuming NetworkController has a method like updateLobbySetting
-                    // networkController.updateLobbySetting(event.getSettingKey(),
-                    // event.getSettingValue());
-                    LOGGER.log(Level.INFO,
-                            "UI Event: Update Lobby Settings requested (Key: {0}, Value: {1}) - Network call placeholder",
-                            new Object[] { event.getSettingKey(), event.getSettingValue() });
-                    // Example: If settingKey is "maxPlayers"
-                    if ("maxPlayers".equals(event.getSettingKey())) {
-                        try {
-                            int maxPlayers = Integer.parseInt(event.getSettingValue());
-                            // networkController.setMaxPlayers(maxPlayers); // Assuming such a method exists
-                            LOGGER.log(Level.INFO, "Placeholder: NetworkController.setMaxPlayers({0})", maxPlayers);
-                        } catch (NumberFormatException e) {
-                            LOGGER.log(Level.WARNING,
-                                    "Invalid maxPlayers value received from UI: " + event.getSettingValue(), e);
-                        }
-                    }
-                });
-
         // Game Events
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.game.BuyTileUIEvent.class,
                 event -> networkController.buyTile(event.getX(), event.getY()));

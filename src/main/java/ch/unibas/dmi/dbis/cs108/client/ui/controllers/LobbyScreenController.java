@@ -79,8 +79,6 @@ public class LobbyScreenController extends BaseController {
     @FXML
     private ComboBox<Integer> maxPlayersCombo;
     @FXML
-    private ComboBox<Integer> maxPlayersHostCombo;
-    @FXML
     private VBox chatContainer;
     @FXML
     private Button createLobbyButton;
@@ -125,7 +123,6 @@ public class LobbyScreenController extends BaseController {
             setupLobbyTable();
             setupPlayerList();
             setupLobbyControls();
-            setupHostControls();
             setupSearchFilter();
             setupChatComponent(); // Call after localPlayer is set
             setupSettingsDialog(); // Call after localPlayer is set
@@ -183,27 +180,8 @@ public class LobbyScreenController extends BaseController {
     private void setupLobbyControls() {
         maxPlayersCombo.setItems(FXCollections.observableArrayList(2, 3, 4, 5, 6, 8));
         maxPlayersCombo.getSelectionModel().select(Integer.valueOf(4));
-        maxPlayersCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null && isHost && currentLobbyId != null && !newVal.equals(oldVal)) {
-                LOGGER.info("Host changed max players to: " + newVal);
-                eventBus.publish(new UpdateLobbySettingsEvent(currentLobbyId, "maxPlayers", newVal.toString()));
-            }
-        });
         hostControlsPanel.setVisible(false);
         hostControlsPanel.setManaged(false);
-    }
-
-    /**
-     * Configures the host controls, including showing the max players combo box.
-     */
-    private void setupHostControls() {
-        // Set up max players display in host controls (read-only)
-        maxPlayersHostCombo.setItems(FXCollections.observableArrayList(2, 3, 4, 5, 6, 8));
-        maxPlayersHostCombo.getSelectionModel().select(maxPlayersCombo.getValue());
-        maxPlayersHostCombo.setDisable(true); // Make it non-editable
-
-        maxPlayersHostCombo.setVisible(false);
-        maxPlayersHostCombo.setManaged(false);
     }
 
     /**
@@ -343,10 +321,7 @@ public class LobbyScreenController extends BaseController {
         }
         // Get selected max players value
         Integer maxPlayers = maxPlayersCombo.getValue();
-        maxLobbyPlayers = maxPlayers == null ? 1 : maxPlayers;
-        if (maxPlayers == null) {
-            maxPlayers = 4; // Fallback if somehow not selected
-        }
+        maxLobbyPlayers = maxPlayers;
         clearError();
         eventBus.publish(new CreateLobbyRequestEvent(name, localPlayer.getName(), maxPlayers));
         lobbyNameField.clear();

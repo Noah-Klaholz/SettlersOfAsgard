@@ -97,12 +97,6 @@
                         <VBox fx:id="hostControlsPanel" spacing="10.0" visible="false" managed="false" styleClass="host-controls">
                             <Separator/>
                             <Label text="Host Controls" styleClass="section-header"/>
-
-                            <HBox spacing="10.0">
-                                <Label text="Max Players:"/>
-                                <ComboBox fx:id="maxPlayersHostCombo" prefWidth="70"/>
-                            </HBox>
-
                             <Button fx:id="startGameButton" text="Start Game" onAction="#handleStartGame"
                                     styleClass="start-game-button" maxWidth="Infinity"/>
                         </VBox>
