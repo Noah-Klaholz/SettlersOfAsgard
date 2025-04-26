@@ -142,9 +142,12 @@ public class StructureActionHandler {
         BoardManager boardManager = gameState.getBoardManager();
         Tile tile = boardManager.getTile(x, y);
 
-        // Validate tile state
-        if (tile == null ||
-                !tile.getOwner().equals(playerName) ||
+        if (tile == null) {
+            return new ValidationResult(false, player, null);
+        }
+        String owner = tile.getOwner();
+        if (owner == null ||
+                !owner.equals(playerName) ||
                 (requireEmptyTile && tile.hasEntity()) ||
                 (requireEntityOnTile && !tile.hasEntity())) {
             return new ValidationResult(false, player, null);
