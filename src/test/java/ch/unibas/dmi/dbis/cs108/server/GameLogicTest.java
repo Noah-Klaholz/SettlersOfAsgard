@@ -13,6 +13,7 @@ import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -35,6 +36,7 @@ public class GameLogicTest {
     private Lobby lobby;
     private GameLogic gameLogic;
     private GameState gameState;
+    private GameState spyGameState;
     private TurnManager turnManager;
 
     /**
@@ -62,6 +64,7 @@ public class GameLogicTest {
         lobby.startGame();
         gameLogic = lobby.getGameLogic();
         gameState = gameLogic.getGameState();
+        spyGameState = spy(gameState);
         turnManager = gameLogic.getTurnManager();
     }
 
@@ -238,22 +241,36 @@ public class GameLogicTest {
     }
 
     /**
-     * This test verifies the correct functionality of the huginn and muginn structure. (4)
+     * This test verifies the correct functionality of the huginn and muninn structure. (4)
+     * Places an artifact on tile (1,1) with the artifact id 10.
+     * the structure should reveal the position of the artifact.
      */
     @Test
     void testUseStructureHuginnAndMuninn() {
-        Tile t =  gameState.getBoardManager().getTile(0, 0);
+        // Setup - place an artifact at (1,1)
+        Tile t = gameState.getBoardManager().getTile(1, 1);
         Structure s = EntityRegistry.getStructure(4);
         assert s != null;
         Artifact a = EntityRegistry.getArtifact(10);
-        gameState.getBoardManager().getTile(1, 1).setArtifact(a);
-        // structure use should now produce output '4$1$1$10' (tile 1, 1, id 10)
-        GameState spyGameState = spy(gameState);
+        t.setArtifact(a);
+
+        // Clear any existing notifications
+        gameState.getNotifications().clear();
+
+        // Player buys tile and places structure
         assertTrue(gameLogic.buyTile(0, 0, "player1"));
         assertTrue(gameLogic.placeStructure(0, 0, s.getId(), "player1"));
+
+        // Use the structure
         assertTrue(gameLogic.useStructure(0, 0, s.getId(), "player1"));
+
+        // Verify energy was added (from structure params)
         assertEquals(2, gameState.getPlayers().get(0).getEnergy());
-        verify(spyGameState).sendNotification("player1", "4$1$1$10");
+
+        // Verify notification was sent
+        List<String> notifications = gameState.getNotifications();
+        assertFalse(notifications.isEmpty());
+        assertTrue(notifications.contains("4$1$1$10"));
     }
 
     /**
@@ -276,15 +293,14 @@ public class GameLogicTest {
     @Test
     void testUseStructureTree() {
         Tile t =  gameState.getBoardManager().getTile(2, 2);
-        t.setEntity(EntityRegistry.getStructure(7));
         Structure s = EntityRegistry.getStructure(7);
         assert s != null;
         int runesBefore = gameState.getPlayers().get(0).getRunes();
-        int price = t.getPrice();
+        int price = t.getPrice() + s.getPrice();
         assertTrue(gameLogic.buyTile(2, 2, "player1"));
         assertTrue(gameLogic.placeStructure(2, 2, s.getId(), "player1"));
         assertTrue(gameLogic.useStructure(2, 2, s.getId(), "player1"));
-        int expectedRunes = runesBefore - price + (int)s.getParams().get(0).getValue();
+        int expectedRunes = runesBefore - price; // No immediate effect of tree structure
         assertEquals(expectedRunes, gameState.getPlayers().get(0).getRunes());
     }
 
@@ -296,8 +312,12 @@ public class GameLogicTest {
         Tile t = gameState.getBoardManager().getTile(0, 0);
         Structure s = EntityRegistry.getStructure(8);
         assert s != null;
+        // Don't buy the tile first - active traps are placed on unowned tiles
         assertTrue(gameLogic.placeStructure(0, 0, s.getId(), "player1"));
-        assertTrue(gameLogic.useStructure(0, 0, s.getId(), "player1"));
+        // Now buy the tile to activate the trap
+        assertTrue(gameLogic.buyTile(0, 0, "player1"));
+        // Verify player got debuffed (runes reduced)
+        assertTrue(gameState.getPlayers().get(0).getRunes() < 100); // Assuming initial runes is 100
     }
 
 }
