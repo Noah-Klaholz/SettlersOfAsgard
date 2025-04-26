@@ -35,8 +35,8 @@ public class Board {
         Tile.TileBuilder tilebuilder = new Tile.TileBuilder();
         tilebuilder.setPrice(10);
 
-        for (int i = 0; i < x; i++) {
-            for (int j = 0; j < y; j++) {
+        for (int i = 0; i <= x; i++) {
+            for (int j = 0; j <= y; j++) {
                 // Set world based on coordinates
                 tilebuilder.setWorld(determineWorld(i, j));
                 // Set monument based on coordinates
