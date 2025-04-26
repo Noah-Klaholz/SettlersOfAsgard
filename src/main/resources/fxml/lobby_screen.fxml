@@ -92,12 +92,8 @@
                                 <Label text="No players joined yet" styleClass="placeholder-label"/>
                             </placeholder>
                         </ListView>
-
-                        <!-- Host Controls -->
-                        <VBox fx:id="hostControlsPanel" spacing="10.0" visible="false" managed="false" styleClass="host-controls">
-                            <Button fx:id="startGameButton" text="Start Game" onAction="#handleStartGame"
-                                    styleClass="start-game-button" maxWidth="Infinity"/>
-                        </VBox>
+                        <Button fx:id="startGameButton" text="Start Game" onAction="#handleStartGame"
+                                styleClass="start-game-button" maxWidth="Infinity"/>
                     </VBox>
                 </TitledPane>
             </VBox>

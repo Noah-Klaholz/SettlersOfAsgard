@@ -246,7 +246,7 @@
 /* Use common button styles */
 .start-game-button {
     /* Inherits .primary-button */
-    -fx-font-size: 14px;
+    -fx-font-size: 10px;
     /* Keep specific font size */
 }
 
