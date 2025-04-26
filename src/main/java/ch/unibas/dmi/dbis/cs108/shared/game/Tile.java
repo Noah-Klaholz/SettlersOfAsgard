@@ -16,7 +16,7 @@ public class Tile {
     private final int y;
     private boolean hasEntity;
     private String owner; //ownerID
-    private final int price;
+    private int price;
     private GameEntity entity; // Not an artifact
     private Artifact artefact;
     private final String world;
@@ -157,6 +157,10 @@ public class Tile {
      */
     public int getPrice() {
         return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
     }
 
     /**

@@ -56,6 +56,7 @@ public class StructureActionHandler {
             // Get structure and check if player can afford it
             Structure structure = EntityRegistry.getStructure(structureID);
             if (structure == null) return false;
+            if (structure.getId() == 7 && !tile.hasRiver()) return false;
 
             // Check if player can afford the structure
             if(!player.buy(structure.getPrice())) return false;
