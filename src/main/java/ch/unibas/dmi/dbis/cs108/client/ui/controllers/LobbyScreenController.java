@@ -416,8 +416,16 @@ public class LobbyScreenController extends BaseController {
             }
 
             LOGGER.info("Successfully joined lobby: " + currentLobbyId + " (Host: " + isHost + ")");
-            // playerNameLabel.setText("Player: " + localPlayer.getName()); // Already
-            // updated above if needed
+
+            // Get max players information from the event or find it in the lobby list
+            allLobbies.stream()
+                    .filter(lobby -> lobby.getId().equals(currentLobbyId))
+                    .findFirst()
+                    .ifPresent(lobby -> {
+                        maxLobbyPlayers = lobby.getMaxPlayers();
+                        LOGGER.fine("Updated maxLobbyPlayers to: " + maxLobbyPlayers);
+                    });
+
             playersInCurrentLobby.setAll(event.getPlayers());
             hostControlsPanel.setVisible(isHost);
             hostControlsPanel.setManaged(isHost);
@@ -801,7 +809,7 @@ public class LobbyScreenController extends BaseController {
         boolean isValid = !name.isEmpty() && name.length() <= 30;
 
         if (isValid) {
-            createLobbyButton.setStyle("-fx-background-color: #5cb85c;"); // Bootstrap-like green
+            createLobbyButton.setStyle("-fx-background-color: #-color-accent-green;"); // Bootstrap-like green
         } else {
             createLobbyButton.setStyle(""); // Reset to default style
         }
@@ -812,12 +820,12 @@ public class LobbyScreenController extends BaseController {
      * conditions.
      */
     private void updateStartGameButtonStyle() {
-        boolean isValid = isHost && currentLobbyId != null && playersInCurrentLobby.size() == maxLobbyPlayers;
+        boolean isValid = currentLobbyId != null && playersInCurrentLobby.size() == maxLobbyPlayers;
 
         if (isValid) {
-            startGameButton.setStyle("-fx-background-color: #5cb85c;"); // Bootstrap-like green
+            startGameButton.setStyle("-fx-background-color: -color-accent-green;"); // Bootstrap-like green
         } else {
-            startGameButton.setStyle(""); // Reset to default style
+            startGameButton.setStyle("-fx-background-color: -color-accent-red"); // Reset to default style
         }
     }
 
