@@ -423,4 +423,19 @@ public class GameLogicTest {
                 "Should prevent tree placement on non-river tile");
     }
 
+    @Test
+    void testInsufficientResources() {
+        // Setup - drain player's resources
+        Player player = gameState.findPlayerByName("player1");
+        player.setRunes(0);
+
+        // Test buying tile with no runes
+        assertFalse(gameLogic.buyTile(0, 0, "player1"), "Should fail - insufficient runes");
+
+        // Test placing structure with no runes
+        player.setRunes(10); // Enough for tile but not structure
+        assertTrue(gameLogic.buyTile(0, 0, "player1"), "Should work - enough runes for tile");
+        assertFalse(gameLogic.placeStructure(0, 0, 1, "player1"), "Should fail - insufficient runes for structure");
+    }
+
 }
