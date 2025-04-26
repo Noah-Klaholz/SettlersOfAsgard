@@ -1283,10 +1283,10 @@ public class GameScreenController extends BaseController {
 
     public void updateRunesAndEnergyBar() {
         if (gamePlayer != null) {
-            runesLabel.setText("Runes: " + gamePlayer.getRunes());
+            runesLabel.setText(gamePlayer.getRunes() + "");
             energyBar.setProgress((double) gamePlayer.getEnergy() / SETTINGS.Config.MAX_ENERGY.getValue());
         } else {
-            runesLabel.setText("Runes: 0");
+            runesLabel.setText("0");
             energyBar.setProgress(0.0);
         }
     }
@@ -1304,9 +1304,15 @@ public class GameScreenController extends BaseController {
         // Clear and populate the players list
         players.clear();
         String currentPlayerName = gameState.getPlayerTurn();
+        Logger.getGlobal().info("Current player turn: " + currentPlayerName);
 
         for (Player player : gameState.getPlayers()) {
             players.add(player.getName());
+        }
+
+        // Ensure the ListView has the players-list class
+        if (!playersList.getStyleClass().contains("players-list")) {
+            playersList.getStyleClass().add("players-list");
         }
 
         // Set a custom cell factory to highlight the current player
@@ -1318,17 +1324,17 @@ public class GameScreenController extends BaseController {
                 if (empty || playerName == null) {
                     setText(null);
                     setGraphic(null);
-                    getStyleClass().remove("current-turn-player");
+                    getStyleClass().removeAll("current-player");
                 } else {
                     setText(playerName);
                     Player player = gameState.findPlayerByName(playerName);
 
                     // Reset styling
-                    getStyleClass().remove("current-turn-player");
+                    getStyleClass().removeAll("current-player");
 
                     // Apply special styling for the current player
                     if (player != null && player.getName().equals(currentPlayerName)) {
-                        getStyleClass().add("current-turn-player");
+                        getStyleClass().add("current-player");
                     }
 
                     // Add a color indicator for the player

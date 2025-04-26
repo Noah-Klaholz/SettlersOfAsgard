@@ -477,6 +477,7 @@ public class LobbyScreenController extends BaseController {
                     if (chatComponentController != null) {
                         chatComponentController.addSystemMessage(joinedPlayerName + " joined the lobby.");
                     }
+                    updateStartGameButtonStyle();
                     updateLobbyPlayerCountInTable(currentLobbyId, playersInCurrentLobby.size());
                 } else {
                     LOGGER.warning("Received PlayerJoinedLobbyEvent for player already in list: " + joinedPlayerName);
@@ -520,6 +521,7 @@ public class LobbyScreenController extends BaseController {
                 LOGGER.info("Left lobby: " + currentLobbyId);
                 resetLobbyState();
                 requestLobbyList();
+                updateStartGameButtonStyle();
                 if (chatComponentController != null) {
                     chatComponentController.addSystemMessage("You left the lobby.");
                 }
@@ -835,8 +837,7 @@ public class LobbyScreenController extends BaseController {
      * conditions.
      */
     private void updateStartGameButtonStyle() {
-        int minPlayers = maxLobbyPlayers;
-        boolean isValid = isHost && currentLobbyId != null && playersInCurrentLobby.size() >= minPlayers;
+        boolean isValid = isHost && currentLobbyId != null && playersInCurrentLobby.size() == maxLobbyPlayers;
 
         if (isValid) {
             startGameButton.setStyle("-fx-background-color: #5cb85c;"); // Bootstrap-like green
