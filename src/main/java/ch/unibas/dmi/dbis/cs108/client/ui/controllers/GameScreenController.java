@@ -335,15 +335,20 @@ public class GameScreenController extends BaseController {
         if (gamePlayer == null) {
             LOGGER.warning("Game player not found in game state.");
             return;
+        } else {
+            LOGGER.fine(() -> "Game player found: " + gamePlayer.getName() + " Runes: " + gamePlayer.getRunes());
         }
 
         // Update the artifacts list
         artifacts = gamePlayer.getArtifacts();
 
         // Update card images after game state changes
-        Platform.runLater(this::updateCardImages);
+        Platform.runLater(() -> {
+            updateCardImages();
+            refreshCardAffordability();
+            updateRunesAndEnergyBar();
+        });
 
-        updateRunesAndEnergyBar();
         // TODO handle game state sync (show player turn, update energy bar, etc.)
     }
 
@@ -863,6 +868,12 @@ public class GameScreenController extends BaseController {
         if (!cardId.startsWith("structure"))
             return; // Only structures for now
 
+        // Don't start drag operation if player can't afford the card
+        if (!canAffordCard(cardId)) {
+            event.consume();
+            return;
+        }
+
         draggedCardSource = src;
         Dragboard db = src.startDragAndDrop(TransferMode.MOVE);
         ClipboardContent content = new ClipboardContent();
@@ -1083,6 +1094,7 @@ public class GameScreenController extends BaseController {
         for (Node card : artifactHand.getChildren()) {
             if (card.getId() != null && card.getId().startsWith("artifact")) {
                 updateCardImage(card);
+                updateCardAffordability(card);
             }
         }
 
@@ -1090,6 +1102,50 @@ public class GameScreenController extends BaseController {
         for (Node card : structureHand.getChildren()) {
             if (card.getId() != null && (card.getId().startsWith("structure") || card.getId().startsWith("statue"))) {
                 updateCardImage(card);
+                updateCardAffordability(card);
+            }
+        }
+    }
+
+    /**
+     * Refreshes the affordability of all cards in the structure hand.
+     * This is called when the game state changes (e.g., when the player
+     * gains or loses runes).
+     */
+    private void refreshCardAffordability() {
+        for (Node card : structureHand.getChildren()) {
+            if (card.getId() != null && card.getId().startsWith("structure")) {
+                updateCardAffordability(card);
+            }
+        }
+    }
+
+    /**
+     * Updates a card's visual state based on whether the player can afford it.
+     * Makes unaffordable cards gray and non-draggable.
+     *
+     * @param card The card node to update.
+     */
+    private void updateCardAffordability(Node card) {
+        String id = card.getId();
+        if (id == null) return;
+
+        boolean canAfford = canAffordCard(id);
+
+        // Apply or remove the CSS class for unaffordable cards
+        if (canAfford) {
+            card.getStyleClass().remove("unaffordable-card");
+            card.getStyleClass().add("game-card");
+            // Make sure it's draggable for structures
+            if (id.startsWith("structure")) {
+                card.addEventHandler(MouseEvent.DRAG_DETECTED, this::handleCardDragDetected);
+            }
+        } else {
+            card.getStyleClass().remove("game-card");
+            card.getStyleClass().add("unaffordable-card");
+            // Remove drag handler for unaffordable cards
+            if (id.startsWith("structure")) {
+                card.removeEventHandler(MouseEvent.DRAG_DETECTED, this::handleCardDragDetected);
             }
         }
     }
@@ -1184,7 +1240,7 @@ public class GameScreenController extends BaseController {
     // Helper methods for better gameState access
 
     private boolean isTileOwnedByPlayer(int row, int col) {
-        return gameState.getBoardManager().getTile(row,col).hasEntity();
+        return gameState.getBoardManager().getTile(row-1,col-1).hasEntity();
     }
 
     private boolean canAffordCard(String cardId) {
@@ -1202,12 +1258,12 @@ public class GameScreenController extends BaseController {
     }
 
     private String getTileOwnerId(int row, int col) {
-        Tile tile = gameState.getBoardManager().getTile(row, col);
+        Tile tile = gameState.getBoardManager().getTile(row-1, col-1);
         return tile == null ? null : tile.getOwner();
     }
 
     private int getTilePrice(int row, int col) {
-        Tile tile = gameState.getBoardManager().getTile(row, col);
+        Tile tile = gameState.getBoardManager().getTile(row-1, col-1);
         return tile.getPrice();
     }
 
