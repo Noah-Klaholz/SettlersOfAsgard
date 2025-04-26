@@ -191,4 +191,7 @@ public class GameState {
         return gameRound;
     }
 
+    public GameEventNotifier getNotifier() {
+        return notifier;
+    }
 }
