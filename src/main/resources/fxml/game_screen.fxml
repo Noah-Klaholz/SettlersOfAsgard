@@ -55,12 +55,12 @@
             <Label text="Players" styleClass="section-title"/>
             <ListView fx:id="playersList" VBox.vgrow="ALWAYS" styleClass="players-list" minHeight="150"/>
 
-            <VBox spacing="8" VBox.vgrow="NEVER">
+            <VBox spacing="8">
                 <Button text="Resource Overview" onAction="#handleResourceOverview" styleClass="action-button"
                         maxWidth="Infinity"/>
                 <Button text="Leaderboard" onAction="#handleLeaderboard" styleClass="action-button"
                         maxWidth="Infinity"/>
-                <Button text="End Turn" onAction="#handleGameRound" styleClass="action-button" maxWidth="Infinity"/>
+                <Button text="End Turn" onAction="#handleEndTurn" styleClass="action-button" maxWidth="Infinity"/>
             </VBox>
         </VBox>
     </left>
