@@ -402,4 +402,25 @@ public class GameLogicTest {
                 "Trap should have reduced player2's runes");
     }
 
+    /**
+     * This test verifies correct tree edge cases
+     */
+    @Test
+    void testTreeStructure_EdgeCases() {
+        // Test tree placement on river tile
+        Tile riverTile = gameState.getBoardManager().getTile(2, 2); // Tile 2,2 is a river tile
+        assertNotNull(riverTile, "Should have a river tile for testing");
+
+        Structure tree = EntityRegistry.getStructure(7);
+        gameLogic.buyTile(riverTile.getX(), riverTile.getY(), "player1");
+        assertTrue(gameLogic.placeStructure(riverTile.getX(), riverTile.getY(), 7, "player1"),
+                "Should allow tree placement on river tile");
+
+        // Test tree placement on non-river tile
+        Tile nonRiverTile = gameState.getBoardManager().getTile(5, 5); // Tile 5,5 is not a river tile
+        gameLogic.buyTile(nonRiverTile.getX(), nonRiverTile.getY(), "player1");
+        assertFalse(gameLogic.placeStructure(nonRiverTile.getX(), nonRiverTile.getY(), 7, "player1"),
+                "Should prevent tree placement on non-river tile");
+    }
+
 }
