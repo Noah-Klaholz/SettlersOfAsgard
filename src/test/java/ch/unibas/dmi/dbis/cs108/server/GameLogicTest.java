@@ -1,13 +1,16 @@
 package ch.unibas.dmi.dbis.cs108.server;
 
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
+import ch.unibas.dmi.dbis.cs108.server.core.model.Leaderboard;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.TurnManager;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
+import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 
 import java.util.List;
@@ -43,7 +46,7 @@ public class GameLogicTest {
      */
     @BeforeEach
     void setUp(){
-        lobby = new Lobby("testLobby", 4);
+        lobby = new Lobby("testLobby", 4, mock(Leaderboard.class));
         ClientHandler player1 = mock(ClientHandler.class);
         ClientHandler player2 = mock(ClientHandler.class);
         ClientHandler player3 = mock(ClientHandler.class);
@@ -218,32 +221,72 @@ public class GameLogicTest {
         assertEquals(1, gameState.getPlayers().get(0).getArtifacts().size());
     }
 
+    /**
+     * This test verifies the correct functionality of the Helgrindr structure. (3)
+     */
+    @Test
+    void testUseStructureHelgrindr() {
+        Tile t = gameState.getBoardManager().getTile(0, 0);
+        Structure s = EntityRegistry.getStructure(3);
+        assert s != null;
+        gameState.getPlayers().get(0).addRunes(100);
+        assertTrue(gameLogic.buyTile(0, 0, "player1"));
+        assertTrue(gameLogic.placeStructure(0, 0, s.getId(), "player1"));
+        assertTrue(gameLogic.useStructure(0, 0, s.getId(), "player1"));
+        assertEquals(0, gameState.getPlayers().get(0).getStatus().get(Status.BuffType.DEBUFFABLE));
 
+    }
 
+    /**
+     * This test verifies the correct functionality of the huginn and muginn structure. (4)
+     */
+    @Test
+    void testUseStructureHuginnAndMuninn() {
+        Tile t =  gameState.getBoardManager().getTile(0, 0);
+        Structure s = EntityRegistry.getStructure(4);
+        assert s != null;
+        Artifact a = EntityRegistry.getArtifact(10);
+        gameState.getBoardManager().getTile(1, 1).setArtifact(a);
+        // structure use should now produce output '4$1$1$10' (tile 1, 1, id 10)
+        GameState spyGameState = spy(gameState);
+        assertTrue(gameLogic.buyTile(0, 0, "player1"));
+        assertTrue(gameLogic.placeStructure(0, 0, s.getId(), "player1"));
+        assertTrue(gameLogic.useStructure(0, 0, s.getId(), "player1"));
+        assertEquals(2, gameState.getPlayers().get(0).getEnergy());
+        verify(spyGameState).sendNotification("player1", "4$1$1$10");
+    }
 
+    /**
+     * This test verifies the correct functionality of the rans hall structure. (5)
+     */
+    @Test
+    void testUseStructureRansHall() {
+        Tile t =  gameState.getBoardManager().getTile(0, 0);
+        Structure s = EntityRegistry.getStructure(5);
+        assert s != null;
+        assertTrue(gameLogic.buyTile(0, 0, "player1"));
+        assertTrue(gameLogic.placeStructure(0, 0, s.getId(), "player1"));
+        assertTrue(gameLogic.useStructure(0, 0, s.getId(), "player1"));
+        assertEquals(2, gameState.getPlayers().get(0).getEnergy());
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    /**
+     * This test verifies the correct functionality of the tree structure. (7)
+     */
+    @Test
+    void testUseStructureTree() {
+        Tile t =  gameState.getBoardManager().getTile(2, 2);
+        t.setEntity(EntityRegistry.getStructure(7));
+        Structure s = EntityRegistry.getStructure(7);
+        assert s != null;
+        int runesBefore = gameState.getPlayers().get(0).getRunes();
+        int price = t.getPrice();
+        assertTrue(gameLogic.buyTile(2, 2, "player1"));
+        assertTrue(gameLogic.placeStructure(2, 2, s.getId(), "player1"));
+        assertTrue(gameLogic.useStructure(2, 2, s.getId(), "player1"));
+        int expectedRunes = runesBefore - price + (int)s.getParams().get(0).getValue();
+        assertEquals(expectedRunes, gameState.getPlayers().get(0).getRunes());
+    }
 
     /**
      * This test verifies the correct functionality of the activeTrap structure. (8)
@@ -253,14 +296,8 @@ public class GameLogicTest {
         Tile t = gameState.getBoardManager().getTile(0, 0);
         Structure s = EntityRegistry.getStructure(8);
         assert s != null;
-        assertTrue(gameLogic.buyTile(0, 0, "player1"));
         assertTrue(gameLogic.placeStructure(0, 0, s.getId(), "player1"));
-        int runesBefore = gameState.getPlayers().get(0).getRunes();
         assertTrue(gameLogic.useStructure(0, 0, s.getId(), "player1"));
-        int runesAfter = gameState.getPlayers().get(0).getRunes();
-        assertEquals(runesBefore + s.getParams().get(0).getValue(), runesAfter);
     }
-
-
 
 }
