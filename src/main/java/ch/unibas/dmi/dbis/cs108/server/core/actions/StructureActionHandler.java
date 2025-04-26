@@ -145,7 +145,7 @@ public class StructureActionHandler {
         // Validate tile state
         if (tile == null ||
                 !tile.getOwner().equals(playerName) ||
-                (requireEmptyTile && !tile.hasOwner()) ||
+                (requireEmptyTile && tile.hasEntity()) ||
                 (requireEntityOnTile && !tile.hasEntity())) {
             return new ValidationResult(false, player, null);
         }
