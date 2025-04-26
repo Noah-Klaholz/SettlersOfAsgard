@@ -88,6 +88,7 @@ public class LobbyScreenController extends BaseController {
     private Button startGameButton;
 
     private String currentLobbyId;
+    private int maxLobbyPlayers;
     private boolean isHost = false;
     private Player localPlayer;
     private PlayerIdentityManager playerManager;
@@ -342,6 +343,7 @@ public class LobbyScreenController extends BaseController {
         }
         // Get selected max players value
         Integer maxPlayers = maxPlayersCombo.getValue();
+        maxLobbyPlayers = maxPlayers == null ? 1 : maxPlayers;
         if (maxPlayers == null) {
             maxPlayers = 4; // Fallback if somehow not selected
         }
@@ -498,6 +500,7 @@ public class LobbyScreenController extends BaseController {
                         chatComponentController.addSystemMessage(leftPlayerName + " left the lobby.");
                     }
                     updateLobbyPlayerCountInTable(currentLobbyId, playersInCurrentLobby.size());
+                    updateStartGameButtonStyle();
                 } else {
                     LOGGER.warning("Received PlayerLeftLobbyEvent for player not in list: " + leftPlayerName);
                 }
@@ -831,7 +834,7 @@ public class LobbyScreenController extends BaseController {
      * conditions.
      */
     private void updateStartGameButtonStyle() {
-        int minPlayers = 2;
+        int minPlayers = maxLobbyPlayers;
         boolean isValid = isHost && currentLobbyId != null && playersInCurrentLobby.size() >= minPlayers;
 
         if (isValid) {
