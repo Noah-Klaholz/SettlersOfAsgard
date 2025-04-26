@@ -170,6 +170,8 @@ public class GameScreenController extends BaseController {
     public GameScreenController() {
         super(new ResourceLoader(), UIEventBus.getInstance(), SceneManager.getInstance());
         localPlayer = GameApplication.getLocalPlayer();
+        Logger.getGlobal().info("game state uses Local Player: " + localPlayer.getName());
+        gameState = new GameState();
         subscribeEvents();
         Logger.getGlobal().info("GameScreenController created and subscribed to events.");
     }
@@ -185,15 +187,13 @@ public class GameScreenController extends BaseController {
         LOGGER.setLevel(Level.ALL);
         LOGGER.info("GameScreenController initialisation started");
 
-        gamePlayer = localPlayer; // temporary for initialisation
-        currentLobbyId = GameApplication.getCurrentLobbyId();
-        gameState = new GameState();
-        gameState.getBoardManager().initializeBoard(8, 7);
-
         if (localPlayer == null) {
             LOGGER.severe("LocalPlayer is null during GameScreenController initialisation!");
             localPlayer = new Player("ErrorGuest"); // Fail‑safe stub
         }
+
+        gamePlayer = localPlayer; // temporary for initialisation
+        currentLobbyId = GameApplication.getCurrentLobbyId();
 
         setupUI();
         loadMapImage();
@@ -433,6 +433,7 @@ public class GameScreenController extends BaseController {
         Platform.runLater(() -> {
             if (event.isSuccess()) {
                 localPlayer.setName(event.getNewName());
+                GameApplication.setLocalPlayer(localPlayer);
                 chatComponentController.setPlayer(localPlayer);
                 chatComponentController.addSystemMessage("Name successfully changed to: " + localPlayer.getName());
                 settingsDialog.playerNameProperty().set(localPlayer.getName());

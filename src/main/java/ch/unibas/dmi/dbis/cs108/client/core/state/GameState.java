@@ -35,6 +35,7 @@ public class GameState {
      */
     public GameState() {
         this.boardManager = new BoardManager(stateLock);
+        boardManager.initializeBoard(8, 7);
     }
 
     /**
@@ -116,7 +117,7 @@ public class GameState {
     public List<Player> getPlayers() {
         stateLock.readLock().lock();
         try {
-            return Collections.unmodifiableList(players);
+            return players;
         } finally {
             stateLock.readLock().unlock();
         }

@@ -97,6 +97,16 @@ public class GameApplication extends Application {
     }
 
     /**
+     * Sets the static localPlayer instance.
+     *
+     * @param localPlayer The Player instance representing the local player.
+     */
+    public static void setLocalPlayer(Player localPlayer) {
+        GameApplication.localPlayer = localPlayer;
+        LOGGER.info("Local player set to: " + localPlayer.getName());
+    }
+
+    /**
      * Provides safe access to the static localPlayer instance.
      * Throws an IllegalStateException if accessed before initialization.
      *
