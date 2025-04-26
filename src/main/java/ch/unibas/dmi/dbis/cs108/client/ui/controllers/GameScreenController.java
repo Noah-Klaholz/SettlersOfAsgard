@@ -22,6 +22,8 @@ import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
+import ch.unibas.dmi.dbis.cs108.shared.game.Status;
+import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -82,6 +84,7 @@ public class GameScreenController extends BaseController {
      * --------------------------------------------------
      */
     private Player localPlayer;
+    private Player gamePlayer;
     private final ObservableList<String> players = FXCollections.observableArrayList();
     private GameState gameState;
     private List<Artifact> artifacts = new ArrayList<>();
@@ -176,6 +179,7 @@ public class GameScreenController extends BaseController {
         LOGGER.setLevel(Level.ALL);
 
         localPlayer = GameApplication.getLocalPlayer();
+        gamePlayer = localPlayer; // temporary for initialisation
         currentLobbyId = GameApplication.getCurrentLobbyId();
         gameState = new GameState();
 
@@ -312,13 +316,20 @@ public class GameScreenController extends BaseController {
             return;
         // Update the game State with the new game state
         gameState = e.getGameState();
+        gamePlayer = gameState.findPlayerByName(gamePlayer.getName());
+
+        if (gamePlayer == null) {
+            LOGGER.warning("Game player not found in game state.");
+            return;
+        }
 
         // Update the artifacts list
-        artifacts = gameState.findPlayerByName(localPlayer.getName()).getArtifacts();
+        artifacts = gamePlayer.getArtifacts();
 
         // Update card images after game state changes
         Platform.runLater(this::updateCardImages);
 
+        updateRunesAndEnergyBar();
         // TODO handle game state sync (show player turn, update energy bar, etc.)
     }
 
@@ -544,8 +555,8 @@ public class GameScreenController extends BaseController {
             alert.setTitle("Confirm Purchase");
             alert.showAndWait().ifPresent(result -> {
                 if (result == ButtonType.YES) {
-                    int gold = getPlayerGold();
-                    if (gold >= price) {
+                    int runes = getPlayerRunes();
+                    if (runes >= price) {
                         // Deduct gold and assign ownership would be handled by server after BuyTileUIEvent
                         eventBus.publish(new BuyTileUIEvent(row, col));
                     } else {
@@ -936,7 +947,9 @@ public class GameScreenController extends BaseController {
             content.getChildren().add(titleLabel);
 
             // Only add separator if next section has content
-            if (details.getDescription() != null && !details.getDescription().isEmpty()) {
+            if (details.getDescription() != null && !details.getDescription().isEmpty() ||
+                    details.getLore() != null && !details.getLore().isEmpty() ||
+                    details.getPrice() > 0) {
                 content.getChildren().add(new Separator());
             }
         }
@@ -948,7 +961,8 @@ public class GameScreenController extends BaseController {
             content.getChildren().add(descLabel);
 
             // Only add separator if next section has content
-            if (details.getLore() != null && !details.getLore().isEmpty()) {
+            if (details.getLore() != null && !details.getLore().isEmpty() ||
+                    details.getPrice() > 0) {
                 content.getChildren().add(new Separator());
             }
         }
@@ -958,6 +972,18 @@ public class GameScreenController extends BaseController {
             loreLabel.getStyleClass().add("tooltip-lore");
             loreLabel.setWrapText(true);
             content.getChildren().add(loreLabel);
+
+            // Only add separator if next section has content
+            if (details.getPrice() > 0) {
+                content.getChildren().add(new Separator());
+            }
+        }
+
+        if (details.getPrice() > 0) {
+            Label priceLabel = new Label("Price: " + details.getPrice() + " runes");
+            priceLabel.getStyleClass().add("tooltip-price");
+            priceLabel.setWrapText(true);
+            content.getChildren().add(priceLabel);
         }
 
         // If no content was added, show a default message
@@ -994,8 +1020,14 @@ public class GameScreenController extends BaseController {
         String title = entity.getName();
         String description = entity.getUsage();
         String lore = entity.getDescription();
+        int actualPrice = 0;
         int price = entity.getPrice();
-        return new CardDetails(title, description, lore, URL, price);
+        if (price != 0) {
+            double priceModifier = gamePlayer.getStatus().get(Status.BuffType.SHOP_PRICE);
+            double adjusted = price / Math.max(priceModifier, 0.5); // Prevent divide-by-zero or negative scaling, set maximum shop price to 200%
+            actualPrice = Math.max(0, (int) Math.round(adjusted)); // Ensure price is never negative
+        }
+        return new CardDetails(title, description, lore, URL, actualPrice);
     }
 
     /**
@@ -1121,33 +1153,31 @@ public class GameScreenController extends BaseController {
     // --- Placeholder methods for game state; keep until real model is wired ---
 
     private boolean isTileOwnedByPlayer(int row, int col) {
-        return row % 2 != 0; // TEST: only odd rows are "owned"
+        return gameState.getBoardManager().getTile(row,col).hasEntity();
     }
 
     private boolean canAffordCard(String cardId) {
-        return getPlayerRunes() >= getCardCost(cardId);
+        int cost = getCardCost(cardId);
+        return getPlayerRunes() >= cost;
     }
 
     private int getCardCost(String cardId) {
-        return cardId.startsWith("structure") ? 5 : 10;
+        CardDetails details = getCardDetails(cardId);
+        return details.getPrice();
     }
 
     private int getPlayerRunes() {
-        return 3;
-        /* TEST: deliberately low */ }
+        return gamePlayer.getRunes();
+    }
 
     private String getTileOwnerId(int row, int col) {
-        if (row % 2 == 0)
-            return null;
-        return (col % 2 == 0) ? localPlayer.getName() : "player2_id";
+        Tile tile = gameState.getBoardManager().getTile(row, col);
+        return tile.getOwner() == null ? null : tile.getOwner();
     }
 
     private int getTilePrice(int row, int col) {
-        return 10;
-    }
-
-    private int getPlayerGold() {
-        return 50;
+        Tile tile = gameState.getBoardManager().getTile(row, col);
+        return tile.getPrice();
     }
 
     private Color getPlayerColor(String playerId) {

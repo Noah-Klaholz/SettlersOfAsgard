@@ -309,26 +309,32 @@
 }
 
 .tooltip-title {
-    -fx-text-fill: #ffd700; /* Direct gold color instead of -color-accent-gold */
+    -fx-text-fill: -color-accent-gold;
     -fx-font-weight: bold;
     -fx-font-size: 14px;
 }
 
 .tooltip-description {
-    -fx-text-fill: white; /* Direct white color instead of -color-text-primary */
+    -fx-text-fill: -color-text-primary;
     -fx-font-size: 12px;
 }
 
 .tooltip-lore {
-    -fx-text-fill: #d2b48c; /* Direct beige color instead of -color-text-secondary */
+    -fx-text-fill: -color-text-secondary;
+    -fx-font-style: italic;
+    -fx-font-size: 12px;
+}
+
+.tooltip-price {
+    -fx-text-fill: -color-text-muted;
     -fx-font-style: italic;
     -fx-font-size: 12px;
 }
 
 .card-tooltip {
-    -fx-background-color: #1e1e1e; /* Direct color instead of -color-background-tertiary */
+    -fx-background-color: -color-background-tertiary;
     -fx-padding: 0;
-    -fx-border-color: #ffd700; /* Direct gold color */
+    -fx-border-color: -color-accent-gold;
     -fx-border-width: 1px;
     -fx-border-radius: 4px;
     -fx-background-radius: 4px;

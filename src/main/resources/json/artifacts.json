@@ -78,7 +78,7 @@
     "cardImagePath": "resources/images/cards/a_muspelheimsflame_card.png",
     "id": 16,
     "chance": 0.3,
-    "effect": 0.5
+    "effect": 0.2
   },
   {
     "name": "Ice Splinter of Niflheim",
@@ -88,7 +88,7 @@
     "cardImagePath": "resources/images/cards/a_nilfheimsicesplinter_card.png",
     "id": 17,
     "chance": 0.3,
-    "effect": -0.5
+    "effect": -0.2
   },
   {
     "name": "Blood of Jörmungandr",

@@ -62,7 +62,7 @@ public class Player {
         }
 
         double priceModifier = status.get(Status.BuffType.SHOP_PRICE);
-        double adjusted = price / Math.max(priceModifier, 0); // Prevent divide-by-zero or negative scaling
+        double adjusted = price / Math.max(priceModifier, 0.5); // Prevent divide-by-zero or negative scaling and ensure maximum price of 200% original
         int adjustedPrice = Math.max(0, (int) Math.round(adjusted)); // Ensure price is never negative
 
         if (runes >= adjustedPrice) {
