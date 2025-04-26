@@ -51,7 +51,7 @@ public class PlayerIdentityManager {
     /**
      * Returns the name of the local player.
      *
-     * @return the name of the local player
+     * @param newName the name of the local player
      */
     public void updatePlayerName(String newName) {
         if (newName == null || newName.trim().isEmpty()) {

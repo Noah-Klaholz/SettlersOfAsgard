@@ -51,6 +51,11 @@ public class GameApplication extends Application {
     private Player localPlayer;
 
     /**
+     * The PlayerIdentityManager instance for managing player identities.
+     */
+    private PlayerIdentityManager playerManager;
+
+    /**
      * The main entry point for the JavaFX application.
      * It launches the application and sets up the primary stage.
      *
@@ -140,16 +145,13 @@ public class GameApplication extends Application {
             LOGGER.info("Using system username or default: " + username);
         }
 
-        // Ensure localPlayer is created safely
-        if (localPlayer == null) {
-            localPlayer = getLocalPlayer();
-            LOGGER.info("Local player instance created: " + localPlayer.getName());
-        } else {
-            // If already created (e.g., by another part of the app before start), update
-            // name if needed
-            localPlayer.setName(username);
-            LOGGER.info("Local player instance already existed, updated name to: " + localPlayer.getName());
-        }
+        // Initialize the PlayerIdentityManager and localPlayer
+        playerManager = PlayerIdentityManager.getInstance();
+        localPlayer = getLocalPlayer();
+        playerManager.addPlayerUpdateListener(this::handlePlayerUpdate);
+
+        // Update the players with the username
+        PlayerIdentityManager.getInstance().updatePlayerName(username);
 
         // Extract server ip and port from the second argument.
         if (params.size() >= 2) {
@@ -162,6 +164,14 @@ public class GameApplication extends Application {
                     LOGGER.info("Connecting to server at " + serverIp + ":" + serverPort);
                     // Pass the static localPlayer instance
                     networkController = new NetworkController(localPlayer);
+
+                    GameState gameState = new GameState();
+                    GameStateManager gameStateManager = new GameStateManager(gameState);
+
+                    // Initialize CommunicationMediator to wire UI and network messages.
+                    new CommunicationMediator(networkController, gameStateManager, localPlayer);
+                    LOGGER.info("CommunicationMediator initialized.");
+
                     networkController.connect(serverIp, serverPort);
                 } catch (NumberFormatException e) {
                     LOGGER.log(Level.SEVERE, "Invalid server port format: " + parts[1], e);
@@ -186,13 +196,6 @@ public class GameApplication extends Application {
             Platform.exit();
             System.exit(1);
         }
-
-        GameState gameState = new GameState();
-        GameStateManager gameStateManager = new GameStateManager(gameState);
-
-        // Initialize CommunicationMediator to wire UI and network messages.
-        new CommunicationMediator(networkController, gameStateManager, localPlayer);
-        LOGGER.info("CommunicationMediator initialized.");
 
         // Initialize and display the main menu scene.
         SceneManager sceneManager = SceneManager.getInstance();
@@ -265,6 +268,15 @@ public class GameApplication extends Application {
     }
 
     /**
+     * Handles player updates by updating the local player instance.
+     *
+     * @param updatedPlayer The updated Player instance.
+     */
+    public void handlePlayerUpdate(Player updatedPlayer) {
+        localPlayer = updatedPlayer;
+    }
+
+    /**
      * Stops the JavaFX application and performs cleanup.
      */
     @Override
@@ -285,6 +297,7 @@ public class GameApplication extends Application {
             networkController.disconnect();
             networkController = null; // Help GC
         }
+        playerManager.removePlayerUpdateListener(this::handlePlayerUpdate);
         // Perform any additional cleanup tasks if necessary (e.g., closing resources)
         Platform.exit();
         System.exit(0);

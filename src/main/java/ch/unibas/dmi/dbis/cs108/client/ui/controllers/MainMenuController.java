@@ -5,7 +5,6 @@ import ch.unibas.dmi.dbis.cs108.client.core.PlayerIdentityManager;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player; // Use shared Player
-import ch.unibas.dmi.dbis.cs108.client.networking.ConnectionState;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.AboutDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
@@ -80,6 +79,8 @@ public class MainMenuController extends BaseController {
             playerManager = PlayerIdentityManager.getInstance();
             localPlayer = playerManager.getLocalPlayer();
             playerManager.addPlayerUpdateListener(this::handlePlayerUpdate);
+            LOGGER.info("Main Menu Local player initialized: " + localPlayer.getName());
+
             if (this.localPlayer == null) {
                 LOGGER.severe("LocalPlayer is null during MainMenuController initialization!");
                 // Handle error appropriately, maybe show an error message and disable
@@ -233,21 +234,8 @@ public class MainMenuController extends BaseController {
         Platform.runLater(() -> {
             if (event.isSuccess()) {
                 String newName = event.getNewName();
-                playerManager.updatePlayerName(newName);
                 // Update the central player instance
-                if (localPlayer != null) {
-                    localPlayer.setName(newName);
-                    GameApplication.setLocalPlayer(localPlayer);
-                    LOGGER.info("Player name successfully changed to: " + localPlayer.getName());
-                    if (chatComponentController != null) {
-                        chatComponentController.setPlayer(localPlayer); // Update chat component's player context
-                        chatComponentController
-                                .addSystemMessage("Name successfully changed to: " + localPlayer.getName());
-                    }
-                    settingsDialog.playerNameProperty().set(localPlayer.getName()); // Update settings dialog
-                } else {
-                    LOGGER.severe("Cannot update player name: localPlayer is null.");
-                }
+                playerManager.updatePlayerName(newName);
             } else {
                 String failureMsg = event.getMessage() != null ? event.getMessage() : "Unknown reason.";
                 LOGGER.warning("Failed to change player name: " + failureMsg);
@@ -397,7 +385,18 @@ public class MainMenuController extends BaseController {
      */
     private void handlePlayerUpdate(Player updatedPlayer) {
         this.localPlayer = updatedPlayer;
-        // Update relevant UI components
+
+        if (localPlayer != null) {
+            LOGGER.info("Player name successfully changed to: " + localPlayer.getName());
+            if (chatComponentController != null) {
+                chatComponentController.setPlayer(localPlayer); // Update chat component's player context
+                chatComponentController
+                        .addSystemMessage("Name successfully changed to: " + localPlayer.getName());
+            }
+            settingsDialog.playerNameProperty().set(localPlayer.getName()); // Update settings dialog
+        } else {
+            LOGGER.severe("Cannot update player name: localPlayer is null.");
+        }
     }
 
     /**
