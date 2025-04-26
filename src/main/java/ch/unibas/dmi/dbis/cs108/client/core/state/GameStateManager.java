@@ -78,6 +78,7 @@ public class GameStateManager {
 
         gameState.getStateLock().writeLock().lock();
         try {
+            gameState.reset();
             // Log each section before parsing to help with debugging
             LOGGER.fine("META section: " + sections[0]);
             parseMetaSection(sections[0]);
@@ -98,7 +99,7 @@ public class GameStateManager {
     }
 
     /**
-     * Parse the meta section of the string
+     * Parse the meta-section of the string
      *
      * @param metaSection the first section of the message that contains metadata
      */
@@ -122,25 +123,22 @@ public class GameStateManager {
      * @param playersSection the first section of the message that contains player data
      */
     private void parsePlayersSection(String playersSection) {
-        // Format: PLAYERS:uuid1{...};uuid2{...};
-        String[] playerEntries = playersSection.substring(8).split(";(?=\\w{8}-)"); // Split on ; followed by UUID
-        Map<UUID, Player> existingPlayers = new HashMap<>();
-        gameState.getPlayers().forEach(p -> existingPlayers.put(p.getPlayerID(), p));
+        // Format: PLAYERS:name1{...};name2{...};
+        String[] playerEntries = playersSection.substring(8).split(";"); // Split on ; followed by name
 
         for (String entry : playerEntries) {
             if (entry.isEmpty()) continue;
 
-            // Extract UUID and properties
+            // Extract name and properties
             int braceOpen = entry.indexOf('{');
-            UUID playerId = UUID.fromString(entry.substring(0, braceOpen));
+            if (braceOpen == -1) continue;
+
+            String playerName = entry.substring(0, braceOpen);
             String props = entry.substring(braceOpen + 1, entry.length() - 1);
 
-            // Get or create player
-            Player player = existingPlayers.get(playerId);
-            if (player == null) {
-                player = new Player(""); // Temporary name
-                gameState.getPlayers().add(player);
-            }
+            // Create player
+            Player player = new Player(playerName);
+            gameState.addPlayer(player);
 
             // Parse properties
             for (String prop : props.split(",(?=[A-Z]{1,2}:)")) { // Split on commas before property codes
@@ -148,7 +146,6 @@ public class GameStateManager {
                 if (keyValue.length != 2) continue;
 
                 switch (keyValue[0]) {
-                    case "N": player.setName(keyValue[1]); break;
                     case "R": player.setRunes(Integer.parseInt(keyValue[1])); break;
                     case "E": player.setEnergy(Integer.parseInt(keyValue[1])); break;
                     case "T":
@@ -198,15 +195,6 @@ public class GameStateManager {
                 }
             }
         }
-
-        // Remove players not in the update
-        List<Player> toRemove = new ArrayList<>();
-        for (Player p : gameState.getPlayers()) {
-            if (!existingPlayers.containsKey(p.getPlayerID())) {
-                toRemove.add(p);
-            }
-        }
-        gameState.getPlayers().removeAll(toRemove);
     }
 
     /**

@@ -171,10 +171,12 @@ public class GameScreenController extends BaseController {
      */
     public GameScreenController() {
         super(new ResourceLoader(), UIEventBus.getInstance(), SceneManager.getInstance());
+
         playerManager = PlayerIdentityManager.getInstance();
         localPlayer = playerManager.getLocalPlayer();
         playerManager.addPlayerUpdateListener(this::handlePlayerUpdate);
-        Logger.getGlobal().info("game state uses Local Player: " + localPlayer.getName());
+
+        Logger.getGlobal().info("Game state uses Local Player: " + localPlayer.getName());
         gameState = new GameState();
         subscribeEvents();
         Logger.getGlobal().info("GameScreenController created and subscribed to events.");
@@ -213,6 +215,8 @@ public class GameScreenController extends BaseController {
         initialiseChatComponent();
         initialisePlayerColours();
         updateCardImages();
+
+        Logger.getGlobal().info("GameScreenController initialized");
     }
 
     /*
@@ -358,6 +362,7 @@ public class GameScreenController extends BaseController {
         }
         // Update the game State with the new game state
         gameState = e.getGameState();
+        LOGGER.info("GameSyncEvent received. Searching for player " + localPlayer.getName());
         gamePlayer = gameState.findPlayerByName(localPlayer.getName());
 
         if (gamePlayer == null) {

@@ -54,8 +54,7 @@ public class GameStateSerializer {
             // 2. All Players
             sb.append("PLAYERS:");
             for (Player p : gameState.getPlayers()) {
-                sb.append(p.getPlayerID()).append("{")
-                        .append("N:").append(p.getName()).append(",")
+                sb.append(p.getName()).append("{")
                         .append("R:").append(p.getRunes()).append(",")
                         .append("E:").append(p.getEnergy()).append(",")
 

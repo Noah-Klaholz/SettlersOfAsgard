@@ -110,6 +110,20 @@ public class GameState {
     }
 
     /**
+     * Adds a player to the list of players
+     *
+     * @param player the player to add
+     */
+    public void addPlayer(Player player) {
+        stateLock.writeLock().lock();
+        try {
+            players.add(player);
+        } finally {
+            stateLock.writeLock().unlock();
+        }
+    }
+
+    /**
      * Gets the list of players
      *
      * @return the players
@@ -131,6 +145,8 @@ public class GameState {
      */
     public Player findPlayerByName(String name) {
         stateLock.readLock().lock();
+        LOGGER.info("Finding player by name: " + name);
+        LOGGER.info("Current players: " + players);
         try {
             return players.stream()
                     .filter(p -> p.getName().equals(name))

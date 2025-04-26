@@ -515,6 +515,7 @@ public class LobbyScreenController extends BaseController {
     private void handleSelfLeftLobby(LobbyLeftEvent event) {
         Objects.requireNonNull(event, "LobbyLeftEvent cannot be null");
         if (currentLobbyId != null && currentLobbyId.equals(event.getLobbyId())) {
+            playersInCurrentLobby.removeAll();
             Platform.runLater(() -> {
                 LOGGER.info("Left lobby: " + currentLobbyId);
                 resetLobbyState();
