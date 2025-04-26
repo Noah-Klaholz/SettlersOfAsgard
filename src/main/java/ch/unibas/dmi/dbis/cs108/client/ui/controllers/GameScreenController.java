@@ -762,8 +762,8 @@ public class GameScreenController extends BaseController {
         gridOffsetX = baseX + (gridW - totalW) / 2 + addHX;
         gridOffsetY = baseY + (gridH - totalH) / 2 + addHY;
 
-        for (int r = 0; r < HEX_ROWS - 1; r++) {
-            for (int c = 0; c < HEX_COLS - 1; c++) {
+        for (int r = 0; r < HEX_ROWS; r++) {
+            for (int c = 0; c < HEX_COLS; c++) {
                 double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2);
                 double cy = gridOffsetY + r * vSpacing;
                 boolean selected = (r == selectedRow && c == selectedCol);
@@ -803,7 +803,7 @@ public class GameScreenController extends BaseController {
         gc.closePath();
 
         // Ownership colouring --------------------------------------------------
-        String ownerId = getTileOwnerId(row, col); // Placeholder implementation
+        String ownerId = getTileOwnerId(row, col);
         Color ownerCol = getPlayerColor(ownerId);
         if (ownerCol != null) {
             Paint oldFill = gc.getFill();
