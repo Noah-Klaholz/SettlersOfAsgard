@@ -84,6 +84,8 @@ public class GameStateManager {
             parseBoardSection(sections[2]);
 
             Logger.getGlobal().info("GameState updated:");
+        } catch (Exception e) {
+            LOGGER.warning("Error updating game state: " + e.getMessage());
         } finally {
             gameState.getStateLock().writeLock().unlock();
         }

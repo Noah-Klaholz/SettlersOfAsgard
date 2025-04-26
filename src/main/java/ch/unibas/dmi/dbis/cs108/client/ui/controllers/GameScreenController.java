@@ -169,14 +169,9 @@ public class GameScreenController extends BaseController {
      */
     public GameScreenController() {
         super(new ResourceLoader(), UIEventBus.getInstance(), SceneManager.getInstance());
+        localPlayer = GameApplication.getLocalPlayer();
         subscribeEvents();
         Logger.getGlobal().info("GameScreenController created and subscribed to events.");
-
-        localPlayer = GameApplication.getLocalPlayer();
-        gamePlayer = localPlayer; // temporary for initialisation
-        currentLobbyId = GameApplication.getCurrentLobbyId();
-        gameState = new GameState();
-        gameState.getBoardManager().initializeBoard(8, 7);
     }
 
     /**
@@ -189,6 +184,11 @@ public class GameScreenController extends BaseController {
     private void initialize() {
         LOGGER.setLevel(Level.ALL);
         LOGGER.info("GameScreenController initialisation started");
+
+        gamePlayer = localPlayer; // temporary for initialisation
+        currentLobbyId = GameApplication.getCurrentLobbyId();
+        gameState = new GameState();
+        gameState.getBoardManager().initializeBoard(8, 7);
 
         if (localPlayer == null) {
             LOGGER.severe("LocalPlayer is null during GameScreenController initialisation!");
@@ -344,7 +344,7 @@ public class GameScreenController extends BaseController {
         }
         // Update the game State with the new game state
         gameState = e.getGameState();
-        gamePlayer = gameState.findPlayerByName(gamePlayer.getName());
+        gamePlayer = gameState.findPlayerByName(localPlayer.getName());
 
         if (gamePlayer == null) {
             LOGGER.warning("Game player not found in game state.");
