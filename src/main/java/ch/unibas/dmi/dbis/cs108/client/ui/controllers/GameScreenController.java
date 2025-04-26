@@ -335,6 +335,8 @@ public class GameScreenController extends BaseController {
         if (gamePlayer == null) {
             LOGGER.warning("Game player not found in game state.");
             return;
+        } else {
+            LOGGER.fine(() -> "Game player found: " + gamePlayer.getName() + " Runes: " + gamePlayer.getRunes());
         }
 
         // Update the artifacts list
@@ -1238,7 +1240,7 @@ public class GameScreenController extends BaseController {
     // Helper methods for better gameState access
 
     private boolean isTileOwnedByPlayer(int row, int col) {
-        return gameState.getBoardManager().getTile(row,col).hasEntity();
+        return gameState.getBoardManager().getTile(row-1,col-1).hasEntity();
     }
 
     private boolean canAffordCard(String cardId) {
@@ -1256,12 +1258,12 @@ public class GameScreenController extends BaseController {
     }
 
     private String getTileOwnerId(int row, int col) {
-        Tile tile = gameState.getBoardManager().getTile(row, col);
+        Tile tile = gameState.getBoardManager().getTile(row-1, col-1);
         return tile == null ? null : tile.getOwner();
     }
 
     private int getTilePrice(int row, int col) {
-        Tile tile = gameState.getBoardManager().getTile(row, col);
+        Tile tile = gameState.getBoardManager().getTile(row-1, col-1);
         return tile.getPrice();
     }
 
