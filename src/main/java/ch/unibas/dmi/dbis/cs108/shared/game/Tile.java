@@ -267,6 +267,15 @@ public class Tile {
     }
 
     /**
+     * Checks if the tile has an owner.
+     *
+     * @return true if the tile has an owner, false otherwise.
+     */
+    public boolean hasOwner() {
+        return owner != null;
+    }
+
+    /**
      * Builder class for creating Tile instances.
      */
     public static class TileBuilder {
