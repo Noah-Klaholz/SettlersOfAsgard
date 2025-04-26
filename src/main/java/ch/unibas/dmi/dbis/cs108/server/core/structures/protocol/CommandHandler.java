@@ -368,6 +368,7 @@ public class CommandHandler {
             this.gameLogic = currentLobby.getGameLogic();
             String startPlayerName = gameLogic.getGameState().getPlayerTurn();
             currentLobby.broadcastMessage("STRT$" + startPlayerName);
+            currentLobby.broadcastMessage(gameLogic.getGameState().createDetailedStatusMessage());
             return true;
         } else {
             System.out.println("ERR$106$CANNOT_START_GAME");

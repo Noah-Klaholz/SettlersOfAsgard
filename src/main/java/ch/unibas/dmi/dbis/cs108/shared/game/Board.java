@@ -6,6 +6,7 @@ import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
 import ch.unibas.dmi.dbis.cs108.shared.utils.RandomGenerator;
 
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Logger;
 
 /**
  * Class representing a game board.
@@ -14,6 +15,8 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class Board {
 
+    /** Logger to log logging */
+    Logger logger = Logger.getLogger(Board.class.getName());
 
     /**
      * Two-dimensional array of Tiles. Represents the entire board. The first dimension is x.
@@ -128,7 +131,7 @@ public class Board {
      */
     public Tile getTileByCoordinates(int x, int y) {
         if (x < 0 || x >= tiles.length || y < 0 || y >= tiles[0].length) {
-            System.out.println("Coordinates out of bounds");
+            logger.warning("Coordinates out of bounds");
             return null; // Out of bounds
         }
         return tiles[x][y];
@@ -143,7 +146,7 @@ public class Board {
      */
     public void setTileByCoordinates(int x, int y, Tile tile) {
         if (x < 0 || x >= tiles.length || y < 0 || y >= tiles[0].length) {
-            System.out.println("Coordinates out of bounds");
+            logger.warning("Coordinates out of bounds");
             return; // Out of bounds
         }
         tiles[x][y] = tile;
@@ -158,7 +161,7 @@ public class Board {
      */
     public void setTile(int x, int y, Tile tile) {
         if (x < 0 || x >= tiles.length || y < 0 || y >= tiles[0].length) {
-            System.out.println("Coordinates out of bounds");
+            logger.warning("Coordinates out of bounds");
             return; // Out of bounds
         }
         tiles[x][y] = tile;

@@ -184,6 +184,7 @@ public class GameScreenController extends BaseController {
         gamePlayer = localPlayer; // temporary for initialisation
         currentLobbyId = GameApplication.getCurrentLobbyId();
         gameState = new GameState();
+        gameState.getBoardManager().initializeBoard(8, 7);
 
         if (localPlayer == null) {
             LOGGER.severe("LocalPlayer is null during GameScreenController initialisation!");
@@ -1202,7 +1203,7 @@ public class GameScreenController extends BaseController {
 
     private String getTileOwnerId(int row, int col) {
         Tile tile = gameState.getBoardManager().getTile(row, col);
-        return tile.getOwner() == null ? null : tile.getOwner();
+        return tile == null ? null : tile.getOwner();
     }
 
     private int getTilePrice(int row, int col) {
