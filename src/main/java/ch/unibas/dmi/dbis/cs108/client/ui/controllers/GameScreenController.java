@@ -4,6 +4,7 @@ import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.client.app.GameApplication;
 import ch.unibas.dmi.dbis.cs108.client.core.PlayerIdentityManager;
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
+import ch.unibas.dmi.dbis.cs108.client.networking.events.EndTurnEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
@@ -13,11 +14,8 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeRequestEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.game.GameSyncEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.game.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyJoinedEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.game.BuyTileUIEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.game.PlaceStructureUIEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.game.TileClickEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.CardDetails;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
@@ -1479,8 +1477,8 @@ public class GameScreenController extends BaseController {
     }
 
     @FXML
-    private void handleGameRound() {
-        /* TODO implement end‑turn logic */
+    private void handleEndTurn() {
+        eventBus.publish(new EndTurnRequestEvent(localPlayer.getName()));
     }
 
     @FXML

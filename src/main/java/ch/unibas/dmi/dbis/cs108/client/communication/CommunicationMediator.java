@@ -7,6 +7,7 @@ import ch.unibas.dmi.dbis.cs108.client.networking.events.LobbyJoinedEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ServerCommandEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.game.EndTurnRequestEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.PlaceStatueUIEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.*;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
@@ -132,6 +133,9 @@ public class CommunicationMediator {
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.StartGameRequestEvent.class,
                 event -> networkController.startGame());
         // Game Events
+        UIEventBus.getInstance().subscribe(EndTurnRequestEvent.class,
+                event -> networkController.endTurn());
+
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.game.BuyTileUIEvent.class,
                 event -> networkController.buyTile(event.getX(), event.getY()));
 
