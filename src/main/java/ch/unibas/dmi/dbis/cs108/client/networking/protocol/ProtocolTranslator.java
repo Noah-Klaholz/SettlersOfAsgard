@@ -173,14 +173,6 @@ public class ProtocolTranslator implements CommunicationAPI {
         if (errorCode.equals("CHAN")) {
             eventDispatcher.dispatchEvent(new NameChangeResponseEvent(false, null, errorMessage));
         } else {
-            // Try to match with standard errors
-            for (Errors error : Errors.values()) {
-                if (error.getError().startsWith(errorCode + DELIMITER)) {
-                    errorMessage = error.getError().split("\\" + DELIMITER, 2)[1];
-                    break;
-                }
-            }
-
             ErrorEvent event = new ErrorEvent(errorCode, errorMessage, ErrorEvent.ErrorSeverity.ERROR);
             eventDispatcher.dispatchEvent(event);
         }
