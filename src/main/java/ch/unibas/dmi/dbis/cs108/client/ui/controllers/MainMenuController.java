@@ -232,6 +232,7 @@ public class MainMenuController extends BaseController {
                 // Update the central player instance
                 if (localPlayer != null) {
                     localPlayer.setName(newName);
+                    GameApplication.setLocalPlayer(localPlayer);
                     LOGGER.info("Player name successfully changed to: " + localPlayer.getName());
                     if (chatComponentController != null) {
                         chatComponentController.setPlayer(localPlayer); // Update chat component's player context

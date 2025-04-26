@@ -63,29 +63,35 @@ public class GameStateManager {
      * @see ch.unibas.dmi.dbis.cs108.server.core.model.GameStateSerializer
      */
     public void updateGameState(String message) {
-        Logger.getGlobal().info("Updateing GameState");
+        LOGGER.info("Updating GameState");
         if (message == null || !message.startsWith("SYNC$")) {
-            LOGGER.warning("Invalid game state message");
+            LOGGER.warning("Invalid game state message: " + (message == null ? "null" : message));
             return;
         }
+
         // Format: META|PLAYERS|BOARD
-        String[] sections = message.split("\\|", 3); // Split into max 3 parts
-        if (sections.length < 3) return;
+        String[] sections = message.split("\\|", 3);
+        if (sections.length < 3) {
+            LOGGER.warning("Invalid message format, expected 3 sections but got " + sections.length);
+            return;
+        }
 
         gameState.getStateLock().writeLock().lock();
         try {
-            // 1. Parse Meta Section
+            // Log each section before parsing to help with debugging
+            LOGGER.fine("META section: " + sections[0]);
             parseMetaSection(sections[0]);
 
-            // 2. Parse Players Section
+            LOGGER.fine("PLAYERS section: " + sections[1]);
             parsePlayersSection(sections[1]);
 
-            // 3. Parse Board Section
+            LOGGER.fine("BOARD section: " + sections[2]);
             parseBoardSection(sections[2]);
 
-            Logger.getGlobal().info("GameState updated:");
+            LOGGER.info("GameState successfully updated");
         } catch (Exception e) {
-            LOGGER.warning("Error updating game state: " + e.getMessage());
+            LOGGER.severe("Error updating game state: " + e);
+            e.printStackTrace(); // Log full stack trace
         } finally {
             gameState.getStateLock().writeLock().unlock();
         }

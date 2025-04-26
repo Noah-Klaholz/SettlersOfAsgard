@@ -587,6 +587,7 @@ public class LobbyScreenController extends BaseController {
                 // Update the central player instance
                 if (localPlayer != null) {
                     localPlayer.setName(newName);
+                    GameApplication.setLocalPlayer(localPlayer); // Update the static reference
                     LOGGER.info("Player name successfully changed to: " + localPlayer.getName());
                     playerNameLabel.setText("Player: " + localPlayer.getName()); // Update label
                     if (settingsDialog != null) {
