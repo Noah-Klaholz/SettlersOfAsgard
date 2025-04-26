@@ -4,6 +4,8 @@ import ch.unibas.dmi.dbis.cs108.client.core.state.GameStateManager;
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
 
 import java.time.Instant;
+import java.util.logging.Logger;
+
 /**
  * Class representing a game synchronization event.
  * This event is used to synchronize the game state across different clients.
@@ -19,6 +21,7 @@ public class GameSyncEvent implements Event{
     private final String message;
 
     public GameSyncEvent(String message) {
+        Logger.getGlobal().info("Networking GameSyncEvent");
         this.message = message;
     }
     /**

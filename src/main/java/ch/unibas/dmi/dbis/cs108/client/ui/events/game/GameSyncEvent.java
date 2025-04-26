@@ -5,6 +5,7 @@ import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
 
 import java.time.Instant;
+import java.util.logging.Logger;
 
 public class GameSyncEvent implements UIEvent {
     /**
@@ -13,8 +14,10 @@ public class GameSyncEvent implements UIEvent {
     private final GameStateManager gameStateManager;
 
     public GameSyncEvent(String args, GameStateManager gameStateManager) {
+        Logger.getGlobal().info("UI GameSyncEvent created");
         this.gameStateManager = gameStateManager;
         gameStateManager.updateGameState(args);
+        Logger.getGlobal().info("UI GameSyncEvent gameState updated");
     }
 
     /**

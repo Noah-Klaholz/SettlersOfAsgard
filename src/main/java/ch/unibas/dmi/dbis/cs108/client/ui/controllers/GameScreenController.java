@@ -45,6 +45,7 @@ import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
 import java.util.*;
@@ -76,8 +77,8 @@ public class GameScreenController extends BaseController {
      * --------------------------------------------------
      */
     private static final Logger LOGGER = Logger.getLogger(GameScreenController.class.getName());
-    static final int HEX_ROWS = 7;
-    static final int HEX_COLS = 8;
+    static final int HEX_ROWS = 6;
+    static final int HEX_COLS = 7;
 
     /*
      * --------------------------------------------------
@@ -168,6 +169,14 @@ public class GameScreenController extends BaseController {
      */
     public GameScreenController() {
         super(new ResourceLoader(), UIEventBus.getInstance(), SceneManager.getInstance());
+        subscribeEvents();
+        Logger.getGlobal().info("GameScreenController created and subscribed to events.");
+
+        localPlayer = GameApplication.getLocalPlayer();
+        gamePlayer = localPlayer; // temporary for initialisation
+        currentLobbyId = GameApplication.getCurrentLobbyId();
+        gameState = new GameState();
+        gameState.getBoardManager().initializeBoard(8, 7);
     }
 
     /**
@@ -179,12 +188,7 @@ public class GameScreenController extends BaseController {
     @FXML
     private void initialize() {
         LOGGER.setLevel(Level.ALL);
-
-        localPlayer = GameApplication.getLocalPlayer();
-        gamePlayer = localPlayer; // temporary for initialisation
-        currentLobbyId = GameApplication.getCurrentLobbyId();
-        gameState = new GameState();
-        gameState.getBoardManager().initializeBoard(8, 7);
+        LOGGER.info("GameScreenController initialisation started");
 
         if (localPlayer == null) {
             LOGGER.severe("LocalPlayer is null during GameScreenController initialisation!");
@@ -192,7 +196,6 @@ public class GameScreenController extends BaseController {
         }
 
         setupUI();
-        subscribeEvents();
         loadMapImage();
         createAdjustmentUI();
 
@@ -237,7 +240,15 @@ public class GameScreenController extends BaseController {
         eventBus.subscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
         eventBus.subscribe(LobbyJoinedEvent.class, this::handleLobbyJoined);
         eventBus.subscribe(TileClickEvent.class, this::onTileClick);
-        eventBus.subscribe(GameSyncEvent.class, this::handleGameSync);
+        // In GameScreenController.subscribeEvents():
+        eventBus.subscribe(GameSyncEvent.class, event -> {
+            LOGGER.info("GameSyncEvent received: " + (event == null ? "null" : event.toString()));
+            if (event != null) {
+                handleGameSync(event);
+            } else {
+                LOGGER.severe("Received null GameSyncEvent");
+            }
+        });
     }
 
     /**
@@ -326,8 +337,11 @@ public class GameScreenController extends BaseController {
      * Handles the game sync event and updates the game state accordingly.
      */
     private void handleGameSync(GameSyncEvent e) {
-        if (e == null || e.getGameState() == null)
+        LOGGER.fine(() -> "GameSyncEvent received: " + e);
+        if (e == null || e.getGameState() == null) {
+            LOGGER.warning("Received null GameSyncEvent or GameState");
             return;
+        }
         // Update the game State with the new game state
         gameState = e.getGameState();
         gamePlayer = gameState.findPlayerByName(gamePlayer.getName());
@@ -347,6 +361,7 @@ public class GameScreenController extends BaseController {
             updateCardImages();
             refreshCardAffordability();
             updateRunesAndEnergyBar();
+            updatePlayerList();
         });
 
         // TODO handle game state sync (show player turn, update energy bar, etc.)
@@ -470,10 +485,28 @@ public class GameScreenController extends BaseController {
     public void cleanup() {
         eventBus.unsubscribe(ConnectionStatusEvent.class, this::onConnectionStatus);
         eventBus.unsubscribe(TileClickEvent.class, this::onTileClick);
+        eventBus.unsubscribe(GameSyncEvent.class, this::handleGameSync);
+        eventBus.unsubscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
+
         if (chatComponentController != null)
             chatComponentController.cleanup();
         if (settingsDialog != null)
             settingsDialog.close();
+        if (gameCanvas != null) {
+            gameCanvas.getParent().removeEventHandler(MouseEvent.MOUSE_PRESSED, e -> handleCanvasClick(e.getX(), e.getY()));
+            gameCanvas.setOnKeyPressed(null);
+        }
+        if (draggedCardSource != null) {
+            Pane parent = (Pane) draggedCardSource.getParent();
+            if (parent != null)
+                parent.getChildren().remove(draggedCardSource);
+        }
+        if (cardTooltips != null) {
+            for (Tooltip tooltip : cardTooltips.values()) {
+                Tooltip.uninstall(tooltip.getOwnerNode(), tooltip);
+            }
+            cardTooltips.clear();
+        }
         LOGGER.info("GameScreenController resources cleaned up");
     }
 
@@ -1162,7 +1195,6 @@ public class GameScreenController extends BaseController {
         try {
             CardDetails details = getCardDetails(id);
             String imageUrl = details.getImageUrl();
-            LOGGER.info("Processing card " + id + " with image URL: " + imageUrl);
 
             if (card instanceof Pane pane) {
                 // Clear existing content first
@@ -1180,7 +1212,6 @@ public class GameScreenController extends BaseController {
                     Image image = resourceLoader.loadImage(imageUrl);
 
                     if (image != null && !image.isError()) {
-                        LOGGER.info("Successfully loaded image for card " + id);
 
                         // Create an ImageView with proper sizing
                         ImageView imageView = new ImageView(image);
@@ -1237,10 +1268,64 @@ public class GameScreenController extends BaseController {
         }
     }
 
+    /**
+     * Updates the player list display and highlights the active player.
+     */
+    private void updatePlayerList() {
+        if (gameState == null) {
+            LOGGER.warning("Game state is null");
+            return;
+        }
+        LOGGER.info("Updating player list");
+
+        // Clear and populate the players list
+        players.clear();
+        String currentPlayerName = gameState.getPlayerTurn();
+
+        for (Player player : gameState.getPlayers()) {
+            players.add(player.getName());
+        }
+
+        // Set a custom cell factory to highlight the current player
+        playersList.setCellFactory(listView -> new ListCell<>() {
+            @Override
+            protected void updateItem(String playerName, boolean empty) {
+                super.updateItem(playerName, empty);
+
+                if (empty || playerName == null) {
+                    setText(null);
+                    setGraphic(null);
+                    getStyleClass().remove("current-turn-player");
+                } else {
+                    setText(playerName);
+                    Player player = gameState.findPlayerByName(playerName);
+
+                    // Reset styling
+                    getStyleClass().remove("current-turn-player");
+
+                    // Apply special styling for the current player
+                    if (player != null && player.getName().equals(currentPlayerName)) {
+                        getStyleClass().add("current-turn-player");
+                    }
+
+                    // Add a color indicator for the player
+                    if (player != null) {
+                        Color playerColor = getPlayerColor(player.getName());
+                        if (playerColor != null) {
+                            Circle colorIndicator = new Circle(6);
+                            colorIndicator.setFill(playerColor);
+                            setGraphic(colorIndicator);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     // Helper methods for better gameState access
 
     private boolean isTileOwnedByPlayer(int row, int col) {
-        return gameState.getBoardManager().getTile(row-1,col-1).hasEntity();
+        return gameState.getBoardManager().getTile(row,col).hasEntity();
     }
 
     private boolean canAffordCard(String cardId) {
@@ -1258,13 +1343,13 @@ public class GameScreenController extends BaseController {
     }
 
     private String getTileOwnerId(int row, int col) {
-        Tile tile = gameState.getBoardManager().getTile(row-1, col-1);
+        Tile tile = gameState.getBoardManager().getTile(row, col);
         return tile == null ? null : tile.getOwner();
     }
 
     private int getTilePrice(int row, int col) {
-        Tile tile = gameState.getBoardManager().getTile(row-1, col-1);
-        return tile.getPrice();
+        Tile tile = gameState.getBoardManager().getTile(row, col);
+        return tile != null ? tile.getPrice() : 0;
     }
 
     private Color getPlayerColor(String playerId) {

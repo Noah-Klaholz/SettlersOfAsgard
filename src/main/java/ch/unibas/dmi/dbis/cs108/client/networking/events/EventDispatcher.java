@@ -66,12 +66,16 @@ public class EventDispatcher {
      */
     @SuppressWarnings("unchecked")
     public <T extends Event> void dispatchEvent(T event) {
+        if (event == null) {
+            LOGGER.warning("Event " + event.getClass().getSimpleName()+ " is null, cannot dispatch.");
+            return;
+        }
         for (EventListener<?> listener : listeners) {
             if (listener.getEventType().isInstance(event)) {
                 try {
                     ((EventListener<T>) listener).onEvent(event);
                 } catch (Exception e) {
-                    LOGGER.warning("Error dispatching event: " + e.getMessage());
+                    LOGGER.warning("Error dispatching event: " + e.getMessage() + " for " + event.getClass().getSimpleName());
                 }
             }
         }

@@ -79,7 +79,7 @@ public class ProtocolTranslator implements CommunicationAPI {
     }
 
     public void processSyncMessage(String message) {
-            eventDispatcher.dispatchEvent(new GameSyncEvent(message));
+        eventDispatcher.dispatchEvent(new GameSyncEvent(message));
     }
 
     public void processStartGameMessage(String args) {

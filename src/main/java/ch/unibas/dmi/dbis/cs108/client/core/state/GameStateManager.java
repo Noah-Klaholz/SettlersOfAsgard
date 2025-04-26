@@ -63,6 +63,7 @@ public class GameStateManager {
      * @see ch.unibas.dmi.dbis.cs108.server.core.model.GameStateSerializer
      */
     public void updateGameState(String message) {
+        Logger.getGlobal().info("Updateing GameState");
         if (message == null || !message.startsWith("SYNC$")) {
             LOGGER.warning("Invalid game state message");
             return;
@@ -81,6 +82,8 @@ public class GameStateManager {
 
             // 3. Parse Board Section
             parseBoardSection(sections[2]);
+
+            Logger.getGlobal().info("GameState updated:");
         } finally {
             gameState.getStateLock().writeLock().unlock();
         }

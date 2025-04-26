@@ -131,7 +131,7 @@ public class Board {
      */
     public Tile getTileByCoordinates(int x, int y) {
         if (x < 0 || x >= tiles.length || y < 0 || y >= tiles[0].length) {
-            logger.warning("Coordinates out of bounds");
+            logger.warning(" get Tile By Coordinates Coordinates out of bounds " + x + " " + y);
             return null; // Out of bounds
         }
         return tiles[x][y];
@@ -146,7 +146,7 @@ public class Board {
      */
     public void setTileByCoordinates(int x, int y, Tile tile) {
         if (x < 0 || x >= tiles.length || y < 0 || y >= tiles[0].length) {
-            logger.warning("Coordinates out of bounds");
+            logger.warning("Set Tile by coordinates Coordinates out of bounds " + x + " " + y);
             return; // Out of bounds
         }
         tiles[x][y] = tile;
@@ -161,7 +161,7 @@ public class Board {
      */
     public void setTile(int x, int y, Tile tile) {
         if (x < 0 || x >= tiles.length || y < 0 || y >= tiles[0].length) {
-            logger.warning("Coordinates out of bounds");
+            logger.warning("Set Tile Coordinates out of bounds " + x + " " + y);
             return; // Out of bounds
         }
         tiles[x][y] = tile;

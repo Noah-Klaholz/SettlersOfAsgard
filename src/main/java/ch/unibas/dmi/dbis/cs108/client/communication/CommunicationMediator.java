@@ -486,6 +486,7 @@ public class CommunicationMediator {
                 new EventDispatcher.EventListener<GameSyncEvent>() {
                     @Override
                     public void onEvent(GameSyncEvent event) {
+                        Logger.getGlobal().info("CommunicationMediator translating SYNC Event");
                         // Publish game sync event to UI
                         UIEventBus.getInstance()
                                 .publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.game.GameSyncEvent("SYNC$" + event.getMessage(), gameStateManager)); // SYNC$ Necessary for proper parsing
