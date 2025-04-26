@@ -358,4 +358,48 @@ public class GameLogicTest {
         assertFalse(gameLogic.placeStructure(0, 0, 2, "player1"), "Should fail - tile already has structure");
     }
 
+    /**
+     * This test verifies correct edge case handling when using a structure
+     */
+    @Test
+    void testUseStructure_InvalidCases() {
+        // Setup valid structure first
+        gameLogic.buyTile(0, 0, "player1");
+        gameLogic.placeStructure(0, 0, 1, "player1");
+
+        // Test invalid coordinates
+        assertFalse(gameLogic.useStructure(-1, 0, 1, "player1"), "Should fail - negative X");
+        assertFalse(gameLogic.useStructure(0, -1, 1, "player1"), "Should fail - negative Y");
+
+        // Test wrong structure ID
+        assertFalse(gameLogic.useStructure(0, 0, 2, "player1"), "Should fail - wrong structure ID");
+
+        // Test using another player's structure
+        gameLogic.buyTile(1, 1, "player2");
+        gameLogic.placeStructure(1, 1, 1, "player2");
+        assertFalse(gameLogic.useStructure(1, 1, 1, "player1"), "Should fail - not owner");
+
+        // Test using already activated structure
+        gameLogic.useStructure(0, 0, 1, "player1");
+        assertFalse(gameLogic.useStructure(0, 0, 1, "player1"), "Should fail - already used this turn");
+    }
+
+    /**
+     * This test verifies correct trap edge cases
+     */
+    @Test
+    void testActiveTrap_EdgeCases() {
+        gameLogic.buyTile(0, 0, "player1");
+
+        // Test trap activation by different player
+        Tile t = gameState.getBoardManager().getTile(1, 1);
+        Structure trap = EntityRegistry.getStructure(8);
+        t.setEntity(trap);
+
+        int player2InitialRunes = gameState.findPlayerByName("player2").getRunes();
+        assertTrue(gameLogic.buyTile(1, 1, "player2"), "Should succeed - buying trapped tile");
+        assertTrue(gameState.findPlayerByName("player2").getRunes() < player2InitialRunes,
+                "Trap should have reduced player2's runes");
+    }
+
 }
