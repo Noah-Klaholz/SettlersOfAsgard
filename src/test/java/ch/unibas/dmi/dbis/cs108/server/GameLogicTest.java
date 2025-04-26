@@ -438,4 +438,40 @@ public class GameLogicTest {
         assertFalse(gameLogic.placeStructure(0, 0, 1, "player1"), "Should fail - insufficient runes for structure");
     }
 
+    /**
+     * This test verifies edge cases for buying tiles
+     */
+    @Test
+    void testBuyTile_EdgeCases() {
+        // Test buying invalid coordinates
+        assertFalse(gameLogic.buyTile(-1, 0, "player1"), "Should fail - negative X");
+        assertFalse(gameLogic.buyTile(0, -1, "player1"), "Should fail - negative Y");
+        assertFalse(gameLogic.buyTile(100, 0, "player1"), "Should fail - X out of bounds");
+        assertFalse(gameLogic.buyTile(0, 100, "player1"), "Should fail - Y out of bounds");
+
+        // Test buying already owned tile
+        assertTrue(gameLogic.buyTile(0, 0, "player1"), "Initial purchase should succeed");
+        assertFalse(gameLogic.buyTile(0, 0, "player1"), "Should fail - already owned by same player");
+        assertFalse(gameLogic.buyTile(0, 0, "player2"), "Should fail - already owned by different player");
+
+        // Test buying with insufficient runes
+        Player player = gameState.findPlayerByName("player1");
+        int originalRunes = player.getRunes();
+        Tile expensiveTile = gameState.getBoardManager().getTile(1, 1);
+        expensiveTile.setPrice(originalRunes + 100); // Make tile unaffordable
+
+        assertFalse(gameLogic.buyTile(1, 1, "player1"), "Should fail - insufficient runes");
+        assertEquals(originalRunes, player.getRunes(), "Runes should not change after failed purchase");
+
+        // Test buying tile with trap (should succeed but reduce runes)
+        Tile trappedTile = gameState.getBoardManager().getTile(2, 2);
+        Structure trap = EntityRegistry.getStructure(8);
+        trappedTile.setEntity(trap);
+
+        int preTrapRunes = player.getRunes();
+        assertTrue(gameLogic.buyTile(2, 2, "player1"), "Should succeed - buying trapped tile");
+        assertTrue(player.getRunes() < preTrapRunes, "Trap should have reduced player's runes");
+        assertEquals("player1", trappedTile.getOwner(), "Tile should now be owned");
+    }
+
 }
