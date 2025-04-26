@@ -18,6 +18,7 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
@@ -80,6 +81,10 @@ public class LobbyScreenController extends BaseController {
     private ComboBox<Integer> maxPlayersHostCombo;
     @FXML
     private VBox chatContainer;
+    @FXML
+    private Button createLobbyButton;
+    @FXML
+    private Button startGameButton;
 
     private String currentLobbyId;
     private boolean isHost = false;
@@ -120,6 +125,7 @@ public class LobbyScreenController extends BaseController {
             setupChatComponent(); // Call after localPlayer is set
             setupSettingsDialog(); // Call after localPlayer is set
             setupEventHandlers();
+            setupButtonStyles();
             playerNameLabel.setText("Player: " + localPlayer.getName()); // Update label
             leaveLobbyButton.setDisable(true); // Disabled by default until joining a lobby
             errorMessage.setVisible(false);
@@ -248,6 +254,22 @@ public class LobbyScreenController extends BaseController {
         }
         settingsDialog.setOnSaveAction(this::handleSettingsSave);
         settingsDialog.setConnectionStatus(isConnected.get(), isConnected.get() ? "Connected" : "Disconnected");
+    }
+
+    /**
+     * Sets up the button styles based on the current state of the lobby name field
+     * and player count.
+     */
+    private void setupButtonStyles() {
+        // Create lobby button style updates based on lobby name field
+        lobbyNameField.textProperty().addListener((observable, oldValue, newValue) -> {
+            updateCreateLobbyButtonStyle();
+        });
+
+        // Start game button style updates based on player count
+        playersInCurrentLobby.addListener((ListChangeListener<String>) change -> {
+            updateStartGameButtonStyle();
+        });
     }
 
     /**
@@ -418,6 +440,7 @@ public class LobbyScreenController extends BaseController {
             playersInCurrentLobby.setAll(event.getPlayers());
             hostControlsPanel.setVisible(isHost);
             hostControlsPanel.setManaged(isHost);
+            updateStartGameButtonStyle();
             leaveLobbyButton.setDisable(false);
             lobbyNameField.clear();
             clearError();
@@ -794,6 +817,36 @@ public class LobbyScreenController extends BaseController {
             settingsDialog.playerNameProperty().set(localPlayer.getName()); // Revert in dialog
         }
         // Audio settings could be handled here if implemented
+    }
+
+    /**
+     * Updates the style of the "Create Lobby" button based on the lobby name field
+     * input.
+     */
+    private void updateCreateLobbyButtonStyle() {
+        String name = lobbyNameField.getText().trim();
+        boolean isValid = !name.isEmpty() && name.length() <= 30;
+
+        if (isValid) {
+            createLobbyButton.setStyle("-fx-background-color: #5cb85c;"); // Bootstrap-like green
+        } else {
+            createLobbyButton.setStyle(""); // Reset to default style
+        }
+    }
+
+    /**
+     * Updates the style of the "Start Game" button based on the current lobby
+     * conditions.
+     */
+    private void updateStartGameButtonStyle() {
+        int minPlayers = 2;
+        boolean isValid = isHost && currentLobbyId != null && playersInCurrentLobby.size() >= minPlayers;
+
+        if (isValid) {
+            startGameButton.setStyle("-fx-background-color: #5cb85c;"); // Bootstrap-like green
+        } else {
+            startGameButton.setStyle(""); // Reset to default style
+        }
     }
 
     /**
