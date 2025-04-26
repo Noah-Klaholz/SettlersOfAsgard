@@ -56,7 +56,7 @@ import java.util.logging.Logger;
 /**
  * JavaFX controller for the in‑game screen.
  * <p>
- * 
+ *
  * <ul>
  * <li>Renders the map and hex‑grid overlay.</li>
  * <li>Dispatches user interaction to the {@link UIEventBus}.</li>
@@ -78,15 +78,15 @@ public class GameScreenController extends BaseController {
      * --------------------------------------------------
      */
     private static final Logger LOGGER = Logger.getLogger(GameScreenController.class.getName());
-    static final int HEX_ROWS = 6;
-    static final int HEX_COLS = 7;
+    static final int HEX_ROWS = 7;
+    static final int HEX_COLS = 8;
 
     /*
      * --------------------------------------------------
      * Game / UI state
      * --------------------------------------------------
      */
-    private PlayerIdentityManager playerManager;
+    private final PlayerIdentityManager playerManager;
     private Player localPlayer;
     private Player gamePlayer;
     private final ObservableList<String> players = FXCollections.observableArrayList();
@@ -230,6 +230,9 @@ public class GameScreenController extends BaseController {
      * defaults.
      */
     private void setupUI() {
+        for (Player player : gameState.getPlayers()) {
+            players.add(player.getName());
+        }
         playersList.setItems(players);
         energyBar.setProgress(0.5);
         runesLabel.setText("0");
@@ -392,13 +395,17 @@ public class GameScreenController extends BaseController {
      * --------------------------------------------------
      */
 
-    /** Switches back to the main‑menu scene. */
+    /**
+     * Switches back to the main‑menu scene.
+     */
     @FXML
     private void handleBackToMainMenu() {
         sceneManager.switchToScene(SceneManager.SceneType.MAIN_MENU);
     }
 
-    /** Opens the in‑game {@link SettingsDialog}. */
+    /**
+     * Opens the in‑game {@link SettingsDialog}.
+     */
     @FXML
     private void handleSettings() {
         LOGGER.info("Settings button clicked.");
@@ -493,7 +500,9 @@ public class GameScreenController extends BaseController {
         chatComponentController.setCurrentLobbyId(lobbyId);
     }
 
-    /** Updates the local player reference and forwards it to the chat UI. */
+    /**
+     * Updates the local player reference and forwards it to the chat UI.
+     */
     public void setLocalPlayer(Player player) {
         this.localPlayer = player;
         chatComponentController.setPlayer(player);
@@ -539,22 +548,30 @@ public class GameScreenController extends BaseController {
      * --------------------------------------------------
      */
 
-    /** Toggles grid‑adjustment mode. */
+    /**
+     * Toggles grid‑adjustment mode.
+     */
     public void toggleGridAdjustmentMode() {
         gridAdjustmentManager.toggleGridAdjustmentMode();
     }
 
-    /** Enables or disables grid‑adjustment mode. */
+    /**
+     * Enables or disables grid‑adjustment mode.
+     */
     public void setGridAdjustmentMode(boolean active) {
         gridAdjustmentManager.setGridAdjustmentMode(active);
     }
 
-    /** @return human‑readable description of the current grid parameters. */
+    /**
+     * @return human‑readable description of the current grid parameters.
+     */
     public String getGridSettings() {
         return gridAdjustmentManager.getGridSettings();
     }
 
-    /** Handles global keyboard shortcuts. */
+    /**
+     * Handles global keyboard shortcuts.
+     */
     @FXML
     private void handleKeyboardShortcut(KeyEvent e) {
         if (gridAdjustmentManager.handleKeyboardShortcut(e)) {
@@ -568,7 +585,9 @@ public class GameScreenController extends BaseController {
      * --------------------------------------------------
      */
 
-    /** Loads the background map image and triggers the initial draw. */
+    /**
+     * Loads the background map image and triggers the initial draw.
+     */
     private void loadMapImage() {
         mapImage = resourceLoader.loadImage(ResourceLoader.MAP_IMAGE);
         isMapLoaded = mapImage != null;
@@ -586,7 +605,16 @@ public class GameScreenController extends BaseController {
         gameCanvas.widthProperty().addListener((o, ov, nv) -> drawMapAndGrid());
         gameCanvas.heightProperty().addListener((o, ov, nv) -> drawMapAndGrid());
         gameCanvas.setFocusTraversable(true);
+
+        // Single click handler - just selects tile
         gameCanvas.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> handleCanvasClick(e.getX(), e.getY()));
+
+        // Double click handler - for purchases
+        gameCanvas.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            if (e.getClickCount() == 2) {
+                handleCanvasDoubleClick(e.getX(), e.getY());
+            }
+        });
 
         if (gameCanvas.getParent() instanceof StackPane parent) {
             parent.addEventHandler(MouseEvent.MOUSE_PRESSED, ev -> {
@@ -597,6 +625,18 @@ public class GameScreenController extends BaseController {
                     ev.consume();
                 }
             });
+
+            // Add double-click handler to parent as well
+            parent.addEventHandler(MouseEvent.MOUSE_CLICKED, ev -> {
+                if (ev.getClickCount() == 2) {
+                    Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
+                    if (local.getX() >= 0 && local.getY() >= 0 &&
+                            local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
+                        handleCanvasDoubleClick(local.getX(), local.getY());
+                        ev.consume();
+                    }
+                }
+            });
         }
 
         gameCanvas.setOnKeyPressed(gridAdjustmentManager::handleGridAdjustmentKeys);
@@ -604,7 +644,7 @@ public class GameScreenController extends BaseController {
 
     /**
      * Handles a physical mouse click on the canvas – selects the hex and triggers
-     * purchase/placement logic as appropriate.
+     * a tile click event.
      */
     private void handleCanvasClick(double px, double py) {
         int[] tile = getHexAt(px, py);
@@ -617,29 +657,33 @@ public class GameScreenController extends BaseController {
         selectedCol = col;
         drawMapAndGrid();
         eventBus.publish(new TileClickEvent(row, col));
+    }
 
-        // --- Purchase logic (with confirmation popup) -------------------------
+    /**
+     * Handles a double-click on the canvas – attempts to purchase the tile immediately
+     * without a confirmation dialog.
+     */
+    private void handleCanvasDoubleClick(double px, double py) {
+        int[] tile = getHexAt(px, py);
+        if (tile == null)
+            return;
+
+        int row = tile[0];
+        int col = tile[1];
+
+        // Check if tile is purchasable
         String ownerId = getTileOwnerId(row, col);
 
         if (ownerId == null) {
             int price = getTilePrice(row, col);
+            int runes = getPlayerRunes();
 
-            // Show confirmation dialog
-            Alert alert = new Alert(AlertType.CONFIRMATION, "Buy this tile for " + price + " gold?", ButtonType.YES,
-                    ButtonType.NO);
-            alert.setHeaderText("Purchase Tile");
-            alert.setTitle("Confirm Purchase");
-            alert.showAndWait().ifPresent(result -> {
-                if (result == ButtonType.YES) {
-                    int runes = getPlayerRunes();
-                    if (runes >= price) {
-                        // Deduct runes and assign ownership would be handled by server after BuyTileUIEvent
-                        eventBus.publish(new BuyTileUIEvent(row, col));
-                    } else {
-                        showNotification("Not enough gold to buy this tile (Cost: " + price + ").");
-                    }
-                }
-            });
+            if (runes >= price) {
+                // Immediately buy the tile without confirmation
+                eventBus.publish(new BuyTileUIEvent(row, col));
+            } else {
+                showNotification("Not enough gold to buy this tile (Cost: " + price + ").");
+            }
         } else if (localPlayer != null && ownerId.equals(localPlayer.getId())) {
             showNotification("You already own this tile.");
         } else {
@@ -698,11 +742,11 @@ public class GameScreenController extends BaseController {
      * Draws the complete grid (including ownership highlighting and selection).
      */
     private void drawHexGrid(GraphicsContext gc,
-            double size,
-            double gridW,
-            double gridH,
-            double addHX,
-            double addHY) {
+                             double size,
+                             double gridW,
+                             double gridH,
+                             double addHX,
+                             double addHY) {
         gc.setStroke(Color.WHITE);
         gc.setLineWidth(1.5);
         gc.setGlobalAlpha(0.7);
@@ -718,8 +762,8 @@ public class GameScreenController extends BaseController {
         gridOffsetX = baseX + (gridW - totalW) / 2 + addHX;
         gridOffsetY = baseY + (gridH - totalH) / 2 + addHY;
 
-        for (int r = 0; r < HEX_ROWS; r++) {
-            for (int c = 0; c < HEX_COLS; c++) {
+        for (int r = 0; r < HEX_ROWS - 1; r++) {
+            for (int c = 0; c < HEX_COLS - 1; c++) {
                 double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2);
                 double cy = gridOffsetY + r * vSpacing;
                 boolean selected = (r == selectedRow && c == selectedCol);
@@ -733,12 +777,12 @@ public class GameScreenController extends BaseController {
      * Draws a single hexagon, optionally highlighting ownership and selection.
      */
     private void drawHex(GraphicsContext gc,
-            double cx,
-            double cy,
-            double size,
-            int row,
-            int col,
-            boolean selected) {
+                         double cx,
+                         double cy,
+                         double size,
+                         int row,
+                         int col,
+                         boolean selected) {
         double[] xs = new double[6];
         double[] ys = new double[6];
 
@@ -795,7 +839,7 @@ public class GameScreenController extends BaseController {
      * Transforms canvas coordinates to logical grid coordinates.
      *
      * @return {@code int[]{row,col}} or {@code null} if the point is not inside
-     *         any tile.
+     * any tile.
      */
     int[] getHexAt(double px, double py) {
         if (!isMapLoaded || effectiveHexSize <= 0)
@@ -809,14 +853,16 @@ public class GameScreenController extends BaseController {
                 double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2);
                 double cy = gridOffsetY + r * vSpacing;
                 if (pointInHex(px, py, cx, cy, effectiveHexSize)) {
-                    return new int[] { r, c };
+                    return new int[]{r, c};
                 }
             }
         }
         return null;
     }
 
-    /** Point‑in‑polygon test for the current hex shape. */
+    /**
+     * Point‑in‑polygon test for the current hex shape.
+     */
     boolean pointInHex(double px, double py, double cx, double cy, double size) {
         double rot = Math.toRadians(gridAdjustmentManager.getHexRotationDegrees());
         double hSquish = gridAdjustmentManager.getHorizontalSquishFactor();
@@ -846,7 +892,9 @@ public class GameScreenController extends BaseController {
      * --------------------------------------------------
      */
 
-    /** Creates the settings dialog instance and initialises bindings. */
+    /**
+     * Creates the settings dialog instance and initialises bindings.
+     */
     private void initialiseSettingsDialog() {
         settingsDialog = new SettingsDialog();
         settingsDialog.playerNameProperty().set(localPlayer.getName());
@@ -854,13 +902,17 @@ public class GameScreenController extends BaseController {
         updateSettingsConnectionStatus();
     }
 
-    /** Synchronises the connection indicator shown inside the dialog. */
+    /**
+     * Synchronises the connection indicator shown inside the dialog.
+     */
     private void updateSettingsConnectionStatus() {
         String status = connectionStatusLabel.getText();
         settingsDialog.setConnectionStatus("Connected".equals(status), status);
     }
 
-    /** Handles the save button inside the settings dialog. */
+    /**
+     * Handles the save button inside the settings dialog.
+     */
     private void handleSettingsSave() {
         String newName = settingsDialog.playerNameProperty().get().trim();
         if (!newName.isEmpty() && !newName.equals(localPlayer.getName())) {
@@ -876,7 +928,9 @@ public class GameScreenController extends BaseController {
      * --------------------------------------------------
      */
 
-    /** Toggles card selection (golden frame) when clicked. */
+    /**
+     * Toggles card selection (golden frame) when clicked.
+     */
     @FXML
     public void handleCardClick(MouseEvent event) {
         Node card = (Node) event.getSource();
@@ -892,7 +946,9 @@ public class GameScreenController extends BaseController {
         event.consume();
     }
 
-    /** Shows the tooltip for a card after a short delay. */
+    /**
+     * Shows the tooltip for a card after a short delay.
+     */
     @FXML
     public void handleCardMouseEntered(MouseEvent event) {
         Node card = (Node) event.getSource();
@@ -901,7 +957,9 @@ public class GameScreenController extends BaseController {
         event.consume();
     }
 
-    /** Hides the tooltip once the mouse exits the card. */
+    /**
+     * Hides the tooltip once the mouse exits the card.
+     */
     @FXML
     public void handleCardMouseExited(MouseEvent event) {
         Node card = (Node) event.getSource();
@@ -913,7 +971,9 @@ public class GameScreenController extends BaseController {
 
     // --- Drag‑and‑drop (structures only; artifacts not implemented yet) --------
 
-    /** Starts a drag‑and‑drop gesture when the user begins dragging a card. */
+    /**
+     * Starts a drag‑and‑drop gesture when the user begins dragging a card.
+     */
     @FXML
     private void handleCardDragDetected(MouseEvent event) {
         if (!(event.getSource() instanceof Pane src))
@@ -944,7 +1004,9 @@ public class GameScreenController extends BaseController {
         event.consume();
     }
 
-    /** Continually called while the user drags a card across the canvas. */
+    /**
+     * Continually called while the user drags a card across the canvas.
+     */
     @FXML
     private void handleDragOver(DragEvent event) {
         if (event.getGestureSource() == gameCanvas)
@@ -964,7 +1026,9 @@ public class GameScreenController extends BaseController {
         event.consume();
     }
 
-    /** Finalises the drag‑and‑drop operation (placing the structure). */
+    /**
+     * Finalises the drag‑and‑drop operation (placing the structure).
+     */
     @FXML
     private void handleDragDropped(DragEvent event) {
         Dragboard db = event.getDragboard();
@@ -986,7 +1050,9 @@ public class GameScreenController extends BaseController {
         event.consume();
     }
 
-    /** Cleans up after a drag‑and‑drop operation has finished. */
+    /**
+     * Cleans up after a drag‑and‑drop operation has finished.
+     */
     @FXML
     private void handleCardDragDone(DragEvent event) {
         if (draggedCardSource != null && event.getTransferMode() == TransferMode.MOVE) {
@@ -1301,14 +1367,8 @@ public class GameScreenController extends BaseController {
         }
         LOGGER.info("Updating player list");
 
-        // Clear and populate the players list
-        players.clear();
         String currentPlayerName = gameState.getPlayerTurn();
         Logger.getGlobal().info("Current player turn: " + currentPlayerName);
-
-        for (Player player : gameState.getPlayers()) {
-            players.add(player.getName());
-        }
 
         // Ensure the ListView has the players-list class
         if (!playersList.getStyleClass().contains("players-list")) {
@@ -1354,7 +1414,7 @@ public class GameScreenController extends BaseController {
     // Helper methods for better gameState access
 
     private boolean isTileOwnedByPlayer(int row, int col) {
-        return gameState.getBoardManager().getTile(row,col).hasEntity();
+        return gameState.getBoardManager().getTile(row, col).hasEntity();
     }
 
     private boolean canAffordCard(String cardId) {
@@ -1415,13 +1475,16 @@ public class GameScreenController extends BaseController {
 
     @FXML
     private void handleResourceOverview() {
-        /* TODO implement resource overview */ }
+        /* TODO implement resource overview */
+    }
 
     @FXML
     private void handleGameRound() {
-        /* TODO implement end‑turn logic */ }
+        /* TODO implement end‑turn logic */
+    }
 
     @FXML
     private void handleLeaderboard() {
-        /* TODO implement leaderboard */ }
+        /* TODO implement leaderboard */
+    }
 }
