@@ -180,8 +180,6 @@ public class LobbyScreenController extends BaseController {
     private void setupLobbyControls() {
         maxPlayersCombo.setItems(FXCollections.observableArrayList(2, 3, 4, 5, 6, 8));
         maxPlayersCombo.getSelectionModel().select(Integer.valueOf(4));
-        hostControlsPanel.setVisible(false);
-        hostControlsPanel.setManaged(false);
     }
 
     /**
