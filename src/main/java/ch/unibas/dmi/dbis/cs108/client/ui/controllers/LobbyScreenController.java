@@ -75,8 +75,6 @@ public class LobbyScreenController extends BaseController {
     @FXML
     private ListView<String> playerList;
     @FXML
-    private VBox hostControlsPanel;
-    @FXML
     private ComboBox<Integer> maxPlayersCombo;
     @FXML
     private VBox chatContainer;
@@ -425,8 +423,6 @@ public class LobbyScreenController extends BaseController {
                     });
 
             playersInCurrentLobby.setAll(event.getPlayers());
-            hostControlsPanel.setVisible(isHost);
-            hostControlsPanel.setManaged(isHost);
             updateStartGameButtonStyle();
             leaveLobbyButton.setDisable(false);
             lobbyNameField.clear();
@@ -498,6 +494,7 @@ public class LobbyScreenController extends BaseController {
         Objects.requireNonNull(event, "LobbyLeftEvent cannot be null");
         if (currentLobbyId != null && currentLobbyId.equals(event.getLobbyId())) {
             playersInCurrentLobby.removeAll();
+            leaveLobbyButton.setDisable(true);
             Platform.runLater(() -> {
                 LOGGER.info("Left lobby: " + currentLobbyId);
                 resetLobbyState();
@@ -668,8 +665,6 @@ public class LobbyScreenController extends BaseController {
         currentLobbyId = null;
         isHost = false;
         playersInCurrentLobby.clear();
-        hostControlsPanel.setVisible(false);
-        hostControlsPanel.setManaged(false);
         leaveLobbyButton.setDisable(true);
         clearError();
         lobbyNameField.setDisable(false);
