@@ -28,7 +28,7 @@ public class Player {
     private List<PurchasableEntity> purchasableEntities;
     private Status status;
     private int roundBoughtTiles;
-    private List<Monument> monuments;
+    private List<Monument> monuments = new ArrayList<>();
 
     /**
      * Constructor for Player class

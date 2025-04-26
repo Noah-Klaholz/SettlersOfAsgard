@@ -70,10 +70,6 @@ public class GameLogicTest {
 
     @AfterEach
     void tearDown() {
-        // Shutdown the turn scheduler if the game is running
-        if (lobby.getStatus().equals("In-Game")) {
-            lobby.stopTurnScheduler();
-        }
         if (gameLogic != null) {
             lobby.endGame();
         }
