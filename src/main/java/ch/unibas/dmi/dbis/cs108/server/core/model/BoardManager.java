@@ -40,7 +40,7 @@ public class BoardManager {
     public void initializeBoard(int width, int height) {
         stateLock.writeLock().lock();
         try {
-            board.initBoard(width, height);
+            board.initBoard(width+1, height+1);
         } finally {
             stateLock.writeLock().unlock();
         }
