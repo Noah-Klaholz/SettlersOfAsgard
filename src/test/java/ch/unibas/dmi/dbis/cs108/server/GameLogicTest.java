@@ -423,6 +423,9 @@ public class GameLogicTest {
                 "Should prevent tree placement on non-river tile");
     }
 
+    /**
+     * This test checks for edge cases when the player has insufficient resources
+     */
     @Test
     void testInsufficientResources() {
         // Setup - drain player's resources
