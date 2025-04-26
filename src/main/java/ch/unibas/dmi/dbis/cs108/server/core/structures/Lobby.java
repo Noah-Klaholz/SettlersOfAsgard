@@ -377,9 +377,6 @@ public class Lobby implements GameEventNotifier {
      */
     private void broadcastTurnUpdate() {
         broadcastMessage("TURN$" + gameLogic.getGameState().getPlayerTurn());
-        if (gameLogic.getTurnManager().isGameRoundComplete()) {
-            broadcastMessage("ENDR$" + gameLogic.createFinalScoreMessage());
-        }
     }
 
 }
