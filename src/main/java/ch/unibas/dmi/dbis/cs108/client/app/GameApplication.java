@@ -4,6 +4,7 @@ package ch.unibas.dmi.dbis.cs108.client.app;
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.client.communication.CommunicationMediator;
 // import ch.unibas.dmi.dbis.cs108.client.core.Game; // Unused import
+import ch.unibas.dmi.dbis.cs108.client.core.PlayerIdentityManager;
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameStateManager;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
@@ -38,13 +39,16 @@ public class GameApplication extends Application {
      * The Player instance representing the local player. Made static for global
      * access.
      */
-    private static Player localPlayer;
 
     private static List<String> players;
     /**
      * The lobby ID for the current game session. Initialized to null.
      */
     private static String currentLobbyId = null;
+    /**
+     * The Player instance representing the local player.
+     */
+    private Player localPlayer;
 
     /**
      * The main entry point for the JavaFX application.
@@ -97,35 +101,21 @@ public class GameApplication extends Application {
     }
 
     /**
-     * Sets the static localPlayer instance.
+     * Gets the local player instance.
      *
-     * @param localPlayer The Player instance representing the local player.
+     * @return localPlayer The local player instance.
      */
-    public static void setLocalPlayer(Player localPlayer) {
-        GameApplication.localPlayer = localPlayer;
-        LOGGER.info("Local player set to: " + localPlayer.getName());
+    public static Player getLocalPlayer() {
+        return PlayerIdentityManager.getInstance().getLocalPlayer();
     }
 
     /**
-     * Provides safe access to the static localPlayer instance.
-     * Throws an IllegalStateException if accessed before initialization.
+     * Sets the local player instance.
      *
-     * @return The static Player instance representing the local player.
+     * @param player The Player instance to set as the local player.
      */
-    public static Player getLocalPlayer() {
-        if (localPlayer == null) {
-            // This should ideally not happen if initialization order is correct,
-            // but provides a safeguard or indicates a logic error.
-            LOGGER.severe("Attempted to access localPlayer before it was initialized!");
-            // Optionally, initialize with a default or throw an exception
-            // For now, let's create a default to avoid NullPointerExceptions downstream,
-            // but log heavily.
-            localPlayer = new Player("LateInitGuest");
-            LOGGER.warning("Created a default 'LateInitGuest' player due to access before start().");
-            // throw new IllegalStateException("Local player has not been initialized
-            // yet.");
-        }
-        return localPlayer;
+    public static void setLocalPlayer(Player player) {
+        PlayerIdentityManager.getInstance().setLocalPlayer(player);
     }
 
     /**
@@ -152,7 +142,7 @@ public class GameApplication extends Application {
 
         // Ensure localPlayer is created safely
         if (localPlayer == null) {
-            localPlayer = new Player(username);
+            localPlayer = getLocalPlayer();
             LOGGER.info("Local player instance created: " + localPlayer.getName());
         } else {
             // If already created (e.g., by another part of the app before start), update

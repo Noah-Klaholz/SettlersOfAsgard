@@ -2,6 +2,7 @@ package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.client.app.GameApplication;
+import ch.unibas.dmi.dbis.cs108.client.core.PlayerIdentityManager;
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
@@ -85,6 +86,7 @@ public class GameScreenController extends BaseController {
      * Game / UI state
      * --------------------------------------------------
      */
+    private PlayerIdentityManager playerManager;
     private Player localPlayer;
     private Player gamePlayer;
     private final ObservableList<String> players = FXCollections.observableArrayList();
@@ -169,7 +171,9 @@ public class GameScreenController extends BaseController {
      */
     public GameScreenController() {
         super(new ResourceLoader(), UIEventBus.getInstance(), SceneManager.getInstance());
-        localPlayer = GameApplication.getLocalPlayer();
+        playerManager = PlayerIdentityManager.getInstance();
+        localPlayer = playerManager.getLocalPlayer();
+        playerManager.addPlayerUpdateListener(this::handlePlayerUpdate);
         Logger.getGlobal().info("game state uses Local Player: " + localPlayer.getName());
         gameState = new GameState();
         subscribeEvents();
@@ -192,7 +196,6 @@ public class GameScreenController extends BaseController {
             localPlayer = new Player("ErrorGuest"); // Fail‑safe stub
         }
 
-        gamePlayer = localPlayer; // temporary for initialisation
         currentLobbyId = GameApplication.getCurrentLobbyId();
 
         setupUI();
@@ -334,6 +337,17 @@ public class GameScreenController extends BaseController {
     }
 
     /**
+     * Updates the player list and runes label when the local player changes.
+     */
+    private void handlePlayerUpdate(Player updatedPlayer) {
+        localPlayer = updatedPlayer;
+        if (chatComponentController != null) {
+            chatComponentController.setPlayer(localPlayer);
+        }
+        LOGGER.info("Player updated in GameScreenController: " + localPlayer.getName());
+    }
+
+    /**
      * Handles the game sync event and updates the game state accordingly.
      */
     private void handleGameSync(GameSyncEvent e) {
@@ -432,6 +446,7 @@ public class GameScreenController extends BaseController {
 
         Platform.runLater(() -> {
             if (event.isSuccess()) {
+                playerManager.updatePlayerName(event.getNewName());
                 localPlayer.setName(event.getNewName());
                 GameApplication.setLocalPlayer(localPlayer);
                 chatComponentController.setPlayer(localPlayer);
@@ -488,6 +503,8 @@ public class GameScreenController extends BaseController {
         eventBus.unsubscribe(TileClickEvent.class, this::onTileClick);
         eventBus.unsubscribe(GameSyncEvent.class, this::handleGameSync);
         eventBus.unsubscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
+
+        playerManager.removePlayerUpdateListener(this::handlePlayerUpdate);
 
         if (chatComponentController != null)
             chatComponentController.cleanup();

@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
 import ch.unibas.dmi.dbis.cs108.client.app.GameApplication;
+import ch.unibas.dmi.dbis.cs108.client.core.PlayerIdentityManager;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
@@ -88,7 +89,8 @@ public class LobbyScreenController extends BaseController {
 
     private String currentLobbyId;
     private boolean isHost = false;
-    private Player localPlayer; // Use shared.game.Player
+    private Player localPlayer;
+    private PlayerIdentityManager playerManager;
     private ChatComponent chatComponentController;
     private SettingsDialog settingsDialog; // Declare SettingsDialog
     private final AtomicBoolean isConnected = new AtomicBoolean(false);
@@ -131,6 +133,11 @@ public class LobbyScreenController extends BaseController {
             errorMessage.setVisible(false);
             errorMessage.setManaged(false);
             requestLobbyList();
+
+            playerManager = PlayerIdentityManager.getInstance();
+            localPlayer = playerManager.getLocalPlayer();
+            playerManager.addPlayerUpdateListener(this::handlePlayerUpdate);
+
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Critical error during LobbyScreenController initialization", e);
             showError("Failed to initialize lobby screen. Please try returning to the main menu.");
@@ -525,6 +532,18 @@ public class LobbyScreenController extends BaseController {
     }
 
     /**
+     * Handles the updating of the player name in the lobbyScreen.
+     *
+     * @param updatedPlayer
+     */
+    private void handlePlayerUpdate(Player updatedPlayer) {
+        this.localPlayer = updatedPlayer;
+        if (chatComponentController != null) {
+            chatComponentController.setPlayer(localPlayer);
+        }
+    }
+
+    /**
      * Handles notification that the game has started for the current lobby.
      */
     private void handleGameStarted(GameStartedEvent event) {
@@ -582,6 +601,7 @@ public class LobbyScreenController extends BaseController {
         Objects.requireNonNull(event, "NameChangeResponseEvent cannot be null");
         Platform.runLater(() -> {
             if (event.isSuccess()) {
+                playerManager.updatePlayerName(event.getNewName());
                 String oldName = localPlayer != null ? localPlayer.getName() : "Unknown";
                 String newName = event.getNewName();
                 // Update the central player instance

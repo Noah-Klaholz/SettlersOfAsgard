@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
 import ch.unibas.dmi.dbis.cs108.client.app.GameApplication; // Import GameApplication
+import ch.unibas.dmi.dbis.cs108.client.core.PlayerIdentityManager;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player; // Use shared Player
@@ -41,6 +42,7 @@ public class MainMenuController extends BaseController {
 
     private final AtomicBoolean isConnected = new AtomicBoolean(false);
     private Player localPlayer; // Use shared.game.Player
+    private PlayerIdentityManager playerManager;
     private int onlineUserCount = 0;
 
     @FXML
@@ -75,7 +77,9 @@ public class MainMenuController extends BaseController {
     private void initialize() {
         LOGGER.info("Initializing MainMenuController...");
         try {
-            this.localPlayer = GameApplication.getLocalPlayer(); // Fetch player instance
+            playerManager = PlayerIdentityManager.getInstance();
+            localPlayer = playerManager.getLocalPlayer();
+            playerManager.addPlayerUpdateListener(this::handlePlayerUpdate);
             if (this.localPlayer == null) {
                 LOGGER.severe("LocalPlayer is null during MainMenuController initialization!");
                 // Handle error appropriately, maybe show an error message and disable
@@ -229,6 +233,7 @@ public class MainMenuController extends BaseController {
         Platform.runLater(() -> {
             if (event.isSuccess()) {
                 String newName = event.getNewName();
+                playerManager.updatePlayerName(newName);
                 // Update the central player instance
                 if (localPlayer != null) {
                     localPlayer.setName(newName);
@@ -386,6 +391,16 @@ public class MainMenuController extends BaseController {
     }
 
     /**
+     * Handles updates to the local player instance.
+     *
+     * @param updatedPlayer The updated player instance.
+     */
+    private void handlePlayerUpdate(Player updatedPlayer) {
+        this.localPlayer = updatedPlayer;
+        // Update relevant UI components
+    }
+
+    /**
      * Updates the "Online Users" label.
      *
      * @param count The number of users currently online.
@@ -420,6 +435,8 @@ public class MainMenuController extends BaseController {
         eventBus.unsubscribe(ConnectionStatusEvent.class, this::handleConnectionStatus);
         eventBus.unsubscribe(ErrorEvent.class, this::handleErrorEvent);
         eventBus.unsubscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
+
+        playerManager.removePlayerUpdateListener(this::handlePlayerUpdate);
 
         if (aboutDialog != null) {
             aboutDialog.close();
