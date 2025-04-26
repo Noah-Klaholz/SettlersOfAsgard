@@ -95,8 +95,6 @@
 
                         <!-- Host Controls -->
                         <VBox fx:id="hostControlsPanel" spacing="10.0" visible="false" managed="false" styleClass="host-controls">
-                            <Separator/>
-                            <Label text="Host Controls" styleClass="section-header"/>
                             <Button fx:id="startGameButton" text="Start Game" onAction="#handleStartGame"
                                     styleClass="start-game-button" maxWidth="Infinity"/>
                         </VBox>
