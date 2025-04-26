@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
+import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.client.app.GameApplication;
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
@@ -1163,7 +1164,23 @@ public class GameScreenController extends BaseController {
         pane.getChildren().add(placeholder);
     }
 
-    // --- Placeholder methods for game state; keep until real model is wired ---
+    /*
+     * --------------------------------------------------
+     * Update helper methods for drawing the gameState
+     * --------------------------------------------------
+     */
+
+    public void updateRunesAndEnergyBar() {
+        if (gamePlayer != null) {
+            runesLabel.setText("Runes: " + gamePlayer.getRunes());
+            energyBar.setProgress((double) gamePlayer.getEnergy() / SETTINGS.Config.MAX_ENERGY.getValue());
+        } else {
+            runesLabel.setText("Runes: 0");
+            energyBar.setProgress(0.0);
+        }
+    }
+
+    // Helper methods for better gameState access
 
     private boolean isTileOwnedByPlayer(int row, int col) {
         return gameState.getBoardManager().getTile(row,col).hasEntity();

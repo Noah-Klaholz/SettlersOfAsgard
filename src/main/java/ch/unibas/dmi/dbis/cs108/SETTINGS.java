@@ -17,7 +17,8 @@ public class SETTINGS {
         MAX_RESOURCE_VALUE(20),
         ARTIFACT_CHANCE(10), // Percentage
         PURCHASABLE_TILES_PER_ROUND(3),
-        SET_BONUS_MULTIPLIER(2);
+        SET_BONUS_MULTIPLIER(2),
+        MAX_ENERGY(4);
 
         private final int value;
 

@@ -371,7 +371,7 @@ public class Player {
      * @param amount int
      */
     public void addEnergy(int amount) {
-        if(energy + amount > 4){
+        if(energy + amount > SETTINGS.Config.MAX_ENERGY.getValue()){
             energy = 4;
             return;
         } else if (energy + amount < 0) {
