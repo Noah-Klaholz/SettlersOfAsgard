@@ -64,7 +64,7 @@
                         <TextField fx:id="lobbyNameField" promptText="Enter lobby name" prefWidth="200" styleClass="lobby-name-field"/>
                         <Label text="Max Players:" />
                         <ComboBox fx:id="maxPlayersCombo" prefWidth="70" />
-                        <Button text="Create Lobby" onAction="#handleCreateLobby" />
+                        <Button fx:id="createLobbyButton" text="Create Lobby" onAction="#handleCreateLobby" />
                         <Button fx:id="leaveLobbyButton" text="Leave" onAction="#handleLeaveLobby" styleClass="leave-button" disable="true"/>
                     </HBox>
                     <Button text="Join Selected Lobby" onAction="#handleJoinLobby"
@@ -103,7 +103,7 @@
                                 <ComboBox fx:id="maxPlayersHostCombo" prefWidth="70"/>
                             </HBox>
 
-                            <Button text="Start Game" onAction="#handleStartGame" 
+                            <Button fx:id="startGameButton" text="Start Game" onAction="#handleStartGame"
                                     styleClass="start-game-button" maxWidth="Infinity"/>
                         </VBox>
                     </VBox>
