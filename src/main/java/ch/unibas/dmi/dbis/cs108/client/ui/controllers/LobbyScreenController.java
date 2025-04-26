@@ -818,12 +818,12 @@ public class LobbyScreenController extends BaseController {
      * conditions.
      */
     private void updateStartGameButtonStyle() {
-        boolean isValid = currentLobbyId != null && playersInCurrentLobby.size() == maxLobbyPlayers;
+        boolean isValid = isHost && currentLobbyId != null && playersInCurrentLobby.size() == maxLobbyPlayers;
 
         if (isValid) {
             startGameButton.setStyle("-fx-background-color: -color-accent-green;"); // Bootstrap-like green
         } else {
-            startGameButton.setStyle("-fx-background-color: -color-accent-red"); // Reset to default style
+            startGameButton.setStyle("-fx-background-color: -color-accent-secondary"); // Reset to default style
         }
     }
 
