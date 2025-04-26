@@ -100,8 +100,6 @@ public class LobbyScreenController extends BaseController {
      */
     public LobbyScreenController() {
         super(new ResourceLoader(), UIEventBus.getInstance(), SceneManager.getInstance());
-        // REMOVED: this.localPlayer = new Player(System.getProperty("user.name",
-        // "Guest"));
         LOGGER.finer("LobbyScreenController instance created.");
     }
 
@@ -112,12 +110,16 @@ public class LobbyScreenController extends BaseController {
     private void initialize() {
         LOGGER.info("Initializing LobbyScreenController...");
         try {
+            playerManager = PlayerIdentityManager.getInstance();
+            playerManager.addPlayerUpdateListener(this::handlePlayerUpdate);
             this.localPlayer = GameApplication.getLocalPlayer(); // Fetch player instance
+
             if (this.localPlayer == null) {
                 LOGGER.severe("LocalPlayer is null during LobbyScreenController initialization!");
                 // Handle error appropriately
                 this.localPlayer = new Player("ErrorGuest"); // Fallback
             }
+
             isConnected.set(true); // When LobbyScreen gets initialized, we are connected, because it wouldnt get shown if not connected.
             setupLobbyTable();
             setupPlayerList();
@@ -133,11 +135,6 @@ public class LobbyScreenController extends BaseController {
             errorMessage.setVisible(false);
             errorMessage.setManaged(false);
             requestLobbyList();
-
-            playerManager = PlayerIdentityManager.getInstance();
-            localPlayer = playerManager.getLocalPlayer();
-            playerManager.addPlayerUpdateListener(this::handlePlayerUpdate);
-
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Critical error during LobbyScreenController initialization", e);
             showError("Failed to initialize lobby screen. Please try returning to the main menu.");
@@ -534,13 +531,29 @@ public class LobbyScreenController extends BaseController {
     /**
      * Handles the updating of the player name in the lobbyScreen.
      *
-     * @param updatedPlayer
+     * @param updatedPlayer The updated player instance.
      */
     private void handlePlayerUpdate(Player updatedPlayer) {
+        String oldName = localPlayer != null ? localPlayer.getName() : "Unknown";
+        String newName = updatedPlayer.getName();
+
         this.localPlayer = updatedPlayer;
-        if (chatComponentController != null) {
-            chatComponentController.setPlayer(localPlayer);
+        LOGGER.info("Player name successfully changed to: " + localPlayer.getName());
+
+        playerNameLabel.setText("Player: " + localPlayer.getName()); // Update label
+        if (settingsDialog != null) {
+            settingsDialog.playerNameProperty().set(newName); // Update dialog as well
         }
+        if (chatComponentController != null) {
+            chatComponentController.setPlayer(localPlayer); // Update chat component
+            chatComponentController
+                    .addSystemMessage("Name successfully changed to: " + localPlayer.getName());
+        }
+        // Update host name in lobby list if this player was a host
+        allLobbies.stream()
+                .filter(lobby -> lobby.getHost().equals(oldName))
+                .forEach(lobby -> lobby.setHost(newName));
+        lobbyTable.refresh();
     }
 
     /**
@@ -602,30 +615,6 @@ public class LobbyScreenController extends BaseController {
         Platform.runLater(() -> {
             if (event.isSuccess()) {
                 playerManager.updatePlayerName(event.getNewName());
-                String oldName = localPlayer != null ? localPlayer.getName() : "Unknown";
-                String newName = event.getNewName();
-                // Update the central player instance
-                if (localPlayer != null) {
-                    localPlayer.setName(newName);
-                    GameApplication.setLocalPlayer(localPlayer); // Update the static reference
-                    LOGGER.info("Player name successfully changed to: " + localPlayer.getName());
-                    playerNameLabel.setText("Player: " + localPlayer.getName()); // Update label
-                    if (settingsDialog != null) {
-                        settingsDialog.playerNameProperty().set(newName); // Update dialog as well
-                    }
-                    if (chatComponentController != null) {
-                        chatComponentController.setPlayer(localPlayer); // Update chat component
-                        chatComponentController
-                                .addSystemMessage("Name successfully changed to: " + localPlayer.getName());
-                    }
-                    // Update host name in lobby list if this player was a host
-                    allLobbies.stream()
-                            .filter(lobby -> lobby.getHost().equals(oldName))
-                            .forEach(lobby -> lobby.setHost(newName));
-                    lobbyTable.refresh();
-                } else {
-                    LOGGER.severe("Cannot update player name: localPlayer is null.");
-                }
             } else {
                 String failureMsg = event.getMessage() != null ? event.getMessage() : "Unknown reason.";
                 LOGGER.warning("Failed to change player name: " + failureMsg);
@@ -776,32 +765,6 @@ public class LobbyScreenController extends BaseController {
         }
         settingsDialog.setConnectionStatus(isConnected.get(), isConnected.get() ? "Connected" : "Disconnected");
 
-        settingsDialog.setOnSaveAction(() -> {
-            boolean muted = settingsDialog.muteProperty().get();
-            double volume = settingsDialog.volumeProperty().get();
-            String requestedName = settingsDialog.playerNameProperty().get();
-            LOGGER.info("Settings dialog save requested - Volume: " + volume + ", Muted: " + muted
-                    + ", Requested Name: " + requestedName);
-
-            if (localPlayer != null && requestedName != null && !requestedName.trim().isEmpty()
-                    && !requestedName.equals(localPlayer.getName())) {
-                requestNameChange(requestedName.trim());
-            } else if (requestedName != null && requestedName.trim().isEmpty()) {
-                LOGGER.warning("Attempted to save empty player name.");
-                if (chatComponentController != null) {
-                    chatComponentController.addSystemMessage("Error: Player name cannot be empty.");
-                }
-                if (localPlayer != null) {
-                    settingsDialog.playerNameProperty().set(localPlayer.getName());
-                }
-            }
-
-            if (chatComponentController != null) {
-                chatComponentController.addSystemMessage(
-                        "Audio settings saved. " + (muted ? "Muted." : "Volume: " + (int) volume + "%"));
-            }
-        });
-
         showDialogAsOverlay(settingsDialog, rootPane);
     }
 
@@ -823,21 +786,29 @@ public class LobbyScreenController extends BaseController {
      * Checks if the player name has changed and sends an update request.
      */
     private void handleSettingsSave() {
-        LOGGER.fine("Settings save action triggered.");
-        if (settingsDialog == null) {
-            LOGGER.warning("SettingsDialog is null during save action.");
-            return;
+        boolean muted = settingsDialog.muteProperty().get();
+        double volume = settingsDialog.volumeProperty().get();
+        String requestedName = settingsDialog.playerNameProperty().get();
+        LOGGER.info("Settings dialog save requested - Volume: " + volume + ", Muted: " + muted
+                + ", Requested Name: " + requestedName);
+
+        if (localPlayer != null && requestedName != null && !requestedName.trim().isEmpty()
+                && !requestedName.equals(localPlayer.getName())) {
+            requestNameChange(requestedName.trim());
+        } else if (requestedName != null && requestedName.trim().isEmpty()) {
+            LOGGER.warning("Attempted to save empty player name.");
+            if (chatComponentController != null) {
+                chatComponentController.addSystemMessage("Error: Player name cannot be empty.");
+            }
+            if (localPlayer != null) {
+                settingsDialog.playerNameProperty().set(localPlayer.getName());
+            }
         }
-        String newName = settingsDialog.playerNameProperty().get().trim();
-        if (localPlayer != null && !newName.isEmpty() && !newName.equals(localPlayer.getName())) {
-            LOGGER.info("Requesting name change from settings dialog to: " + newName);
-            eventBus.publish(new NameChangeRequestEvent(newName));
-        } else if (localPlayer != null && newName.isEmpty()) {
-            LOGGER.warning("Attempted to save empty player name from settings.");
-            showError("Player name cannot be empty.");
-            settingsDialog.playerNameProperty().set(localPlayer.getName()); // Revert in dialog
+
+        if (chatComponentController != null) {
+            chatComponentController.addSystemMessage(
+                    "Audio settings saved. " + (muted ? "Muted." : "Volume: " + (int) volume + "%"));
         }
-        // Audio settings could be handled here if implemented
     }
 
     /**
@@ -886,6 +857,8 @@ public class LobbyScreenController extends BaseController {
         eventBus.unsubscribe(ErrorEvent.class, this::handleError);
         eventBus.unsubscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
         eventBus.unsubscribe(ConnectionStatusEvent.class, this::handleConnectionStatus);
+
+        playerManager.removePlayerUpdateListener(this::handlePlayerUpdate);
 
         if (chatComponentController != null) {
             chatComponentController.cleanup();
