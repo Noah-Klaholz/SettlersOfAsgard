@@ -9,6 +9,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.GridAdjustmentManager;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
@@ -51,6 +52,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
+import javax.swing.text.html.parser.Entity;
 import java.util.*;
 import java.util.LinkedHashMap;
 import java.util.logging.Level;
@@ -155,6 +157,7 @@ public class GameScreenController extends BaseController {
     private Label adjustmentModeIndicator;
     private Label adjustmentValuesLabel;
     private Node draggedCardSource;
+    private int[] highlightedTile = null;
 
     /**
      * Constructs a new GameScreenController.
@@ -197,7 +200,7 @@ public class GameScreenController extends BaseController {
             }
         }
 
-        currentLobbyId = GameApplication.getCurrentLobbyId();
+        initialisePlayerColours();
         setupUI();
         loadMapImage();
         createPlaceholderImage();
@@ -275,7 +278,6 @@ public class GameScreenController extends BaseController {
         playerColours = new ArrayList<>();
         playerColours.add(Color.RED);
         playerColours.add(Color.BLUE);
-        playerColours.add(Color.GREEN);
         playerColours.add(Color.YELLOW);
         playerColours.add(Color.PURPLE);
         playerColours.add(Color.ORANGE);
@@ -283,8 +285,12 @@ public class GameScreenController extends BaseController {
         playerColours.add(Color.MAGENTA);
 
         for (String playerName : GameApplication.getPlayers()) {
-            Color color = playerColours.remove(0);
-            playerColors.put(playerName, color);
+            if (playerName.equals(localPlayer.getName())) {
+                playerColors.put(playerName,Color.GREEN); // Local Player should always be green
+            } else {
+                Color color = playerColours.remove(0);
+                playerColors.put(playerName, color);
+            }
         }
     }
 
@@ -345,9 +351,11 @@ public class GameScreenController extends BaseController {
      */
     private void handlePlayerUpdate(Player updatedPlayer) {
         localPlayer = updatedPlayer;
-        if (chatComponentController != null) {
-            chatComponentController.setPlayer(localPlayer);
-        }
+        GameApplication.setLocalPlayer(localPlayer);
+        chatComponentController.setPlayer(localPlayer);
+        chatComponentController.addSystemMessage("Name successfully changed to: " + localPlayer.getName());
+        settingsDialog.playerNameProperty().set(localPlayer.getName());
+        updatePlayerList();
         LOGGER.info("Player updated in GameScreenController: " + localPlayer.getName());
     }
 
@@ -388,6 +396,23 @@ public class GameScreenController extends BaseController {
             LOGGER.fine("UI update complete.");
         });
     }
+
+    /**
+     * Shows an error message in the chat component.
+     *
+     * @param event The error event containing the error message.
+     */
+    public void handleError(ErrorEvent event) {
+        Objects.requireNonNull(event, "ErrorEvent cannot be null");
+        Platform.runLater(() -> {
+            String errorMessage = event.getErrorMessage();
+            LOGGER.warning("Received error event: " + errorMessage);
+            if (chatComponentController != null && errorMessage != null && !errorMessage.isEmpty()) {
+                chatComponentController.addSystemMessage("Error: " + errorMessage);
+            }
+        });
+    }
+
 
     /**
      * Handles the action to go back to the main menu.
@@ -461,11 +486,6 @@ public class GameScreenController extends BaseController {
         Platform.runLater(() -> {
             if (event.isSuccess()) {
                 playerManager.updatePlayerName(event.getNewName());
-                localPlayer.setName(event.getNewName());
-                GameApplication.setLocalPlayer(localPlayer);
-                chatComponentController.setPlayer(localPlayer);
-                chatComponentController.addSystemMessage("Name successfully changed to: " + localPlayer.getName());
-                settingsDialog.playerNameProperty().set(localPlayer.getName());
             } else {
                 String reason = Optional.ofNullable(event.getMessage()).orElse("Unknown reason.");
                 chatComponentController.addSystemMessage("Failed to change name: " + reason);
@@ -650,6 +670,9 @@ public class GameScreenController extends BaseController {
             });
         }
         gameCanvas.setOnKeyPressed(gridAdjustmentManager::handleGridAdjustmentKeys);
+        gameCanvas.setOnDragOver(this::handleDragOver);
+        gameCanvas.setOnDragDropped(this::handleDragDropped);
+        gameCanvas.setOnDragExited(this::handleDragExited);
     }
 
     /**
@@ -859,6 +882,90 @@ public class GameScreenController extends BaseController {
             gc.setStroke(oldStroke);
         } else {
             gc.stroke();
+        }
+
+        // Add drag target highlight (bright green) ------------------------------
+        boolean isDragTarget = highlightedTile != null &&
+                highlightedTile[0] == row &&
+                highlightedTile[1] == col;
+        if (isDragTarget) {
+            Paint oldStroke = gc.getStroke();
+            double oldLineWidth = gc.getLineWidth();
+            double oldAlpha = gc.getGlobalAlpha();
+
+            gc.setStroke(Color.LIME);
+            gc.setLineWidth(4);
+            gc.setGlobalAlpha(0.8);
+            gc.stroke();
+
+            gc.setStroke(oldStroke);
+            gc.setLineWidth(oldLineWidth);
+            gc.setGlobalAlpha(oldAlpha);
+        }
+
+        // Draw the Entity if it exists -----------------------------------------
+        Tile tile = getTile(row, col);
+        if (tile != null) {
+            GameEntity entity = tile.getEntity();
+            if (entity != null) {
+                String URL = EntityRegistry.getURL(entity.getId(), false);
+                drawEntityImage(gc, URL, cx, cy, size, hSquish);
+            }
+        } else {
+            LOGGER.warning("Tile is null for row " + row + ", col " + col);
+        }
+    }
+
+    /**
+     * Draws an entity image centered in a hex tile.
+     * The image is scaled to fit the hex width while preserving its aspect ratio.
+     *
+     * @param gc The graphics context to draw on
+     * @param imageUrl The URL of the image to draw
+     * @param centerX The x-coordinate of the hex center
+     * @param centerY The y-coordinate of the hex center
+     * @param hexSize The size of the hex
+     * @param hSquish The horizontal squish factor
+     */
+    private void drawEntityImage(GraphicsContext gc, String imageUrl, double centerX, double centerY,
+                                 double hexSize, double hSquish) {
+        if (imageUrl == null || imageUrl.isEmpty()) {
+            return; // No image to draw
+        }
+
+        try {
+            Image image = resourceLoader.loadImage(imageUrl);
+            if (image == null || image.isError()) {
+                LOGGER.fine("Failed to load entity image: " + imageUrl);
+                return;
+            }
+
+            // Calculate maximum width based on hex size and squish factor
+            // The width of a hex is approximately 2 * size
+            double maxWidth = 1.7 * hexSize * hSquish;
+
+            // Calculate scale to fit width
+            double scale = maxWidth / image.getWidth();
+
+            // Calculate scaled dimensions
+            double scaledWidth = image.getWidth() * scale;
+            double scaledHeight = image.getHeight() * scale;
+
+            // Save current graphics state
+            double oldAlpha = gc.getGlobalAlpha();
+            gc.setGlobalAlpha(1.0); // Full opacity for the image
+
+            // Draw image centered in the hex
+            gc.drawImage(image,
+                    centerX - scaledWidth/2,
+                    centerY - scaledHeight/2,
+                    scaledWidth,
+                    scaledHeight);
+
+            // Restore graphics state
+            gc.setGlobalAlpha(oldAlpha);
+        } catch (Exception e) {
+            LOGGER.warning("Error drawing entity image: " + e.getMessage());
         }
     }
 
@@ -1157,9 +1264,53 @@ public class GameScreenController extends BaseController {
 
         ValidationResult validation = validatePlacement(cardInfo, targetCoords[0], targetCoords[1]);
         if (validation.isValid()) {
+        int[] target = getHexAt(event.getX(), event.getY());
+        String cardId = event.getDragboard().getString();
+        boolean isStructure = cardId != null && cardId.startsWith("structure");
+
+        boolean validTarget = false;
+        if (target != null && isStructure) {
+            // Check if player owns the tile and the tile doesn't already have an entity
+            Tile tile = getTile(target[0], target[1]);
+            boolean tileOwnedByPlayer = (tile != null &&
+                    tile.getOwner() != null &&
+                    gamePlayer != null &&
+                    tile.getOwner().equals(gamePlayer.getName()));
+            boolean tileEmpty = tile != null &&
+                    (tile.getEntity() == null ||
+                            tile.getEntity().isArtifact());
+
+            validTarget = tileOwnedByPlayer && tileEmpty;
+        }
+
+        // Update the highlighted tile
+        if (validTarget) {
+            highlightedTile = target;
+            drawMapAndGrid(); // Redraw to show highlight
             event.acceptTransferModes(TransferMode.MOVE);
         } else {
+            // Clear highlight if not a valid target
+            if (highlightedTile != null) {
+                highlightedTile = null;
+                drawMapAndGrid(); // Redraw to remove highlight
+            }
             event.acceptTransferModes(TransferMode.NONE);
+        }
+
+        event.consume();
+    }
+
+    /**
+     * Clears the highlighted tile when the drag operation exits the canvas.
+     *
+     * @param event The drag event containing the current mouse position
+     */
+    @FXML
+    private void handleDragExited(DragEvent event) {
+        // Clear the highlighted tile when drag exits canvas
+        if (highlightedTile != null) {
+            highlightedTile = null;
+            drawMapAndGrid();
         }
         event.consume();
     }
@@ -1258,6 +1409,11 @@ public class GameScreenController extends BaseController {
                 }
             }
         }
+
+        // Clear highlight
+        highlightedTile = null;
+        drawMapAndGrid();
+
         event.setDropCompleted(success);
         event.consume();
     }
@@ -1557,6 +1713,15 @@ public class GameScreenController extends BaseController {
         }
     }
 
+    public void updateMap() {
+        if (gameState == null) {
+            LOGGER.warning("Game state is null");
+            return;
+        }
+        LOGGER.info("Updating map");
+        drawMapAndGrid();
+    }
+
     /**
      * Updates the player list display, highlighting the active player.
      */
@@ -1565,16 +1730,33 @@ public class GameScreenController extends BaseController {
             LOGGER.warning("Game state is null");
             return;
         }
+
+        Platform.runLater(() -> {
+            try {
+                LOGGER.info("Updating player list with " + gameState.getPlayers().size() + " players");
+
+                // Get current player turn
+                String currentPlayerName = gameState.getPlayerTurn();
+
+                // Create a fresh list from game state to avoid stale data
+                List<String> currentPlayers = new ArrayList<>();
+                for (Player player : gameState.getPlayers()) {
+                    currentPlayers.add(player.getName());
+                }
+
+                // Clear and rebuild the observable list
+                players.clear();
+                players.addAll(currentPlayers);
         LOGGER.info("Updating player list");
         players.clear();
         String currentPlayerName = gameState.getPlayerTurn();
         Logger.getGlobal().info("Current player turn: " + currentPlayerName);
 
-        for (Player player : gameState.getPlayers()) {
+                for (Player player : gameState.getPlayers()) {
             players.add(player.getName());
-        }
+                }
 
-        playersList.setCellFactory(listView -> new ListCell<>() {
+                playersList.setCellFactory(listView -> new ListCell<>() {
             @Override
             protected void updateItem(String playerName, boolean empty) {
                 super.updateItem(playerName, empty);
@@ -1586,15 +1768,15 @@ public class GameScreenController extends BaseController {
                     setText(playerName);
                     Player player = gameState.findPlayerByName(playerName);
                     getStyleClass().remove("current-turn-player");
-                    if (player != null && currentPlayerName != null && player.getName().equals(currentPlayerName)) { // Added
+                            if (player != null && currentPlayerName != null && player.getName().equals(currentPlayerName)) { // Added
                                                                                                                      // null
                                                                                                                      // check
                                                                                                                      // for
                                                                                                                      // currentPlayerName
-                        getStyleClass().add("current-turn-player");
+                                getStyleClass().add("current-turn-player");
                     }
-                    if (player != null) {
-                        // Use GameScreenController.this for clarity accessing outer class method
+                            if (player != null) {
+                                // Use GameScreenController.this for clarity accessing outer class method
                         Color playerColor = GameScreenController.this.getPlayerColor(player.getName());
                         if (playerColor != null) {
                             Circle colorIndicator = new Circle(6);
@@ -1605,8 +1787,25 @@ public class GameScreenController extends BaseController {
                         }
                     } else {
                         setGraphic(null); // Ensure no old graphic remains if player is null
+                            }
+                        }
                     }
+                });
+
+                // Force refresh and ensure visibility
+                playersList.refresh();
+                playersList.setVisible(true);
+
+                // Check parent containers are visible too
+                Node parent = playersList.getParent();
+                while (parent != null) {
+                    parent.setVisible(true);
+                    parent = parent.getParent();
                 }
+
+            } catch (Exception e) {
+                LOGGER.severe("Error updating player list: " + e.getMessage());
+                e.printStackTrace();
             }
         });
     }
@@ -1676,7 +1875,7 @@ public class GameScreenController extends BaseController {
      * @return true if occupied, false otherwise
      */
     private boolean isTileOccupied(int row, int col) {
-        Tile tile = gameState.getBoardManager().getTile(row, col);
+        Tile tile = getTile(row,col);
         return tile != null && (tile.hasEntity() || tile.getArtifact() != null);
     }
 
@@ -1688,7 +1887,7 @@ public class GameScreenController extends BaseController {
      * @return the owner's name, or null if unowned
      */
     private String getTileOwnerName(int row, int col) {
-        Tile tile = gameState.getBoardManager().getTile(row, col);
+        Tile tile = getTile(row,col);
         return (tile != null) ? tile.getOwner() : null;
     }
 

@@ -145,8 +145,6 @@ public class GameState {
      */
     public Player findPlayerByName(String name) {
         stateLock.readLock().lock();
-        LOGGER.info("Finding player by name: " + name);
-        LOGGER.info("Current players: " + players);
         try {
             return players.stream()
                     .filter(p -> p.getName().equals(name))

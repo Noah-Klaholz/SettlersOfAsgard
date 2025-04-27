@@ -802,7 +802,7 @@ public class LobbyScreenController extends BaseController {
         boolean isValid = !name.isEmpty() && name.length() <= 30;
 
         if (isValid) {
-            createLobbyButton.setStyle("-fx-background-color: #-color-accent-green;"); // Bootstrap-like green
+            createLobbyButton.setStyle("-fx-background-color: -color-accent-green;"); // Bootstrap-like green
         } else {
             createLobbyButton.setStyle(""); // Reset to default style
         }
