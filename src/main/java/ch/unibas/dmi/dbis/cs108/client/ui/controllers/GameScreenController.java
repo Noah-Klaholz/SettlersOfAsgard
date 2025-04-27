@@ -621,11 +621,11 @@ public class GameScreenController extends BaseController {
         gameCanvas.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> handleCanvasClick(e.getX(), e.getY()));
 
         // Double click handler - for purchases
-//        gameCanvas.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-//            if (e.getClickCount() == 2) {
-//                handleCanvasDoubleClick(e.getX(), e.getY());
-//            }
-//        });
+        gameCanvas.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            if (e.getClickCount() == 2) {
+                handleCanvasClick(e.getX(), e.getY());
+            }
+        });
 
         if (gameCanvas.getParent() instanceof StackPane parent) {
             parent.addEventHandler(MouseEvent.MOUSE_PRESSED, ev -> {
@@ -641,11 +641,11 @@ public class GameScreenController extends BaseController {
             parent.addEventHandler(MouseEvent.MOUSE_CLICKED, ev -> {
                 if (ev.getClickCount() == 2) {
                     Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
-//                    if (local.getX() >= 0 && local.getY() >= 0 &&
-//                            local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
-//                        handleCanvasDoubleClick(local.getX(), local.getY());
-//                        ev.consume();
-//                    }
+                    if (local.getX() >= 0 && local.getY() >= 0 &&
+                            local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
+                        handleCanvasClick(local.getX(), local.getY());
+                        ev.consume();
+                    }
                 }
             });
         }
@@ -946,7 +946,7 @@ public class GameScreenController extends BaseController {
                 double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2);
                 double cy = gridOffsetY + r * vSpacing;
                 if (pointInHex(px, py, cx, cy, effectiveHexSize)) {
-                    return new int[]{r, c};
+                    return new int[] { r, c };
                 }
             }
         }
