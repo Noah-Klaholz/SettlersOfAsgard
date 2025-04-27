@@ -18,11 +18,11 @@ public class Leaderboard {
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     public Leaderboard() {
-        this(Paths.get("leaderboard", "Leaderboard.txt"));
+        this(Paths.get("leaderboard", "Leaderboard.txt").toAbsolutePath());
     }
 
     public Leaderboard(Path customPath) {
-        this.leaderboardPath = customPath.toAbsolutePath();
+        this.leaderboardPath = customPath;
         ensureDirectoryExists();
         load();
     }
