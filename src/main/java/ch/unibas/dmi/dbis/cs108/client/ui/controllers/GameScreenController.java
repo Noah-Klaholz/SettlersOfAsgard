@@ -175,7 +175,6 @@ public class GameScreenController extends BaseController {
     private ChatComponent chatComponentController;
     private ResourceOverviewPopup resourceOverviewPopup;
 
-
     // Grid‑adjustment overlay controls (created programmatically)
     private Label adjustmentModeIndicator;
     private Label adjustmentValuesLabel;
@@ -724,7 +723,8 @@ public class GameScreenController extends BaseController {
      */
     @FXML
     private void handleKeyboardShortcut(KeyEvent e) {
-        if (gridAdjustmentManager.handleKeyboardShortcut(e)) {
+        // Add null check here
+        if (gridAdjustmentManager != null && gridAdjustmentManager.handleKeyboardShortcut(e)) {
             e.consume();
         }
     }
@@ -788,7 +788,7 @@ public class GameScreenController extends BaseController {
                         tooltip.show(gameCanvas, e.getScreenX() + 15, e.getScreenY() + 15);
 
                         // Update highlighted tile
-                        highlightedTile = new int[]{row, col};
+                        highlightedTile = new int[] { row, col };
                     }
                 }
             } else if (highlightedTile != null) {
@@ -864,8 +864,7 @@ public class GameScreenController extends BaseController {
                             resourceLoader,
                             clickedTile,
                             localPlayer.getName(),
-                            this::useRuneTable
-                    );
+                            this::useRuneTable);
                     popup.showNear(gameCanvas);
                 }
                 // Check if it's a statue
@@ -876,8 +875,7 @@ public class GameScreenController extends BaseController {
                             localPlayer.getName(),
                             this::levelUpStatue,
                             this::makeStatueDeal,
-                            this::receiveStatueBlessing
-                    );
+                            this::receiveStatueBlessing);
                     popup.showNear(gameCanvas);
                 }
             }
@@ -2362,7 +2360,7 @@ public class GameScreenController extends BaseController {
 
     /*
      * ==================================================
-     * Inner Classes for Extensible Drag & Drop Handling
+     * Inner Classes for Extensibility Drag & Drop Handling
      * ==================================================
      */
 
