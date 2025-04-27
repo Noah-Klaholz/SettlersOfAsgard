@@ -5,6 +5,8 @@ package ch.unibas.dmi.dbis.cs108.client.ui.utils;
  * Contains the title, description, and lore of the card.
  */
 public class CardDetails {
+    /** The ID of the card. */
+    final int id;
     /**Map of card IDs to CardDetails objects.*/
     final String title;
     /**Map of card IDs to CardDetails objects.*/
@@ -19,11 +21,15 @@ public class CardDetails {
     /**
      * Constructor for CardDetails.
      *
+     * @param id          The ID of the card.
      * @param title       The title of the card.
      * @param description The description of the card.
      * @param lore        The lore of the card.
+     * @param cardImagePath The path to the card image.
+     * @param price       The price of the card in runes.
      */
-    public CardDetails(String title, String description, String lore, String cardImagePath, int price) {
+    public CardDetails(int id, String title, String description, String lore, String cardImagePath, int price) {
+        this.id = id;
         this.title = title;
         this.description = description;
         this.lore = lore;
@@ -74,5 +80,9 @@ public class CardDetails {
      */
     public int getPrice() {
         return price;
+    }
+
+    public int getID() {
+        return id;
     }
 }
