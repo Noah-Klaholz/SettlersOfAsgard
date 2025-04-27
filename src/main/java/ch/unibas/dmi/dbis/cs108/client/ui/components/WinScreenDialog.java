@@ -30,6 +30,7 @@ public class WinScreenDialog extends UIComponent<StackPane> {
      */
     public WinScreenDialog(Map<String, Integer> leaderboard) {
         super("");
+        this.view = new StackPane(); // <-- This is required!
         StackPane root = getView();
         root.getStyleClass().addAll("overlay", "dialog-background");
 
