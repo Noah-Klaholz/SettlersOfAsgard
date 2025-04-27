@@ -152,3 +152,49 @@
     /* Darken hover color */
     -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.2), 2, 0, 0, 1);
 }
+
+/* Card Styling */
+.game-card {
+    /* Base style for all cards in hand */
+    -fx-border-color: -color-border-secondary;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 5, 0, 1, 2);
+}
+
+.affordable-card {
+    /* Style for cards the player can afford */
+    -fx-opacity: 1.0;
+    -fx-cursor: hand;
+    /* Indicate interactability */
+}
+
+.affordable-card:hover {
+    -fx-effect: dropshadow(three-pass-box, -color-accent-gold, 10, 0.2, 0, 0);
+    -fx-border-color: -color-accent-gold;
+    -fx-border-width: 1.5px;
+}
+
+.unaffordable-card {
+    /* Style for cards the player cannot afford */
+    -fx-opacity: 0.6;
+    /* Make it look disabled */
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 3, 0, 1, 1);
+    /* Less pronounced shadow */
+    -fx-cursor: default;
+    /* Indicate non-interactability */
+    /* Optional: Grayscale effect */
+    /* -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 1, 1) color-adjust(saturation: -1.0); */
+}
+
+.selected-card {
+    /* Style for the currently selected card */
+    -fx-border-color: -color-accent-gold;
+    -fx-border-width: 2.5px;
+    -fx-effect: dropshadow(three-pass-box, -color-accent-gold-transparent-high, 15, 0.5, 0, 0);
+}
+
+.statue-card {
+    /* Specific styling for the statue card slot if needed */
+}
