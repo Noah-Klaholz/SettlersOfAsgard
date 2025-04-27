@@ -6,7 +6,8 @@ import java.util.Optional;
 
 /**
  * Event representing a request to use a player artifact.
- * This event is sent from the client to the server when a player wants to use an artifact.
+ * This event is sent from the client to the server when a player wants to use
+ * an artifact.
  */
 public class UsePlayerArtifactUIEvent implements UIEvent {
     private final int artifactId;
@@ -16,8 +17,8 @@ public class UsePlayerArtifactUIEvent implements UIEvent {
     /**
      * Constructs a UsePlayerArtifactUIEvent.
      *
-     * @param artifactId  the ID of the artifact
-     * @param useType     the type of use (e.g., "attack", "defend")
+     * @param artifactId   the ID of the artifact
+     * @param useType      the type of use (e.g., "attack", "defend")
      * @param targetPlayer the target player (optional)
      */
     public UsePlayerArtifactUIEvent(int artifactId, String useType, String targetPlayer) {
