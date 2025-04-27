@@ -4,34 +4,35 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
 
 /**
  * Event representing a request to buy a tile on the board.
+ * Coordinates follow UI convention (row, col).
  */
 public class BuyTileUIEvent implements UIEvent {
-    private final int x;
-    private final int y;
+    private final int row; // Renamed from x
+    private final int col; // Renamed from y
 
     /**
      * Constructs a BuyTileUIEvent.
      *
-     * @param x the x-coordinate
-     * @param y the y-coordinate
+     * @param row the row coordinate (UI convention)
+     * @param col the column coordinate (UI convention)
      */
-    public BuyTileUIEvent(int x, int y) {
-        this.x = x;
-        this.y = y;
+    public BuyTileUIEvent(int row, int col) { // Renamed parameters
+        this.row = row;
+        this.col = col;
     }
 
     /**
-     * @return the x-coordinate
+     * @return the row coordinate
      */
-    public int getX() {
-        return x;
+    public int getRow() { // Renamed from getX
+        return row;
     }
 
     /**
-     * @return the y-coordinate
+     * @return the column coordinate
      */
-    public int getY() {
-        return y;
+    public int getCol() { // Renamed from getY
+        return col;
     }
 
     /**
