@@ -1530,48 +1530,78 @@ public class GameScreenController extends BaseController {
             LOGGER.warning("Game state is null");
             return;
         }
-        LOGGER.info("Updating player list");
 
-        String currentPlayerName = gameState.getPlayerTurn();
-        Logger.getGlobal().info("Current player turn: " + currentPlayerName);
+        Platform.runLater(() -> {
+            try {
+                LOGGER.info("Updating player list with " + gameState.getPlayers().size() + " players");
 
-        // Ensure the ListView has the players-list class
-        if (!playersList.getStyleClass().contains("players-list")) {
-            playersList.getStyleClass().add("players-list");
-        }
+                // Get current player turn
+                String currentPlayerName = gameState.getPlayerTurn();
 
-        // Set a custom cell factory to highlight the current player
-        playersList.setCellFactory(listView -> new ListCell<>() {
-            @Override
-            protected void updateItem(String playerName, boolean empty) {
-                super.updateItem(playerName, empty);
+                // Create a fresh list from game state to avoid stale data
+                List<String> currentPlayers = new ArrayList<>();
+                for (Player player : gameState.getPlayers()) {
+                    currentPlayers.add(player.getName());
+                }
 
-                if (empty || playerName == null) {
-                    setText(null);
-                    setGraphic(null);
-                    getStyleClass().removeAll("current-player");
-                } else {
-                    setText(playerName);
-                    Player player = gameState.findPlayerByName(playerName);
+                // Clear and rebuild the observable list
+                players.clear();
+                players.addAll(currentPlayers);
 
-                    // Reset styling
-                    getStyleClass().removeAll("current-player");
+                // Ensure the ListView has the players-list class
+                if (!playersList.getStyleClass().contains("players-list")) {
+                    playersList.getStyleClass().add("players-list");
+                }
 
-                    // Apply special styling for the current player
-                    if (player != null && player.getName().equals(currentPlayerName)) {
-                        getStyleClass().add("current-player");
-                    }
+                // Set a custom cell factory to highlight the current player
+                playersList.setCellFactory(listView -> new ListCell<>() {
+                    @Override
+                    protected void updateItem(String playerName, boolean empty) {
+                        super.updateItem(playerName, empty);
 
-                    // Add a color indicator for the player
-                    if (player != null) {
-                        Color playerColor = getPlayerColor(player.getName());
-                        if (playerColor != null) {
-                            Circle colorIndicator = new Circle(6);
-                            colorIndicator.setFill(playerColor);
-                            setGraphic(colorIndicator);
+                        if (empty || playerName == null) {
+                            setText(null);
+                            setGraphic(null);
+                            getStyleClass().removeAll("current-player");
+                        } else {
+                            setText(playerName);
+                            Player player = gameState.findPlayerByName(playerName);
+
+                            // Reset styling
+                            getStyleClass().removeAll("current-player");
+
+                            // Apply special styling for the current player
+                            if (player != null && player.getName().equals(currentPlayerName)) {
+                                getStyleClass().add("current-player");
+                            }
+
+                            // Add a color indicator for the player
+                            if (player != null) {
+                                Color playerColor = getPlayerColor(player.getName());
+                                if (playerColor != null) {
+                                    Circle colorIndicator = new Circle(6);
+                                    colorIndicator.setFill(playerColor);
+                                    setGraphic(colorIndicator);
+                                }
+                            }
                         }
                     }
+                });
+
+                // Force refresh and ensure visibility
+                playersList.refresh();
+                playersList.setVisible(true);
+
+                // Check parent containers are visible too
+                Node parent = playersList.getParent();
+                while (parent != null) {
+                    parent.setVisible(true);
+                    parent = parent.getParent();
                 }
+
+            } catch (Exception e) {
+                LOGGER.severe("Error updating player list: " + e.getMessage());
+                e.printStackTrace();
             }
         });
     }
