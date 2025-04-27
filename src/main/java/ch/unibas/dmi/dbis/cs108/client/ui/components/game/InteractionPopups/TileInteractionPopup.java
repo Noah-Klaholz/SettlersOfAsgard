@@ -1,4 +1,4 @@
-package ch.unibas.dmi.dbis.cs108.client.ui.components.game;
+package ch.unibas.dmi.dbis.cs108.client.ui.components.game.InteractionPopups;
 
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
