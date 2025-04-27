@@ -308,8 +308,6 @@ public class GameScreenController extends BaseController {
             players.add(player.getName());
         }
         playersList.setItems(players);
-        energyBar.setProgress(0.5);
-        runesLabel.setText("0");
         connectionStatusLabel.setText("Connected");
         gameCanvas.widthProperty().bind(((Region) gameCanvas.getParent()).widthProperty());
         gameCanvas.heightProperty().bind(((Region) gameCanvas.getParent()).heightProperty());
@@ -326,44 +324,7 @@ public class GameScreenController extends BaseController {
         eventBus.subscribe(TileClickEvent.class, this::onTileClick);
         eventBus.subscribe(ErrorEvent.class, this::handleError);
         eventBus.subscribe(EndGameEvent.class, this::handleEndGame);
-        // In GameScreenController.subscribeEvents():
-        eventBus.subscribe(GameSyncEvent.class, event -> {
-            // Log receiving the event
-            if (event == null || event.getGameState() == null) {
-                LOGGER.severe("Received null GameSyncEvent or GameState. Cannot update UI.");
-                return;
-            }
-
-            GameState updatedState = event.getGameState();
-            // Log details about the received event
-            LOGGER.info(
-                    String.format("Received GameSyncEvent: Updating game state. Board size: %d tiles. Player turn: %s",
-                            updatedState.getBoardManager().getBoard().getTiles().length, updatedState.getPlayerTurn()));
-
-            Platform.runLater(() -> {
-                gameState = updatedState;
-                LOGGER.info("GameSyncEvent received. Searching for player " + localPlayer.getName());
-                gamePlayer = gameState.findPlayerByName(localPlayer.getName());
-
-                if (gamePlayer == null) {
-                    LOGGER.warning("Game player not found in game state.");
-                    return;
-                }
-
-                artifacts = gamePlayer.getArtifacts();
-
-                updateCardImages();
-                refreshCardAffordability();
-                updateRunesAndEnergyBar();
-                updatePlayerList();
-                updateMap();
-
-                if (uiInitialized.compareAndSet(false, true)) {
-                    LOGGER.info("First GameSyncEvent processed. Proceeding to full UI initialization...");
-                    initializeUI();
-                }
-            });
-        });
+        eventBus.subscribe(GameSyncEvent.class, this::handleGameSync);
     }
 
     /**
@@ -475,6 +436,7 @@ public class GameScreenController extends BaseController {
         }
 
         GameState updatedState = e.getGameState();
+
         // Log details about the received event
         LOGGER.info(String.format("Received GameSyncEvent: Updating game state. Board size: %d tiles. Player turn: %s",
                 updatedState.getBoardManager().getBoard().getTiles().length, updatedState.getPlayerTurn()));
@@ -665,6 +627,9 @@ public class GameScreenController extends BaseController {
         eventBus.unsubscribe(TileClickEvent.class, this::onTileClick);
         eventBus.unsubscribe(GameSyncEvent.class, this::handleGameSync);
         eventBus.unsubscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
+        eventBus.unsubscribe(LobbyJoinedEvent.class, this::handleLobbyJoined);
+        eventBus.unsubscribe(ErrorEvent.class, this::handleError);
+        eventBus.unsubscribe(EndGameEvent.class, this::handleEndGame);
 
         playerManager.removePlayerUpdateListener(this::handlePlayerUpdate);
 
@@ -766,6 +731,7 @@ public class GameScreenController extends BaseController {
             }
         });
 
+        /** //TODO this code might be problematic
         // Mouse move handler for tile tooltips
         gameCanvas.addEventHandler(MouseEvent.MOUSE_MOVED, e -> {
             double mouseX = e.getX();
@@ -802,7 +768,7 @@ public class GameScreenController extends BaseController {
         gameCanvas.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
             Tooltip.uninstall(gameCanvas, null);
             highlightedTile = null;
-        });
+        }); */
 
         if (gameCanvas.getParent() instanceof StackPane parent) {
             parent.addEventHandler(MouseEvent.MOUSE_PRESSED, ev -> {
@@ -1062,7 +1028,7 @@ public class GameScreenController extends BaseController {
             double oldLineWidth = gc.getLineWidth();
             double oldAlpha = gc.getGlobalAlpha();
 
-            gc.setStroke(Color.LIME);
+            gc.setStroke(Color.ORANGE); // for better visibility against green tile
             gc.setLineWidth(4);
             gc.setGlobalAlpha(0.8);
             gc.stroke();
@@ -1082,8 +1048,7 @@ public class GameScreenController extends BaseController {
                 drawEntityImage(gc, URL, cx, cy, size, hSquish, entity.getId()); // Pass entity ID for logging
             }
         } else {
-            // Log only once or use finer level if this happens often
-            // LOGGER.warning("Tile is null for row " + row + ", col " + col);
+            LOGGER.warning("Tile is null for row " + row + ", col " + col);
         }
     }
 
@@ -1566,7 +1531,7 @@ public class GameScreenController extends BaseController {
         tooltip.setHideDelay(Duration.millis(200));
 
         String id = card.getId();
-        CardDetails details = null;
+        CardDetails details;
         try {
             details = getCardDetails(id);
         } catch (Exception e) {
@@ -1638,7 +1603,7 @@ public class GameScreenController extends BaseController {
 
         // Set the tooltip properties
         tooltip.setMaxWidth(300);
-        tooltip.setMaxHeight(Region.USE_PREF_SIZE); // Allow height to adjust
+        tooltip.setMaxHeight(200);
         content.setMinHeight(Region.USE_PREF_SIZE);
         content.setPrefHeight(Region.USE_COMPUTED_SIZE);
         content.setMaxHeight(Region.USE_PREF_SIZE);
@@ -1650,7 +1615,6 @@ public class GameScreenController extends BaseController {
         return tooltip;
     }
 
-    // --- End of Tooltip creation helper section ---
 
     /**
      * Create a custom tooltip for the selected statue.
@@ -1697,7 +1661,7 @@ public class GameScreenController extends BaseController {
         }
 
         tooltip.setMaxWidth(300);
-        tooltip.setMaxHeight(Region.USE_PREF_SIZE); // Adjust height
+        tooltip.setMaxHeight(200);
         content.setMinHeight(Region.USE_PREF_SIZE);
         content.setPrefHeight(Region.USE_COMPUTED_SIZE);
         content.setMaxHeight(Region.USE_PREF_SIZE);
@@ -1889,7 +1853,8 @@ public class GameScreenController extends BaseController {
      */
     private void refreshCardAffordability() {
         for (Node card : structureHand.getChildren()) {
-            if (card.getId() != null && card.getId().startsWith("structure")) {
+            if (card.getId() != null && card.getId().startsWith("structure") ||
+                    card.getId().startsWith("statue")) {
                 updateCardAffordability(card);
             }
         }
