@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities;
 
 import ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors.Parameter;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
@@ -120,6 +121,13 @@ public abstract class GameEntity {
      * @return true if it is, false otherwise
      */
     public boolean isMonument() { return this instanceof Monument; }
+
+    /**
+     * Returns if this entity is an artifact.
+     *
+     * @return true if it is, false otherwise
+     */
+    public boolean isArtifact() { return this instanceof Artifact; }
 
     /**
      * Sets the value of the parameter at the specified index to the given value
