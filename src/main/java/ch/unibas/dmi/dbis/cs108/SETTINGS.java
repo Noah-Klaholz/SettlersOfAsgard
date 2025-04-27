@@ -1,7 +1,8 @@
 package ch.unibas.dmi.dbis.cs108;
 
 /**
- * The {@code SETTINGS} class contains configuration settings for the game server and client.
+ * The {@code SETTINGS} class contains configuration settings for the game
+ * server and client.
  */
 public class SETTINGS {
     public enum Config {
@@ -18,7 +19,8 @@ public class SETTINGS {
         ARTIFACT_CHANCE(10), // Percentage
         PURCHASABLE_TILES_PER_ROUND(3),
         SET_BONUS_MULTIPLIER(2),
-        MAX_ENERGY(4);
+        MAX_ENERGY(4),
+        MAX_STRUCTURES(6);
 
         private final int value;
 

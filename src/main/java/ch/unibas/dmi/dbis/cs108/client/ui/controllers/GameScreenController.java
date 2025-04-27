@@ -49,10 +49,17 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import javax.swing.text.html.parser.Entity;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -132,6 +139,12 @@ public class GameScreenController extends BaseController {
 
     private GridAdjustmentManager gridAdjustmentManager;
 
+    // Card handler registry for extensible drag & drop
+    private final Map<String, CardDragHandler> cardHandlers = new HashMap<>();
+
+    // Cached placeholder for missing images
+    private Node missingImagePlaceholder = null;
+
     /*
      * --------------------------------------------------
      * FXML‑injected UI elements
@@ -186,18 +199,55 @@ public class GameScreenController extends BaseController {
 
         currentLobbyId = GameApplication.getCurrentLobbyId();
         localPlayer = playerManager.getLocalPlayer();
-        Logger.getGlobal().info("Game state uses Local Player: " + localPlayer.getName());
+        // Use localPlayer's name for initial log, gamePlayer might not be set yet
+        Logger.getGlobal()
+                .info("Game state uses Local Player: " + (localPlayer != null ? localPlayer.getName() : "null"));
         gameState = new GameState();
         subscribeEvents();
-        selectedStatue = new CardDetails(EntityRegistry.getGameEntityOriginalById(38), true);
+        // Initialize selectedStatue safely
+        GameEntity defaultStatueEntity = EntityRegistry.getGameEntityOriginalById(38);
+        if (defaultStatueEntity != null) {
+            selectedStatue = new CardDetails(defaultStatueEntity, true);
+        } else {
+            LOGGER.severe("Failed to load default statue entity (ID 38).");
+            // Handle error case, maybe create a dummy CardDetails or throw exception
+            selectedStatue = new CardDetails(38, "Error Statue", "Failed to load", "", "", 0);
+        }
         Logger.getGlobal().info("GameScreenController created and subscribed to events.");
 
+        // Register card handlers for extensible drag & drop
+        registerCardHandlers();
+        createPlaceholderNode(); // Create the reusable placeholder
+    }
+
+    /**
+     * Creates a reusable red rectangle placeholder node.
+     */
+    private void createPlaceholderNode() {
+        Rectangle rect = new Rectangle(78, 118); // Size for card slots
+        rect.setFill(Color.RED);
+        missingImagePlaceholder = rect;
+    }
+
+    /**
+     * Registers handlers for different card types to support extensible drag &
+     * drop.
+     */
+    private void registerCardHandlers() {
+        // Register structure handler
+        cardHandlers.put("structure", new StructureCardHandler());
+
+        // Artifact and statue handlers will be added later
+        // cardHandlers.put("artifact", new ArtifactCardHandler());
+        // cardHandlers.put("statue", new StatueCardHandler());
+        LOGGER.fine("Registered card drag handlers.");
     }
 
     /**
      * Invoked by the FXMLLoader after all @FXML fields have been injected.
      * <p>
-     * Only light initialization should happen here. Heavy lifting and game-state relevant
+     * Only light initialization should happen here. Heavy lifting and game-state
+     * relevant
      * initialization should be done in the {@link #initializeUI()} method.
      */
     @FXML
@@ -311,7 +361,7 @@ public class GameScreenController extends BaseController {
 
         for (String playerName : GameApplication.getPlayers()) {
             if (playerName.equals(localPlayer.getName())) {
-                playerColors.put(playerName,Color.GREEN); // Local Player should always be green
+                playerColors.put(playerName, Color.GREEN); // Local Player should always be green
             } else {
                 Color color = playerColours.remove(0);
                 playerColors.put(playerName, color);
@@ -429,7 +479,6 @@ public class GameScreenController extends BaseController {
             }
         });
     }
-
 
     /*
      * --------------------------------------------------
@@ -584,7 +633,8 @@ public class GameScreenController extends BaseController {
         if (settingsDialog != null)
             settingsDialog.close();
         if (gameCanvas != null) {
-            gameCanvas.getParent().removeEventHandler(MouseEvent.MOUSE_PRESSED, e -> handleCanvasClick(e.getX(), e.getY()));
+            gameCanvas.getParent().removeEventHandler(MouseEvent.MOUSE_PRESSED,
+                    e -> handleCanvasClick(e.getX(), e.getY()));
             gameCanvas.setOnKeyPressed(null);
         }
         if (draggedCardSource != null) {
@@ -722,7 +772,8 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Handles a double-click on the canvas – attempts to purchase the tile immediately
+     * Handles a double-click on the canvas – attempts to purchase the tile
+     * immediately
      * without a confirmation dialog.
      */
     private void handleCanvasDoubleClick(double px, double py) {
@@ -804,11 +855,11 @@ public class GameScreenController extends BaseController {
      * Draws the complete grid (including ownership highlighting and selection).
      */
     private void drawHexGrid(GraphicsContext gc,
-                             double size,
-                             double gridW,
-                             double gridH,
-                             double addHX,
-                             double addHY) {
+            double size,
+            double gridW,
+            double gridH,
+            double addHX,
+            double addHY) {
         gc.setStroke(Color.WHITE);
         gc.setLineWidth(1.5);
         gc.setGlobalAlpha(0.7);
@@ -837,14 +888,15 @@ public class GameScreenController extends BaseController {
 
     /**
      * Draws a single hexagon, optionally highlighting ownership and selection.
+     * Also draws the entity image if present.
      */
     private void drawHex(GraphicsContext gc,
-                         double cx,
-                         double cy,
-                         double size,
-                         int row,
-                         int col,
-                         boolean selected) {
+            double cx,
+            double cy,
+            double size,
+            int row,
+            int col,
+            boolean selected) {
         double[] xs = new double[6];
         double[] ys = new double[6];
 
@@ -914,44 +966,77 @@ public class GameScreenController extends BaseController {
         if (tile != null) {
             GameEntity entity = tile.getEntity();
             if (entity != null) {
+                // Use isCard=false for entities placed on the board
                 String URL = EntityRegistry.getURL(entity.getId(), false);
-                drawEntityImage(gc, URL, cx, cy, size, hSquish);
+                drawEntityImage(gc, URL, cx, cy, size, hSquish, entity.getId()); // Pass entity ID for logging
             }
         } else {
-            LOGGER.warning("Tile is null for row " + row + ", col " + col);
+            // Log only once or use finer level if this happens often
+            // LOGGER.warning("Tile is null for row " + row + ", col " + col);
         }
     }
 
     /**
      * Draws an entity image centered in a hex tile.
      * The image is scaled to fit the hex width while preserving its aspect ratio.
+     * Uses EntityRegistry.getURL(isCard=false) for loading the image, with a red
+     * placeholder if missing.
      *
-     * @param gc The graphics context to draw on
-     * @param imageUrl The URL of the image to draw
-     * @param centerX The x-coordinate of the hex center
-     * @param centerY The y-coordinate of the hex center
-     * @param hexSize The size of the hex
-     * @param hSquish The horizontal squish factor
+     * @param gc       The graphics context to draw on
+     * @param imageUrl The URL of the image to draw (obtained with isCard=false)
+     * @param centerX  The x-coordinate of the hex center
+     * @param centerY  The y-coordinate of the hex center
+     * @param hexSize  The size of the hex
+     * @param hSquish  The horizontal squish factor
+     * @param entityId The ID of the entity being drawn (for logging)
      */
     private void drawEntityImage(GraphicsContext gc, String imageUrl, double centerX, double centerY,
-                                 double hexSize, double hSquish) {
+            double hexSize, double hSquish, int entityId) {
+        // Calculate placeholder size relative to hex (adjust as needed for map
+        // entities)
+        double placeholderSizeRatio = 0.7; // Make placeholder 70% of hex width
+        double placeholderWidth = 1.7 * hexSize * hSquish * placeholderSizeRatio;
+        // Maintain aspect ratio 1:1 for square placeholder, adjust if needed
+        double placeholderHeight = placeholderWidth;
+        double placeholderX = centerX - placeholderWidth / 2;
+        double placeholderY = centerY - placeholderHeight / 2;
+
+        // Helper function to draw placeholder
+        Runnable drawPlaceholder = () -> {
+            Paint oldFill = gc.getFill();
+            double oldAlpha = gc.getGlobalAlpha();
+            gc.setFill(Color.RED); // Use red for placeholder
+            gc.setGlobalAlpha(1.0); // Ensure placeholder is opaque
+            gc.fillRect(placeholderX, placeholderY, placeholderWidth, placeholderHeight);
+            gc.setFill(oldFill);
+            gc.setGlobalAlpha(oldAlpha);
+        };
+
         if (imageUrl == null || imageUrl.isEmpty()) {
-            return; // No image to draw
+            // Log ERROR for missing URL
+            LOGGER.severe(String.format("Missing map image URL for entity ID %d. Drawing red placeholder.", entityId));
+            drawPlaceholder.run();
+            return;
         }
 
         try {
             Image image = resourceLoader.loadImage(imageUrl);
             if (image == null || image.isError()) {
-                LOGGER.fine("Failed to load entity image: " + imageUrl);
+                // Log ERROR for image loading failure
+                LOGGER.severe(
+                        String.format("Failed to load map entity image: %s (Entity ID: %d). Drawing red placeholder.",
+                                imageUrl, entityId));
+                drawPlaceholder.run();
                 return;
             }
 
             // Calculate maximum width based on hex size and squish factor
-            // The width of a hex is approximately 2 * size
             double maxWidth = 1.7 * hexSize * hSquish;
+            // Calculate maximum height based on hex size (approx sqrt(3)*size)
+            double maxHeight = 1.732 * hexSize; // Approximation
 
-            // Calculate scale to fit width
-            double scale = maxWidth / image.getWidth();
+            // Calculate scale to fit within both max width and max height
+            double scale = Math.min(maxWidth / image.getWidth(), maxHeight / image.getHeight());
 
             // Calculate scaled dimensions
             double scaledWidth = image.getWidth() * scale;
@@ -963,15 +1048,18 @@ public class GameScreenController extends BaseController {
 
             // Draw image centered in the hex
             gc.drawImage(image,
-                    centerX - scaledWidth/2,
-                    centerY - scaledHeight/2,
+                    centerX - scaledWidth / 2,
+                    centerY - scaledHeight / 2,
                     scaledWidth,
                     scaledHeight);
 
             // Restore graphics state
             gc.setGlobalAlpha(oldAlpha);
         } catch (Exception e) {
-            LOGGER.warning("Error drawing entity image: " + e.getMessage());
+            // Log ERROR for any other exception during drawing
+            LOGGER.log(Level.SEVERE,
+                    String.format("Error drawing map entity image for ID %d: %s", entityId, e.getMessage()), e);
+            drawPlaceholder.run();
         }
     }
 
@@ -985,7 +1073,7 @@ public class GameScreenController extends BaseController {
      * Transforms canvas coordinates to logical grid coordinates.
      *
      * @return {@code int[]{row,col}} or {@code null} if the point is not inside
-     * any tile.
+     *         any tile.
      */
     int[] getHexAt(double px, double py) {
         if (!isMapLoaded || effectiveHexSize <= 0)
@@ -999,7 +1087,7 @@ public class GameScreenController extends BaseController {
                 double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2);
                 double cy = gridOffsetY + r * vSpacing;
                 if (pointInHex(px, py, cx, cy, effectiveHexSize)) {
-                    return new int[]{r, c};
+                    return new int[] { r, c };
                 }
             }
         }
@@ -1138,87 +1226,103 @@ public class GameScreenController extends BaseController {
         event.consume();
     }
 
-    // --- Drag‑and‑drop (structures only; artifacts not implemented yet) --------
+    // --- Drag‑and‑drop (Refactored for Extensibility) ---
 
     /**
-     * Starts a drag‑and‑drop gesture when the user begins dragging a card.
+     * Helper method to extract the card type from its ID.
+     * Returns "structure", "artifact", "statue", or an empty string.
      */
-    @FXML
-    private void handleCardDragDetected(MouseEvent event) {
-        if (!(event.getSource() instanceof Pane src))
-            return;
-        String cardId = src.getId();
-        if (cardId == null || cardId.isEmpty())
-            return;
-        if (!cardId.startsWith("structure"))
-            return; // Only structures for now
-
-        // Don't start drag operation if player can't afford the card
-        if (!canAffordCard(cardId)) {
-            event.consume();
-            return;
-        }
-
-        draggedCardSource = src;
-        Dragboard db = src.startDragAndDrop(TransferMode.MOVE);
-        ClipboardContent content = new ClipboardContent();
-        content.putString(cardId);
-        db.setContent(content);
-
-        SnapshotParameters params = new SnapshotParameters();
-        params.setFill(Color.TRANSPARENT);
-        WritableImage snapshot = src.snapshot(params, null);
-        db.setDragView(snapshot, event.getX(), event.getY());
-
-        event.consume();
+    private String getCardType(String cardId) {
+        if (cardId == null)
+            return "";
+        if (cardId.startsWith("structure"))
+            return "structure";
+        if (cardId.startsWith("artifact"))
+            return "artifact";
+        if (cardId.startsWith("statue"))
+            return "statue";
+        return ""; // Unknown type
     }
 
     /**
-     * Gets entity ID from CardDetails.
+     * Handles the start of a drag operation from a card Pane.
+     * Delegates to the appropriate CardDragHandler based on card type.
      */
-    private int getEntityIDFromCardDetails(CardDetails details) {
-        return details.getID();
+    @FXML
+    private void handleCardDragDetected(MouseEvent event) {
+        Node sourceNode = (Node) event.getSource();
+        String cardId = sourceNode.getId();
+
+        if (cardId == null || cardId.isEmpty()) {
+            LOGGER.warning("Drag detected on node with no ID.");
+            event.consume(); // Prevent drag if ID is missing
+            return;
+        }
+
+        // Determine card type prefix (structure, artifact, statue)
+        String cardType = getCardType(cardId);
+        CardDragHandler handler = cardHandlers.get(cardType);
+
+        if (handler == null) {
+            // Log if no handler is found for a known type, otherwise ignore (e.g., dragging
+            // non-card elements)
+            if (!cardType.isEmpty()) {
+                LOGGER.warning("No handler registered for card type: " + cardType + " (Card ID: " + cardId + ")");
+            }
+            event.consume(); // Prevent drag if no handler
+            return;
+        }
+
+        // Let the appropriate handler handle the drag start
+        handler.handleDragDetected(sourceNode, cardId, event);
+        // Event consumption is handled within the handler
     }
 
     /**
      * Continually called while the user drags a card across the canvas.
-     * It checks if the target tile is valid for placing a structure.
+     * Delegates validation to the appropriate CardDragHandler.
      *
      * @param event The drag event containing the current mouse position
      */
     @FXML
     private void handleDragOver(DragEvent event) {
-        if (event.getGestureSource() == gameCanvas)
+        // Basic checks: ensure drag comes from a different source and has string data
+        if (event.getGestureSource() == gameCanvas || !event.getDragboard().hasString()) {
+            event.acceptTransferModes(TransferMode.NONE); // Explicitly reject
+            event.consume();
             return;
-        if (!event.getDragboard().hasString())
-            return;
-
-        int[] target = getHexAt(event.getX(), event.getY());
-        String cardId = event.getDragboard().getString();
-        boolean isStructure = cardId != null && cardId.startsWith("structure");
-
-        boolean validTarget = false;
-        if (target != null && isStructure) {
-            // Check if player owns the tile and the tile doesn't already have an entity
-            Tile tile = getTile(target[0], target[1]);
-            boolean tileOwnedByPlayer = (tile != null &&
-                    tile.getOwner() != null &&
-                    gamePlayer != null &&
-                    tile.getOwner().equals(gamePlayer.getName()));
-            boolean tileEmpty = tile != null &&
-                    (tile.getEntity() == null ||
-                            tile.getEntity().isArtifact());
-
-            validTarget = tileOwnedByPlayer && tileEmpty;
         }
 
-        // Update the highlighted tile
-        if (validTarget) {
-            highlightedTile = target;
-            drawMapAndGrid(); // Redraw to show highlight
+        String cardId = event.getDragboard().getString();
+        String cardType = getCardType(cardId);
+        CardDragHandler handler = cardHandlers.get(cardType);
+
+        if (handler == null) {
+            // No handler for this type, reject the drag
+            event.acceptTransferModes(TransferMode.NONE);
+            event.consume();
+            return;
+        }
+
+        // Get the tile at the cursor position
+        int[] tileCoords = getHexAt(event.getX(), event.getY());
+
+        boolean isValidTarget = false;
+        if (tileCoords != null) {
+            // Let the appropriate handler validate if drop is allowed here
+            isValidTarget = handler.canDropAt(tileCoords[0], tileCoords[1], cardId);
+        }
+
+        // Update highlight and accept/reject transfer mode
+        if (isValidTarget) {
+            // Valid drop target - highlight the tile if not already highlighted
+            if (highlightedTile == null || highlightedTile[0] != tileCoords[0] || highlightedTile[1] != tileCoords[1]) {
+                highlightedTile = tileCoords;
+                drawMapAndGrid(); // Redraw to show highlight
+            }
             event.acceptTransferModes(TransferMode.MOVE);
         } else {
-            // Clear highlight if not a valid target
+            // Invalid drop target - clear highlight if currently shown
             if (highlightedTile != null) {
                 highlightedTile = null;
                 drawMapAndGrid(); // Redraw to remove highlight
@@ -1236,16 +1340,17 @@ public class GameScreenController extends BaseController {
      */
     @FXML
     private void handleDragExited(DragEvent event) {
-        // Clear the highlighted tile when drag exits canvas
+        // Clear the highlighted tile when drag exits canvas boundaries
         if (highlightedTile != null) {
             highlightedTile = null;
-            drawMapAndGrid();
+            drawMapAndGrid(); // Redraw to remove highlight
         }
         event.consume();
     }
 
     /**
-     * Finalises the drag‑and‑drop operation (placing the structure).
+     * Finalises the drag‑and‑drop operation (placing the item).
+     * Delegates processing to the appropriate CardDragHandler.
      *
      * @param event The drag event containing the current mouse position
      */
@@ -1253,87 +1358,85 @@ public class GameScreenController extends BaseController {
     private void handleDragDropped(DragEvent event) {
         Dragboard db = event.getDragboard();
         boolean success = false;
+
+        // Ensure data is present
         if (db.hasString()) {
             String cardId = db.getString();
-            int[] tile = getHexAt(event.getX(), event.getY());
+            String cardType = getCardType(cardId);
+            CardDragHandler handler = cardHandlers.get(cardType);
 
-            // Check if the target is valid
-            if (tile != null && canAffordCard(cardId)) {
-                // EXISTING CODE FOR HANDLING STRUCTURES
-                if (cardId.startsWith("structure")) {
-                    Tile gameTile = getTile(tile[0], tile[1]);
-                    boolean tileOwnedByPlayer = (gameTile != null &&
-                            gameTile.getOwner() != null &&
-                            gamePlayer != null &&
-                            gameTile.getOwner().equals(gamePlayer.getName()));
-                    boolean tileEmpty = gameTile != null &&
-                            (gameTile.getEntity() == null ||
-                                    gameTile.getEntity().isArtifact());
+            if (handler != null) {
+                int[] tileCoords = getHexAt(event.getX(), event.getY());
 
-                    if (tileOwnedByPlayer && tileEmpty) {
-                        try {
-                            // Get the correct entity ID using the existing method
-                            int structureId = getEntityID(cardId);
-                            LOGGER.info("Placing structure " + structureId + " at tile " + tile[0] + "," + tile[1]);
-                            eventBus.publish(new PlaceStructureUIEvent(tile[0], tile[1], structureId));
-                            success = true;
-                        } catch (NumberFormatException ex) {
-                            chatComponentController.addSystemMessage("Error placing card: Invalid card data.");
-                            LOGGER.warning("Error parsing structure ID: " + ex.getMessage());
-                        }
-                    }
+                if (tileCoords != null) {
+                    int row = tileCoords[0];
+                    int col = tileCoords[1];
+
+                    // Let the appropriate handler process the drop
+                    // The handler performs final validation and publishes events
+                    success = handler.handleDrop(row, col, cardId);
+                } else {
+                    LOGGER.fine("Drag dropped outside of any valid tile.");
                 }
-
-                // NEW CODE FOR HANDLING STATUES
-                if (cardId != null && cardId.startsWith("statue") && tile != null) {
-                    Tile gameTile = getTile(tile[0], tile[1]);
-                    boolean tileOwnedByPlayer = (gameTile != null &&
-                            gameTile.getOwner() != null &&
-                            gamePlayer != null &&
-                            gameTile.getOwner().equals(gamePlayer.getName()));
-                    boolean tileEmpty = gameTile != null &&
-                            (gameTile.getEntity() == null ||
-                                    gameTile.getEntity().isArtifact());
-
-                    if (tileOwnedByPlayer && tileEmpty && !hasPlacedStatue) {
-                        try {
-                            // Extract the statue ID from the cardId
-                            int statueId = Integer.parseInt(cardId.replace("statue", ""));
-                            LOGGER.info("Placing statue " + statueId + " at tile " + tile[0] + "," + tile[1]);
-                            eventBus.publish(new PlaceStructureUIEvent(tile[0], tile[1], statueId));
-                            markStatuePlaced();
-                            success = true;
-                        } catch (NumberFormatException ex) {
-                            chatComponentController.addSystemMessage("Error placing statue: Invalid statue data.");
-                            LOGGER.warning("Error parsing statue ID: " + ex.getMessage());
-                        }
-                    }
-                }
+            } else {
+                LOGGER.warning("Drop detected for unknown card type: " + cardType + " (Card ID: " + cardId + ")");
             }
+        } else {
+            LOGGER.warning("Drag dropped with no string data in dragboard.");
         }
 
-        // Clear highlight
-        highlightedTile = null;
-        drawMapAndGrid();
+        // Clear highlight regardless of success/failure
+        if (highlightedTile != null) {
+            highlightedTile = null;
+            drawMapAndGrid();
+        }
 
-        // Complete the drag-and-drop operation
+        // Inform the system whether the drop was successful
         event.setDropCompleted(success);
         event.consume();
     }
 
     /**
-     * Cleans up after a drag‑and‑drop operation has finished.
+     * Cleans up after a drag‑and‑drop operation has finished (on the source node).
+     * Delegates to the appropriate CardDragHandler.
      *
      * @param event The drag event containing the current mouse position
      */
     @FXML
     private void handleCardDragDone(DragEvent event) {
-        if (draggedCardSource != null && event.getTransferMode() == TransferMode.MOVE) {
-            Pane parent = (Pane) draggedCardSource.getParent();
-            if (parent != null)
-                parent.getChildren().remove(draggedCardSource);
+        String cardId = null;
+        // Identify the source card ID from the event source if possible
+        if (event.getGestureSource() instanceof Node sourceNode) {
+            cardId = sourceNode.getId();
+        } else {
+            LOGGER.warning("handleCardDragDone: Could not identify source node.");
+            event.consume();
+            return;
         }
-        draggedCardSource = null;
+
+        if (cardId != null) {
+            String cardType = getCardType(cardId);
+            CardDragHandler handler = cardHandlers.get(cardType);
+
+            if (handler != null) {
+                // Let the handler perform cleanup actions (e.g., removing card from hand if
+                // needed)
+                handler.handleDragDone(cardId, event.getTransferMode() == TransferMode.MOVE);
+            } else {
+                LOGGER.warning("handleCardDragDone: No handler found for card type: " + cardType + " (Card ID: "
+                        + cardId + ")");
+            }
+        }
+
+        // Clear reference to the dragged source node
+        draggedCardSource = null; // Reset draggedCardSource here
+
+        // Clear highlight just in case it wasn't cleared by DragExited/Dropped
+        if (highlightedTile != null) {
+            highlightedTile = null;
+            drawMapAndGrid();
+        }
+
         event.consume();
     }
 
@@ -1352,7 +1455,15 @@ public class GameScreenController extends BaseController {
         tooltip.setHideDelay(Duration.millis(200));
 
         String id = card.getId();
-        CardDetails details = getCardDetails(id);
+        CardDetails details = null;
+        try {
+            details = getCardDetails(id);
+        } catch (Exception e) {
+            LOGGER.warning("Could not get card details for tooltip: " + id + " - " + e.getMessage());
+            // Create a default tooltip or return null/empty tooltip
+            tooltip.setText("Error loading details");
+            return tooltip;
+        }
 
         // Create a layout with styled sections
         VBox content = new VBox(5);
@@ -1368,8 +1479,8 @@ public class GameScreenController extends BaseController {
             content.getChildren().add(titleLabel);
 
             // Only add separator if next section has content
-            if (details.getDescription() != null && !details.getDescription().isEmpty() ||
-                    details.getLore() != null && !details.getLore().isEmpty() ||
+            if ((details.getDescription() != null && !details.getDescription().isEmpty()) ||
+                    (details.getLore() != null && !details.getLore().isEmpty()) ||
                     details.getPrice() > 0) {
                 content.getChildren().add(new Separator());
             }
@@ -1382,7 +1493,7 @@ public class GameScreenController extends BaseController {
             content.getChildren().add(descLabel);
 
             // Only add separator if next section has content
-            if (details.getLore() != null && !details.getLore().isEmpty() ||
+            if ((details.getLore() != null && !details.getLore().isEmpty()) ||
                     details.getPrice() > 0) {
                 content.getChildren().add(new Separator());
             }
@@ -1416,7 +1527,7 @@ public class GameScreenController extends BaseController {
 
         // Set the tooltip properties
         tooltip.setMaxWidth(300);
-        tooltip.setMaxHeight(200);
+        tooltip.setMaxHeight(Region.USE_PREF_SIZE); // Allow height to adjust
         content.setMinHeight(Region.USE_PREF_SIZE);
         content.setPrefHeight(Region.USE_COMPUTED_SIZE);
         content.setMaxHeight(Region.USE_PREF_SIZE);
@@ -1427,6 +1538,8 @@ public class GameScreenController extends BaseController {
 
         return tooltip;
     }
+
+    // --- End of Tooltip creation helper section ---
 
     /**
      * Create a custom tooltip for the selected statue.
@@ -1473,7 +1586,7 @@ public class GameScreenController extends BaseController {
         }
 
         tooltip.setMaxWidth(300);
-        tooltip.setMaxHeight(200);
+        tooltip.setMaxHeight(Region.USE_PREF_SIZE); // Adjust height
         content.setMinHeight(Region.USE_PREF_SIZE);
         content.setPrefHeight(Region.USE_COMPUTED_SIZE);
         content.setMaxHeight(Region.USE_PREF_SIZE);
@@ -1489,80 +1602,143 @@ public class GameScreenController extends BaseController {
      * Adds drag handlers to the statue card.
      */
     private void setStatueDragHandlers(Node card) {
-        card.setOnDragDetected(this::handleStatueDragDetected);
+        // TODO: Implement statue drag handling using a dedicated StatueCardHandler
+        // For now, link to the generic handler which will prevent drag if no statue
+        // handler exists
+        card.setOnDragDetected(this::handleCardDragDetected);
         card.setOnDragDone(this::handleCardDragDone);
     }
 
     /**
      * Handles drag detection for statue cards.
+     * TODO: This logic should move into a dedicated StatueCardHandler.
      */
     private void handleStatueDragDetected(MouseEvent event) {
-        if (selectedStatue == null || hasPlacedStatue || !canAffordCard("statue")) {
-            event.consume();
-            return;
-        }
-
-        Node src = (Node) event.getSource();
-        draggedCardSource = src;
-
-        Dragboard db = src.startDragAndDrop(TransferMode.MOVE);
-        ClipboardContent content = new ClipboardContent();
-        // Store the entity ID of the selected statue
-        content.putString("statue" + getEntityIDFromCardDetails(selectedStatue));
-        db.setContent(content);
-
-        SnapshotParameters params = new SnapshotParameters();
-        params.setFill(Color.TRANSPARENT);
-        WritableImage snapshot = src.snapshot(params, null);
-        db.setDragView(snapshot, event.getX(), event.getY());
-
+        // This is currently incorrectly linked directly.
+        // It should be handled by handleCardDragDetected -> StatueCardHandler.
+        // For now, prevent statue drag until handler is implemented.
+        LOGGER.info("Statue drag detected, but handler not yet implemented. Cancelling drag.");
         event.consume();
+
+        /*
+         * --- Logic to move to StatueCardHandler ---
+         * if (selectedStatue == null || hasPlacedStatue || !canAffordCard("statue")) {
+         * event.consume();
+         * return;
+         * }
+         * 
+         * Node src = (Node) event.getSource();
+         * draggedCardSource = src;
+         * 
+         * Dragboard db = src.startDragAndDrop(TransferMode.MOVE);
+         * ClipboardContent content = new ClipboardContent();
+         * // Store the entity ID of the selected statue
+         * content.putString("statue" + getEntityIDFromCardDetails(selectedStatue));
+         * db.setContent(content);
+         * 
+         * SnapshotParameters params = new SnapshotParameters();
+         * params.setFill(Color.TRANSPARENT);
+         * WritableImage snapshot = src.snapshot(params, null);
+         * db.setDragView(snapshot, event.getX(), event.getY());
+         * 
+         * event.consume();
+         */
     }
 
     /**
      * Retrieves the card details for a given card ID.
+     * Uses EntityRegistry.getURL(isCard=true) for the card image URL.
      *
-     * @param id The ID of the card.
+     * @param id The ID of the card (e.g., "structure1", "artifact2").
      * @return The CardDetails object containing the card's details.
+     * @throws IllegalArgumentException if the card ID is invalid or entity cannot
+     *                                  be found.
      */
-    public CardDetails getCardDetails(String id) {
-        int entityID = getEntityID(id);
-        GameEntity entity = EntityRegistry.getGameEntityOriginalById(entityID); // DO NOT Make changes to this entity, READ-ONLY
-        String URL = EntityRegistry.getURL(entityID, true);
+    public CardDetails getCardDetails(String id) throws IllegalArgumentException {
+        int entityID = getEntityID(id); // Can throw IllegalArgumentException
+        GameEntity entity = EntityRegistry.getGameEntityOriginalById(entityID);
+
+        if (entity == null) {
+            throw new IllegalArgumentException(
+                    "Entity not found in registry for ID: " + entityID + " (derived from card ID: " + id + ")");
+        }
+
+        // Use isCard=true for the small image shown in the hand
+        String cardImageUrl = EntityRegistry.getURL(entityID, true);
         String title = entity.getName();
         String description = entity.getUsage();
         String lore = entity.getDescription();
         int actualPrice = 0;
-        int price = entity.getPrice();
-        if (price != 0) {
+        int basePrice = entity.getPrice();
+
+        if (basePrice != 0 && gamePlayer != null) { // Check gamePlayer null status
             double priceModifier = gamePlayer.getStatus().get(Status.BuffType.SHOP_PRICE);
-            double adjusted = price / Math.max(priceModifier, 0.5); // Prevent divide-by-zero or negative scaling, set maximum shop price to 200%
+            // Ensure modifier is reasonable (e.g., prevent division by zero or negative)
+            double effectiveModifier = Math.max(priceModifier, 0.1); // Minimum modifier 0.1 (10x price increase max)
+            double adjusted = basePrice / effectiveModifier;
             actualPrice = Math.max(0, (int) Math.round(adjusted)); // Ensure price is never negative
+        } else if (basePrice != 0) {
+            actualPrice = basePrice; // Use base price if gamePlayer not available yet
         }
-        return new CardDetails(entityID, title,description, lore, URL, actualPrice);
+
+        return new CardDetails(entityID, title, description, lore, cardImageUrl, actualPrice);
     }
 
     /**
-     * Maps card IDs to their corresponding entity IDs.
+     * Maps card IDs (e.g., "structure1", "artifact2") to their corresponding entity
+     * IDs.
      *
-     * @param id The ID of the card.
+     * @param id The ID of the card node from FXML.
      * @return The corresponding entity ID.
+     * @throws IllegalArgumentException if the card ID format is invalid.
      */
-    private int getEntityID(String id) {
-        if (id.startsWith("artifact")) {
-            int i = Integer.parseInt(id.replace("artifact", ""));
-            if (i < 0 || i >= artifacts.size() || artifacts.isEmpty()) {
-                Logger.getGlobal().fine("Invalid artifact ID or artifacts are null: " + id); // This is expected, since the player might not have all artifact slots filled
-                return 22; // ID of the artifact which holds the description for the card (should the slot be empty)
+    private int getEntityID(String id) throws IllegalArgumentException {
+        if (id == null || id.isEmpty()) {
+            throw new IllegalArgumentException("Card ID cannot be null or empty.");
+        }
+
+        try {
+            if (id.startsWith("artifact")) {
+                int index = Integer.parseInt(id.replace("artifact", ""));
+                // Artifact indices are 0-based (artifact1 -> index 0)
+                if (index < 1 || index > 3) { // Assuming artifact IDs are artifact1, artifact2, artifact3
+                    throw new IllegalArgumentException("Invalid artifact index in ID: " + id);
+                }
+                // Adjust index to be 0-based for list access
+                int listIndex = index - 1;
+                if (artifacts == null || listIndex < 0 || listIndex >= artifacts.size()
+                        || artifacts.get(listIndex) == null) {
+                    // If artifact slot is empty or invalid, return a placeholder ID (e.g., empty
+                    // slot visual)
+                    LOGGER.fine("Artifact slot " + index + " is empty or invalid.");
+                    return 22; // ID for the "Empty Artifact Slot" description/visual
+                } else {
+                    return artifacts.get(listIndex).getId();
+                }
+            } else if (id.startsWith("structure")) {
+                // Structure IDs are 1-based (structure1 -> entity ID 1)
+                int structureNum = Integer.parseInt(id.replace("structure", ""));
+                if (structureNum < 1 || structureNum > 9) { // Assuming structures 1-9 exist
+                    throw new IllegalArgumentException("Invalid structure number in ID: " + id);
+                }
+                return structureNum; // Structure number directly maps to entity ID
+            } else if (id.startsWith("statue")) {
+                // If it's the generic statue card placeholder in the UI
+                if (id.equals("statue")) {
+                    // Return the ID of the selected statue if available, otherwise a
+                    // default/placeholder
+                    return (selectedStatue != null) ? selectedStatue.getID() : 38; // 38 is a default statue ID
+                } else {
+                    // If the ID contains a specific statue ID (e.g., "statue39" from drag content)
+                    return Integer.parseInt(id.replace("statue", ""));
+                }
             } else {
-                return artifacts.get(i).getId();
+                throw new IllegalArgumentException("Invalid card ID prefix: " + id);
             }
-        } else if (id.startsWith("structure")) {
-            return Integer.parseInt(id.replace("structure", "")); // Structure IDs are numbered 1-9 (but 7-9 cannot be bought)
-        } else if (id.startsWith("statue")) {
-            return 38; // ID of the statue which holds the description for the card
-        } else {
-            throw new IllegalArgumentException("Invalid card ID: " + id);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid number format in card ID: " + id, e);
+        } catch (IndexOutOfBoundsException e) {
+            throw new IllegalArgumentException("Artifact index out of bounds for ID: " + id, e);
         }
     }
 
@@ -1616,7 +1792,8 @@ public class GameScreenController extends BaseController {
      */
     private void updateCardAffordability(Node card) {
         String id = card.getId();
-        if (id == null) return;
+        if (id == null)
+            return;
 
         boolean canAfford = canAffordCard(id);
 
@@ -1639,73 +1816,108 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Updates a single card with the correct image.
+     * Updates a single card in the hand with the correct image using getCardDetails
+     * (isCard=true).
+     * Uses a cached red placeholder on failure.
      *
-     * @param card The card node to update.
+     * @param card The card node (Pane) to update.
      */
     private void updateCardImage(Node card) {
         String id = card.getId();
-        if (id == null) return;
+        if (id == null || !(card instanceof Pane pane)) {
+            return; // Ignore if ID is null or node is not a Pane
+        }
+
+        // Clear existing content first
+        pane.getChildren().clear();
+
+        // Set fixed dimensions and default style
+        pane.setMinSize(80, 120);
+        pane.setPrefSize(80, 120);
+        pane.setMaxSize(80, 120);
+        pane.setStyle("-fx-border-color: #444444; -fx-border-width: 1px; -fx-border-radius: 5px;"); // Base style
 
         try {
-            CardDetails details = getCardDetails(id);
+            CardDetails details = getCardDetails(id); // Uses isCard=true internally
             String imageUrl = details.getImageUrl();
 
-            if (card instanceof Pane pane) {
-                // Clear existing content first
-                pane.getChildren().clear();
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                Image image = resourceLoader.loadImage(imageUrl);
 
-                // Set fixed dimensions
-                pane.setMinSize(80, 120);
-                pane.setPrefSize(80, 120);
-                pane.setMaxSize(80, 120);
+                if (image != null && !image.isError()) {
+                    ImageView imageView = new ImageView(image);
+                    imageView.setPreserveRatio(true);
+                    imageView.setFitWidth(78); // Slightly smaller than pane for border
+                    imageView.setFitHeight(118);
 
-                // Add a border
-                pane.setStyle("-fx-border-color: #444444; -fx-border-width: 1px; -fx-border-radius: 5px;");
+                    // Center image in pane using a StackPane wrapper
+                    StackPane wrapper = new StackPane(imageView);
+                    wrapper.setPrefSize(78, 118); // Match ImageView size
+                    StackPane.setAlignment(imageView, Pos.CENTER);
 
-                if (imageUrl != null && !imageUrl.isEmpty()) {
-                    Image image = resourceLoader.loadImage(imageUrl);
-
-                    if (image != null && !image.isError()) {
-
-                        // Create an ImageView with proper sizing
-                        ImageView imageView = new ImageView(image);
-                        imageView.setPreserveRatio(true);
-                        imageView.setFitWidth(78);
-                        imageView.setFitHeight(118);
-
-                        // Center image in pane
-                        StackPane wrapper = new StackPane(imageView);
-                        wrapper.setPrefSize(78, 118);
-
-                        pane.getChildren().add(wrapper);
-                    } else {
-                        LOGGER.warning("Failed to load image for card " + id);
-                        addPlaceholder(pane, details.getTitle());
-                    }
+                    pane.getChildren().add(wrapper);
                 } else {
-                    LOGGER.warning("No image URL for card " + id);
-                    addPlaceholder(pane, details.getTitle());
+                    // Log ERROR for image loading failure
+                    LOGGER.severe(String.format("Failed to load card image: %s (Card ID: %s). Using placeholder.",
+                            imageUrl, id));
+                    addPlaceholderToPane(pane); // Use red placeholder
                 }
-
-                // Ensure card is visible
-                pane.setVisible(true);
-                pane.setOpacity(1.0);
+            } else {
+                // Log WARNING/ERROR for missing image URL (might be expected for empty slots)
+                if (id.startsWith("artifact") && details.getID() == 22) { // ID 22 is the empty slot placeholder
+                    LOGGER.fine(String.format("No image URL for empty artifact slot ID %s. Using placeholder.", id));
+                } else {
+                    LOGGER.severe(String.format("Missing image URL for card ID %s (Entity ID: %d). Using placeholder.",
+                            id, details.getID()));
+                }
+                addPlaceholderToPane(pane); // Use red placeholder
             }
+        } catch (IllegalArgumentException e) {
+            // Log ERROR if getCardDetails fails (e.g., invalid ID format, entity not found)
+            LOGGER.severe(String.format("Error getting card details for ID '%s': %s. Cannot update card image.", id,
+                    e.getMessage()));
+            addPlaceholderToPane(pane); // Show error placeholder
         } catch (Exception e) {
-            LOGGER.warning("Failed to update card " + id + ": " + e.getMessage());
+            // Log ERROR for any other unexpected exception
+            LOGGER.log(Level.SEVERE,
+                    String.format("Unexpected error updating card image for ID '%s': %s", id, e.getMessage()), e);
+            addPlaceholderToPane(pane); // Show error placeholder
+        } finally {
+            // Ensure card is visible even if only placeholder is shown
+            pane.setVisible(true);
+            pane.setOpacity(1.0);
         }
     }
 
-    private void addPlaceholder(Pane pane, String title) {
-        Label placeholder = new Label(title != null ? title : "Card");
-        placeholder.setWrapText(true);
-        placeholder.setAlignment(Pos.CENTER);
-        placeholder.setPrefSize(78, 118);
-        placeholder.setStyle("-fx-background-color: #333344; -fx-text-fill: white; -fx-alignment: center;");
-
-        pane.getChildren().add(placeholder);
+    /**
+     * Adds the cached red placeholder node to the given Pane.
+     *
+     * @param pane The target Pane.
+     */
+    private void addPlaceholderToPane(Pane pane) {
+        if (missingImagePlaceholder != null) {
+            // Ensure placeholder is not already parented elsewhere
+            if (missingImagePlaceholder.getParent() != null) {
+                ((Pane) missingImagePlaceholder.getParent()).getChildren().remove(missingImagePlaceholder);
+            }
+            // Add the single placeholder instance
+            pane.getChildren().add(missingImagePlaceholder);
+            // Center it if the pane is a StackPane, otherwise default alignment
+            if (pane instanceof StackPane) {
+                StackPane.setAlignment(missingImagePlaceholder, Pos.CENTER);
+            }
+        } else {
+            // Fallback if placeholder creation failed
+            Label errorLabel = new Label("ERR");
+            errorLabel.setStyle("-fx-background-color: red; -fx-text-fill: white; -fx-alignment: center;");
+            errorLabel.setPrefSize(78, 118);
+            pane.getChildren().add(errorLabel);
+        }
     }
+
+    // Remove the old addPlaceholder methods as they created new nodes each time
+    // private void addPlaceholder(Pane pane, String title) { ... }
+    // private void addPlaceholder(Pane pane, String title, Color bgColor) { ... }
 
     /**
      * Called when a statue is selected from the popup.
@@ -1753,11 +1965,11 @@ public class GameScreenController extends BaseController {
                     pane.getChildren().add(wrapper);
                 } else {
                     LOGGER.warning("Failed to load image for statue");
-                    addPlaceholder(pane, details.getTitle());
+                    addPlaceholderToPane(pane); // Use red placeholder
                 }
             } else {
                 LOGGER.warning("No image URL for statue");
-                addPlaceholder(pane, details.getTitle());
+                addPlaceholderToPane(pane); // Use red placeholder
             }
 
             // Update tooltip
@@ -1791,7 +2003,6 @@ public class GameScreenController extends BaseController {
             }
         }
     }
-
 
     /*
      * --------------------------------------------------
@@ -1909,7 +2120,7 @@ public class GameScreenController extends BaseController {
     }
 
     private boolean isTileOwnedByPlayer(int row, int col) {
-        return getTile(row,col).hasEntity();
+        return getTile(row, col).hasEntity();
     }
 
     private boolean canAffordCard(String cardId) {
@@ -1927,12 +2138,12 @@ public class GameScreenController extends BaseController {
     }
 
     private String getTileOwnerId(int row, int col) {
-        Tile tile = getTile(row,col);
+        Tile tile = getTile(row, col);
         return tile == null ? null : tile.getOwner();
     }
 
     private int getTilePrice(int row, int col) {
-        Tile tile = getTile(row,col);
+        Tile tile = getTile(row, col);
         return tile != null ? tile.getPrice() : 0;
     }
 
@@ -1982,4 +2193,318 @@ public class GameScreenController extends BaseController {
     private void handleLeaderboard() {
         /* TODO implement leaderboard */
     }
-}
+
+    /*
+     * ==================================================
+     * Inner Classes for Extensible Drag & Drop Handling
+     * ==================================================
+     */
+
+    /**
+     * Interface for card drag-and-drop handlers.
+     * Allows for extensible handling of different card types.
+     */
+    private interface CardDragHandler {
+        /**
+         * Handles the drag detection for a card. Sets up the Dragboard.
+         * Consumes the event if drag should start, otherwise lets it propagate.
+         */
+        void handleDragDetected(Node sourceNode, String cardId, MouseEvent event);
+
+        /**
+         * Checks if the card can be dropped at the specified tile during DragOver.
+         * Performs validation checks (ownership, occupancy, limits, cost).
+         */
+        boolean canDropAt(int row, int col, String cardId);
+
+        /**
+         * Processes the drop of a card onto a tile. Performs final validation
+         * and publishes the relevant event if successful.
+         * Returns true if the drop was successfully processed (event published), false
+         * otherwise.
+         */
+        boolean handleDrop(int row, int col, String cardId);
+
+        /**
+         * Handles the completion of the drag-and-drop operation on the source node.
+         * Called when the drag gesture finishes (successfully or not).
+         */
+        void handleDragDone(String cardId, boolean wasDroppedSuccessfully);
+    }
+
+    /**
+     * Implementation of CardDragHandler for structure cards.
+     */
+    private class StructureCardHandler implements CardDragHandler {
+        @Override
+        public void handleDragDetected(Node sourceNode, String cardId, MouseEvent event) {
+            // 1. Check Affordability
+            int cost = -1; // Default to invalid cost
+            int runes = -1; // Default to invalid runes
+            try {
+                cost = getCardCost(cardId); // Can throw IllegalArgumentException
+                runes = getPlayerRunes(); // Can be null if gamePlayer not set
+                if (runes < cost) {
+                    // Log warning and show notification on FX thread
+                    final int finalCost = cost; // Need final variable for lambda
+                    final int finalRunes = runes;
+                    Platform.runLater(() -> {
+                        LOGGER.warning(String.format(
+                                "Player [%s] cannot afford structure (Card: %s, Cost: %d runes, Has: %d runes). Drag cancelled.",
+                                (localPlayer != null ? localPlayer.getName() : "Unknown"), cardId, finalCost,
+                                finalRunes));
+                        showNotification("You cannot afford this structure (Cost: " + finalCost + " runes).");
+                    });
+                    event.consume(); // Prevent drag from starting
+                    return;
+                }
+            } catch (IllegalArgumentException e) {
+                LOGGER.severe(String.format("Error getting cost for card '%s' during drag start: %s. Drag cancelled.",
+                        cardId, e.getMessage()));
+                event.consume();
+                return;
+            } catch (NullPointerException e) {
+                LOGGER.warning(String.format(
+                        "Cannot check affordability for card '%s': gamePlayer not initialized yet. Drag cancelled.",
+                        cardId));
+                event.consume();
+                return;
+            }
+
+            // 2. Log Drag Start
+            try {
+                int entityId = getEntityID(cardId); // Can throw IllegalArgumentException
+                GameEntity entity = EntityRegistry.getGameEntityOriginalById(entityId);
+                String entityName = (entity != null) ? entity.getName() : "Unknown Entity";
+
+                LOGGER.info(String.format(
+                        "Player [%s] started dragging structure [%s] (Card ID: %s, Entity ID: %d)",
+                        (localPlayer != null ? localPlayer.getName() : "Unknown"), entityName, cardId, entityId));
+
+                // 3. Setup Dragboard
+                draggedCardSource = sourceNode; // Keep track of the source
+                Dragboard db = sourceNode.startDragAndDrop(TransferMode.MOVE);
+                ClipboardContent content = new ClipboardContent();
+                content.putString(cardId); // Put the FXML ID of the card
+                db.setContent(content);
+
+                // Create a snapshot for the drag view
+                SnapshotParameters params = new SnapshotParameters();
+                params.setFill(Color.TRANSPARENT);
+                WritableImage snapshot = sourceNode.snapshot(params, null);
+                db.setDragView(snapshot, event.getX(), event.getY()); // Position relative to cursor
+
+                event.consume(); // Consume event to indicate drag has started
+
+            } catch (IllegalArgumentException e) {
+                LOGGER.severe(
+                        String.format("Error getting entity ID for card '%s' during drag start: %s. Drag cancelled.",
+                                cardId, e.getMessage()));
+                event.consume(); // Prevent drag if ID is invalid
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, String.format("Unexpected error during structure drag start for card '%s': %s",
+                        cardId, e.getMessage()), e);
+                event.consume(); // Prevent drag on unexpected error
+            }
+        }
+
+        @Override
+        public boolean canDropAt(int row, int col, String cardId) {
+            // Basic null checks
+            if (localPlayer == null || gameState == null || gamePlayer == null) {
+                LOGGER.warning(
+                        "canDropAt check failed: Crucial game state (localPlayer, gameState, or gamePlayer) is null.");
+                return false;
+            }
+
+            Tile targetTile = getTile(row, col);
+            if (targetTile == null) {
+                // This might happen if coordinates are slightly off, log finely if needed
+                // LOGGER.finest("canDropAt check failed: Target tile [%d,%d] is null in game
+                // state.", row, col);
+                return false;
+            }
+
+            // --- Validation in Strict Order ---
+
+            // 1. Ownership check
+            String tileOwnerId = targetTile.getOwner();
+            if (tileOwnerId == null || !tileOwnerId.equals(localPlayer.getId())) {
+                // Silently fail during drag over, log on drop attempt
+                return false;
+            }
+
+            // 2. Occupancy check (allow placing over artifacts)
+            if (targetTile.hasEntity() && !targetTile.getEntity().isArtifact()) {
+                // Silently fail during drag over, log on drop attempt
+                return false;
+            }
+
+            // 3. Structure limit check
+            int maxStructures = SETTINGS.Config.MAX_STRUCTURES.getValue();
+            if (localPlayer.getOwnedTiles().size() >= maxStructures) {
+                // Silently fail during drag over, log on drop attempt
+                return false;
+            }
+
+            // 4. Affordability check (redundant if checked on drag start, but good safety
+            // check)
+            try {
+                if (!canAffordCard(cardId)) {
+                    // Silently fail during drag over, log on drop attempt
+                    return false;
+                }
+            } catch (Exception e) {
+                LOGGER.warning("Error checking affordability during canDropAt: " + e.getMessage());
+                return false; // Fail safe if cost check fails
+            }
+
+            // All checks passed
+            return true;
+        }
+
+        @Override
+        public boolean handleDrop(int row, int col, String cardId) {
+            // Perform final validation checks before publishing event
+            if (localPlayer == null || gameState == null || gamePlayer == null) {
+                LOGGER.severe(
+                        "Structure drop failed: Crucial game state (localPlayer, gameState, or gamePlayer) is null.");
+                return false;
+            }
+
+            int entityId;
+            GameEntity entity;
+            try {
+                entityId = getEntityID(cardId);
+                entity = EntityRegistry.getGameEntityOriginalById(entityId);
+                if (entity == null)
+                    throw new NullPointerException("Entity not found in registry for ID: " + entityId);
+            } catch (IllegalArgumentException | NullPointerException e) {
+                LOGGER.severe(String.format("Structure drop failed: Invalid entity data for card '%s'. Error: %s",
+                        cardId, e.getMessage()));
+                Platform.runLater(() -> showNotification("Error: Invalid structure data."));
+                return false;
+            }
+
+            String entityName = entity.getName();
+            Tile targetTile = getTile(row, col);
+
+            // Should not happen if canDropAt was checked, but validate again
+            if (targetTile == null) {
+                LOGGER.severe(String.format("Structure drop failed: Target tile [%d,%d] became null.", row, col));
+                return false;
+            }
+
+            // --- Validation in Strict Order (with Logging and Notifications) ---
+
+            // 1. Ownership
+            String tileOwnerName = targetTile.getOwner();
+            if (tileOwnerName == null || !tileOwnerName.equals(localPlayer.getId())) {
+                String ownerName = "None";
+                if (tileOwnerName != null) {
+                    Player owner = gameState.findPlayerByName(tileOwnerName);
+                    ownerName = (owner != null) ? owner.getName() : "Unknown (" + tileOwnerName + ")";
+                }
+                LOGGER.warning(String.format(
+                        "Placement failed: Player [%s] attempted to place structure [%s] on tile [%d,%d] owned by [%s]",
+                        localPlayer.getName(), entityName, row, col, ownerName));
+                Platform.runLater(() -> showNotification("You can only place structures on tiles you own."));
+                return false;
+            }
+
+            // 2. Occupancy (allow placing over artifacts)
+            if (targetTile.hasEntity() && !targetTile.getEntity().isArtifact()) {
+                GameEntity existingEntity = targetTile.getEntity();
+                String existingName = (existingEntity != null) ? existingEntity.getName() : "Unknown";
+                LOGGER.warning(String.format(
+                        "Placement failed: Player [%s] attempted to place structure [%s] on tile [%d,%d] already occupied by [%s]",
+                        localPlayer.getName(), entityName, row, col, existingName));
+                Platform.runLater(() -> showNotification("This tile is already occupied by a structure or statue."));
+                return false;
+            }
+
+            // 3. Structure Limit
+            int currentCount = localPlayer.getOwnedTiles().size();
+            int maxAllowed = SETTINGS.Config.MAX_STRUCTURES.getValue();
+            if (currentCount >= maxAllowed) {
+                LOGGER.warning(String.format(
+                        "Placement failed: Player [%s] attempted to place structure [%s] but already has %d/%d structures",
+                        localPlayer.getName(), entityName, currentCount, maxAllowed));
+                Platform.runLater(() -> showNotification(
+                        "You have reached the maximum number of structures (" + maxAllowed + ")."));
+                return false;
+            }
+
+            // 4. Affordability
+            int cost = -1;
+            int runes = -1;
+            try {
+                cost = getCardCost(cardId);
+                runes = getPlayerRunes();
+                if (runes < cost) {
+                    LOGGER.warning(String.format(
+                            "Placement failed: Player [%s] cannot afford structure [%s] (Cost: %d runes, Has: %d runes)",
+                            localPlayer.getName(), entityName, cost, runes));
+                    final int finalCost = cost; // For lambda
+                    Platform.runLater(
+                            () -> showNotification("You cannot afford this structure (Cost: " + finalCost + ")."));
+                    return false;
+                }
+            } catch (Exception e) {
+                LOGGER.severe(String.format("Placement failed: Error checking cost for structure [%s]: %s", entityName,
+                        e.getMessage()));
+                Platform.runLater(() -> showNotification("Error checking structure cost."));
+                return false;
+            }
+
+            // All checks passed - Publish the event
+            LOGGER.info(String.format(
+                    "Player [%s] placing Structure [%s] (Entity ID: %d) at tile [%d,%d] (Cost: %d runes)",
+                    localPlayer.getName(), entityName, entityId, row, col, cost));
+
+            // Publish event on the event bus (assumed to handle communication)
+            // Note: Event uses (x,y) which corresponds to (col,row)
+            eventBus.publish(new PlaceStructureUIEvent(col, row, entityId));
+
+            // UI update (drawing the entity) will happen automatically when GameSyncEvent
+            // is received and processed.
+            // The structure card in the hand remains.
+
+            return true; // Indicate successful processing
+        }
+
+        @Override
+        public void handleDragDone(String cardId, boolean wasDroppedSuccessfully) {
+            // This method is called on the source node after the drop completes.
+            // For structures, the card remains in the hand. Log the outcome.
+            try {
+                int entityId = getEntityID(cardId);
+                GameEntity entity = EntityRegistry.getGameEntityOriginalById(entityId);
+                String entityName = (entity != null) ? entity.getName() : "Unknown";
+
+                if (wasDroppedSuccessfully) {
+                    LOGGER.info(String.format(
+                            "Structure drag successful for [%s] (Card ID: %s, Entity ID: %d) by player [%s]",
+                            entityName, cardId, entityId, (localPlayer != null ? localPlayer.getName() : "Unknown")));
+                    // Refresh affordability in case costs changed or runes were spent
+                    Platform.runLater(GameScreenController.this::refreshCardAffordability);
+                } else {
+                    LOGGER.info(String.format(
+                            "Structure drag cancelled/failed for [%s] (Card ID: %s, Entity ID: %d) by player [%s]",
+                            entityName, cardId, entityId, (localPlayer != null ? localPlayer.getName() : "Unknown")));
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE,
+                        String.format("Error during structure drag done for card '%s': %s", cardId, e.getMessage()), e);
+            }
+            // Resetting draggedCardSource is handled in the main handleCardDragDone method
+        }
+    } // End of StructureCardHandler
+
+    // TODO: Implement ArtifactCardHandler following the CardDragHandler interface
+    // private class ArtifactCardHandler implements CardDragHandler { ... }
+
+    // TODO: Implement StatueCardHandler following the CardDragHandler interface
+    // private class StatueCardHandler implements CardDragHandler { ... }
+
+} // End of GameScreenController
