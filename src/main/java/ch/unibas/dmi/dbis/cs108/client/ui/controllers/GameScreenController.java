@@ -320,12 +320,41 @@ public class GameScreenController extends BaseController {
         eventBus.subscribe(EndGameEvent.class, this::handleEndGame);
         // In GameScreenController.subscribeEvents():
         eventBus.subscribe(GameSyncEvent.class, event -> {
-            LOGGER.info("GameSyncEvent received: " + (event == null ? "null" : event.toString()));
-            if (event != null) {
-                handleGameSync(event);
-            } else {
-                LOGGER.severe("Received null GameSyncEvent");
+            // Log receiving the event
+            if (event == null || event.getGameState() == null) {
+                LOGGER.severe("Received null GameSyncEvent or GameState. Cannot update UI.");
+                return;
             }
+
+            GameState updatedState = event.getGameState();
+            // Log details about the received event
+            LOGGER.info(
+                    String.format("Received GameSyncEvent: Updating game state. Board size: %d tiles. Player turn: %s",
+                            updatedState.getBoardManager().getBoard().getTiles().length, updatedState.getPlayerTurn()));
+
+            Platform.runLater(() -> {
+                gameState = updatedState;
+                LOGGER.info("GameSyncEvent received. Searching for player " + localPlayer.getName());
+                gamePlayer = gameState.findPlayerByName(localPlayer.getName());
+
+                if (gamePlayer == null) {
+                    LOGGER.warning("Game player not found in game state.");
+                    return;
+                }
+
+                artifacts = gamePlayer.getArtifacts();
+
+                updateCardImages();
+                refreshCardAffordability();
+                updateRunesAndEnergyBar();
+                updatePlayerList();
+                updateMap();
+
+                if (uiInitialized.compareAndSet(false, true)) {
+                    LOGGER.info("First GameSyncEvent processed. Proceeding to full UI initialization...");
+                    initializeUI();
+                }
+            });
         });
     }
 
@@ -431,13 +460,16 @@ public class GameScreenController extends BaseController {
      * Handles the game sync event and updates the game state accordingly.
      */
     private void handleGameSync(GameSyncEvent e) {
-        LOGGER.fine(() -> "GameSyncEvent received: " + e);
+        // Log receiving the event
         if (e == null || e.getGameState() == null) {
-            LOGGER.warning("Received null GameSyncEvent or GameState");
+            LOGGER.severe("Received null GameSyncEvent or GameState. Cannot update UI.");
             return;
         }
 
         GameState updatedState = e.getGameState();
+        // Log details about the received event
+        LOGGER.info(String.format("Received GameSyncEvent: Updating game state. Board size: %d tiles. Player turn: %s",
+                updatedState.getBoardManager().getBoard().getTiles().length, updatedState.getPlayerTurn()));
 
         Platform.runLater(() -> {
             gameState = updatedState;
@@ -979,7 +1011,7 @@ public class GameScreenController extends BaseController {
     /**
      * Draws an entity image centered in a hex tile.
      * The image is scaled to fit the hex width while preserving its aspect ratio.
-     * Uses EntityRegistry.getURL(isCard=false) for loading the image, with a red
+     * Uses EntityRegistry.getURL(isCard=true) for loading the image, with a red
      * placeholder if missing.
      *
      * @param gc       The graphics context to draw on
@@ -2374,8 +2406,13 @@ public class GameScreenController extends BaseController {
         public boolean handleDrop(int row, int col, String cardId) {
             // Perform final validation checks before publishing event
             if (localPlayer == null || gameState == null || gamePlayer == null) {
-                LOGGER.severe(
-                        "Structure drop failed: Crucial game state (localPlayer, gameState, or gamePlayer) is null.");
+                // Log ERROR: Critical state missing
+                LOGGER.severe(String.format(
+                        "Failed to send PlaceStructureUIEvent: Critical game state missing (Player: %s, GameState: %s, GamePlayer: %s) for CardID [%s] at Tile (%d, %d)",
+                        localPlayer != null ? localPlayer.getName() : "null",
+                        gameState != null ? "present" : "null",
+                        gamePlayer != null ? "present" : "null",
+                        cardId, col, row));
                 return false;
             }
 
@@ -2387,8 +2424,10 @@ public class GameScreenController extends BaseController {
                 if (entity == null)
                     throw new NullPointerException("Entity not found in registry for ID: " + entityId);
             } catch (IllegalArgumentException | NullPointerException e) {
-                LOGGER.severe(String.format("Structure drop failed: Invalid entity data for card '%s'. Error: %s",
-                        cardId, e.getMessage()));
+                // Log ERROR: Invalid entity data
+                LOGGER.severe(String.format(
+                        "Failed to send PlaceStructureUIEvent: Invalid entity data for CardID [%s] at Tile (%d, %d). Error: %s",
+                        cardId, col, row, e.getMessage()));
                 Platform.runLater(() -> showNotification("Error: Invalid structure data."));
                 return false;
             }
@@ -2398,7 +2437,10 @@ public class GameScreenController extends BaseController {
 
             // Should not happen if canDropAt was checked, but validate again
             if (targetTile == null) {
-                LOGGER.severe(String.format("Structure drop failed: Target tile [%d,%d] became null.", row, col));
+                // Log ERROR: Tile became null
+                LOGGER.severe(String.format(
+                        "Failed to send PlaceStructureUIEvent: Target Tile (%d, %d) became null for CardID [%s]",
+                        col, row, cardId));
                 return false;
             }
 
@@ -2412,9 +2454,10 @@ public class GameScreenController extends BaseController {
                     Player owner = gameState.findPlayerByName(tileOwnerName);
                     ownerName = (owner != null) ? owner.getName() : "Unknown (" + tileOwnerName + ")";
                 }
-                LOGGER.warning(String.format(
-                        "Placement failed: Player [%s] attempted to place structure [%s] on tile [%d,%d] owned by [%s]",
-                        localPlayer.getName(), entityName, row, col, ownerName));
+                // Log ERROR: Ownership validation failed
+                LOGGER.severe(String.format(
+                        "Failed to send PlaceStructureUIEvent: Player [%s] attempted to place EntityID [%d] (%s) on Tile (%d, %d) owned by [%s]",
+                        localPlayer.getName(), entityId, entityName, col, row, ownerName));
                 Platform.runLater(() -> showNotification("You can only place structures on tiles you own."));
                 return false;
             }
@@ -2423,9 +2466,10 @@ public class GameScreenController extends BaseController {
             if (targetTile.hasEntity() && !targetTile.getEntity().isArtifact()) {
                 GameEntity existingEntity = targetTile.getEntity();
                 String existingName = (existingEntity != null) ? existingEntity.getName() : "Unknown";
-                LOGGER.warning(String.format(
-                        "Placement failed: Player [%s] attempted to place structure [%s] on tile [%d,%d] already occupied by [%s]",
-                        localPlayer.getName(), entityName, row, col, existingName));
+                // Log ERROR: Occupancy validation failed
+                LOGGER.severe(String.format(
+                        "Failed to send PlaceStructureUIEvent: Player [%s] attempted to place EntityID [%d] (%s) on Tile (%d, %d) already occupied by [%s]",
+                        localPlayer.getName(), entityId, entityName, col, row, existingName));
                 Platform.runLater(() -> showNotification("This tile is already occupied by a structure or statue."));
                 return false;
             }
@@ -2436,9 +2480,10 @@ public class GameScreenController extends BaseController {
             int currentCount = localPlayer.getOwnedTiles().size();
             int maxAllowed = SETTINGS.Config.MAX_STRUCTURES.getValue();
             if (currentCount >= maxAllowed) {
-                LOGGER.warning(String.format(
-                        "Placement failed: Player [%s] attempted to place structure [%s] but already has %d/%d structures",
-                        localPlayer.getName(), entityName, currentCount, maxAllowed));
+                // Log ERROR: Structure limit validation failed
+                LOGGER.severe(String.format(
+                        "Failed to send PlaceStructureUIEvent: Player [%s] attempted to place EntityID [%d] (%s) on Tile (%d, %d) but already has %d/%d structures",
+                        localPlayer.getName(), entityId, entityName, col, row, currentCount, maxAllowed));
                 Platform.runLater(() -> showNotification(
                         "You have reached the maximum number of structures (" + maxAllowed + ")."));
                 return false;
@@ -2451,25 +2496,28 @@ public class GameScreenController extends BaseController {
                 cost = getCardCost(cardId);
                 runes = getPlayerRunes();
                 if (runes < cost) {
-                    LOGGER.warning(String.format(
-                            "Placement failed: Player [%s] cannot afford structure [%s] (Cost: %d runes, Has: %d runes)",
-                            localPlayer.getName(), entityName, cost, runes));
+                    // Log ERROR: Affordability validation failed
+                    LOGGER.severe(String.format(
+                            "Failed to send PlaceStructureUIEvent: Player [%s] cannot afford EntityID [%d] (%s) on Tile (%d, %d) (Cost: %d, Has: %d)",
+                            localPlayer.getName(), entityId, entityName, col, row, cost, runes));
                     final int finalCost = cost; // For lambda
                     Platform.runLater(
                             () -> showNotification("You cannot afford this structure (Cost: " + finalCost + ")."));
                     return false;
                 }
             } catch (Exception e) {
-                LOGGER.severe(String.format("Placement failed: Error checking cost for structure [%s]: %s", entityName,
-                        e.getMessage()));
+                // Log ERROR: Cost check failed
+                LOGGER.severe(String.format(
+                        "Failed to send PlaceStructureUIEvent: Error checking cost for EntityID [%d] (%s) on Tile (%d, %d). Error: %s",
+                        entityId, entityName, col, row, e.getMessage()));
                 Platform.runLater(() -> showNotification("Error checking structure cost."));
                 return false;
             }
 
-            // All checks passed - Publish the event
+            // All checks passed - Log sending the event
             LOGGER.info(String.format(
-                    "Player [%s] placing Structure [%s] (Entity ID: %d) at tile [%d,%d] (Cost: %d runes)",
-                    localPlayer.getName(), entityName, entityId, row, col, cost));
+                    "Sending PlaceStructureUIEvent: Player [%s] placing EntityID [%d] (%s) on Tile (%d, %d)",
+                    localPlayer.getName(), entityId, entityName, col, row));
 
             // Publish event on the event bus (assumed to handle communication)
             // Note: Event uses (x,y) which corresponds to (col,row)
@@ -2513,9 +2561,12 @@ public class GameScreenController extends BaseController {
     } // End of StructureCardHandler
 
     // TODO: Implement ArtifactCardHandler following the CardDragHandler interface
+    // Add logging for sending UseFieldArtifactUIEvent / UsePlayerArtifactUIEvent
+    // here
     // private class ArtifactCardHandler implements CardDragHandler { ... }
 
     // TODO: Implement StatueCardHandler following the CardDragHandler interface
+    // Add logging for sending PlaceStatueUIEvent here
     // private class StatueCardHandler implements CardDragHandler { ... }
 
 } // End of GameScreenController
