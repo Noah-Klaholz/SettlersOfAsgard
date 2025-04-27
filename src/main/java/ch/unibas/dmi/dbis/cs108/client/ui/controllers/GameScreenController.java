@@ -9,6 +9,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.GridAdjustmentManager;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
@@ -259,6 +260,7 @@ public class GameScreenController extends BaseController {
         eventBus.subscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
         eventBus.subscribe(LobbyJoinedEvent.class, this::handleLobbyJoined);
         eventBus.subscribe(TileClickEvent.class, this::onTileClick);
+        eventBus.subscribe(ErrorEvent.class, this::handleError);
         // In GameScreenController.subscribeEvents():
         eventBus.subscribe(GameSyncEvent.class, event -> {
             LOGGER.info("GameSyncEvent received: " + (event == null ? "null" : event.toString()));
@@ -302,7 +304,7 @@ public class GameScreenController extends BaseController {
 
         for (String playerName : GameApplication.getPlayers()) {
             if (playerName.equals(localPlayer.getName())) {
-                playerColours.add(Color.GREEN); // Local Player should always be green
+                playerColors.put(playerName,Color.GREEN); // Local Player should always be green
             } else {
                 Color color = playerColours.remove(0);
                 playerColors.put(playerName, color);
@@ -360,9 +362,11 @@ public class GameScreenController extends BaseController {
      */
     private void handlePlayerUpdate(Player updatedPlayer) {
         localPlayer = updatedPlayer;
-        if (chatComponentController != null) {
-            chatComponentController.setPlayer(localPlayer);
-        }
+        GameApplication.setLocalPlayer(localPlayer);
+        chatComponentController.setPlayer(localPlayer);
+        chatComponentController.addSystemMessage("Name successfully changed to: " + localPlayer.getName());
+        settingsDialog.playerNameProperty().set(localPlayer.getName());
+        updatePlayerList();
         LOGGER.info("Player updated in GameScreenController: " + localPlayer.getName());
     }
 
@@ -396,10 +400,25 @@ public class GameScreenController extends BaseController {
             updatePlayerList();
             updateMap();
 
-            // ✅ Real initialization only after first GameSyncEvent
             if (uiInitialized.compareAndSet(false, true)) {
                 LOGGER.info("First GameSyncEvent processed. Proceeding to full UI initialization...");
                 initializeUI();
+            }
+        });
+    }
+
+    /**
+     * Shows an error message in the chat component.
+     *
+     * @param event The error event containing the error message.
+     */
+    public void handleError(ErrorEvent event) {
+        Objects.requireNonNull(event, "ErrorEvent cannot be null");
+        Platform.runLater(() -> {
+            String errorMessage = event.getErrorMessage();
+            LOGGER.warning("Received error event: " + errorMessage);
+            if (chatComponentController != null && errorMessage != null && !errorMessage.isEmpty()) {
+                chatComponentController.addSystemMessage("Error: " + errorMessage);
             }
         });
     }
@@ -475,11 +494,6 @@ public class GameScreenController extends BaseController {
         Platform.runLater(() -> {
             if (event.isSuccess()) {
                 playerManager.updatePlayerName(event.getNewName());
-                localPlayer.setName(event.getNewName());
-                GameApplication.setLocalPlayer(localPlayer);
-                chatComponentController.setPlayer(localPlayer);
-                chatComponentController.addSystemMessage("Name successfully changed to: " + localPlayer.getName());
-                settingsDialog.playerNameProperty().set(localPlayer.getName());
             } else {
                 String reason = Optional.ofNullable(event.getMessage()).orElse("Unknown reason.");
                 chatComponentController.addSystemMessage("Failed to change name: " + reason);
@@ -1623,11 +1637,11 @@ public class GameScreenController extends BaseController {
     // Helper methods for better gameState access
 
     private Tile getTile(int row, int col) {
-        return gameState.getBoardManager().getTile(row, col);
+        return gameState.getBoardManager().getTile(col, row);
     }
 
     private boolean isTileOwnedByPlayer(int row, int col) {
-        return gameState.getBoardManager().getTile(col, row).hasEntity();
+        return getTile(row,col).hasEntity();
     }
 
     private boolean canAffordCard(String cardId) {
@@ -1645,12 +1659,12 @@ public class GameScreenController extends BaseController {
     }
 
     private String getTileOwnerId(int row, int col) {
-        Tile tile = gameState.getBoardManager().getTile(col, row);
+        Tile tile = getTile(row,col);
         return tile == null ? null : tile.getOwner();
     }
 
     private int getTilePrice(int row, int col) {
-        Tile tile = gameState.getBoardManager().getTile(col, row);
+        Tile tile = getTile(row,col);
         return tile != null ? tile.getPrice() : 0;
     }
 

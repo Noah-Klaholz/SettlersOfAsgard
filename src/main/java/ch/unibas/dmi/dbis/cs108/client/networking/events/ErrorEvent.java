@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.networking.events;
 
 import java.time.Instant;
+import java.util.logging.Logger;
 
 /**
  * UIEvent representing an error in the application.
