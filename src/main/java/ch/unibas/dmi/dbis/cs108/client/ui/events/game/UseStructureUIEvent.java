@@ -9,7 +9,6 @@ public class UseStructureUIEvent implements UIEvent {
     private final int row;
     private final int col;
     private final int structureId;
-    private final String useType;
 
     /**
      * Constructs a UseStructureUIEvent.
@@ -17,13 +16,11 @@ public class UseStructureUIEvent implements UIEvent {
      * @param row         the row coordinate
      * @param col         the column coordinate
      * @param structureId the ID of the structure
-     * @param useType     the type of use (e.g., "PLACE", "ACTIVATE")
      */
-    public UseStructureUIEvent(int row, int col, int structureId, String useType) {
+    public UseStructureUIEvent(int row, int col, int structureId) {
         this.row = row;
         this.col = col;
         this.structureId = structureId;
-        this.useType = useType;
     }
 
     /**
@@ -47,12 +44,6 @@ public class UseStructureUIEvent implements UIEvent {
         return structureId;
     }
 
-    /**
-     * @return the use type
-     */
-    public String getUseType() {
-        return useType;
-    }
 
     /**
      * @return the event type identifier

@@ -9,8 +9,11 @@ import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.WinScreenDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.GridAdjustmentManager;
+import ch.unibas.dmi.dbis.cs108.client.ui.components.game.InteractionPopups.RuneTableInteractionPopup;
+import ch.unibas.dmi.dbis.cs108.client.ui.components.game.InteractionPopups.StatueInteractionPopup;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.ResourceOverviewPopup;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.StatueSelectionPopup;
+import ch.unibas.dmi.dbis.cs108.client.ui.components.game.TileTooltip;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
@@ -680,6 +683,44 @@ public class GameScreenController extends BaseController {
             }
         });
 
+        // Mouse move handler for tile tooltips
+        gameCanvas.addEventHandler(MouseEvent.MOUSE_MOVED, e -> {
+            double mouseX = e.getX();
+            double mouseY = e.getY();
+
+            int[] hexCoords = getHexAt(mouseX, mouseY);
+            if (hexCoords != null) {
+                int row = hexCoords[0];
+                int col = hexCoords[1];
+
+                // Only show tooltip if the hex coordinates changed (to avoid tooltip flicker)
+                if (highlightedTile == null || highlightedTile[0] != row || highlightedTile[1] != col) {
+                    // Hide any existing tooltip
+                    Tooltip.uninstall(gameCanvas, null);
+
+                    Tile tile = getTile(row, col);
+                    if (tile != null) {
+                        // Create and show tooltip
+                        TileTooltip tooltip = new TileTooltip(tile, tile.getOwner());
+                        tooltip.show(gameCanvas, e.getScreenX() + 15, e.getScreenY() + 15);
+
+                        // Update highlighted tile
+                        highlightedTile = new int[]{row, col};
+                    }
+                }
+            } else if (highlightedTile != null) {
+                // Mouse is not over a valid tile, hide any active tooltip
+                Tooltip.uninstall(gameCanvas, null);
+                highlightedTile = null;
+            }
+        });
+
+        // Hide tooltip when mouse exits canvas
+        gameCanvas.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
+            Tooltip.uninstall(gameCanvas, null);
+            highlightedTile = null;
+        });
+
         if (gameCanvas.getParent() instanceof StackPane parent) {
             parent.addEventHandler(MouseEvent.MOUSE_PRESSED, ev -> {
                 Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
@@ -724,6 +765,40 @@ public class GameScreenController extends BaseController {
         selectedCol = col;
         drawMapAndGrid();
         eventBus.publish(new TileClickEvent(row, col));
+
+        // Handle interaction with structures/statues
+        Tile clickedTile = getTile(row, col);
+        if (clickedTile != null && clickedTile.hasEntity()) {
+            // Only allow interaction if the tile is owned by the current player
+            if (localPlayer != null && clickedTile.getOwner() != null &&
+                    clickedTile.getOwner().equals(localPlayer.getName())) {
+
+                int entityId = clickedTile.getEntity().getId();
+
+                // Check if it's a rune table (structure)
+                if (entityId == 1) { // Rune Table id
+                    RuneTableInteractionPopup popup = new RuneTableInteractionPopup(
+                            resourceLoader,
+                            clickedTile,
+                            localPlayer.getName(),
+                            this::useRuneTable
+                    );
+                    popup.showNear(gameCanvas);
+                }
+                // Check if it's a statue
+                else if (entityId >= 30 && entityId <= 37) { // Adjust ID range as needed for statues
+                    StatueInteractionPopup popup = new StatueInteractionPopup(
+                            resourceLoader,
+                            clickedTile,
+                            localPlayer.getName(),
+                            this::levelUpStatue,
+                            this::makeStatueDeal,
+                            this::receiveStatueBlessing
+                    );
+                    popup.showNear(gameCanvas);
+                }
+            }
+        }
     }
 
     /**
@@ -1967,9 +2042,9 @@ public class GameScreenController extends BaseController {
     }
 
     /*
-     * --------------------------------------------------
-     * Unused menu handlers – retained for feature parity
-     * --------------------------------------------------
+     * --------------------------------------------------------
+     * Menu handlers and event handlers for game interactions
+     * --------------------------------------------------------
      */
 
     /**
@@ -2002,5 +2077,46 @@ public class GameScreenController extends BaseController {
     @FXML
     private void handleLeaderboard() {
         /* TODO implement leaderboard */
+    }
+
+    /**
+     * Handles using a rune table structure
+     *
+     * @param tile The tile containing the rune table
+     */
+    private void useRuneTable(Tile tile) {
+        // Send event to use rune table
+        eventBus.publish(new UseStructureUIEvent(tile.getX(), tile.getY(), 1));
+        showNotification("Using rune table at (" + tile.getX() + "," + tile.getY() + ")");
+    }
+
+    /**
+     * Handles leveling up a statue
+     *
+     * @param tile The tile containing the statue
+     */
+    private void levelUpStatue(Tile tile) {
+        eventBus.publish(new UpgradeStatueUIEvent(tile.getEntity().getId(), tile.getX(), tile.getY()));
+        showNotification("Leveling up statue at (" + tile.getX() + "," + tile.getY() + ")");
+    }
+
+    /**
+     * Handles making a deal with a statue (level 2 interaction)
+     *
+     * @param tile The tile containing the statue
+     */
+    private void makeStatueDeal(Tile tile) {
+        // This will need statue-specific UI for different deal types
+        showNotification("Making a deal with statue at (" + tile.getX() + "," + tile.getY() + ")");
+    }
+
+    /**
+     * Handles receiving a blessing from a statue (level 3 interaction)
+     *
+     * @param tile The tile containing the statue
+     */
+    private void receiveStatueBlessing(Tile tile) {
+        // This will need statue-specific UI for different blessing types
+        showNotification("Receiving blessing from statue at (" + tile.getX() + "," + tile.getY() + ")");
     }
 }
