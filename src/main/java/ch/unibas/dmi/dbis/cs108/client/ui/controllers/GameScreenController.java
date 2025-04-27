@@ -13,16 +13,15 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeRequestEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.game.GameSyncEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.game.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyJoinedEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.game.BuyTileUIEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.game.PlaceStructureUIEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.game.TileClickEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.CardDetails;
+import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
@@ -41,6 +40,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
@@ -50,85 +50,52 @@ import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
 import java.util.*;
+import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
- * JavaFX controller for the in‑game screen.
- * <p>
- * 
- * <ul>
- * <li>Renders the map and hex‑grid overlay.</li>
- * <li>Dispatches user interaction to the {@link UIEventBus}.</li>
- * <li>Provides grid‑adjustment tooling through
- * {@link GridAdjustmentManager}.</li>
- * <li>Hosts auxiliary UI (chat component, settings overlay, etc.).</li>
- * </ul>
- *
- * <p>
- * Functionality that is not yet implemented is explicitly marked with TODO tags
- * so that future work is easy to track.
- * </p>
+ * Controller for the in-game screen of the application.
+ * Handles rendering of the game board, user interactions such as drag-and-drop
+ * for game pieces,
+ * and communication with the game logic through the UIEventBus.
  */
 public class GameScreenController extends BaseController {
 
-    /*
-     * --------------------------------------------------
-     * Static configuration
-     * --------------------------------------------------
-     */
+    public static final DataFormat CARD_DATA_FORMAT = new DataFormat("application/x-settlers-card");
     private static final Logger LOGGER = Logger.getLogger(GameScreenController.class.getName());
-    static final int HEX_ROWS = 6;
-    static final int HEX_COLS = 7;
-
-    /*
-     * --------------------------------------------------
-     * Game / UI state
-     * --------------------------------------------------
-     */
+    private static final int HEX_ROWS = 6;
+    private static final int HEX_COLS = 7;
+    private static final int MAX_STRUCTURES = 5;
+    private static final int MAX_ARTIFACTS = 3;
+    private static final int MAX_STATUES = 1;
+    private final ObservableList<String> players = FXCollections.observableArrayList();
+    private final Map<Node, Tooltip> cardTooltips = new HashMap<>();
+    private final Map<Integer, Image> entityImageCache = new HashMap<>();
+    private final Map<String, Color> playerColors = new HashMap<>();
     private PlayerIdentityManager playerManager;
     private Player localPlayer;
     private Player gamePlayer;
-    private final ObservableList<String> players = FXCollections.observableArrayList();
     private GameState gameState;
-    private List<Artifact> artifacts = new ArrayList<>();
-    List<Color> playerColours;
-
-    // Map and grid dimensions calculated at runtime
+    private List<Artifact> artifactsInHand = new ArrayList<>();
+    private List<Color> playerColours;
     private double scaledMapWidth;
     private double scaledMapHeight;
     private double mapOffsetX;
     private double mapOffsetY;
-
-    /*
-     * The following fields are package‑private because the adjustment manager
-     * accesses them directly.
-     */
-    double effectiveHexSize;
-    double gridOffsetX;
-    double gridOffsetY;
-
+    private double effectiveHexSize;
+    private double gridOffsetX;
+    private double gridOffsetY;
     private int selectedRow = -1;
     private int selectedCol = -1;
-
     private String currentLobbyId;
-
     private Image mapImage;
     private boolean isMapLoaded;
-
+    private Image placeholderImage;
     private SettingsDialog settingsDialog;
     private Node selectedCard;
-
-    // Tooltips for cards are cached to avoid recreating them on every hover event
-    private final Map<Node, Tooltip> cardTooltips = new HashMap<>();
-
     private GridAdjustmentManager gridAdjustmentManager;
-
-    /*
-     * --------------------------------------------------
-     * FXML‑injected UI elements
-     * --------------------------------------------------
-     */
     @FXML
     private Canvas gameCanvas;
     @FXML
@@ -142,66 +109,81 @@ public class GameScreenController extends BaseController {
     @FXML
     private FlowPane structureHand;
     @FXML
+    private HBox statueHand;
+    @FXML
     private Label connectionStatusLabel;
     @FXML
     private VBox chatContainer;
-
+    @FXML
+    private StackPane gameBoardContainer;
+    @FXML
+    private Pane artifact1;
+    @FXML
+    private Pane artifact2;
+    @FXML
+    private Pane artifact3;
+    @FXML
+    private Pane structure1;
+    @FXML
+    private Pane structure2;
+    @FXML
+    private Pane structure3;
+    @FXML
+    private Pane structure4;
+    @FXML
+    private Pane structure5;
+    @FXML
+    private Pane statueCard;
     private ChatComponent chatComponentController;
-
-    // Grid‑adjustment overlay controls (created programmatically)
     private Label adjustmentModeIndicator;
     private Label adjustmentValuesLabel;
-
-    // Keeps track of the node that initiated the current drag‑and‑drop gesture
     private Node draggedCardSource;
 
-    // Simplified colour table – replace with proper game state look‑up
-    private final Map<String, Color> playerColors = new HashMap<>();
-
-    /*
-     * --------------------------------------------------
-     * Construction / initialisation
-     * --------------------------------------------------
-     */
-
     /**
-     * Default constructor – required by the FXMLLoader. The heavy lifting
-     * happens in {@link #initialize()} which is invoked automatically once the
-     * FXML graph is ready.
+     * Constructs a new GameScreenController.
+     * Initializes the player manager, local player, and subscribes to necessary
+     * events.
      */
     public GameScreenController() {
         super(new ResourceLoader(), UIEventBus.getInstance(), SceneManager.getInstance());
-
         playerManager = PlayerIdentityManager.getInstance();
         localPlayer = playerManager.getLocalPlayer();
+        if (localPlayer == null) {
+            LOGGER.severe("LocalPlayer is null during construction! Using fallback.");
+            localPlayer = new Player("ErrorGuest-" + UUID.randomUUID().toString().substring(0, 4));
+            PlayerIdentityManager.getInstance().setLocalPlayer(localPlayer);
+        }
         playerManager.addPlayerUpdateListener(this::handlePlayerUpdate);
-
-        Logger.getGlobal().info("Game state uses Local Player: " + localPlayer.getName());
+        LOGGER.info("GameScreenController created for player: " + localPlayer.getName());
         gameState = new GameState();
         subscribeEvents();
-        Logger.getGlobal().info("GameScreenController created and subscribed to events.");
+        LOGGER.info("GameScreenController subscribed to events.");
     }
 
     /**
-     * Invoked by the FXMLLoader after all @FXML fields have been injected.
-     * <p>
-     * This method wires UI bindings, subscribes to the event bus, initialises
-     * helper classes and loads the map image.
+     * Initializes the controller after its root element has been completely
+     * processed.
+     * Sets up the UI components, loads the map image, and prepares the game board.
      */
     @FXML
     private void initialize() {
-        LOGGER.setLevel(Level.ALL);
-        LOGGER.info("GameScreenController initialisation started");
+        LOGGER.setLevel(Level.FINE);
+        LOGGER.info("GameScreenController initialisation started for player: " +
+                (localPlayer != null ? localPlayer.getName() : "null"));
 
         if (localPlayer == null) {
-            LOGGER.severe("LocalPlayer is null during GameScreenController initialisation!");
-            localPlayer = new Player("ErrorGuest"); // Fail‑safe stub
+            LOGGER.severe("LocalPlayer is STILL null during initialize!");
+            localPlayer = PlayerIdentityManager.getInstance().getLocalPlayer();
+            if (localPlayer == null) {
+                localPlayer = new Player("CriticalErrorGuest");
+                LOGGER.severe("Critical Error: Could not establish local player identity.");
+            }
         }
 
         currentLobbyId = GameApplication.getCurrentLobbyId();
-
         setupUI();
         loadMapImage();
+        createPlaceholderImage();
         createAdjustmentUI();
 
         gridAdjustmentManager = new GridAdjustmentManager(
@@ -214,20 +196,14 @@ public class GameScreenController extends BaseController {
         initialiseSettingsDialog();
         initialiseChatComponent();
         initialisePlayerColours();
-        updateCardImages();
-
-        Logger.getGlobal().info("GameScreenController initialized");
+        updateCardDisplay();
+        LOGGER.info("GameScreenController initialized successfully.");
     }
 
-    /*
-     * --------------------------------------------------
-     * UI helper initialisation
-     * --------------------------------------------------
-     */
-
     /**
-     * Wires UI controls to their backing properties and assigns sensible
-     * defaults.
+     * Sets up the user interface components by binding them to their respective
+     * properties
+     * and setting initial values.
      */
     private void setupUI() {
         playersList.setItems(players);
@@ -239,46 +215,43 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Installs all {@link UIEventBus} subscriptions that this controller relies
-     * on.
+     * Subscribes to various events on the UIEventBus to handle game state changes,
+     * player actions, and other game-related events.
      */
     private void subscribeEvents() {
         eventBus.subscribe(ConnectionStatusEvent.class, this::onConnectionStatus);
         eventBus.subscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
         eventBus.subscribe(LobbyJoinedEvent.class, this::handleLobbyJoined);
         eventBus.subscribe(TileClickEvent.class, this::onTileClick);
-        // In GameScreenController.subscribeEvents():
         eventBus.subscribe(GameSyncEvent.class, event -> {
-            LOGGER.info("GameSyncEvent received: " + (event == null ? "null" : event.toString()));
-            if (event != null) {
+            LOGGER.fine("GameSyncEvent received: " + (event == null ? "null" : "valid"));
+            if (event != null && event.getGameState() != null) {
                 handleGameSync(event);
             } else {
-                LOGGER.severe("Received null GameSyncEvent");
+                LOGGER.warning("Received null or invalid GameSyncEvent");
             }
         });
     }
 
     /**
-     * Creates the {@link ChatComponent}, injects it into the placeholder VBox
-     * and forwards the current player and lobby context.
+     * Initializes the chat component, sets the current player and lobby,
+     * and adds it to the chat container in the UI.
      */
     private void initialiseChatComponent() {
         chatContainer.getChildren().clear();
-
         chatComponentController = new ChatComponent();
         Node chatView = chatComponentController.getView();
         chatContainer.getChildren().add(chatView);
         VBox.setVgrow(chatView, Priority.ALWAYS);
-
         chatComponentController.setPlayer(localPlayer);
         chatComponentController.setCurrentLobbyId(currentLobbyId);
     }
 
     /**
-     * initialises the player colours used for the hex grid.
+     * Initializes the player colors used for visualizing player ownership on the
+     * game board.
      */
     private void initialisePlayerColours() {
-        // Create a list of possible player colours
         playerColours = new ArrayList<>();
         playerColours.add(Color.RED);
         playerColours.add(Color.BLUE);
@@ -296,7 +269,8 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Adds the translucent info panel used while in grid‑adjustment mode.
+     * Creates the UI elements for grid adjustment mode, including indicators and
+     * labels.
      */
     private void createAdjustmentUI() {
         adjustmentModeIndicator = new Label("GRID ADJUSTMENT MODE (Press G to exit)");
@@ -316,16 +290,14 @@ public class GameScreenController extends BaseController {
         StackPane.setAlignment(panel, Pos.TOP_CENTER);
     }
 
-    /*
-     * --------------------------------------------------
-     * Event‑bus callbacks
-     * --------------------------------------------------
+    /**
+     * Handles connection status events by updating the UI and displaying messages.
+     *
+     * @param e the ConnectionStatusEvent
      */
-
     private void onConnectionStatus(ConnectionStatusEvent e) {
         if (e == null)
             return;
-
         Platform.runLater(() -> {
             connectionStatusLabel.setText(Optional.ofNullable(e.getState()).map(Object::toString).orElse("UNKNOWN"));
             if (e.getMessage() != null && !e.getMessage().isEmpty()) {
@@ -336,12 +308,20 @@ public class GameScreenController extends BaseController {
         });
     }
 
+    /**
+     * Handles tile click events by logging the event.
+     *
+     * @param e the TileClickEvent
+     */
     private void onTileClick(TileClickEvent e) {
         LOGGER.fine(() -> String.format("Tile clicked externally (row=%d,col=%d)", e.getRow(), e.getCol()));
     }
 
     /**
-     * Updates the player list and runes label when the local player changes.
+     * Updates the local player reference and refreshes the UI when the player data
+     * changes.
+     *
+     * @param updatedPlayer the updated Player object
      */
     private void handlePlayerUpdate(Player updatedPlayer) {
         localPlayer = updatedPlayer;
@@ -352,57 +332,57 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Handles the game sync event and updates the game state accordingly.
+     * Handles game synchronization events by updating the game state and refreshing
+     * the UI.
+     *
+     * @param e the GameSyncEvent
      */
     private void handleGameSync(GameSyncEvent e) {
-        LOGGER.fine(() -> "GameSyncEvent received: " + e);
+        LOGGER.fine("Handling GameSyncEvent...");
         if (e == null || e.getGameState() == null) {
-            LOGGER.warning("Received null GameSyncEvent or GameState");
+            LOGGER.warning("Cannot handle null GameSyncEvent or GameState.");
             return;
         }
-        // Update the game State with the new game state
-        gameState = e.getGameState();
-        LOGGER.info("GameSyncEvent received. Searching for player " + localPlayer.getName());
-        gamePlayer = gameState.findPlayerByName(localPlayer.getName());
+        this.gameState = e.getGameState();
+        LOGGER.fine("GameState updated from sync event.");
 
-        if (gamePlayer == null) {
-            LOGGER.warning("Game player not found in game state.");
-            return;
+        if (localPlayer != null) {
+            this.gamePlayer = gameState.findPlayerByName(localPlayer.getName());
+            if (this.gamePlayer == null) {
+                LOGGER.warning("Local player '" + localPlayer.getName() + "' not found in synced GameState!");
+            } else {
+                LOGGER.fine("Found gamePlayer instance for '" + localPlayer.getName() + "' in GameState.");
+                this.artifactsInHand = new ArrayList<>(gamePlayer.getArtifacts());
+            }
         } else {
-            LOGGER.fine(() -> "Game player found: " + gamePlayer.getName() + " Runes: " + gamePlayer.getRunes());
+            LOGGER.severe("LocalPlayer reference is null when handling GameSyncEvent!");
+            this.gamePlayer = null;
         }
 
-        // Update the artifacts list
-        artifacts = gamePlayer.getArtifacts();
-
-        // Update card images after game state changes
         Platform.runLater(() -> {
-            updateCardImages();
-            refreshCardAffordability();
+            LOGGER.fine("Updating UI elements after GameSync...");
             updateRunesAndEnergyBar();
             updatePlayerList();
+            updateCardDisplay();
+            drawMapAndGrid();
+            LOGGER.fine("UI update complete.");
         });
-
-        // TODO handle game state sync (show player turn, update energy bar, etc.)
     }
 
-    /*
-     * --------------------------------------------------
-     * Navigation & overlay actions (Main‑menu / Settings dialog)
-     * --------------------------------------------------
+    /**
+     * Handles the action to go back to the main menu.
      */
-
-    /** Switches back to the main‑menu scene. */
     @FXML
     private void handleBackToMainMenu() {
         sceneManager.switchToScene(SceneManager.SceneType.MAIN_MENU);
     }
 
-    /** Opens the in‑game {@link SettingsDialog}. */
+    /**
+     * Handles the settings button click by showing the settings dialog.
+     */
     @FXML
     private void handleSettings() {
         LOGGER.info("Settings button clicked.");
-
         Pane root = (StackPane) gameCanvas.getParent();
         if (root == null) {
             LOGGER.warning("Cannot show settings: Root pane (StackPane) not found.");
@@ -416,8 +396,8 @@ public class GameScreenController extends BaseController {
             boolean muted = settingsDialog.muteProperty().get();
             double volume = settingsDialog.volumeProperty().get();
             String requested = settingsDialog.playerNameProperty().get();
-            LOGGER.info("Settings dialog save requested – Volume: " + volume + ", Muted: " + muted
-                    + ", Requested Name: " + requested);
+            LOGGER.info("Settings dialog save requested – Volume: " + volume + ", Muted: " + muted +
+                    ", Requested Name: " + requested);
 
             if (requested != null && !requested.trim().isEmpty() && !requested.equals(localPlayer.getName())) {
                 requestNameChange(requested.trim());
@@ -425,17 +405,17 @@ public class GameScreenController extends BaseController {
                 chatComponentController.addSystemMessage("Error: Player name cannot be empty.");
                 settingsDialog.playerNameProperty().set(localPlayer.getName());
             }
-
-            chatComponentController
-                    .addSystemMessage("Audio settings saved. " + (muted ? "Muted." : "Volume: " + (int) volume + "%"));
+            chatComponentController.addSystemMessage(
+                    "Audio settings saved. " + (muted ? "Muted." : "Volume: " + (int) volume + "%"));
         });
 
         showDialogAsOverlay(settingsDialog, root);
     }
 
     /**
-     * Publishes a {@link ChangeNameUIEvent} so that the server can validate and
-     * apply the new name.
+     * Requests a name change for the player by publishing a ChangeNameUIEvent.
+     *
+     * @param newName the new name requested by the player
      */
     private void requestNameChange(String newName) {
         LOGGER.info("Requesting name change to: " + newName);
@@ -444,11 +424,13 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Reacts to a positive or negative name‑change response from the server.
+     * Handles the response to a name change request, updating the UI and player
+     * data accordingly.
+     *
+     * @param event the NameChangeResponseEvent
      */
     private void handleNameChangeResponse(NameChangeResponseEvent event) {
         Objects.requireNonNull(event, "NameChangeResponseEvent cannot be null");
-
         Platform.runLater(() -> {
             if (event.isSuccess()) {
                 playerManager.updatePlayerName(event.getNewName());
@@ -466,11 +448,12 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Displays a system message once the local player has joined a lobby.
+     * Displays a system message when the local player joins a lobby.
+     *
+     * @param event the LobbyJoinedEvent
      */
     private void handleLobbyJoined(LobbyJoinedEvent event) {
         Objects.requireNonNull(event, "LobbyJoinedEvent cannot be null");
-
         Platform.runLater(() -> {
             chatComponentController.setPlayer(localPlayer);
             chatComponentController.setCurrentLobbyId(currentLobbyId);
@@ -478,37 +461,58 @@ public class GameScreenController extends BaseController {
         });
     }
 
-    /*
-     * --------------------------------------------------
-     * External setters (used by SceneManager or other controllers)
-     * --------------------------------------------------
-     */
-
     /**
-     * Updates the lobby identifier for both the controller and the chat
-     * component.
+     * Updates the lobby identifier for the controller and the chat component.
+     *
+     * @param lobbyId the new lobby identifier
      */
     public void setCurrentLobbyId(String lobbyId) {
         this.currentLobbyId = lobbyId;
         chatComponentController.setCurrentLobbyId(lobbyId);
     }
 
-    /** Updates the local player reference and forwards it to the chat UI. */
+    /**
+     * Updates the local player reference and synchronizes the game player
+     * reference.
+     *
+     * @param player the new local player
+     */
     public void setLocalPlayer(Player player) {
         this.localPlayer = player;
-        chatComponentController.setPlayer(player);
+        if (player != null) {
+            LOGGER.info("LocalPlayer set to: " + player.getName());
+            if (gameState != null) {
+                this.gamePlayer = gameState.findPlayerByName(player.getName());
+                if (this.gamePlayer == null) {
+                    LOGGER.warning("Updated localPlayer '" + player.getName() + "' not found in current GameState.");
+                } else {
+                    this.artifactsInHand = new ArrayList<>(gamePlayer.getArtifacts());
+                }
+            }
+            if (chatComponentController != null) {
+                chatComponentController.setPlayer(player);
+            }
+            Platform.runLater(() -> {
+                if (settingsDialog != null) {
+                    settingsDialog.playerNameProperty().set(player.getName());
+                }
+                updateCardDisplay();
+            });
+        } else {
+            LOGGER.warning("LocalPlayer set to null.");
+            this.gamePlayer = null;
+        }
     }
 
     /**
-     * Must be called when the controller is disposed to avoid dangling listeners
-     * and memory leaks.
+     * Cleans up resources and unsubscribes from events when the controller is
+     * disposed.
      */
     public void cleanup() {
         eventBus.unsubscribe(ConnectionStatusEvent.class, this::onConnectionStatus);
         eventBus.unsubscribe(TileClickEvent.class, this::onTileClick);
         eventBus.unsubscribe(GameSyncEvent.class, this::handleGameSync);
         eventBus.unsubscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
-
         playerManager.removePlayerUpdateListener(this::handlePlayerUpdate);
 
         if (chatComponentController != null)
@@ -516,13 +520,9 @@ public class GameScreenController extends BaseController {
         if (settingsDialog != null)
             settingsDialog.close();
         if (gameCanvas != null) {
-            gameCanvas.getParent().removeEventHandler(MouseEvent.MOUSE_PRESSED, e -> handleCanvasClick(e.getX(), e.getY()));
+            gameCanvas.getParent().removeEventHandler(MouseEvent.MOUSE_PRESSED,
+                    e -> handleCanvasClick(e.getX(), e.getY()));
             gameCanvas.setOnKeyPressed(null);
-        }
-        if (draggedCardSource != null) {
-            Pane parent = (Pane) draggedCardSource.getParent();
-            if (parent != null)
-                parent.getChildren().remove(draggedCardSource);
         }
         if (cardTooltips != null) {
             for (Tooltip tooltip : cardTooltips.values()) {
@@ -533,28 +533,36 @@ public class GameScreenController extends BaseController {
         LOGGER.info("GameScreenController resources cleaned up");
     }
 
-    /*
-     * --------------------------------------------------
-     * Grid‑adjustment API (delegates to GridAdjustmentManager)
-     * --------------------------------------------------
+    /**
+     * Toggles the grid adjustment mode.
      */
-
-    /** Toggles grid‑adjustment mode. */
     public void toggleGridAdjustmentMode() {
         gridAdjustmentManager.toggleGridAdjustmentMode();
     }
 
-    /** Enables or disables grid‑adjustment mode. */
+    /**
+     * Enables or disables the grid adjustment mode.
+     *
+     * @param active true to enable, false to disable
+     */
     public void setGridAdjustmentMode(boolean active) {
         gridAdjustmentManager.setGridAdjustmentMode(active);
     }
 
-    /** @return human‑readable description of the current grid parameters. */
+    /**
+     * Retrieves a human-readable description of the current grid parameters.
+     *
+     * @return the grid settings as a string
+     */
     public String getGridSettings() {
         return gridAdjustmentManager.getGridSettings();
     }
 
-    /** Handles global keyboard shortcuts. */
+    /**
+     * Handles global keyboard shortcuts for grid adjustment.
+     *
+     * @param e the KeyEvent to process
+     */
     @FXML
     private void handleKeyboardShortcut(KeyEvent e) {
         if (gridAdjustmentManager.handleKeyboardShortcut(e)) {
@@ -562,13 +570,9 @@ public class GameScreenController extends BaseController {
         }
     }
 
-    /*
-     * --------------------------------------------------
-     * Map image & canvas handling
-     * --------------------------------------------------
+    /**
+     * Loads the background map image and triggers the initial draw.
      */
-
-    /** Loads the background map image and triggers the initial draw. */
     private void loadMapImage() {
         mapImage = resourceLoader.loadImage(ResourceLoader.MAP_IMAGE);
         isMapLoaded = mapImage != null;
@@ -579,8 +583,7 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Installs listeners so that the grid is redrawn when the canvas size changes
-     * and so that mouse and keyboard events are intercepted.
+     * Sets up listeners for canvas size changes and input events.
      */
     private void setupCanvasListeners() {
         gameCanvas.widthProperty().addListener((o, ov, nv) -> drawMapAndGrid());
@@ -598,58 +601,78 @@ public class GameScreenController extends BaseController {
                 }
             });
         }
-
         gameCanvas.setOnKeyPressed(gridAdjustmentManager::handleGridAdjustmentKeys);
     }
 
     /**
-     * Handles a physical mouse click on the canvas – selects the hex and triggers
-     * purchase/placement logic as appropriate.
+     * Handles a mouse click on the canvas, selecting tiles or initiating purchases.
+     *
+     * @param px the x-coordinate of the click
+     * @param py the y-coordinate of the click
      */
     private void handleCanvasClick(double px, double py) {
-        int[] tile = getHexAt(px, py);
-        if (tile == null)
+        if (gridAdjustmentManager.isGridAdjustmentModeActive()) {
+            gridAdjustmentManager.handleCanvasClick(px, py);
             return;
+        }
 
-        int row = tile[0];
-        int col = tile[1];
-        selectedRow = row;
-        selectedCol = col;
-        drawMapAndGrid();
-        eventBus.publish(new TileClickEvent(row, col));
+        int[] tileCoords = getHexAt(px, py);
+        if (tileCoords == null) {
+            selectedRow = -1;
+            selectedCol = -1;
+            drawMapAndGrid();
+            return;
+        }
 
-        // --- Purchase logic (with confirmation popup) -------------------------
-        String ownerId = getTileOwnerId(row, col);
+        int row = tileCoords[0];
+        int col = tileCoords[1];
 
-        if (ownerId == null) {
-            int price = getTilePrice(row, col);
+        if (selectedRow != row || selectedCol != col) {
+            selectedRow = row;
+            selectedCol = col;
+            drawMapAndGrid();
+            eventBus.publish(new TileClickEvent(row, col));
+            LOGGER.fine("Tile selected: (" + row + ", " + col + ")");
+        }
 
-            // Show confirmation dialog
-            Alert alert = new Alert(AlertType.CONFIRMATION, "Buy this tile for " + price + " gold?", ButtonType.YES,
-                    ButtonType.NO);
-            alert.setHeaderText("Purchase Tile");
+        Tile clickedTile = gameState.getBoardManager().getTile(row, col);
+        if (clickedTile != null && clickedTile.getOwner() == null && !clickedTile.hasEntity()) {
+            int price = clickedTile.getPrice();
+            Alert alert = new Alert(AlertType.CONFIRMATION);
             alert.setTitle("Confirm Purchase");
+            alert.setHeaderText("Purchase Tile (" + row + ", " + col + ")");
+            alert.setContentText("Buy this tile for " + price + " runes?");
+            alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+
             alert.showAndWait().ifPresent(result -> {
                 if (result == ButtonType.YES) {
-                    int runes = getPlayerRunes();
-                    if (runes >= price) {
-                        // Deduct runes and assign ownership would be handled by server after BuyTileUIEvent
+                    if (canAffordTile(price)) {
+                        LOGGER.info("Player confirmed purchase for tile (" + row + ", " + col + ").");
                         eventBus.publish(new BuyTileUIEvent(row, col));
                     } else {
-                        showNotification("Not enough gold to buy this tile (Cost: " + price + ").");
+                        LOGGER.warning("Player cannot afford tile (" + row + ", " + col + "). Cost: " + price);
+                        showNotification("Not enough runes to buy this tile (Cost: " + price + ").");
                     }
                 }
             });
-        } else if (localPlayer != null && ownerId.equals(localPlayer.getId())) {
-            showNotification("You already own this tile.");
-        } else {
-            showNotification("This tile is owned by another player.");
+        } else if (clickedTile != null && clickedTile.getOwner() != null) {
+            String ownerName = clickedTile.getOwner();
+            if (localPlayer != null && ownerName.equals(localPlayer.getName())) {
+                if (clickedTile.hasEntity()) {
+                    showNotification("You own this tile with a " + clickedTile.getEntity().getName() + " on it.");
+                } else {
+                    showNotification("You own this tile.");
+                }
+            } else {
+                showNotification("This tile is owned by " + ownerName + ".");
+            }
+        } else if (clickedTile != null && clickedTile.hasEntity()) {
+            showNotification("This tile contains a " + clickedTile.getEntity().getName() + ".");
         }
     }
 
     /**
-     * Repaints the map and hex‑grid. Invoked whenever the canvas is resized or
-     * one of the grid parameters changes.
+     * Draws the map, hex grid, and placed entities on the canvas.
      */
     void drawMapAndGrid() {
         if (!isMapLoaded)
@@ -662,7 +685,6 @@ public class GameScreenController extends BaseController {
         GraphicsContext gc = gameCanvas.getGraphicsContext2D();
         gc.clearRect(0, 0, cW, cH);
 
-        // --- Draw background map ---------------------------------------------
         double imgRatio = mapImage.getWidth() / mapImage.getHeight();
         double canvasRatio = cW / cH;
         if (canvasRatio > imgRatio) {
@@ -676,33 +698,39 @@ public class GameScreenController extends BaseController {
         mapOffsetY = (cH - scaledMapHeight) / 2;
         gc.drawImage(mapImage, mapOffsetX, mapOffsetY, scaledMapWidth, scaledMapHeight);
 
-        // --- Prepare grid dimensions ----------------------------------------
         double gridW = scaledMapWidth * gridAdjustmentManager.getGridWidthPercentage();
         double gridH = scaledMapHeight * gridAdjustmentManager.getGridHeightPercentage();
-        double hLimit = gridW / ((HEX_COLS - 1) * 0.75 + 1);
-        double vLimit = gridH / ((HEX_ROWS - 0.5) * 0.866 * 2);
-        effectiveHexSize = Math.min(hLimit, vLimit) * 0.5 * gridAdjustmentManager.getGridScaleFactor();
+        double hHexLimit = gridW / ((HEX_COLS - 1) * 0.75 + 1);
+        double vHexLimit = gridH / ((HEX_ROWS - 0.5) * Math.sqrt(3.0) / 2.0 * 2.0);
+        effectiveHexSize = Math.min(hHexLimit, vHexLimit) * 0.5 * gridAdjustmentManager.getGridScaleFactor();
+
+        if (effectiveHexSize <= 0) {
+            LOGGER.warning("Calculated effectiveHexSize is zero or negative. Skipping grid draw.");
+            return;
+        }
 
         double addHX = gridAdjustmentManager.getGridHorizontalOffset() * scaledMapWidth;
         double addHY = gridAdjustmentManager.getGridVerticalOffset() * scaledMapHeight;
 
         drawHexGrid(gc, effectiveHexSize, gridW, gridH, addHX, addHY);
+        drawPlacedEntities(gc, effectiveHexSize);
 
-        // Ensure adjustment overlay is visible in adjustment mode
         boolean active = gridAdjustmentManager.isGridAdjustmentModeActive();
         adjustmentModeIndicator.setVisible(active);
         adjustmentValuesLabel.setVisible(active);
     }
 
     /**
-     * Draws the complete grid (including ownership highlighting and selection).
+     * Draws the hexagonal grid with ownership and selection highlights.
+     *
+     * @param gc    the GraphicsContext to draw on
+     * @param size  the size of each hexagon
+     * @param gridW the width of the grid
+     * @param gridH the height of the grid
+     * @param addHX additional horizontal offset
+     * @param addHY additional vertical offset
      */
-    private void drawHexGrid(GraphicsContext gc,
-            double size,
-            double gridW,
-            double gridH,
-            double addHX,
-            double addHY) {
+    private void drawHexGrid(GraphicsContext gc, double size, double gridW, double gridH, double addHX, double addHY) {
         gc.setStroke(Color.WHITE);
         gc.setLineWidth(1.5);
         gc.setGlobalAlpha(0.7);
@@ -730,15 +758,17 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Draws a single hexagon, optionally highlighting ownership and selection.
+     * Draws a single hexagon with ownership and selection highlights.
+     *
+     * @param gc       the GraphicsContext to draw on
+     * @param cx       the x-coordinate of the hexagon center
+     * @param cy       the y-coordinate of the hexagon center
+     * @param size     the size of the hexagon
+     * @param row      the row index
+     * @param col      the column index
+     * @param selected whether the hexagon is selected
      */
-    private void drawHex(GraphicsContext gc,
-            double cx,
-            double cy,
-            double size,
-            int row,
-            int col,
-            boolean selected) {
+    private void drawHex(GraphicsContext gc, double cx, double cy, double size, int row, int col, boolean selected) {
         double[] xs = new double[6];
         double[] ys = new double[6];
 
@@ -758,9 +788,9 @@ public class GameScreenController extends BaseController {
             gc.lineTo(xs[i], ys[i]);
         gc.closePath();
 
-        // Ownership colouring --------------------------------------------------
-        String ownerId = getTileOwnerId(row, col); // Placeholder implementation
-        Color ownerCol = getPlayerColor(ownerId);
+        // Use getTileOwnerName which exists and returns the name string
+        String ownerName = getTileOwnerName(row, col);
+        Color ownerCol = getPlayerColor(ownerName); // Use the implemented getPlayerColor
         if (ownerCol != null) {
             Paint oldFill = gc.getFill();
             double oldAlpha = gc.getGlobalAlpha();
@@ -771,7 +801,6 @@ public class GameScreenController extends BaseController {
             gc.setGlobalAlpha(oldAlpha);
         }
 
-        // Selection highlight --------------------------------------------------
         if (selected) {
             Paint oldStroke = gc.getStroke();
             double oldAlpha = gc.getGlobalAlpha();
@@ -785,19 +814,79 @@ public class GameScreenController extends BaseController {
         }
     }
 
-    /*
-     * --------------------------------------------------
-     * Hit‑testing helpers
-     * --------------------------------------------------
+    /**
+     * Draws entities placed on the game board.
+     *
+     * @param gc      the GraphicsContext to draw on
+     * @param hexSize the size of each hexagon
      */
+    private void drawPlacedEntities(GraphicsContext gc, double hexSize) {
+        if (gameState == null || gameState.getBoardManager() == null)
+            return;
+
+        double hSpacing = hexSize * gridAdjustmentManager.getHorizontalSpacingFactor();
+        double vSpacing = hexSize * gridAdjustmentManager.getVerticalSpacingFactor();
+
+        for (int r = 0; r < HEX_ROWS; r++) {
+            for (int c = 0; c < HEX_COLS; c++) {
+                Tile tile = gameState.getBoardManager().getTile(r, c);
+                if (tile != null && tile.hasEntity() && tile.getEntity() != null) {
+                    GameEntity entity = tile.getEntity();
+                    int entityId = entity.getId();
+                    Image entityImage = getEntityImage(entityId);
+
+                    if (entityImage != null) {
+                        double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2);
+                        double cy = gridOffsetY + r * vSpacing;
+                        double imgDrawWidth = hexSize * 1.6;
+                        double imgDrawHeight = entityImage.getHeight() * (imgDrawWidth / entityImage.getWidth());
+                        double drawX = cx - imgDrawWidth / 2;
+                        double drawY = cy - imgDrawHeight / 2;
+                        gc.drawImage(entityImage, drawX, drawY, imgDrawWidth, imgDrawHeight);
+                    } else {
+                        LOGGER.fine("No image for entity ID: " + entityId + " on tile (" + r + "," + c + ")");
+                        double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2);
+                        double cy = gridOffsetY + r * vSpacing;
+                        gc.setFill(Color.MAGENTA);
+                        gc.fillOval(cx - hexSize * 0.2, cy - hexSize * 0.2, hexSize * 0.4, hexSize * 0.4);
+                    }
+                }
+            }
+        }
+    }
 
     /**
-     * Transforms canvas coordinates to logical grid coordinates.
+     * Retrieves or loads the image for an entity, caching it for future use.
      *
-     * @return {@code int[]{row,col}} or {@code null} if the point is not inside
-     *         any tile.
+     * @param entityId the ID of the entity
+     * @return the Image for the entity, or placeholder if unavailable
      */
-    int[] getHexAt(double px, double py) {
+    private Image getEntityImage(int entityId) {
+        return entityImageCache.computeIfAbsent(entityId, id -> {
+            String imageUrl = EntityRegistry.getURL(id, false);
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                Image img = resourceLoader.loadImage(imageUrl);
+                if (img != null && !img.isError()) {
+                    return img;
+                } else {
+                    LOGGER.warning("Failed to load image for entity ID: " + id + " from URL: " + imageUrl);
+                    return placeholderImage;
+                }
+            } else {
+                LOGGER.warning("No image URL for entity ID: " + id);
+                return placeholderImage;
+            }
+        });
+    }
+
+    /**
+     * Converts canvas coordinates to grid coordinates.
+     *
+     * @param px the x-coordinate on the canvas
+     * @param py the y-coordinate on the canvas
+     * @return an array of [row, col] or null if outside the grid
+     */
+    private int[] getHexAt(double px, double py) {
         if (!isMapLoaded || effectiveHexSize <= 0)
             return null;
 
@@ -816,8 +905,17 @@ public class GameScreenController extends BaseController {
         return null;
     }
 
-    /** Point‑in‑polygon test for the current hex shape. */
-    boolean pointInHex(double px, double py, double cx, double cy, double size) {
+    /**
+     * Tests if a point lies within a hexagon.
+     *
+     * @param px   the x-coordinate of the point
+     * @param py   the y-coordinate of the point
+     * @param cx   the x-coordinate of the hexagon center
+     * @param cy   the y-coordinate of the hexagon center
+     * @param size the size of the hexagon
+     * @return true if the point is inside the hexagon, false otherwise
+     */
+    private boolean pointInHex(double px, double py, double cx, double cy, double size) {
         double rot = Math.toRadians(gridAdjustmentManager.getHexRotationDegrees());
         double hSquish = gridAdjustmentManager.getHorizontalSquishFactor();
         double vSquish = gridAdjustmentManager.getVerticalSquishFactor();
@@ -840,13 +938,9 @@ public class GameScreenController extends BaseController {
         return inside;
     }
 
-    /*
-     * --------------------------------------------------
-     * Settings dialog helper methods
-     * --------------------------------------------------
+    /**
+     * Initializes the settings dialog and sets up its bindings.
      */
-
-    /** Creates the settings dialog instance and initialises bindings. */
     private void initialiseSettingsDialog() {
         settingsDialog = new SettingsDialog();
         settingsDialog.playerNameProperty().set(localPlayer.getName());
@@ -854,13 +948,17 @@ public class GameScreenController extends BaseController {
         updateSettingsConnectionStatus();
     }
 
-    /** Synchronises the connection indicator shown inside the dialog. */
+    /**
+     * Updates the connection status displayed in the settings dialog.
+     */
     private void updateSettingsConnectionStatus() {
         String status = connectionStatusLabel.getText();
         settingsDialog.setConnectionStatus("Connected".equals(status), status);
     }
 
-    /** Handles the save button inside the settings dialog. */
+    /**
+     * Handles the save action in the settings dialog.
+     */
     private void handleSettingsSave() {
         String newName = settingsDialog.playerNameProperty().get().trim();
         if (!newName.isEmpty() && !newName.equals(localPlayer.getName())) {
@@ -870,13 +968,33 @@ public class GameScreenController extends BaseController {
         }
     }
 
-    /*
-     * --------------------------------------------------
-     * Card tooltip & drag‑and‑drop handling
-     * --------------------------------------------------
+    /**
+     * Creates a Tooltip for a given card Node.
+     *
+     * @param card the card Node
+     * @return a Tooltip with card details
      */
+    private Tooltip createTooltipForCard(Node card) {
+        String fxId = card.getId();
+        CardDetails details = getCardDetails(fxId);
+        StringBuilder tooltipText = new StringBuilder();
+        tooltipText.append(details.getTitle()).append("\n");
+        tooltipText.append(details.getDescription()).append("\n");
+        if (details.getLore() != null && !details.getLore().isEmpty()) {
+            tooltipText.append("\n").append(details.getLore());
+        }
+        tooltipText.append("\nCost: ").append(details.getPrice());
+        Tooltip tooltip = new Tooltip(tooltipText.toString());
+        tooltip.setWrapText(true);
+        tooltip.setMaxWidth(250);
+        return tooltip;
+    }
 
-    /** Toggles card selection (golden frame) when clicked. */
+    /**
+     * Handles a card click event to toggle its selection state.
+     *
+     * @param event the MouseEvent triggered by the click
+     */
     @FXML
     public void handleCardClick(MouseEvent event) {
         Node card = (Node) event.getSource();
@@ -892,7 +1010,11 @@ public class GameScreenController extends BaseController {
         event.consume();
     }
 
-    /** Shows the tooltip for a card after a short delay. */
+    /**
+     * Displays a tooltip when the mouse enters a card.
+     *
+     * @param event the MouseEvent triggered by mouse entry
+     */
     @FXML
     public void handleCardMouseEntered(MouseEvent event) {
         Node card = (Node) event.getSource();
@@ -901,7 +1023,11 @@ public class GameScreenController extends BaseController {
         event.consume();
     }
 
-    /** Hides the tooltip once the mouse exits the card. */
+    /**
+     * Hides the tooltip when the mouse exits a card.
+     *
+     * @param event the MouseEvent triggered by mouse exit
+     */
     @FXML
     public void handleCardMouseExited(MouseEvent event) {
         Node card = (Node) event.getSource();
@@ -911,52 +1037,78 @@ public class GameScreenController extends BaseController {
         event.consume();
     }
 
-    // --- Drag‑and‑drop (structures only; artifacts not implemented yet) --------
-
-    /** Starts a drag‑and‑drop gesture when the user begins dragging a card. */
+    /**
+     * Initiates a drag-and-drop operation for a card.
+     *
+     * @param event the MouseEvent triggered by drag detection
+     */
     @FXML
     private void handleCardDragDetected(MouseEvent event) {
-        if (!(event.getSource() instanceof Pane src))
+        if (!(event.getSource() instanceof Pane cardPane)) {
+            LOGGER.warning("Drag detected on non-Pane source.");
             return;
-        String cardId = src.getId();
-        if (cardId == null || cardId.isEmpty())
-            return;
-        if (!cardId.startsWith("structure"))
-            return; // Only structures for now
+        }
 
-        // Don't start drag operation if player can't afford the card
-        if (!canAffordCard(cardId)) {
+        CardInfo cardInfo = getCardInfo(cardPane);
+        if (cardInfo.type == CardType.UNKNOWN) {
+            LOGGER.warning("Drag detected on card with unknown type or invalid ID: " + cardPane.getId());
+            return;
+        }
+
+        if (!canAffordCard(cardInfo.id)) {
+            LOGGER.fine("Cannot afford card " + cardInfo.id + ". Drag cancelled.");
+            showNotification("You cannot afford this card (Cost: " + getCardCost(cardInfo.id) + ").");
             event.consume();
             return;
         }
 
-        draggedCardSource = src;
-        Dragboard db = src.startDragAndDrop(TransferMode.MOVE);
+        if (gameState == null || localPlayer == null || !localPlayer.getName().equals(gameState.getPlayerTurn())) {
+            showNotification("It's not your turn!");
+            event.consume();
+            return;
+        }
+
+        draggedCardSource = cardPane;
+        Dragboard db = cardPane.startDragAndDrop(TransferMode.MOVE);
         ClipboardContent content = new ClipboardContent();
-        content.putString(cardId);
+        Map<DataFormat, Object> cardData = new HashMap<>();
+        cardData.put(CARD_DATA_FORMAT, cardInfo.type.name() + ":" + cardInfo.id);
+        content.putAll(cardData);
         db.setContent(content);
 
         SnapshotParameters params = new SnapshotParameters();
         params.setFill(Color.TRANSPARENT);
-        WritableImage snapshot = src.snapshot(params, null);
+        WritableImage snapshot = cardPane.snapshot(params, null);
         db.setDragView(snapshot, event.getX(), event.getY());
 
+        LOGGER.fine("Drag started for card type: " + cardInfo.type + ", ID: " + cardInfo.id);
         event.consume();
     }
 
-    /** Continually called while the user drags a card across the canvas. */
+    /**
+     * Handles the drag-over event when a card is dragged over the canvas.
+     *
+     * @param event the DragEvent
+     */
     @FXML
     private void handleDragOver(DragEvent event) {
-        if (event.getGestureSource() == gameCanvas)
+        if (event.getGestureSource() != draggedCardSource || !event.getDragboard().hasContent(CARD_DATA_FORMAT)) {
+            event.acceptTransferModes(TransferMode.NONE);
+            event.consume();
             return;
-        if (!event.getDragboard().hasString())
+        }
+
+        int[] targetCoords = getHexAt(event.getX(), event.getY());
+        CardInfo cardInfo = getCardInfoFromDragboard(event.getDragboard());
+
+        if (targetCoords == null || cardInfo.type == CardType.UNKNOWN) {
+            event.acceptTransferModes(TransferMode.NONE);
+            event.consume();
             return;
+        }
 
-        int[] target = getHexAt(event.getX(), event.getY());
-        String cardId = event.getDragboard().getString();
-        boolean isStructure = cardId != null && cardId.startsWith("structure");
-
-        if (target != null && isStructure && isTileOwnedByPlayer(target[0], target[1])) {
+        ValidationResult validation = validatePlacement(cardInfo, targetCoords[0], targetCoords[1]);
+        if (validation.isValid()) {
             event.acceptTransferModes(TransferMode.MOVE);
         } else {
             event.acceptTransferModes(TransferMode.NONE);
@@ -964,21 +1116,97 @@ public class GameScreenController extends BaseController {
         event.consume();
     }
 
-    /** Finalises the drag‑and‑drop operation (placing the structure). */
+    /**
+     * Handles the drop event when a card is dropped onto the canvas.
+     *
+     * @param event the DragEvent
+     */
     @FXML
     private void handleDragDropped(DragEvent event) {
         Dragboard db = event.getDragboard();
         boolean success = false;
-        if (db.hasString()) {
-            String cardId = db.getString();
-            int[] tile = getHexAt(event.getX(), event.getY());
-            if (tile != null && isTileOwnedByPlayer(tile[0], tile[1]) && canAffordCard(cardId)) {
-                try {
-                    int structureId = Integer.parseInt(cardId.replace("structure", ""));
-                    eventBus.publish(new PlaceStructureUIEvent(tile[0], tile[1], structureId));
-                    success = true;
-                } catch (NumberFormatException ex) {
-                    chatComponentController.addSystemMessage("Error placing card: Invalid card data.");
+
+        if (db.hasContent(CARD_DATA_FORMAT)) {
+            CardInfo cardInfo = getCardInfoFromDragboard(db);
+            int[] targetCoords = getHexAt(event.getX(), event.getY());
+
+            if (targetCoords != null && cardInfo.type != CardType.UNKNOWN) {
+                int row = targetCoords[0];
+                int col = targetCoords[1];
+                ValidationResult validation = validatePlacement(cardInfo, row, col);
+                if (validation.isValid()) {
+                    LOGGER.info("Attempting to place " + cardInfo.type + " (ID: " + cardInfo.id + ") on tile (" +
+                            row + ", " + col + ")");
+                    try {
+                        switch (cardInfo.type) {
+                            case STRUCTURE:
+                                eventBus.publish(new PlaceStructureUIEvent(row, col, cardInfo.id));
+                                success = true;
+                                break;
+                            case STATUE:
+                                Optional<Integer> selectedStatueId = showStatueSelectionPopup();
+                                if (selectedStatueId.isPresent()) {
+                                    // Correct constructor order: PlaceStatueUIEvent(statueId, x, y)
+                                    eventBus.publish(new PlaceStatueUIEvent(selectedStatueId.get(), row, col));
+                                    success = true;
+                                } else {
+                                    LOGGER.info("Statue placement cancelled by user.");
+                                    showNotification("Statue placement cancelled.");
+                                }
+                                break;
+                            case ARTIFACT:
+                                GameEntity entity = EntityRegistry.getGameEntityOriginalById(cardInfo.id);
+                                if (entity instanceof Artifact artifactEntity) {
+                                    // Use getUseType() which returns "Field" or "Player"
+                                    String useType = artifactEntity.getUseType().getType();
+                                    if ("Field".equalsIgnoreCase(useType)) {
+                                        // Correct constructor: UseFieldArtifactUIEvent(x, y, artifactId, useType)
+                                        eventBus.publish(new UseFieldArtifactUIEvent(row, col, cardInfo.id, useType));
+                                        success = true;
+                                    } else if ("Player".equalsIgnoreCase(useType)) {
+                                        String targetPlayerName = getTileOwnerName(row, col);
+                                        if (targetPlayerName == null
+                                                || (localPlayer != null
+                                                        && targetPlayerName.equals(localPlayer.getName()))) {
+                                            targetPlayerName = (localPlayer != null) ? localPlayer.getName() : null; // Target
+                                                                                                                     // self
+                                                                                                                     // if
+                                                                                                                     // tile
+                                                                                                                     // unowned/owned
+                                                                                                                     // by
+                                                                                                                     // self,
+                                                                                                                     // else
+                                                                                                                     // null
+                                        }
+                                        // Correct constructor: UsePlayerArtifactUIEvent(artifactId, Optional<String>
+                                        // targetPlayer)
+                                        eventBus.publish(
+                                                new UsePlayerArtifactUIEvent(cardInfo.id, useType, targetPlayerName));
+                                        success = true;
+                                    } else {
+                                        LOGGER.warning("Artifact with unhandled useType '" + useType
+                                                + "' cannot be used on the board.");
+                                        showNotification("This artifact type cannot be used on the board.");
+                                    }
+                                } else {
+                                    LOGGER.severe("ARTIFACT card entity is not an Artifact for ID: " + cardInfo.id);
+                                }
+                                break;
+                            default:
+                                LOGGER.severe("Unhandled card type in DragDropped: " + cardInfo.type);
+                                break;
+                        }
+                        if (success) {
+                            LOGGER.info(cardInfo.type + " placement/use event published for tile (" + row + ", " + col
+                                    + ")");
+                        }
+                    } catch (Exception e) {
+                        LOGGER.log(Level.SEVERE, "Error publishing placement event for card " + cardInfo.id, e);
+                        showNotification("Error processing card placement. See logs."); // Added log hint
+                    }
+                } else {
+                    LOGGER.warning("Drop rejected on tile (" + row + ", " + col + "): " + validation.reason());
+                    showNotification("Cannot place card here: " + validation.reason());
                 }
             }
         }
@@ -986,301 +1214,291 @@ public class GameScreenController extends BaseController {
         event.consume();
     }
 
-    /** Cleans up after a drag‑and‑drop operation has finished. */
+    /**
+     * Handles the completion of a drag-and-drop operation.
+     *
+     * @param event the DragEvent
+     */
     @FXML
     private void handleCardDragDone(DragEvent event) {
-        if (draggedCardSource != null && event.getTransferMode() == TransferMode.MOVE) {
-            Pane parent = (Pane) draggedCardSource.getParent();
-            if (parent != null)
-                parent.getChildren().remove(draggedCardSource);
+        if (event.getTransferMode() == TransferMode.MOVE) {
+            LOGGER.fine("Card drag done successfully (Move).");
+        } else {
+            LOGGER.fine("Card drag done unsuccessfully (or cancelled).");
         }
         draggedCardSource = null;
         event.consume();
     }
 
-    /*
-     * --------------------------------------------------
-     * Tooltip creation helper
-     * --------------------------------------------------
-     */
-
     /**
-     * Creates an appropriate tooltip for a card based on its type
+     * Displays a popup for selecting a statue to place.
+     * Uses a ChoiceDialog with Strings for display.
+     *
+     * @return an Optional containing the selected statue ID, or empty if cancelled
      */
-    private Tooltip createTooltipForCard(Node card) {
-        Tooltip tooltip = new Tooltip();
-        tooltip.setShowDelay(Duration.millis(500));
-        tooltip.setHideDelay(Duration.millis(200));
+    private Optional<Integer> showStatueSelectionPopup() {
+        // Get available placeable statues (IDs 31-37 typically)
+        List<Statue> availableStatues = EntityRegistry.getAllStatues().stream()
+                .filter(s -> s.getId() >= 31 && s.getId() <= 37) // Filter for placeable statues
+                .collect(Collectors.toList());
 
-        String id = card.getId();
-        CardDetails details = getCardDetails(id);
-
-        // Create a layout with styled sections
-        VBox content = new VBox(5);
-        content.setPadding(new Insets(8));
-        content.setMaxWidth(300);
-        content.getStyleClass().add("tooltip-content");
-
-        // Only add components with actual content
-        if (details.getTitle() != null && !details.getTitle().isEmpty()) {
-            Label titleLabel = new Label(details.getTitle());
-            titleLabel.getStyleClass().add("tooltip-title");
-            titleLabel.setWrapText(true);
-            content.getChildren().add(titleLabel);
-
-            // Only add separator if next section has content
-            if (details.getDescription() != null && !details.getDescription().isEmpty() ||
-                    details.getLore() != null && !details.getLore().isEmpty() ||
-                    details.getPrice() > 0) {
-                content.getChildren().add(new Separator());
-            }
+        if (availableStatues.isEmpty()) {
+            LOGGER.severe("No placeable statues found in EntityRegistry!");
+            showNotification("Error: No statues available to place.");
+            return Optional.empty();
         }
 
-        if (details.getDescription() != null && !details.getDescription().isEmpty()) {
-            Label descLabel = new Label(details.getDescription());
-            descLabel.getStyleClass().add("tooltip-description");
-            descLabel.setWrapText(true);
-            content.getChildren().add(descLabel);
-
-            // Only add separator if next section has content
-            if (details.getLore() != null && !details.getLore().isEmpty() ||
-                    details.getPrice() > 0) {
-                content.getChildren().add(new Separator());
-            }
+        // Create a map from display string to statue ID
+        Map<String, Integer> statueOptions = new LinkedHashMap<>(); // Use LinkedHashMap to preserve order
+        for (Statue statue : availableStatues) {
+            // Calculate actual price for display
+            int actualPrice = calculateActualPrice(statue.getPrice());
+            String displayName = statue.getName() + " (Cost: " + actualPrice + ")";
+            statueOptions.put(displayName, statue.getId());
         }
 
-        if (details.getLore() != null && !details.getLore().isEmpty()) {
-            Label loreLabel = new Label(details.getLore());
-            loreLabel.getStyleClass().add("tooltip-lore");
-            loreLabel.setWrapText(true);
-            content.getChildren().add(loreLabel);
+        // Use ChoiceDialog<String> instead of ChoiceDialog<Statue>
+        ChoiceDialog<String> dialog = new ChoiceDialog<>(
+                statueOptions.keySet().iterator().next(), // Default selection
+                statueOptions.keySet()); // Available choices
+        dialog.setTitle("Choose Statue");
+        dialog.setHeaderText("Select the statue you want to place:");
+        dialog.setContentText("Statue:");
 
-            // Only add separator if next section has content
-            if (details.getPrice() > 0) {
-                content.getChildren().add(new Separator());
-            }
-        }
+        // No setConverter needed for String dialog
 
-        if (details.getPrice() > 0) {
-            Label priceLabel = new Label("Price: " + details.getPrice() + " runes");
-            priceLabel.getStyleClass().add("tooltip-price");
-            priceLabel.setWrapText(true);
-            content.getChildren().add(priceLabel);
-        }
+        Optional<String> result = dialog.showAndWait();
 
-        // If no content was added, show a default message
-        if (content.getChildren().isEmpty()) {
-            Label defaultLabel = new Label("No information available");
-            defaultLabel.getStyleClass().add("tooltip-description");
-            content.getChildren().add(defaultLabel);
-        }
-
-        // Set the tooltip properties
-        tooltip.setMaxWidth(300);
-        tooltip.setMaxHeight(200);
-        content.setMinHeight(Region.USE_PREF_SIZE);
-        content.setPrefHeight(Region.USE_COMPUTED_SIZE);
-        content.setMaxHeight(Region.USE_PREF_SIZE);
-
-        tooltip.setGraphic(content);
-        tooltip.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-        tooltip.getStyleClass().add("card-tooltip");
-
-        return tooltip;
+        // Map the selected display string back to the statue ID using the map
+        return result.map(statueOptions::get);
     }
 
     /**
-     * Retrieves the card details for a given card ID.
+     * Retrieves detailed information about a card.
      *
-     * @param id The ID of the card.
-     * @return The CardDetails object containing the card's details.
+     * @param cardFxId the FXML ID of the card
+     * @return the CardDetails object
      */
-    public CardDetails getCardDetails(String id) {
-        int entityID = getEntityID(id);
-        GameEntity entity = EntityRegistry.getGameEntityOriginalById(entityID); // DO NOT Make changes to this entity, READ-ONLY
-        String URL = EntityRegistry.getURL(entityID, true);
+    public CardDetails getCardDetails(String cardFxId) {
+        CardInfo cardInfo = getCardInfoFromFxId(cardFxId);
+        if (cardInfo.type == CardType.UNKNOWN) {
+            LOGGER.warning("getCardDetails called with unknown card FxId: " + cardFxId);
+            int placeholderId = 22;
+            if (cardFxId != null) {
+                if (cardFxId.startsWith("structure"))
+                    placeholderId = 1;
+                else if (cardFxId.startsWith("statue"))
+                    placeholderId = 38;
+            }
+            GameEntity placeholderEntity = EntityRegistry.getGameEntityOriginalById(placeholderId);
+            if (placeholderEntity != null) {
+                return new CardDetails(placeholderEntity.getName(), placeholderEntity.getUsage(),
+                        placeholderEntity.getDescription(), EntityRegistry.getURL(placeholderId, true), 0);
+            } else {
+                return new CardDetails("Unknown Card", "Details unavailable.", "", null, 0);
+            }
+        }
+
+        GameEntity entity = EntityRegistry.getGameEntityOriginalById(cardInfo.id);
+        if (entity == null) {
+            LOGGER.severe("EntityRegistry returned null for card ID: " + cardInfo.id);
+            return new CardDetails("Error", "Could not load details.", "", null, 0);
+        }
+
+        String url = EntityRegistry.getURL(cardInfo.id, true);
         String title = entity.getName();
         String description = entity.getUsage();
         String lore = entity.getDescription();
-        int actualPrice = 0;
-        int price = entity.getPrice();
-        if (price != 0) {
-            double priceModifier = gamePlayer.getStatus().get(Status.BuffType.SHOP_PRICE);
-            double adjusted = price / Math.max(priceModifier, 0.5); // Prevent divide-by-zero or negative scaling, set maximum shop price to 200%
-            actualPrice = Math.max(0, (int) Math.round(adjusted)); // Ensure price is never negative
-        }
-        return new CardDetails(title, description, lore, URL, actualPrice);
+        int basePrice = entity.getPrice();
+        int actualPrice = calculateActualPrice(basePrice);
+
+        return new CardDetails(title, description, lore, url, actualPrice);
     }
 
     /**
-     * Maps card IDs to their corresponding entity IDs.
+     * Calculates the actual price of an entity considering player buffs.
      *
-     * @param id The ID of the card.
-     * @return The corresponding entity ID.
+     * @param basePrice the base price of the entity
+     * @return the adjusted price
      */
-    private int getEntityID(String id) {
-        if (id.startsWith("artifact")) {
-            int i = Integer.parseInt(id.replace("artifact", ""));
-            if (i < 0 || i >= artifacts.size() || artifacts.isEmpty()) {
-                Logger.getGlobal().fine("Invalid artifact ID or artifacts are null: " + id); // This is expected, since the player might not have all artifact slots filled
-                return 22; // ID of the artifact which holds the description for the card (should the slot be empty)
-            } else {
-                return artifacts.get(i).getId();
-            }
-        } else if (id.startsWith("structure")) {
-            return Integer.parseInt(id.replace("structure", "")); // Structure IDs are numbered 1-9 (but 7-9 cannot be bought)
-        } else if (id.startsWith("statue")) {
-            return 38; // ID of the statue which holds the description for the card
-        } else {
-            throw new IllegalArgumentException("Invalid card ID: " + id);
-        }
-    }
-
-    /*
-     * --------------------------------------------------
-     * Card Image loading and helpers
-     * --------------------------------------------------
-     */
-
-    /**
-     * Updates the cards in the hands with the correct images.
-     */
-    private void updateCardImages() {
-        // Update artifact cards
-        for (Node card : artifactHand.getChildren()) {
-            if (card.getId() != null && card.getId().startsWith("artifact")) {
-                updateCardImage(card);
-                updateCardAffordability(card);
-            }
-        }
-
-        // Update structure cards
-        for (Node card : structureHand.getChildren()) {
-            if (card.getId() != null && (card.getId().startsWith("structure") || card.getId().startsWith("statue"))) {
-                updateCardImage(card);
-                updateCardAffordability(card);
-            }
-        }
+    private int calculateActualPrice(int basePrice) {
+        if (basePrice == 0)
+            return 0;
+        if (gamePlayer == null)
+            return basePrice;
+        double priceModifier = gamePlayer.getStatus().get(Status.BuffType.SHOP_PRICE);
+        double adjusted = basePrice * Math.max(priceModifier, 0.1);
+        return Math.max(0, (int) Math.round(adjusted));
     }
 
     /**
-     * Refreshes the affordability of all cards in the structure hand.
-     * This is called when the game state changes (e.g., when the player
-     * gains or loses runes).
-     */
-    private void refreshCardAffordability() {
-        for (Node card : structureHand.getChildren()) {
-            if (card.getId() != null && card.getId().startsWith("structure")) {
-                updateCardAffordability(card);
-            }
-        }
-    }
-
-    /**
-     * Updates a card's visual state based on whether the player can afford it.
-     * Makes unaffordable cards gray and non-draggable.
+     * Retrieves the entity ID from an FXML ID.
      *
-     * @param card The card node to update.
+     * @param fxId the FXML ID
+     * @return the corresponding entity ID
      */
-    private void updateCardAffordability(Node card) {
-        String id = card.getId();
-        if (id == null) return;
-
-        boolean canAfford = canAffordCard(id);
-
-        // Apply or remove the CSS class for unaffordable cards
-        if (canAfford) {
-            card.getStyleClass().remove("unaffordable-card");
-            card.getStyleClass().add("game-card");
-            // Make sure it's draggable for structures
-            if (id.startsWith("structure")) {
-                card.addEventHandler(MouseEvent.DRAG_DETECTED, this::handleCardDragDetected);
-            }
-        } else {
-            card.getStyleClass().remove("game-card");
-            card.getStyleClass().add("unaffordable-card");
-            // Remove drag handler for unaffordable cards
-            if (id.startsWith("structure")) {
-                card.removeEventHandler(MouseEvent.DRAG_DETECTED, this::handleCardDragDetected);
-            }
-        }
+    private int getEntityID(String fxId) {
+        CardInfo info = getCardInfoFromFxId(fxId);
+        return info.id;
     }
 
     /**
-     * Updates a single card with the correct image.
+     * Retrieves card information from a Node.
      *
-     * @param card The card node to update.
+     * @param card the card Node
+     * @return the CardInfo containing type and ID
      */
-    private void updateCardImage(Node card) {
-        String id = card.getId();
-        if (id == null) return;
+    private CardInfo getCardInfo(Node card) {
+        if (card == null || card.getId() == null) {
+            return new CardInfo(CardType.UNKNOWN, -1);
+        }
+        return getCardInfoFromFxId(card.getId());
+    }
 
+    /**
+     * Retrieves card information from an FXML ID.
+     *
+     * @param fxId the FXML ID
+     * @return the CardInfo containing type and ID
+     */
+    private CardInfo getCardInfoFromFxId(String fxId) {
+        if (fxId == null || fxId.isEmpty()) {
+            return new CardInfo(CardType.UNKNOWN, -1);
+        }
         try {
-            CardDetails details = getCardDetails(id);
-            String imageUrl = details.getImageUrl();
-
-            if (card instanceof Pane pane) {
-                // Clear existing content first
-                pane.getChildren().clear();
-
-                // Set fixed dimensions
-                pane.setMinSize(80, 120);
-                pane.setPrefSize(80, 120);
-                pane.setMaxSize(80, 120);
-
-                // Add a border
-                pane.setStyle("-fx-border-color: #444444; -fx-border-width: 1px; -fx-border-radius: 5px;");
-
-                if (imageUrl != null && !imageUrl.isEmpty()) {
-                    Image image = resourceLoader.loadImage(imageUrl);
-
-                    if (image != null && !image.isError()) {
-
-                        // Create an ImageView with proper sizing
-                        ImageView imageView = new ImageView(image);
-                        imageView.setPreserveRatio(true);
-                        imageView.setFitWidth(78);
-                        imageView.setFitHeight(118);
-
-                        // Center image in pane
-                        StackPane wrapper = new StackPane(imageView);
-                        wrapper.setPrefSize(78, 118);
-
-                        pane.getChildren().add(wrapper);
-                    } else {
-                        LOGGER.warning("Failed to load image for card " + id);
-                        addPlaceholder(pane, details.getTitle());
-                    }
+            if (fxId.startsWith("artifact")) {
+                int index = Integer.parseInt(fxId.replace("artifact", "")) - 1;
+                if (artifactsInHand != null && index >= 0 && index < artifactsInHand.size()) {
+                    return new CardInfo(CardType.ARTIFACT, artifactsInHand.get(index).getId());
                 } else {
-                    LOGGER.warning("No image URL for card " + id);
-                    addPlaceholder(pane, details.getTitle());
+                    return new CardInfo(CardType.ARTIFACT, 22);
                 }
-
-                // Ensure card is visible
-                pane.setVisible(true);
-                pane.setOpacity(1.0);
+            } else if (fxId.startsWith("structure")) {
+                int structureNum = Integer.parseInt(fxId.replace("structure", ""));
+                if (structureNum >= 1 && structureNum <= 5) {
+                    return new CardInfo(CardType.STRUCTURE, structureNum);
+                } else {
+                    LOGGER.warning("Unexpected structure fx:id: " + fxId);
+                    return new CardInfo(CardType.UNKNOWN, -1);
+                }
+            } else if (fxId.equals("statueCard")) {
+                return new CardInfo(CardType.STATUE, 38);
+            } else {
+                LOGGER.warning("Unrecognized card fx:id format: " + fxId);
+                return new CardInfo(CardType.UNKNOWN, -1);
             }
-        } catch (Exception e) {
-            LOGGER.warning("Failed to update card " + id + ": " + e.getMessage());
+        } catch (NumberFormatException e) {
+            LOGGER.warning("Failed to parse number from card fx:id: " + fxId);
+            return new CardInfo(CardType.UNKNOWN, -1);
         }
     }
 
-    private void addPlaceholder(Pane pane, String title) {
-        Label placeholder = new Label(title != null ? title : "Card");
-        placeholder.setWrapText(true);
-        placeholder.setAlignment(Pos.CENTER);
-        placeholder.setPrefSize(78, 118);
-        placeholder.setStyle("-fx-background-color: #333344; -fx-text-fill: white; -fx-alignment: center;");
-
-        pane.getChildren().add(placeholder);
+    /**
+     * Retrieves card information from the dragboard.
+     *
+     * @param db the Dragboard
+     * @return the CardInfo containing type and ID
+     */
+    private CardInfo getCardInfoFromDragboard(Dragboard db) {
+        if (db.hasContent(CARD_DATA_FORMAT)) {
+            String data = (String) db.getContent(CARD_DATA_FORMAT);
+            String[] parts = data.split(":", 2);
+            if (parts.length == 2) {
+                try {
+                    CardType type = CardType.valueOf(parts[0]);
+                    int id = Integer.parseInt(parts[1]);
+                    return new CardInfo(type, id);
+                } catch (IllegalArgumentException e) {
+                    LOGGER.warning("Failed to parse card data from dragboard: " + data);
+                }
+            }
+        }
+        return new CardInfo(CardType.UNKNOWN, -1);
     }
 
-    /*
-     * --------------------------------------------------
-     * Update helper methods for drawing the gameState
-     * --------------------------------------------------
+    /**
+     * Updates the display of all card slots with current images and affordability.
      */
+    private void updateCardDisplay() {
+        LOGGER.fine("Updating all card displays...");
+        List<Pane> artifactPanes = List.of(artifact1, artifact2, artifact3);
+        for (int i = 0; i < artifactPanes.size(); i++) {
+            Pane cardPane = artifactPanes.get(i);
+            int entityId = (artifactsInHand != null && i < artifactsInHand.size()) ? artifactsInHand.get(i).getId()
+                    : 22;
+            updateSingleCardView(cardPane, entityId);
+        }
 
+        List<Pane> structurePanes = List.of(structure1, structure2, structure3, structure4, structure5);
+        for (int i = 0; i < structurePanes.size(); i++) {
+            Pane cardPane = structurePanes.get(i);
+            int entityId = i + 1;
+            updateSingleCardView(cardPane, entityId);
+        }
+
+        updateSingleCardView(statueCard, 38);
+        LOGGER.fine("Card display update finished.");
+    }
+
+    /**
+     * Updates the visual representation of a single card.
+     *
+     * @param cardPane the Pane representing the card
+     * @param entityId the ID of the entity
+     */
+    private void updateSingleCardView(Pane cardPane, int entityId) {
+        if (cardPane == null) {
+            LOGGER.warning("Attempted to update a null card pane.");
+            return;
+        }
+        String imageUrl = EntityRegistry.getURL(entityId, true);
+        Image image = (imageUrl != null && !imageUrl.isEmpty()) ? resourceLoader.loadImage(imageUrl) : null;
+        if (image == null || image.isError()) {
+            LOGGER.warning("Failed to load card image for entity ID: " + entityId +
+                    (imageUrl != null ? " from URL: " + imageUrl : ""));
+            image = placeholderImage;
+        }
+
+        cardPane.getChildren().clear();
+        if (image != null) {
+            ImageView imageView = new ImageView(image);
+            imageView.setPreserveRatio(true);
+            imageView.setFitWidth(78);
+            imageView.setFitHeight(118);
+            StackPane wrapper = new StackPane(imageView);
+            wrapper.setPrefSize(80, 120);
+            wrapper.setAlignment(Pos.CENTER);
+            cardPane.getChildren().add(wrapper);
+        } else {
+            Label errorLabel = new Label("ERR");
+            errorLabel.setStyle("-fx-text-fill: red; -fx-alignment: center;");
+            cardPane.getChildren().add(errorLabel);
+        }
+
+        boolean canAfford = canAffordCard(entityId);
+        CardType type = getCardInfoFromFxId(cardPane.getId()).type;
+        cardPane.getStyleClass().removeAll("affordable-card", "unaffordable-card", "game-card");
+
+        if (canAfford) {
+            cardPane.getStyleClass().add("affordable-card");
+            if (type == CardType.STRUCTURE || type == CardType.STATUE || type == CardType.ARTIFACT) {
+                cardPane.removeEventHandler(MouseEvent.DRAG_DETECTED, this::handleCardDragDetected);
+                cardPane.addEventHandler(MouseEvent.DRAG_DETECTED, this::handleCardDragDetected);
+            } else {
+                cardPane.removeEventHandler(MouseEvent.DRAG_DETECTED, this::handleCardDragDetected);
+            }
+        } else {
+            cardPane.getStyleClass().add("unaffordable-card");
+            cardPane.removeEventHandler(MouseEvent.DRAG_DETECTED, this::handleCardDragDetected);
+        }
+        cardPane.getStyleClass().add("game-card");
+        cardPane.setVisible(true);
+        cardPane.setOpacity(1.0);
+    }
+
+    /**
+     * Updates the runes label and energy bar based on the current game state.
+     */
     public void updateRunesAndEnergyBar() {
         if (gamePlayer != null) {
             runesLabel.setText("Runes: " + gamePlayer.getRunes());
@@ -1292,7 +1510,7 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Updates the player list display and highlights the active player.
+     * Updates the player list display, highlighting the active player.
      */
     private void updatePlayerList() {
         if (gameState == null) {
@@ -1300,8 +1518,6 @@ public class GameScreenController extends BaseController {
             return;
         }
         LOGGER.info("Updating player list");
-
-        // Clear and populate the players list
         players.clear();
         String currentPlayerName = gameState.getPlayerTurn();
 
@@ -1309,12 +1525,10 @@ public class GameScreenController extends BaseController {
             players.add(player.getName());
         }
 
-        // Set a custom cell factory to highlight the current player
         playersList.setCellFactory(listView -> new ListCell<>() {
             @Override
             protected void updateItem(String playerName, boolean empty) {
                 super.updateItem(playerName, empty);
-
                 if (empty || playerName == null) {
                     setText(null);
                     setGraphic(null);
@@ -1322,100 +1536,294 @@ public class GameScreenController extends BaseController {
                 } else {
                     setText(playerName);
                     Player player = gameState.findPlayerByName(playerName);
-
-                    // Reset styling
                     getStyleClass().remove("current-turn-player");
-
-                    // Apply special styling for the current player
-                    if (player != null && player.getName().equals(currentPlayerName)) {
+                    if (player != null && currentPlayerName != null && player.getName().equals(currentPlayerName)) { // Added
+                                                                                                                     // null
+                                                                                                                     // check
+                                                                                                                     // for
+                                                                                                                     // currentPlayerName
                         getStyleClass().add("current-turn-player");
                     }
-
-                    // Add a color indicator for the player
                     if (player != null) {
-                        Color playerColor = getPlayerColor(player.getName());
+                        // Use GameScreenController.this for clarity accessing outer class method
+                        Color playerColor = GameScreenController.this.getPlayerColor(player.getName());
                         if (playerColor != null) {
                             Circle colorIndicator = new Circle(6);
                             colorIndicator.setFill(playerColor);
                             setGraphic(colorIndicator);
+                        } else {
+                            setGraphic(null); // Ensure no old graphic remains if color is null
                         }
+                    } else {
+                        setGraphic(null); // Ensure no old graphic remains if player is null
                     }
                 }
             }
         });
     }
 
-    // Helper methods for better gameState access
-
-    private boolean isTileOwnedByPlayer(int row, int col) {
-        return gameState.getBoardManager().getTile(row,col).hasEntity();
-    }
-
-    private boolean canAffordCard(String cardId) {
-        int cost = getCardCost(cardId);
+    /**
+     * Checks if the player can afford a tile.
+     *
+     * @param cost the cost of the tile
+     * @return true if affordable, false otherwise
+     */
+    private boolean canAffordTile(int cost) {
         return getPlayerRunes() >= cost;
     }
 
-    private int getCardCost(String cardId) {
-        CardDetails details = getCardDetails(cardId);
-        return details.getPrice();
-    }
-
-    private int getPlayerRunes() {
-        return gamePlayer.getRunes();
-    }
-
-    private String getTileOwnerId(int row, int col) {
-        Tile tile = gameState.getBoardManager().getTile(row, col);
-        return tile == null ? null : tile.getOwner();
-    }
-
-    private int getTilePrice(int row, int col) {
-        Tile tile = gameState.getBoardManager().getTile(row, col);
-        return tile != null ? tile.getPrice() : 0;
-    }
-
-    private Color getPlayerColor(String playerId) {
-        return playerId == null ? null : playerColors.getOrDefault(playerId, Color.GRAY);
-    }
-
-    /*
-     * --------------------------------------------------
-     * Convenience API for other components
-     * --------------------------------------------------
+    /**
+     * Checks if the player can afford a card.
+     *
+     * @param entityId the ID of the card's entity
+     * @return true if affordable, false otherwise
      */
+    private boolean canAffordCard(int entityId) {
+        int cost = getCardCost(entityId);
+        return getPlayerRunes() >= cost;
+    }
 
     /**
-     * @return the canvas used for game rendering (needed by the adjustment tool).
+     * Retrieves the cost of a card.
+     *
+     * @param entityId the ID of the card's entity
+     * @return the cost of the card
+     */
+    private int getCardCost(int entityId) {
+        GameEntity entity = EntityRegistry.getGameEntityOriginalById(entityId);
+        if (entity == null)
+            return Integer.MAX_VALUE;
+        return calculateActualPrice(entity.getPrice());
+    }
+
+    /**
+     * Retrieves the current player's runes.
+     *
+     * @return the number of runes
+     */
+    private int getPlayerRunes() {
+        return (gamePlayer != null) ? gamePlayer.getRunes() : 0;
+    }
+
+    /**
+     * Checks if the tile is owned by the local player.
+     *
+     * @param row the row index
+     * @param col the column index
+     * @return true if owned by the local player, false otherwise
+     */
+    private boolean isTileOwnedByPlayer(int row, int col) {
+        if (localPlayer == null)
+            return false;
+        Tile tile = gameState.getBoardManager().getTile(row, col);
+        return tile != null && localPlayer.getName().equals(tile.getOwner());
+    }
+
+    /**
+     * Checks if the tile is occupied by an entity or artifact.
+     *
+     * @param row the row index
+     * @param col the column index
+     * @return true if occupied, false otherwise
+     */
+    private boolean isTileOccupied(int row, int col) {
+        Tile tile = gameState.getBoardManager().getTile(row, col);
+        return tile != null && (tile.hasEntity() || tile.getArtifact() != null);
+    }
+
+    /**
+     * Retrieves the owner name of a tile.
+     *
+     * @param row the row index
+     * @param col the column index
+     * @return the owner's name, or null if unowned
+     */
+    private String getTileOwnerName(int row, int col) {
+        Tile tile = gameState.getBoardManager().getTile(row, col);
+        return (tile != null) ? tile.getOwner() : null;
+    }
+
+    /**
+     * Checks if the player can place another structure.
+     *
+     * @return true if allowed, false otherwise
+     */
+    private boolean canPlaceStructure() {
+        if (gamePlayer == null)
+            return false;
+        long structureCount = gamePlayer.getPurchasableEntities().stream()
+                .filter(e -> e instanceof Structure)
+                .count();
+        return structureCount < MAX_STRUCTURES;
+    }
+
+    /**
+     * Checks if the player can place a statue.
+     *
+     * @return true if allowed, false otherwise
+     */
+    private boolean canPlaceStatue() {
+        if (gamePlayer == null)
+            return false;
+        long statueCount = gamePlayer.getPurchasableEntities().stream()
+                .filter(e -> e instanceof Statue)
+                .count();
+        return statueCount < MAX_STATUES;
+    }
+
+    /**
+     * Validates if a card can be placed on a tile.
+     *
+     * @param cardInfo the card information
+     * @param row      the row index
+     * @param col      the column index
+     * @return the ValidationResult
+     */
+    private ValidationResult validatePlacement(CardInfo cardInfo, int row, int col) {
+        if (gameState == null || localPlayer == null || !localPlayer.getName().equals(gameState.getPlayerTurn())) {
+            return ValidationResult.invalid("It's not your turn.");
+        }
+
+        if (cardInfo.type == CardType.STRUCTURE || cardInfo.type == CardType.STATUE) {
+            if (!isTileOwnedByPlayer(row, col)) {
+                return ValidationResult.invalid("You do not own this tile.");
+            }
+        }
+
+        if (isTileOccupied(row, col)) {
+            Tile targetTile = gameState.getBoardManager().getTile(row, col);
+            if (targetTile.hasEntity()) {
+                return ValidationResult
+                        .invalid("Tile is already occupied by " + targetTile.getEntity().getName() + ".");
+            }
+            if (targetTile.getArtifact() != null && cardInfo.type != CardType.ARTIFACT) {
+                return ValidationResult.invalid("Tile already contains an artifact.");
+            }
+        }
+
+        switch (cardInfo.type) {
+            case STRUCTURE:
+                if (!canPlaceStructure()) {
+                    return ValidationResult.invalid("Maximum number of structures (" + MAX_STRUCTURES + ") reached.");
+                }
+                break;
+            case STATUE:
+                if (!canPlaceStatue()) {
+                    return ValidationResult.invalid("You can only place one statue.");
+                }
+                break;
+            case ARTIFACT:
+                break;
+            default:
+                return ValidationResult.invalid("Unknown card type.");
+        }
+
+        if (!canAffordCard(cardInfo.id)) {
+            return ValidationResult.invalid("You cannot afford this card (Cost: " + getCardCost(cardInfo.id) + ").");
+        }
+
+        return ValidationResult.valid();
+    }
+
+    /**
+     * Retrieves the game canvas.
+     *
+     * @return the Canvas used for rendering
      */
     public Canvas getGameCanvas() {
         return gameCanvas;
     }
 
     /**
-     * Shows a transient notification via the chat component. A dedicated toast
-     * system might be preferable long‑term, but this suffices for now.
+     * Displays a notification message via the chat component.
+     *
+     * @param message the message to display
      */
     private void showNotification(String message) {
         LOGGER.info("Notification: " + message);
         chatComponentController.addSystemMessage("Info: " + message);
     }
 
-    /*
-     * --------------------------------------------------
-     * Unused menu handlers – retained for feature parity
-     * --------------------------------------------------
+    /**
+     * Retrieves the owner ID of a tile.
+     * Note: This method seems unused now, replaced by getTileOwnerName.
+     * Keeping it for potential internal use or future refactoring.
+     *
+     * @param row the row index
+     * @param col the column index
+     * @return the owner's ID (name), or null if unowned
      */
+    private String getTileOwnerId(int row, int col) {
+        Tile tile = gameState.getBoardManager().getTile(row, col);
+        return (tile != null) ? tile.getOwner() : null;
+    }
 
+    /**
+     * Retrieves the color associated with a player.
+     *
+     * @param playerId the player's ID
+     * @return the player's Color, or null if not found
+     */
+    private Color getPlayerColor(String playerId) {
+        return playerColors.get(playerId);
+    }
+
+    /**
+     * Creates a simple red square placeholder image.
+     */
+    private void createPlaceholderImage() {
+        int width = 32;
+        int height = 32;
+        WritableImage img = new WritableImage(width, height);
+        PixelWriter pw = img.getPixelWriter();
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                pw.setColor(x, y, Color.RED);
+            }
+        }
+        this.placeholderImage = img;
+        LOGGER.fine("Placeholder image created.");
+    }
+
+    /**
+     * Handles the resource overview action (not implemented).
+     */
     @FXML
     private void handleResourceOverview() {
-        /* TODO implement resource overview */ }
+        LOGGER.info("Resource overview not implemented.");
+    }
 
+    /**
+     * Handles the game round action (not implemented).
+     */
     @FXML
     private void handleGameRound() {
-        /* TODO implement end‑turn logic */ }
+        LOGGER.info("Game round logic not implemented.");
+    }
 
+    /**
+     * Handles the leaderboard action (not implemented).
+     */
     @FXML
     private void handleLeaderboard() {
-        /* TODO implement leaderboard */ }
+        LOGGER.info("Leaderboard not implemented.");
+    }
+
+    private enum CardType {
+        STRUCTURE, STATUE, ARTIFACT, UNKNOWN
+    }
+
+    private record CardInfo(CardType type, int id) {
+    }
+
+    private record ValidationResult(boolean isValid, String reason) {
+        static ValidationResult valid() {
+            return new ValidationResult(true, null);
+        }
+
+        static ValidationResult invalid(String reason) {
+            return new ValidationResult(false, reason);
+        }
+    }
 }
