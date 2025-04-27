@@ -10,11 +10,12 @@ Der Spieler mit den meisten Runen nach 5 Spielrunden gewinnt das Spiel.
 ## Dokumente
 
 Alle relevanten Dokumente sind im Ordner `docs` zu finden.
-Für die Wichtigsten Dokumente sind hier Links angegeben:
+Für die wichtigsten Dokumente sind hier Links angegeben:
 
 ## Links
 
 Genauere Dokumentation der Spielregeln: [Spielregeln](docs/Spielbeschreibungen/GameDesign.pdf).
+Dokumentation des genauen Spielablaufs: [Manual](docs/Spielbeschreibungen/GameManual.md).
 
 Netzwerkprotokoll: [Netzwerkprotokoll](docs/Networking/Netzwerkprotokoll.pdf).
 
