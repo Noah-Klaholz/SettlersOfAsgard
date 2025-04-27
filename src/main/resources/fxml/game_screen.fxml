@@ -143,12 +143,10 @@
                                   onMouseEntered="#handleCardMouseEntered"
                                   onMouseExited="#handleCardMouseExited"
                                   onDragDone="#handleCardDragDone"/>
-                            <Pane fx:id="statue" styleClass="card,structure-card" prefWidth="80" prefHeight="120"
-                                  onMouseClicked="#handleCardClick"
-                                  onDragDetected="#handleCardDragDetected"
-                                  onMouseEntered="#handleCardMouseEntered"
-                                  onMouseExited="#handleCardMouseExited"
-                                  onDragDone="#handleCardDragDone"/>
+                            <StackPane id="statue" styleClass="game-card"
+                                   onMouseClicked="#handleStatueCardClick"
+                                   onMouseEntered="#handleCardMouseEntered"
+                                   onMouseExited="#handleCardMouseExited"/>
                         </FlowPane>
                     </VBox>
                 </HBox>

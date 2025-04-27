@@ -10,6 +10,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.WinScreenDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.GridAdjustmentManager;
+import ch.unibas.dmi.dbis.cs108.client.ui.components.game.StatueSelectionPopup;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
@@ -123,6 +124,8 @@ public class GameScreenController extends BaseController {
 
     private SettingsDialog settingsDialog;
     private Node selectedCard;
+    private CardDetails selectedStatue;
+    private boolean hasPlacedStatue = false;
 
     // Tooltips for cards are cached to avoid recreating them on every hover event
     private final Map<Node, Tooltip> cardTooltips = new HashMap<>();
@@ -186,6 +189,7 @@ public class GameScreenController extends BaseController {
         Logger.getGlobal().info("Game state uses Local Player: " + localPlayer.getName());
         gameState = new GameState();
         subscribeEvents();
+        selectedStatue = new CardDetails(EntityRegistry.getGameEntityOriginalById(38), true);
         Logger.getGlobal().info("GameScreenController created and subscribed to events.");
 
     }
@@ -1089,6 +1093,29 @@ public class GameScreenController extends BaseController {
     }
 
     /**
+     * Handles click on the statue card, showing the statue selection popup.
+     */
+    @FXML
+    public void handleStatueCardClick(MouseEvent event) {
+        if (hasPlacedStatue) {
+            // Player already placed a statue, ignore click
+            return;
+        }
+
+        // Check if this is the statue card
+        Node card = (Node) event.getSource();
+        if (card.getId() != null && card.getId().startsWith("statue")) {
+            // Create and show the statue selection popup
+            StatueSelectionPopup popup = new StatueSelectionPopup(resourceLoader, this::onStatueSelected);
+            popup.show(card,
+                    event.getScreenX() - 175, // Center horizontally
+                    event.getScreenY() - 200); // Position above the cursor
+
+            event.consume();
+        }
+    }
+
+    /**
      * Shows the tooltip for a card after a short delay.
      */
     @FXML
@@ -1144,6 +1171,13 @@ public class GameScreenController extends BaseController {
         db.setDragView(snapshot, event.getX(), event.getY());
 
         event.consume();
+    }
+
+    /**
+     * Gets entity ID from CardDetails.
+     */
+    private int getEntityIDFromCardDetails(CardDetails details) {
+        return details.getID();
     }
 
     /**
@@ -1225,25 +1259,54 @@ public class GameScreenController extends BaseController {
 
             // Check if the target is valid
             if (tile != null && canAffordCard(cardId)) {
-                Tile gameTile = getTile(tile[0], tile[1]);
-                boolean tileOwnedByPlayer = (gameTile != null &&
-                        gameTile.getOwner() != null &&
-                        gamePlayer != null &&
-                        gameTile.getOwner().equals(gamePlayer.getName()));
-                boolean tileEmpty = gameTile != null &&
-                        (gameTile.getEntity() == null ||
-                                gameTile.getEntity().isArtifact());
+                // EXISTING CODE FOR HANDLING STRUCTURES
+                if (cardId.startsWith("structure")) {
+                    Tile gameTile = getTile(tile[0], tile[1]);
+                    boolean tileOwnedByPlayer = (gameTile != null &&
+                            gameTile.getOwner() != null &&
+                            gamePlayer != null &&
+                            gameTile.getOwner().equals(gamePlayer.getName()));
+                    boolean tileEmpty = gameTile != null &&
+                            (gameTile.getEntity() == null ||
+                                    gameTile.getEntity().isArtifact());
 
-                if (tileOwnedByPlayer && tileEmpty) {
-                    try {
-                        // Get the correct entity ID using the existing method
-                        int structureId = getEntityID(cardId);
-                        LOGGER.info("Placing structure " + structureId + " at tile " + tile[0] + "," + tile[1]);
-                        eventBus.publish(new PlaceStructureUIEvent(tile[0], tile[1], structureId));
-                        success = true;
-                    } catch (NumberFormatException ex) {
-                        chatComponentController.addSystemMessage("Error placing card: Invalid card data.");
-                        LOGGER.warning("Error parsing structure ID: " + ex.getMessage());
+                    if (tileOwnedByPlayer && tileEmpty) {
+                        try {
+                            // Get the correct entity ID using the existing method
+                            int structureId = getEntityID(cardId);
+                            LOGGER.info("Placing structure " + structureId + " at tile " + tile[0] + "," + tile[1]);
+                            eventBus.publish(new PlaceStructureUIEvent(tile[0], tile[1], structureId));
+                            success = true;
+                        } catch (NumberFormatException ex) {
+                            chatComponentController.addSystemMessage("Error placing card: Invalid card data.");
+                            LOGGER.warning("Error parsing structure ID: " + ex.getMessage());
+                        }
+                    }
+                }
+
+                // NEW CODE FOR HANDLING STATUES
+                if (cardId != null && cardId.startsWith("statue") && tile != null) {
+                    Tile gameTile = getTile(tile[0], tile[1]);
+                    boolean tileOwnedByPlayer = (gameTile != null &&
+                            gameTile.getOwner() != null &&
+                            gamePlayer != null &&
+                            gameTile.getOwner().equals(gamePlayer.getName()));
+                    boolean tileEmpty = gameTile != null &&
+                            (gameTile.getEntity() == null ||
+                                    gameTile.getEntity().isArtifact());
+
+                    if (tileOwnedByPlayer && tileEmpty && !hasPlacedStatue) {
+                        try {
+                            // Extract the statue ID from the cardId
+                            int statueId = Integer.parseInt(cardId.replace("statue", ""));
+                            LOGGER.info("Placing statue " + statueId + " at tile " + tile[0] + "," + tile[1]);
+                            eventBus.publish(new PlaceStructureUIEvent(tile[0], tile[1], statueId));
+                            markStatuePlaced();
+                            success = true;
+                        } catch (NumberFormatException ex) {
+                            chatComponentController.addSystemMessage("Error placing statue: Invalid statue data.");
+                            LOGGER.warning("Error parsing statue ID: " + ex.getMessage());
+                        }
                     }
                 }
             }
@@ -1253,6 +1316,7 @@ public class GameScreenController extends BaseController {
         highlightedTile = null;
         drawMapAndGrid();
 
+        // Complete the drag-and-drop operation
         event.setDropCompleted(success);
         event.consume();
     }
@@ -1365,6 +1429,97 @@ public class GameScreenController extends BaseController {
     }
 
     /**
+     * Create a custom tooltip for the selected statue.
+     */
+    private Tooltip createStatueTooltip(CardDetails details) {
+        Tooltip tooltip = new Tooltip();
+        tooltip.setShowDelay(Duration.millis(500));
+        tooltip.setHideDelay(Duration.millis(200));
+
+        VBox content = new VBox(5);
+        content.setPadding(new Insets(8));
+        content.setMaxWidth(300);
+        content.getStyleClass().add("tooltip-content");
+
+        if (details.getTitle() != null && !details.getTitle().isEmpty()) {
+            Label titleLabel = new Label(details.getTitle());
+            titleLabel.getStyleClass().add("tooltip-title");
+            titleLabel.setWrapText(true);
+            content.getChildren().add(titleLabel);
+            content.getChildren().add(new Separator());
+        }
+
+        if (details.getDescription() != null && !details.getDescription().isEmpty()) {
+            Label descLabel = new Label(details.getDescription());
+            descLabel.getStyleClass().add("tooltip-description");
+            descLabel.setWrapText(true);
+            content.getChildren().add(descLabel);
+            content.getChildren().add(new Separator());
+        }
+
+        if (details.getLore() != null && !details.getLore().isEmpty()) {
+            Label loreLabel = new Label(details.getLore());
+            loreLabel.getStyleClass().add("tooltip-lore");
+            loreLabel.setWrapText(true);
+            content.getChildren().add(loreLabel);
+            content.getChildren().add(new Separator());
+        }
+
+        if (details.getPrice() > 0) {
+            Label priceLabel = new Label("Price: " + details.getPrice() + " runes");
+            priceLabel.getStyleClass().add("tooltip-price");
+            priceLabel.setWrapText(true);
+            content.getChildren().add(priceLabel);
+        }
+
+        tooltip.setMaxWidth(300);
+        tooltip.setMaxHeight(200);
+        content.setMinHeight(Region.USE_PREF_SIZE);
+        content.setPrefHeight(Region.USE_COMPUTED_SIZE);
+        content.setMaxHeight(Region.USE_PREF_SIZE);
+
+        tooltip.setGraphic(content);
+        tooltip.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        tooltip.getStyleClass().add("card-tooltip");
+
+        return tooltip;
+    }
+
+    /**
+     * Adds drag handlers to the statue card.
+     */
+    private void setStatueDragHandlers(Node card) {
+        card.setOnDragDetected(this::handleStatueDragDetected);
+        card.setOnDragDone(this::handleCardDragDone);
+    }
+
+    /**
+     * Handles drag detection for statue cards.
+     */
+    private void handleStatueDragDetected(MouseEvent event) {
+        if (selectedStatue == null || hasPlacedStatue || !canAffordCard("statue")) {
+            event.consume();
+            return;
+        }
+
+        Node src = (Node) event.getSource();
+        draggedCardSource = src;
+
+        Dragboard db = src.startDragAndDrop(TransferMode.MOVE);
+        ClipboardContent content = new ClipboardContent();
+        // Store the entity ID of the selected statue
+        content.putString("statue" + getEntityIDFromCardDetails(selectedStatue));
+        db.setContent(content);
+
+        SnapshotParameters params = new SnapshotParameters();
+        params.setFill(Color.TRANSPARENT);
+        WritableImage snapshot = src.snapshot(params, null);
+        db.setDragView(snapshot, event.getX(), event.getY());
+
+        event.consume();
+    }
+
+    /**
      * Retrieves the card details for a given card ID.
      *
      * @param id The ID of the card.
@@ -1384,7 +1539,7 @@ public class GameScreenController extends BaseController {
             double adjusted = price / Math.max(priceModifier, 0.5); // Prevent divide-by-zero or negative scaling, set maximum shop price to 200%
             actualPrice = Math.max(0, (int) Math.round(adjusted)); // Ensure price is never negative
         }
-        return new CardDetails(title, description, lore, URL, actualPrice);
+        return new CardDetails(entityID, title,description, lore, URL, actualPrice);
     }
 
     /**
@@ -1431,9 +1586,11 @@ public class GameScreenController extends BaseController {
 
         // Update structure cards
         for (Node card : structureHand.getChildren()) {
-            if (card.getId() != null && (card.getId().startsWith("structure") || card.getId().startsWith("statue"))) {
+            if (card.getId() != null && (card.getId().startsWith("structure"))) {
                 updateCardImage(card);
                 updateCardAffordability(card);
+            } else if (card.getId() != null && card.getId().startsWith("statue")) {
+                updateStatueCard(card, selectedStatue);
             }
         }
     }
@@ -1468,14 +1625,14 @@ public class GameScreenController extends BaseController {
             card.getStyleClass().remove("unaffordable-card");
             card.getStyleClass().add("game-card");
             // Make sure it's draggable for structures
-            if (id.startsWith("structure")) {
+            if (id.startsWith("structure") || id.startsWith("statue") && !hasPlacedStatue) {
                 card.addEventHandler(MouseEvent.DRAG_DETECTED, this::handleCardDragDetected);
             }
         } else {
             card.getStyleClass().remove("game-card");
             card.getStyleClass().add("unaffordable-card");
             // Remove drag handler for unaffordable cards
-            if (id.startsWith("structure")) {
+            if (id.startsWith("structure") || id.startsWith("statue") && hasPlacedStatue) {
                 card.removeEventHandler(MouseEvent.DRAG_DETECTED, this::handleCardDragDetected);
             }
         }
@@ -1549,6 +1706,92 @@ public class GameScreenController extends BaseController {
 
         pane.getChildren().add(placeholder);
     }
+
+    /**
+     * Called when a statue is selected from the popup.
+     */
+    private void onStatueSelected(CardDetails statueDetails) {
+        this.selectedStatue = statueDetails;
+
+        // Update the statue card with the selected statue image
+        for (Node card : structureHand.getChildren()) {
+            if (card.getId() != null && card.getId().startsWith("statue")) {
+                updateStatueCard(card, statueDetails);
+            }
+        }
+    }
+
+    /**
+     * Updates the statue card with selected statue image and details.
+     */
+    private void updateStatueCard(Node card, CardDetails details) {
+        if (card instanceof Pane pane) {
+            // Clear existing content
+            pane.getChildren().clear();
+
+            // Set dimensions
+            pane.setMinSize(80, 120);
+            pane.setPrefSize(80, 120);
+            pane.setMaxSize(80, 120);
+
+            // Add border
+            pane.setStyle("-fx-border-color: #444444; -fx-border-width: 1px; -fx-border-radius: 5px;");
+
+            String imageUrl = details.getImageUrl();
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                Image image = resourceLoader.loadImage(imageUrl);
+
+                if (image != null && !image.isError()) {
+                    ImageView imageView = new ImageView(image);
+                    imageView.setPreserveRatio(true);
+                    imageView.setFitWidth(78);
+                    imageView.setFitHeight(118);
+
+                    StackPane wrapper = new StackPane(imageView);
+                    wrapper.setPrefSize(78, 118);
+
+                    pane.getChildren().add(wrapper);
+                } else {
+                    LOGGER.warning("Failed to load image for statue");
+                    addPlaceholder(pane, details.getTitle());
+                }
+            } else {
+                LOGGER.warning("No image URL for statue");
+                addPlaceholder(pane, details.getTitle());
+            }
+
+            // Update tooltip
+            Tooltip tooltip = cardTooltips.computeIfAbsent(card, this::createTooltipForCard);
+            Tooltip.uninstall(card, tooltip);
+            cardTooltips.remove(card);
+            cardTooltips.put(card, createStatueTooltip(details));
+
+            // Make sure the card has drag-and-drop handlers
+            if (!hasPlacedStatue && canAffordCard("statue")) {
+                setStatueDragHandlers(card);
+                card.getStyleClass().remove("unaffordable-card");
+                card.getStyleClass().add("game-card");
+            }
+        }
+    }
+
+    /**
+     * Marks that a statue has been placed and disables the statue card.
+     */
+    public void markStatuePlaced() {
+        hasPlacedStatue = true;
+
+        // Update the statue card to be non-interactive
+        for (Node card : structureHand.getChildren()) {
+            if (card.getId() != null && card.getId().startsWith("statue")) {
+                card.getStyleClass().remove("game-card");
+                card.getStyleClass().add("unaffordable-card");
+                card.setOnDragDetected(null);
+                card.setOnMouseClicked(null);
+            }
+        }
+    }
+
 
     /*
      * --------------------------------------------------
