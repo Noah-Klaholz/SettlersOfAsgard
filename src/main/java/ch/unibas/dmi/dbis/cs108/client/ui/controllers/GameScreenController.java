@@ -2307,7 +2307,7 @@ public class GameScreenController extends BaseController {
 
         // Position and show the popup
         if (!resourceOverviewPopup.isShowing()) {
-            Node source = resourceOverviewButton; // Replace with your actual button reference
+            Node source = resourceOverviewButton;
             resourceOverviewPopup.show(source.getScene().getWindow(),
                     source.localToScreen(source.getBoundsInLocal()).getCenterX() - 225,
                     source.localToScreen(source.getBoundsInLocal()).getCenterY() + 20);
@@ -2317,11 +2317,6 @@ public class GameScreenController extends BaseController {
     @FXML
     private void handleEndTurn() {
         eventBus.publish(new EndTurnRequestEvent(localPlayer.getName()));
-    }
-
-    @FXML
-    private void handleLeaderboard() {
-        /* TODO implement leaderboard */
     }
 
     /**
