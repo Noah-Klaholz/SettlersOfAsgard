@@ -153,6 +153,7 @@ public class GameScreenController extends BaseController {
 
     // Keeps track of the node that initiated the current drag‑and‑drop gesture
     private Node draggedCardSource;
+    private int[] highlightedTile = null;
 
     // Simplified colour table – replace with proper game state look‑up
     private final Map<String, Color> playerColors = new HashMap<>();
@@ -284,7 +285,6 @@ public class GameScreenController extends BaseController {
         playerColours = new ArrayList<>();
         playerColours.add(Color.RED);
         playerColours.add(Color.BLUE);
-        playerColours.add(Color.GREEN);
         playerColours.add(Color.YELLOW);
         playerColours.add(Color.PURPLE);
         playerColours.add(Color.ORANGE);
@@ -292,8 +292,12 @@ public class GameScreenController extends BaseController {
         playerColours.add(Color.MAGENTA);
 
         for (String playerName : GameApplication.getPlayers()) {
-            Color color = playerColours.remove(0);
-            playerColors.put(playerName, color);
+            if (playerName.equals(localPlayer.getName())) {
+                playerColours.add(Color.GREEN); // Local Player should always be green
+            } else {
+                Color color = playerColours.remove(0);
+                playerColors.put(playerName, color);
+            }
         }
     }
 
@@ -638,6 +642,9 @@ public class GameScreenController extends BaseController {
         }
 
         gameCanvas.setOnKeyPressed(gridAdjustmentManager::handleGridAdjustmentKeys);
+        gameCanvas.setOnDragOver(this::handleDragOver);
+        gameCanvas.setOnDragDropped(this::handleDragDropped);
+        gameCanvas.setOnDragExited(this::handleDragExited);
     }
 
     /**
@@ -826,8 +833,27 @@ public class GameScreenController extends BaseController {
             gc.stroke();
         }
 
+        // Add drag target highlight (bright green) ------------------------------
+        boolean isDragTarget = highlightedTile != null &&
+                highlightedTile[0] == row &&
+                highlightedTile[1] == col;
+        if (isDragTarget) {
+            Paint oldStroke = gc.getStroke();
+            double oldLineWidth = gc.getLineWidth();
+            double oldAlpha = gc.getGlobalAlpha();
+
+            gc.setStroke(Color.LIME);
+            gc.setLineWidth(4);
+            gc.setGlobalAlpha(0.8);
+            gc.stroke();
+
+            gc.setStroke(oldStroke);
+            gc.setLineWidth(oldLineWidth);
+            gc.setGlobalAlpha(oldAlpha);
+        }
+
         // Draw the Entity if it exists -----------------------------------------
-        Tile tile = gameState.getBoardManager().getTile(row, col);
+        Tile tile = getTile(row, col);
         if (tile != null) {
             GameEntity entity = tile.getEntity();
             if (entity != null) {
@@ -1069,6 +1095,9 @@ public class GameScreenController extends BaseController {
 
     /**
      * Continually called while the user drags a card across the canvas.
+     * It checks if the target tile is valid for placing a structure.
+     *
+     * @param event The drag event containing the current mouse position
      */
     @FXML
     private void handleDragOver(DragEvent event) {
@@ -1081,16 +1110,57 @@ public class GameScreenController extends BaseController {
         String cardId = event.getDragboard().getString();
         boolean isStructure = cardId != null && cardId.startsWith("structure");
 
-        if (target != null && isStructure && isTileOwnedByPlayer(target[0], target[1])) {
+        boolean validTarget = false;
+        if (target != null && isStructure) {
+            // Check if player owns the tile and the tile doesn't already have an entity
+            Tile tile = getTile(target[0], target[1]);
+            boolean tileOwnedByPlayer = (tile != null &&
+                    tile.getOwner() != null &&
+                    gamePlayer != null &&
+                    tile.getOwner().equals(gamePlayer.getName()));
+            boolean tileEmpty = tile != null &&
+                    (tile.getEntity() == null ||
+                            tile.getEntity().isArtifact());
+
+            validTarget = tileOwnedByPlayer && tileEmpty;
+        }
+
+        // Update the highlighted tile
+        if (validTarget) {
+            highlightedTile = target;
+            drawMapAndGrid(); // Redraw to show highlight
             event.acceptTransferModes(TransferMode.MOVE);
         } else {
+            // Clear highlight if not a valid target
+            if (highlightedTile != null) {
+                highlightedTile = null;
+                drawMapAndGrid(); // Redraw to remove highlight
+            }
             event.acceptTransferModes(TransferMode.NONE);
+        }
+
+        event.consume();
+    }
+
+    /**
+     * Clears the highlighted tile when the drag operation exits the canvas.
+     *
+     * @param event The drag event containing the current mouse position
+     */
+    @FXML
+    private void handleDragExited(DragEvent event) {
+        // Clear the highlighted tile when drag exits canvas
+        if (highlightedTile != null) {
+            highlightedTile = null;
+            drawMapAndGrid();
         }
         event.consume();
     }
 
     /**
      * Finalises the drag‑and‑drop operation (placing the structure).
+     *
+     * @param event The drag event containing the current mouse position
      */
     @FXML
     private void handleDragDropped(DragEvent event) {
@@ -1099,22 +1169,45 @@ public class GameScreenController extends BaseController {
         if (db.hasString()) {
             String cardId = db.getString();
             int[] tile = getHexAt(event.getX(), event.getY());
-            if (tile != null && isTileOwnedByPlayer(tile[0], tile[1]) && canAffordCard(cardId)) {
-                try {
-                    int structureId = Integer.parseInt(cardId.replace("structure", ""));
-                    eventBus.publish(new PlaceStructureUIEvent(tile[0], tile[1], structureId));
-                    success = true;
-                } catch (NumberFormatException ex) {
-                    chatComponentController.addSystemMessage("Error placing card: Invalid card data.");
+
+            // Check if the target is valid
+            if (tile != null && canAffordCard(cardId)) {
+                Tile gameTile = getTile(tile[0], tile[1]);
+                boolean tileOwnedByPlayer = (gameTile != null &&
+                        gameTile.getOwner() != null &&
+                        gamePlayer != null &&
+                        gameTile.getOwner().equals(gamePlayer.getName()));
+                boolean tileEmpty = gameTile != null &&
+                        (gameTile.getEntity() == null ||
+                                gameTile.getEntity().isArtifact());
+
+                if (tileOwnedByPlayer && tileEmpty) {
+                    try {
+                        // Get the correct entity ID using the existing method
+                        int structureId = getEntityID(cardId);
+                        LOGGER.info("Placing structure " + structureId + " at tile " + tile[0] + "," + tile[1]);
+                        eventBus.publish(new PlaceStructureUIEvent(tile[0], tile[1], structureId));
+                        success = true;
+                    } catch (NumberFormatException ex) {
+                        chatComponentController.addSystemMessage("Error placing card: Invalid card data.");
+                        LOGGER.warning("Error parsing structure ID: " + ex.getMessage());
+                    }
                 }
             }
         }
+
+        // Clear highlight
+        highlightedTile = null;
+        drawMapAndGrid();
+
         event.setDropCompleted(success);
         event.consume();
     }
 
     /**
      * Cleans up after a drag‑and‑drop operation has finished.
+     *
+     * @param event The drag event containing the current mouse position
      */
     @FXML
     private void handleCardDragDone(DragEvent event) {
@@ -1485,8 +1578,12 @@ public class GameScreenController extends BaseController {
 
     // Helper methods for better gameState access
 
+    private Tile getTile(int row, int col) {
+        return gameState.getBoardManager().getTile(col, row);
+    }
+
     private boolean isTileOwnedByPlayer(int row, int col) {
-        return gameState.getBoardManager().getTile(row, col).hasEntity();
+        return gameState.getBoardManager().getTile(col, row).hasEntity();
     }
 
     private boolean canAffordCard(String cardId) {
@@ -1504,12 +1601,12 @@ public class GameScreenController extends BaseController {
     }
 
     private String getTileOwnerId(int row, int col) {
-        Tile tile = gameState.getBoardManager().getTile(row, col);
+        Tile tile = gameState.getBoardManager().getTile(col, row);
         return tile == null ? null : tile.getOwner();
     }
 
     private int getTilePrice(int row, int col) {
-        Tile tile = gameState.getBoardManager().getTile(row, col);
+        Tile tile = gameState.getBoardManager().getTile(col, row);
         return tile != null ? tile.getPrice() : 0;
     }
 
