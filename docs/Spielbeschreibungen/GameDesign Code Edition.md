@@ -1,3 +1,24 @@
+# Settlers Of Asgard - Game Manual
+
+// einleitung
+
+## Starten des Spiels
+
+Um ein Spiel zu starten muss ein Server gestartet werden und pro Spieler ein Client. 
+Als erstes mit `cd src/main/java` ins Hauptverzeichnis wechseln (falls noch nicht schon drin).
+Dann ein Terminal öffnen und `./gradlew build-cs108` eingeben. Anschließend ins Verzeichnis build/libs mit
+`cd build/libs` wechseln. Dort befindet sich nun eine Datei namens `settlersOfAsgard.jar`. Zum Starten des Servers:
+- Eingabe im Terminal: `java -jar settlersOfAsgard.jar server <port>`.
+- Der Port ist dabei eine Zahl > 1024, die wählbar ist. Ein Beispiel wäre 9000.
+Nun sollte der Server laufen. In einem neuen Terminal wieder ins Verzeichnis build/libs wechseln (s.o.) und den Client 
+wie folgt starten:
+- Eingabe im Terminal: `java -jar settlersOfAsgard.jar client <ip-adresse>:<port>`
+- Zu beachten ist dass der Port die gleiche Zahl ist wie der beim Server angegebene Port und das die IP-adresse mit 
+der der Maschine auf welcher der Server läuft übereinstimmt. Wenn Server und Client auf dem gleichen Rechner laufen, reicht es 
+aus anstatt der IP-adresse der eigenen Maschine `localhost`zu verwenden.  
+
+// hier lobby start usw machen
+
 # Entities
 Unterarten übernehmen Eigenschaften ihrer Überarten außer anders angegeben
 ## Player
