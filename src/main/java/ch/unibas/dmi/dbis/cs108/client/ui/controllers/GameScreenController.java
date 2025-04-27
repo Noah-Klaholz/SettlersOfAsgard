@@ -47,6 +47,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
+import javax.swing.text.html.parser.Entity;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -382,9 +383,8 @@ public class GameScreenController extends BaseController {
             refreshCardAffordability();
             updateRunesAndEnergyBar();
             updatePlayerList();
+            updateMap();
         });
-
-        // TODO handle game state sync (show player turn, update energy bar, etc.)
     }
 
     /*
@@ -824,6 +824,71 @@ public class GameScreenController extends BaseController {
             gc.setStroke(oldStroke);
         } else {
             gc.stroke();
+        }
+
+        // Draw the Entity if it exists -----------------------------------------
+        Tile tile = gameState.getBoardManager().getTile(row, col);
+        if (tile != null) {
+            GameEntity entity = tile.getEntity();
+            if (entity != null) {
+                String URL = EntityRegistry.getURL(entity.getId(), false);
+                drawEntityImage(gc, URL, cx, cy, size, hSquish);
+            }
+        } else {
+            LOGGER.warning("Tile is null for row " + row + ", col " + col);
+        }
+    }
+
+    /**
+     * Draws an entity image centered in a hex tile.
+     * The image is scaled to fit the hex width while preserving its aspect ratio.
+     *
+     * @param gc The graphics context to draw on
+     * @param imageUrl The URL of the image to draw
+     * @param centerX The x-coordinate of the hex center
+     * @param centerY The y-coordinate of the hex center
+     * @param hexSize The size of the hex
+     * @param hSquish The horizontal squish factor
+     */
+    private void drawEntityImage(GraphicsContext gc, String imageUrl, double centerX, double centerY,
+                                 double hexSize, double hSquish) {
+        if (imageUrl == null || imageUrl.isEmpty()) {
+            return; // No image to draw
+        }
+
+        try {
+            Image image = resourceLoader.loadImage(imageUrl);
+            if (image == null || image.isError()) {
+                LOGGER.fine("Failed to load entity image: " + imageUrl);
+                return;
+            }
+
+            // Calculate maximum width based on hex size and squish factor
+            // The width of a hex is approximately 2 * size
+            double maxWidth = 1.7 * hexSize * hSquish;
+
+            // Calculate scale to fit width
+            double scale = maxWidth / image.getWidth();
+
+            // Calculate scaled dimensions
+            double scaledWidth = image.getWidth() * scale;
+            double scaledHeight = image.getHeight() * scale;
+
+            // Save current graphics state
+            double oldAlpha = gc.getGlobalAlpha();
+            gc.setGlobalAlpha(1.0); // Full opacity for the image
+
+            // Draw image centered in the hex
+            gc.drawImage(image,
+                    centerX - scaledWidth/2,
+                    centerY - scaledHeight/2,
+                    scaledWidth,
+                    scaledHeight);
+
+            // Restore graphics state
+            gc.setGlobalAlpha(oldAlpha);
+        } catch (Exception e) {
+            LOGGER.warning("Error drawing entity image: " + e.getMessage());
         }
     }
 
@@ -1353,6 +1418,15 @@ public class GameScreenController extends BaseController {
             runesLabel.setText("0");
             energyBar.setProgress(0.0);
         }
+    }
+
+    public void updateMap() {
+        if (gameState == null) {
+            LOGGER.warning("Game state is null");
+            return;
+        }
+        LOGGER.info("Updating map");
+        drawMapAndGrid();
     }
 
     /**
