@@ -4,6 +4,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.utils.StylesheetLoader;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.property.*;
+import javafx.event.Event;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -68,7 +69,7 @@ public class SettingsDialog extends UIComponent<StackPane> {
         VBox content = new VBox(15);
         content.getStyleClass().add("dialog-content-box"); // Use style class
         content.setAlignment(Pos.CENTER);
-        content.setOnMouseClicked(event -> event.consume());
+        content.setOnMouseClicked(Event::consume);
 
         Text title = new Text(SETTINGS_TITLE);
         title.getStyleClass().add("dialog-title"); // Use style class

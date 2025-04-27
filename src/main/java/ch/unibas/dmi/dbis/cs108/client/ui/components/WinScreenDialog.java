@@ -1,13 +1,22 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.components;
 
+import ch.unibas.dmi.dbis.cs108.client.ui.utils.StylesheetLoader;
 import javafx.animation.FadeTransition;
+import javafx.event.Event;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.util.Duration;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import java.util.List;
 import java.util.Map;
@@ -22,6 +31,8 @@ public class WinScreenDialog extends UIComponent<StackPane> {
     private Runnable onMenuAction;
     /** The runnable onLobbyAction that takes you back to the lobby */
     private Runnable onLobbyAction;
+    /** The dialog content */
+    private final VBox dialogContent;
 
     /**
      * Constructor for WinScreenDialog.
@@ -30,49 +41,70 @@ public class WinScreenDialog extends UIComponent<StackPane> {
      */
     public WinScreenDialog(Map<String, Integer> leaderboard) {
         super("");
-        this.view = new StackPane(); // <-- This is required!
-        StackPane root = getView();
-        root.getStyleClass().addAll("overlay", "dialog-background");
+        this.view = new StackPane();
+        this.view.getStyleClass().add("dialog-overlay");
 
-        VBox container = new VBox(24);
-        container.setAlignment(Pos.CENTER);
-        container.getStyleClass().add("dialog-container");
+        StylesheetLoader.loadDialogStylesheets(this.view);
+        StylesheetLoader.loadStylesheet(this.view, "/css/winscreen-dialog.css");
 
-        Label title = new Label("Game Over");
-        title.getStyleClass().add("dialog-section-title");
+        this.view.setAlignment(Pos.CENTER);
+        dialogContent = createDialogContent(leaderboard);
+        StackPane.setAlignment(dialogContent, Pos.CENTER);
+        this.view.getChildren().add(dialogContent);
+        this.view.setViewOrder(-100);
+        this.view.setOnMouseClicked(event -> {
+            if (event.getTarget() == this.view) {
+                close();
+                event.consume();
+            }
+        });
+        this.view.setVisible(false);
+        this.view.setManaged(false);
+    }
 
-        // Sort leaderboard descending
-        List<Map.Entry<String, Integer>> sorted = leaderboard.entrySet().stream()
-                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
-                .collect(Collectors.toList());
+    /**
+     * Creates the dialog content with a title, leaderboard, and buttons.
+     *
+     * @return The VBox containing the dialog content.
+     */
+    private VBox createDialogContent(Map<String, Integer> leaderboard) {
+        VBox dialogContent = new VBox(20);
+        dialogContent.getStyleClass().add("dialog-content");
+        dialogContent.setAlignment(Pos.CENTER);
+        dialogContent.setOnMouseClicked(Event::consume);
 
-        VBox boardBox = new VBox(8);
-        boardBox.setAlignment(Pos.CENTER_LEFT);
-        for (Map.Entry<String, Integer> entry : sorted) {
-            Label row = new Label(entry.getKey() + ": " + entry.getValue());
-            row.getStyleClass().add("dialog-label");
-            boardBox.getChildren().add(row);
-        }
+        Label titleLabel = new Label("Game Over");
+        titleLabel.getStyleClass().add("dialog-title");
 
-        HBox buttons = new HBox(16);
-        buttons.setAlignment(Pos.CENTER);
-        Button mainMenu = new Button("Main Menu");
-        mainMenu.getStyleClass().addAll("dialog-button", "dialog-button-save");
-        mainMenu.setOnAction(evt -> {
+        LeaderboardView leaderboardBox = new LeaderboardView(new HashMap<>(leaderboard));
+
+        Button menuButton = new Button("Main Menu");
+        menuButton.getStyleClass().add("menu-button");
+        menuButton.setOnAction(e -> {
             if (onMenuAction != null) onMenuAction.run();
             close();
         });
 
-        Button backLobby = new Button("Back to Lobby");
-        backLobby.getStyleClass().addAll("dialog-button", "dialog-button-cancel");
-        backLobby.setOnAction(evt -> {
+        Button lobbyButton = new Button("Lobby");
+        lobbyButton.getStyleClass().add("lobby-button");
+        lobbyButton.setOnAction(e -> {
             if (onLobbyAction != null) onLobbyAction.run();
             close();
         });
 
-        buttons.getChildren().addAll(mainMenu, backLobby);
-        container.getChildren().addAll(title, boardBox, buttons);
-        root.getChildren().add(container);
+        HBox buttonBox = new HBox(menuButton, lobbyButton);
+        buttonBox.getStyleClass().add("button-box");
+        buttonBox.setAlignment(Pos.CENTER);
+        buttonBox.setSpacing(10);
+
+        dialogContent.getChildren().addAll(
+                titleLabel,
+                new DialogSeparator(),
+                leaderboardBox,
+                new DialogSeparator(),
+                buttonBox);
+
+        return dialogContent;
     }
 
     /**
@@ -80,11 +112,11 @@ public class WinScreenDialog extends UIComponent<StackPane> {
      */
     @Override
     public void show() {
-        getView().setVisible(true);
-        getView().setManaged(true);
-        getView().setOpacity(0);
-        getView().toFront();
-        FadeTransition fadeIn = new FadeTransition(Duration.millis(200), getView());
+        this.view.setVisible(true);
+        this.view.setManaged(true);
+        this.view.setOpacity(0);
+        this.view.toFront();
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(200), this.view);
         fadeIn.setFromValue(0);
         fadeIn.setToValue(1);
         fadeIn.play();
@@ -94,17 +126,21 @@ public class WinScreenDialog extends UIComponent<StackPane> {
      * Closes the dialog with a fade-out effect.
      */
     public void close() {
-        FadeTransition fadeOut = new FadeTransition(Duration.millis(200), getView());
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(200), this.view);
         fadeOut.setFromValue(1);
         fadeOut.setToValue(0);
         fadeOut.setOnFinished(e -> {
-            getView().setVisible(false);
-            getView().setManaged(false);
-            if (getView().getParent() instanceof StackPane parent) {
-                parent.getChildren().remove(getView());
+            this.view.setVisible(false);
+            this.view.setManaged(false);
+            // Remove the view from its parent after fade out
+            if (this.view.getParent() instanceof Pane parentPane) {
+                parentPane.getChildren().remove(this.view);
             }
-            Runnable onClose = getOnCloseAction();
-            if (onClose != null) onClose.run();
+            // Use the inherited getter
+            Runnable action = getOnCloseAction();
+            if (action != null) {
+                action.run();
+            }
         });
         fadeOut.play();
     }
@@ -125,5 +161,59 @@ public class WinScreenDialog extends UIComponent<StackPane> {
      */
     public void setOnLobbyAction(Runnable action) {
         this.onLobbyAction = action;
+    }
+
+    /**
+     * Custom separator using CSS styling.
+     */
+    private static class DialogSeparator extends Region {
+        public DialogSeparator() {
+            getStyleClass().add("dialog-separator"); // Use style class
+        }
+    }
+
+    /**
+     * Custom leaderboard view to display player scores.
+     */
+    public class LeaderboardView extends VBox {
+
+        /**
+         * Constructor for LeaderboardView.
+         *
+         * @param leaderboard A map containing player names and their scores.
+         */
+        public LeaderboardView(HashMap<String, Integer> leaderboard) {
+            setSpacing(8);
+            setAlignment(Pos.CENTER);
+
+            // Sort players by score descending
+            List<Map.Entry<String, Integer>> sorted = leaderboard.entrySet().stream()
+                    .sorted(Map.Entry.<String, Integer>comparingByValue(Comparator.reverseOrder()))
+                    .toList();
+
+            int rank = 1;
+            for (Map.Entry<String, Integer> entry : sorted) {
+                HBox row = new HBox(20);
+                row.setAlignment(Pos.CENTER_LEFT);
+
+                Label name = new Label(entry.getKey());
+                Label score = new Label(String.valueOf(entry.getValue()));
+
+                // Assign style class based on rank
+                if (rank == 1) {
+                    row.getStyleClass().add("leaderboard-gold");
+                } else if (rank == 2) {
+                    row.getStyleClass().add("leaderboard-silver");
+                } else if (rank == 3) {
+                    row.getStyleClass().add("leaderboard-bronze");
+                } else {
+                    row.getStyleClass().add("leaderboard-darkblue");
+                }
+
+                row.getChildren().addAll(new Label("#" + rank), name, score);
+                getChildren().add(row);
+                rank++;
+            }
+        }
     }
 }
