@@ -2340,10 +2340,17 @@ public class GameScreenController extends BaseController {
                 return false;
             }
 
-            // 3. Structure limit check
-            int maxStructures = SETTINGS.Config.MAX_STRUCTURES.getValue();
-            if (localPlayer.getOwnedTiles().size() >= maxStructures) {
-                // Silently fail during drag over, log on drop attempt
+            // 3. Structure Limit
+            // TODO: Verify if getOwnedTiles().size() correctly counts placed structures.
+            // It might count all owned tiles, which would be incorrect for this limit.
+            int currentCount = localPlayer.getOwnedTiles().size();
+            int maxAllowed = SETTINGS.Config.MAX_STRUCTURES.getValue();
+            if (currentCount >= maxAllowed) {
+                LOGGER.warning(String.format(
+                        "Placement failed: Player [%s] attempted to place structure [%s] but already has %d/%d structures",
+                        localPlayer.getName(), currentCount, maxAllowed));
+                Platform.runLater(() -> showNotification(
+                        "You have reached the maximum number of structures (" + maxAllowed + ")."));
                 return false;
             }
 
@@ -2424,6 +2431,8 @@ public class GameScreenController extends BaseController {
             }
 
             // 3. Structure Limit
+            // TODO: Verify if getOwnedTiles().size() correctly counts placed structures.
+            // It might count all owned tiles, which would be incorrect for this limit.
             int currentCount = localPlayer.getOwnedTiles().size();
             int maxAllowed = SETTINGS.Config.MAX_STRUCTURES.getValue();
             if (currentCount >= maxAllowed) {
@@ -2477,6 +2486,8 @@ public class GameScreenController extends BaseController {
         public void handleDragDone(String cardId, boolean wasDroppedSuccessfully) {
             // This method is called on the source node after the drop completes.
             // For structures, the card remains in the hand. Log the outcome.
+            // NOTE: If structures should be consumed, logic needs to be added here
+            // to remove/disable the card from the hand visually or functionally.
             try {
                 int entityId = getEntityID(cardId);
                 GameEntity entity = EntityRegistry.getGameEntityOriginalById(entityId);
