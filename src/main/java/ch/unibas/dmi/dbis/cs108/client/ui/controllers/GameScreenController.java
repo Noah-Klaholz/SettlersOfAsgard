@@ -28,6 +28,8 @@ import ch.unibas.dmi.dbis.cs108.client.ui.utils.CardDetails;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
@@ -134,6 +136,7 @@ public class GameScreenController extends BaseController {
 
     private SettingsDialog settingsDialog;
     private Node selectedCard;
+    private CardDetails selectedCardDetails;
     private CardDetails selectedStatue;
     private boolean hasPlacedStatue = false;
 
@@ -839,7 +842,19 @@ public class GameScreenController extends BaseController {
             } else {
                 showNotification("Not enough runes to buy this tile (Cost: " + price + ").");
             }
-        } else if (localPlayer != null && ownerId.equals(localPlayer.getId())) {
+        } else if (localPlayer != null && ownerId.equals(localPlayer.getName())) {
+            if (selectedCardDetails != null) {
+                GameEntity ge = EntityRegistry.getGameEntityOriginalById(selectedCardDetails.getID());
+                if (ge != null) {
+                    if (ge instanceof Structure s) {
+                        eventBus.publish(new PlaceStructureUIEvent(col, row, s.getId()));
+                    } else if (ge instanceof Statue s) {
+                        eventBus.publish(new PlaceStatueUIEvent(col, row, s.getId()));
+                    } else {
+                        showNotification("Invalid entity type for placement.");
+                    }
+                }
+            }
             showNotification("You already own this tile.");
         } else {
             showNotification("This tile is owned by another player.");
@@ -1221,6 +1236,7 @@ public class GameScreenController extends BaseController {
     @FXML
     public void handleCardClick(MouseEvent event) {
         Node card = (Node) event.getSource();
+        Logger.getGlobal().info("Card clicked: " + card.getId());
         if (card == selectedCard) {
             card.getStyleClass().remove("selected-card");
             selectedCard = null;
@@ -1229,6 +1245,7 @@ public class GameScreenController extends BaseController {
                 selectedCard.getStyleClass().remove("selected-card");
             card.getStyleClass().add("selected-card");
             selectedCard = card;
+            selectedCardDetails = getCardDetails(card.getId());
         }
         event.consume();
     }
