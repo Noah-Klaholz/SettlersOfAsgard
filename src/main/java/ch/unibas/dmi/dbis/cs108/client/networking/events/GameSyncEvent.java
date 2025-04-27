@@ -21,7 +21,6 @@ public class GameSyncEvent implements Event{
     private final String message;
 
     public GameSyncEvent(String message) {
-        Logger.getGlobal().info("Networking GameSyncEvent");
         this.message = message;
     }
     /**
