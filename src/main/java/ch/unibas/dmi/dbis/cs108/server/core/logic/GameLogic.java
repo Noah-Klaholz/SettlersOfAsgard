@@ -81,7 +81,6 @@ public class GameLogic implements GameLogicInterface {
         gameLock.writeLock().lock();
         try {
             gameState.setPlayers(players);
-            gameState.getBoardManager().initializeBoard(8, 7);
             turnManager.nextTurn();
         } finally {
             gameLock.writeLock().unlock();
