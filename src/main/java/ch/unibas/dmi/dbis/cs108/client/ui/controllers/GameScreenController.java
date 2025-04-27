@@ -1147,76 +1147,122 @@ public class GameScreenController extends BaseController {
 
     /**
      * Handles the drag-over event when a card is dragged over the canvas.
+     * Accepts the transfer only if the drop is potentially valid.
      *
      * @param event the DragEvent
      */
     @FXML
     private void handleDragOver(DragEvent event) {
-        if (event.getGestureSource() != draggedCardSource || !event.getDragboard().hasContent(CARD_DATA_FORMAT)) {
+        LOGGER.finest("handleDragOver triggered."); // Log entry
+
+        // Check 1: Is the source the card being dragged?
+        if (event.getGestureSource() != draggedCardSource) {
+            LOGGER.finest("DragOver rejected: Gesture source mismatch.");
             event.acceptTransferModes(TransferMode.NONE);
             event.consume();
             return;
         }
 
+        // Check 2: Does the dragboard have the correct data format?
+        Dragboard db = event.getDragboard();
+        if (!db.hasContent(CARD_DATA_FORMAT)) {
+            LOGGER.finest("DragOver rejected: No card data format found.");
+            event.acceptTransferModes(TransferMode.NONE);
+            event.consume();
+            return;
+        }
+
+        // Check 3: Get card info and target coordinates
+        CardInfo cardInfo = getCardInfoFromDragboard(db);
         int[] targetCoords = getHexAt(event.getX(), event.getY());
-        CardInfo cardInfo = getCardInfoFromDragboard(event.getDragboard());
 
+        // Check 4: Are coordinates and card info valid?
         if (targetCoords == null || cardInfo.type == CardType.UNKNOWN) {
+            LOGGER.finest("DragOver rejected: Invalid target coordinates or unknown card type.");
             event.acceptTransferModes(TransferMode.NONE);
             event.consume();
             return;
         }
 
-        ValidationResult validation = validatePlacement(cardInfo, targetCoords[0], targetCoords[1]);
+        // Check 5: Validate the potential placement
+        int row = targetCoords[0];
+        int col = targetCoords[1];
+        ValidationResult validation = validatePlacement(cardInfo, row, col);
+        LOGGER.finest("DragOver validation for card " + cardInfo.id + " at (" + row + "," + col + "): " + validation);
+
         if (validation.isValid()) {
+            LOGGER.finest("DragOver accepting MOVE transfer.");
             event.acceptTransferModes(TransferMode.MOVE);
         } else {
+            LOGGER.finest("DragOver rejecting transfer due to validation failure.");
             event.acceptTransferModes(TransferMode.NONE);
         }
-        event.consume();
+        event.consume(); // Consume the event regardless of acceptance
     }
 
     /**
      * Handles the drop event when a card is dropped onto the canvas.
-     * Ensures PlaceStructureUIEvent uses (row, col).
+     * Validates the drop and publishes the appropriate UI event if valid.
      *
      * @param event the DragEvent
      */
     @FXML
     private void handleDragDropped(DragEvent event) {
+        LOGGER.fine("handleDragDropped triggered."); // Log entry
         Dragboard db = event.getDragboard();
-        boolean success = false;
+        boolean success = false; // Assume failure initially
 
+        // Check 1: Does the dragboard have the correct data format?
         if (db.hasContent(CARD_DATA_FORMAT)) {
+            LOGGER.fine("Dragboard has CARD_DATA_FORMAT.");
             CardInfo cardInfo = getCardInfoFromDragboard(db);
             int[] targetCoords = getHexAt(event.getX(), event.getY());
 
+            // Check 2: Are coordinates and card info valid?
             if (targetCoords != null && cardInfo.type != CardType.UNKNOWN) {
                 int row = targetCoords[0]; // UI Row
                 int col = targetCoords[1]; // UI Column
-                ValidationResult validation = validatePlacement(cardInfo, row, col); // Validation uses (row, col)
+                LOGGER.fine("Drop detected for card type: " + cardInfo.type + ", ID: " + cardInfo.id + " at coords: ("
+                        + row + ", " + col + ")");
+
+                // Check 3: Validate the placement
+                ValidationResult validation = validatePlacement(cardInfo, row, col);
+                LOGGER.fine("Validation result for drop: " + validation);
+
                 if (validation.isValid()) {
-                    LOGGER.info("Attempting to place " + cardInfo.type + " (ID: " + cardInfo.id + ") on tile (" +
+                    LOGGER.info("Validation PASSED. Attempting to publish event for " + cardInfo.type + " (ID: "
+                            + cardInfo.id + ") on tile (" +
                             row + ", " + col + ")");
                     try {
+                        // Check 4: Publish the correct event based on card type
                         switch (cardInfo.type) {
                             case STRUCTURE:
-                                LOGGER.fine("Publishing PlaceStructureUIEvent for (" + row + ", " + col + "), ID: "
+                                LOGGER.fine("[PUBLISHING] PlaceStructureUIEvent for (" + row + ", " + col + "), ID: "
                                         + cardInfo.id);
                                 eventBus.publish(new PlaceStructureUIEvent(row, col, cardInfo.id));
                                 success = true;
                                 break;
                             case STATUE:
+                                // Statue placement requires selection first
                                 Optional<Integer> selectedStatueId = showStatueSelectionPopup();
                                 if (selectedStatueId.isPresent()) {
                                     int statueId = selectedStatueId.get();
-                                    LOGGER.fine("Publishing PlaceStatueUIEvent for (" + row + ", " + col + "), ID: "
-                                            + statueId);
-                                    eventBus.publish(new PlaceStatueUIEvent(statueId, row, col));
-                                    success = true;
+                                    // Re-validate affordability for the *specific* statue chosen
+                                    if (canAffordCard(statueId)) {
+                                        LOGGER.fine("[PUBLISHING] PlaceStatueUIEvent for (" + row + ", " + col
+                                                + "), ID: " + statueId);
+                                        eventBus.publish(new PlaceStatueUIEvent(statueId, row, col));
+                                        success = true;
+                                    } else {
+                                        LOGGER.warning("Cannot afford selected statue ID: " + statueId);
+                                        showNotification("You cannot afford the selected statue (Cost: "
+                                                + getCardCost(statueId) + ").");
+                                        // success remains false
+                                    }
                                 } else {
                                     LOGGER.info("Statue placement cancelled by user.");
                                     showNotification("Statue placement cancelled.");
+                                    // success remains false
                                 }
                                 break;
                             case ARTIFACT:
@@ -1224,74 +1270,115 @@ public class GameScreenController extends BaseController {
                                 if (entity instanceof Artifact artifactEntity) {
                                     String useType = artifactEntity.getUseType().getType();
                                     if ("Field".equalsIgnoreCase(useType)) {
-                                        LOGGER.fine("Publishing UseFieldArtifactUIEvent for (" + row + ", " + col
+                                        LOGGER.fine("[PUBLISHING] UseFieldArtifactUIEvent for (" + row + ", " + col
                                                 + "), ID: " + cardInfo.id);
                                         eventBus.publish(new UseFieldArtifactUIEvent(row, col, cardInfo.id, useType));
                                         success = true;
                                     } else if ("Player".equalsIgnoreCase(useType)) {
+                                        // Determine target player based on tile ownership
                                         String targetPlayerName = getTileOwnerName(row, col); // Uses (row, col)
-                                        if (targetPlayerName == null
-                                                || (localPlayer != null
-                                                        && targetPlayerName.equals(localPlayer.getName()))) {
-                                            targetPlayerName = (localPlayer != null) ? localPlayer.getName() : null;
+                                        // If tile unowned or owned by self, target self
+                                        if (targetPlayerName == null || (localPlayer != null
+                                                && targetPlayerName.equals(localPlayer.getName()))) {
+                                            targetPlayerName = (localPlayer != null) ? localPlayer.getName() : null; // Target
+                                                                                                                     // self
+                                            LOGGER.fine("Targeting self for Player artifact: " + targetPlayerName);
+                                        } else {
+                                            LOGGER.fine(
+                                                    "Targeting other player for Player artifact: " + targetPlayerName);
                                         }
-                                        LOGGER.fine("Publishing UsePlayerArtifactUIEvent for target: "
-                                                + targetPlayerName + ", ID: " + cardInfo.id);
-                                        eventBus.publish(
-                                                new UsePlayerArtifactUIEvent(cardInfo.id, useType, targetPlayerName));
-                                        success = true;
+
+                                        if (targetPlayerName != null) {
+                                            LOGGER.fine("[PUBLISHING] UsePlayerArtifactUIEvent for target: "
+                                                    + targetPlayerName + ", ID: " + cardInfo.id);
+                                            eventBus.publish(new UsePlayerArtifactUIEvent(cardInfo.id, useType,
+                                                    targetPlayerName));
+                                            success = true;
+                                        } else {
+                                            LOGGER.warning(
+                                                    "Could not determine target player for Player artifact (localPlayer is null?).");
+                                            showNotification("Error: Could not determine target player.");
+                                            // success remains false
+                                        }
                                     } else {
                                         LOGGER.warning("Artifact with unhandled useType '" + useType
                                                 + "' cannot be used on the board.");
                                         showNotification("This artifact type cannot be used on the board.");
+                                        // success remains false
                                     }
                                 } else {
                                     LOGGER.severe("ARTIFACT card entity is not an Artifact for ID: " + cardInfo.id);
+                                    // success remains false
                                 }
                                 break;
                             default:
                                 LOGGER.severe("Unhandled card type in DragDropped: " + cardInfo.type);
+                                // success remains false
                                 break;
                         }
+                        // Log success state after attempting to publish
                         if (success) {
-                            LOGGER.info(cardInfo.type + " placement/use event published for tile (" + row + ", " + col
-                                    + ")");
+                            LOGGER.info("Event published successfully for " + cardInfo.type + " on tile (" + row + ", "
+                                    + col + ")");
+                        } else {
+                            LOGGER.warning("Event publication step resulted in failure or cancellation for "
+                                    + cardInfo.type + " on tile (" + row + ", " + col + ")");
                         }
                     } catch (Exception e) {
                         LOGGER.log(Level.SEVERE, "Error publishing placement event for card " + cardInfo.id, e);
                         showNotification("Error processing card placement. See logs.");
+                        success = false; // Ensure success is false on exception
                     }
                 } else {
-                    LOGGER.warning("Drop rejected on tile (" + row + ", " + col + "): " + validation.reason());
+                    // Validation failed
+                    LOGGER.warning("Drop rejected on tile (" + row + ", " + col + ") due to validation failure: "
+                            + validation.reason());
                     showNotification("Cannot place card here: " + validation.reason());
+                    success = false;
                 }
             } else {
+                // Invalid coordinates or card type
                 if (targetCoords == null)
                     LOGGER.warning("Drop failed: Invalid drop location (outside grid).");
                 else
                     LOGGER.warning("Drop failed: Unknown card type from dragboard.");
+                success = false;
             }
         } else {
             LOGGER.warning("Drop failed: No valid card data found in dragboard.");
+            success = false;
         }
+
+        // Check 5: Finalize the drop event
+        LOGGER.fine("Setting drop completed status to: " + success);
         event.setDropCompleted(success);
-        event.consume();
+        event.consume(); // Consume the event to indicate it's handled
+        LOGGER.fine("handleDragDropped finished.");
     }
 
     /**
      * Handles the completion of a drag-and-drop operation.
+     * Logs the outcome.
      *
      * @param event the DragEvent
      */
     @FXML
     private void handleCardDragDone(DragEvent event) {
+        // Log based on whether the drop was accepted and completed (TransferMode.MOVE)
         if (event.getTransferMode() == TransferMode.MOVE) {
-            LOGGER.fine("Card drag done successfully (Move).");
+            LOGGER.fine("Card drag done: Successful drop (MOVE transfer mode).");
+            // Optionally clear selection or provide other feedback if needed
+            if (draggedCardSource != null && draggedCardSource == selectedCard) {
+                selectedCard.getStyleClass().remove("selected-card");
+                selectedCard = null;
+            }
         } else {
-            LOGGER.fine("Card drag done unsuccessfully (or cancelled).");
+            LOGGER.fine("Card drag done: Drop failed or cancelled (Transfer mode: " + event.getTransferMode() + ").");
+            // Optionally restore visual state if needed
         }
+        // Always clear the source reference
         draggedCardSource = null;
-        event.consume();
+        event.consume(); // Consume the event
     }
 
     /**
@@ -1791,6 +1878,7 @@ public class GameScreenController extends BaseController {
             Tile targetTile = getTile(row, col); // Uses helper with coordinate swap
             if (targetTile != null) {
                 if (cardInfo.type == CardType.STRUCTURE || cardInfo.type == CardType.STATUE) {
+                    // Cannot place structure```java
                     // Cannot place structure/statue if *anything* is there
                     if (targetTile.hasEntity()) {
                         return ValidationResult
