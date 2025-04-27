@@ -4,11 +4,11 @@
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+
 <BorderPane xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController"
-            stylesheets="/css/variables.css,/css/common.css,/css/game-screen.css"
-            minWidth="900" minHeight="600" prefWidth="1200" prefHeight="768" maxWidth="1920" maxHeight="1080"
-            onKeyPressed="#handleKeyboardShortcut">
+            styleClass="root-pane" stylesheets="@../css/common.css, @../css/game-screen.css">
 
     <top>
         <HBox alignment="CENTER" spacing="15.0" styleClass="header-panel">
@@ -74,10 +74,22 @@
         </BorderPane>
     </left>
 
+    <right>
+        <!-- Wrap chat in a TitledPane for collapsibility and consistent look -->
+        <TitledPane text="Chat" collapsible="true" expanded="true" VBox.vgrow="ALWAYS" styleClass="chat-titled-pane">
+            <VBox fx:id="chatContainer" spacing="5.0" VBox.vgrow="ALWAYS" prefWidth="280.0" minWidth="250.0">
+                <!-- ChatComponent will be added here programmatically -->
+                <!-- Ensure VBox.setVgrow is called on the added ChatComponent view in the controller -->
+            </VBox>
+        </TitledPane>
+    </right>
+
     <center>
-        <StackPane fx:id="gameBoardContainer" styleClass="game-board-container">
-            <Canvas fx:id="gameCanvas" width="600" height="400" onDragOver="#handleDragOver" onDragDropped="#handleDragDropped"/>
-            <!-- Grid Adjustment UI will be added here programmatically -->
+        <StackPane fx:id="gameBoardContainer" styleClass="game-board-container"
+                   onDragOver="#handleDragOver"
+                   onDragDropped="#handleDragDropped">
+            <Canvas fx:id="gameCanvas"/>
+            <!-- Adjustment UI elements are added programmatically -->
         </StackPane>
     </center>
 
@@ -170,15 +182,4 @@
             </TitledPane>
         </VBox>
     </bottom>
-
-    <!-- Add the right section for the chat -->
-    <right>
-        <!-- Wrap chat in a TitledPane for collapsibility and consistent look -->
-        <TitledPane text="Chat" collapsible="true" expanded="true" VBox.vgrow="ALWAYS" styleClass="chat-titled-pane">
-            <VBox fx:id="chatContainer" spacing="5.0" VBox.vgrow="ALWAYS" prefWidth="280.0" minWidth="250.0">
-                <!-- ChatComponent will be added here programmatically -->
-                <!-- Ensure VBox.setVgrow is called on the added ChatComponent view in the controller -->
-            </VBox>
-        </TitledPane>
-    </right>
 </BorderPane>
