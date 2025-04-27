@@ -189,6 +189,7 @@ public class GameScreenController extends BaseController {
         Logger.getGlobal().info("Game state uses Local Player: " + localPlayer.getName());
         gameState = new GameState();
         subscribeEvents();
+        selectedStatue = new CardDetails(EntityRegistry.getGameEntityOriginalById(38), true);
         Logger.getGlobal().info("GameScreenController created and subscribed to events.");
 
     }
@@ -1585,9 +1586,11 @@ public class GameScreenController extends BaseController {
 
         // Update structure cards
         for (Node card : structureHand.getChildren()) {
-            if (card.getId() != null && (card.getId().startsWith("structure") || card.getId().startsWith("statue"))) {
+            if (card.getId() != null && (card.getId().startsWith("structure"))) {
                 updateCardImage(card);
                 updateCardAffordability(card);
+            } else if (card.getId() != null && card.getId().startsWith("statue")) {
+                updateStatueCard(card, selectedStatue);
             }
         }
     }
@@ -1622,14 +1625,14 @@ public class GameScreenController extends BaseController {
             card.getStyleClass().remove("unaffordable-card");
             card.getStyleClass().add("game-card");
             // Make sure it's draggable for structures
-            if (id.startsWith("structure")) {
+            if (id.startsWith("structure") || id.startsWith("statue") && !hasPlacedStatue) {
                 card.addEventHandler(MouseEvent.DRAG_DETECTED, this::handleCardDragDetected);
             }
         } else {
             card.getStyleClass().remove("game-card");
             card.getStyleClass().add("unaffordable-card");
             // Remove drag handler for unaffordable cards
-            if (id.startsWith("structure")) {
+            if (id.startsWith("structure") || id.startsWith("statue") && hasPlacedStatue) {
                 card.removeEventHandler(MouseEvent.DRAG_DETECTED, this::handleCardDragDetected);
             }
         }

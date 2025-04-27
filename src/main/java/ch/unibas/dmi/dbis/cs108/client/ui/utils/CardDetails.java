@@ -1,5 +1,8 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.utils;
 
+import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
+import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
+
 /**
  * Class representing the details of a card.
  * Contains the title, description, and lore of the card.
@@ -35,6 +38,21 @@ public class CardDetails {
         this.lore = lore;
         this.imageUrl = cardImagePath;
         this.price = price;
+    }
+
+    /**
+     * Constructor for CardDetails using a GameEntity.
+     *
+     * @param gameEntity The GameEntity object representing the card.
+     * @param isCard     Indicates if the entity is a card.
+     */
+    public CardDetails(GameEntity gameEntity, boolean isCard) {
+        this.id = gameEntity.getId();
+        this.title = gameEntity.getName();
+        this.description = gameEntity.getDescription();
+        this.lore = gameEntity.getUsage();
+        this.imageUrl = EntityRegistry.getURL(id, isCard);
+        this.price = gameEntity.getPrice();
     }
 
     /**
