@@ -4,12 +4,12 @@ import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.client.app.GameApplication;
 import ch.unibas.dmi.dbis.cs108.client.core.PlayerIdentityManager;
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
-import ch.unibas.dmi.dbis.cs108.client.networking.events.EndTurnEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.WinScreenDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.GridAdjustmentManager;
+import ch.unibas.dmi.dbis.cs108.client.ui.components.game.ResourceOverviewPopup;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.StatueSelectionPopup;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
@@ -153,8 +153,12 @@ public class GameScreenController extends BaseController {
     private Label connectionStatusLabel;
     @FXML
     private VBox chatContainer;
+    @FXML
+    private Button resourceOverviewButton;
 
     private ChatComponent chatComponentController;
+    private ResourceOverviewPopup resourceOverviewPopup;
+
 
     // Grid‑adjustment overlay controls (created programmatically)
     private Label adjustmentModeIndicator;
@@ -191,7 +195,6 @@ public class GameScreenController extends BaseController {
         subscribeEvents();
         selectedStatue = new CardDetails(EntityRegistry.getGameEntityOriginalById(38), true);
         Logger.getGlobal().info("GameScreenController created and subscribed to events.");
-
     }
 
     /**
@@ -227,6 +230,8 @@ public class GameScreenController extends BaseController {
         }
 
         initialisePlayerColours();
+        resourceOverviewPopup = new ResourceOverviewPopup(resourceLoader, playerColors);
+
         setupUI();
         loadMapImage();
         createAdjustmentUI();
@@ -1259,7 +1264,6 @@ public class GameScreenController extends BaseController {
 
             // Check if the target is valid
             if (tile != null && canAffordCard(cardId)) {
-                // EXISTING CODE FOR HANDLING STRUCTURES
                 if (cardId.startsWith("structure")) {
                     Tile gameTile = getTile(tile[0], tile[1]);
                     boolean tileOwnedByPlayer = (gameTile != null &&
@@ -1968,9 +1972,26 @@ public class GameScreenController extends BaseController {
      * --------------------------------------------------
      */
 
+    /**
+     * Handles the resource overview button click.
+     */
     @FXML
     private void handleResourceOverview() {
-        /* TODO implement resource overview */
+        if (gameState == null) {
+            showNotification("Game state not available");
+            return;
+        }
+
+        // Update the popup with current players
+        resourceOverviewPopup.updatePlayers(gameState.getPlayers(), gameState.getPlayerTurn());
+
+        // Position and show the popup
+        if (!resourceOverviewPopup.isShowing()) {
+            Node source = resourceOverviewButton; // Replace with your actual button reference
+            resourceOverviewPopup.show(source.getScene().getWindow(),
+                    source.localToScreen(source.getBoundsInLocal()).getCenterX() - 225,
+                    source.localToScreen(source.getBoundsInLocal()).getCenterY() + 20);
+        }
     }
 
     @FXML

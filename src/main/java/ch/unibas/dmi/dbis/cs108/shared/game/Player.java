@@ -482,4 +482,5 @@ public class Player {
         }
         return tilesWithStructures;
     }
+
 }

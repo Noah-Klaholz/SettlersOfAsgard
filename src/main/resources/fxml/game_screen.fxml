@@ -64,9 +64,7 @@
 
             <bottom>
                 <VBox spacing="8"> <!-- Put buttons in bottom -->
-                    <Button text="Resource Overview" onAction="#handleResourceOverview" styleClass="action-button"
-                            maxWidth="Infinity"/>
-                    <Button text="Leaderboard" onAction="#handleLeaderboard" styleClass="action-button"
+                    <Button fx:id="resourceOverviewButton" text="Resource Overview" onAction="#handleResourceOverview" styleClass="action-button"
                             maxWidth="Infinity"/>
                     <Button text="End Turn" onAction="#handleEndTurn" styleClass="action-button" maxWidth="Infinity"/>
                 </VBox>
