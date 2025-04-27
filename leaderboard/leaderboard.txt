@@ -1,4 +1,4 @@
-thor: 415
-loki: 260
-freya: 200
-odin: 184
+thor: 640
+loki: 402
+freya: 334
+odin: 284
