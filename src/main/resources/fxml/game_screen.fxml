@@ -68,36 +68,47 @@
     <center>
         <StackPane fx:id="gameBoardContainer" styleClass="game-board-container">
             <Canvas fx:id="gameCanvas" width="600" height="400" onDragOver="#handleDragOver" onDragDropped="#handleDragDropped"/>
+            <!-- Grid Adjustment UI will be added here programmatically -->
         </StackPane>
     </center>
 
     <bottom>
         <VBox spacing="5">
-            <TitledPane text="Cards" collapsible="true">
+            <TitledPane text="Cards" collapsible="true" expanded="true">
                 <HBox spacing="10" styleClass="card-section">
+                    <!-- Artifacts Section -->
                     <VBox spacing="5">
                         <Label text="Artifacts:" styleClass="card-category"/>
                         <HBox fx:id="artifactHand" spacing="8">
+                            <!-- 3 Artifact Slots -->
                             <Pane fx:id="artifact1" styleClass="card,artifact-card" prefWidth="80" prefHeight="120"
                                   onMouseClicked="#handleCardClick"
+                                  onDragDetected="#handleCardDragDetected"
                                   onMouseEntered="#handleCardMouseEntered"
-                                  onMouseExited="#handleCardMouseExited"/>
+                                  onMouseExited="#handleCardMouseExited"
+                                  onDragDone="#handleCardDragDone"/>
                             <Pane fx:id="artifact2" styleClass="card,artifact-card" prefWidth="80" prefHeight="120"
                                   onMouseClicked="#handleCardClick"
+                                  onDragDetected="#handleCardDragDetected"
                                   onMouseEntered="#handleCardMouseEntered"
-                                  onMouseExited="#handleCardMouseExited"/>
+                                  onMouseExited="#handleCardMouseExited"
+                                  onDragDone="#handleCardDragDone"/>
                             <Pane fx:id="artifact3" styleClass="card,artifact-card" prefWidth="80" prefHeight="120"
                                   onMouseClicked="#handleCardClick"
+                                  onDragDetected="#handleCardDragDetected"
                                   onMouseEntered="#handleCardMouseEntered"
-                                  onMouseExited="#handleCardMouseExited"/>
+                                  onMouseExited="#handleCardMouseExited"
+                                  onDragDone="#handleCardDragDone"/>
                         </HBox>
                     </VBox>
 
                     <Separator orientation="VERTICAL" styleClass="section-divider"/>
 
-                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                    <!-- Structures Section -->
+                    <VBox spacing="5">
                         <Label text="Structures:" styleClass="card-category"/>
                         <FlowPane fx:id="structureHand" hgap="8" vgap="8">
+                            <!-- 5 Structure Slots -->
                             <Pane fx:id="structure1" styleClass="card,structure-card" prefWidth="80" prefHeight="120"
                                   onMouseClicked="#handleCardClick"
                                   onDragDetected="#handleCardDragDetected"
@@ -128,19 +139,23 @@
                                   onMouseEntered="#handleCardMouseEntered"
                                   onMouseExited="#handleCardMouseExited"
                                   onDragDone="#handleCardDragDone"/>
-                            <Pane fx:id="structure6" styleClass="card,structure-card" prefWidth="80" prefHeight="120"
-                                  onMouseClicked="#handleCardClick"
-                                  onDragDetected="#handleCardDragDetected"
-                                  onMouseEntered="#handleCardMouseEntered"
-                                  onMouseExited="#handleCardMouseExited"
-                                  onDragDone="#handleCardDragDone"/>
-                            <Pane fx:id="statue" styleClass="card,structure-card" prefWidth="80" prefHeight="120"
-                                  onMouseClicked="#handleCardClick"
-                                  onDragDetected="#handleCardDragDetected"
-                                  onMouseEntered="#handleCardMouseEntered"
-                                  onMouseExited="#handleCardMouseExited"
-                                  onDragDone="#handleCardDragDone"/>
                         </FlowPane>
+                    </VBox>
+
+                    <Separator orientation="VERTICAL" styleClass="section-divider"/>
+
+                    <!-- Statue Section -->
+                    <VBox spacing="5">
+                        <Label text="Statue:" styleClass="card-category"/>
+                        <HBox fx:id="statueHand" spacing="8">
+                            <!-- 1 Statue Slot -->
+                            <Pane fx:id="statueCard" styleClass="card,statue-card" prefWidth="80" prefHeight="120"
+                                  onMouseClicked="#handleCardClick"
+                                  onDragDetected="#handleCardDragDetected"
+                                  onMouseEntered="#handleCardMouseEntered"
+                                  onMouseExited="#handleCardMouseExited"
+                                  onDragDone="#handleCardDragDone"/>
+                        </HBox>
                     </VBox>
                 </HBox>
             </TitledPane>
