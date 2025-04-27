@@ -10,8 +10,7 @@ It contains:
 ## EXAMPLE
 
 SNYC$META:3,1,player2|PLAYERS:
-550e8400-e29b-41d4-a716-446655440000{
-  N:player1,
+player1{
   R:12,
   E:3,
   T:[101,102],
@@ -44,7 +43,6 @@ Player round: 1
 Current player: "player2"
 
 Player 1:
-UUID: 550e8400-e29b-41d4-a716-446655440000
 Name: "player1"
 Runes: 12
 Energy: 3
@@ -79,7 +77,7 @@ Status: default buffs
 
 ## NOTES
 
-1. ALL UUIDs / IDs follow their respective formats (UUID v4 for players, custom IDs for artifacts/entities).
+1. player Names are unique and can therefore be used as identifiers.
 2. Status values use multipliers (1.0 = normal).
 3. Empty lists are represented as [].
 4. Null values are explicitly written as "nulL".
