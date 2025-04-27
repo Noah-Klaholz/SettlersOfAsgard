@@ -10,7 +10,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.util.Duration;
 
 import java.util.Objects;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -272,32 +271,5 @@ public class GridAdjustmentManager {
 
     public boolean isGridAdjustmentModeActive() {
         return gridAdjustmentModeActive;
-    }
-
-    /**
-     * Handles mouse clicks on the canvas *while* grid adjustment mode is active.
-     * Currently logs the click coordinates for debugging purposes.
-     * Does not perform tile selection, as that's handled by GameScreenController
-     * during normal gameplay.
-     *
-     * @param px The x-coordinate of the click on the canvas.
-     * @param py The y-coordinate of the click on the canvas.
-     */
-    public void handleCanvasClick(double px, double py) {
-        if (!gridAdjustmentModeActive) {
-            // This should ideally not be called if mode is inactive, but check just in
-            // case.
-            LOGGER.warning("handleCanvasClick called in GridAdjustmentManager while mode is inactive.");
-            return;
-        }
-
-        // Log the click coordinates during adjustment mode for debugging/potential
-        // future use.
-        LOGGER.log(Level.INFO, String.format("Grid Adjustment Mode: Click detected at (%.2f, %.2f)", px, py));
-
-        // Currently, no specific action is taken on click during adjustment mode
-        // itself.
-        // Tile selection logic resides in GameScreenController for normal gameplay.
-        // Future features might involve selecting grid points or lines here.
     }
 }

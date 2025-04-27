@@ -4,11 +4,11 @@
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.Circle?>
-
 <BorderPane xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController"
-            styleClass="root-pane" stylesheets="@../css/common.css, @../css/game-screen.css">
+            stylesheets="/css/variables.css,/css/common.css,/css/game-screen.css"
+            minWidth="900" minHeight="600" prefWidth="1200" prefHeight="768" maxWidth="1920" maxHeight="1080"
+            onKeyPressed="#handleKeyboardShortcut">
 
     <top>
         <HBox alignment="CENTER" spacing="15.0" styleClass="header-panel">
@@ -74,62 +74,39 @@
         </BorderPane>
     </left>
 
-    <right>
-        <!-- Wrap chat in a TitledPane for collapsibility and consistent look -->
-        <TitledPane text="Chat" collapsible="true" expanded="true" VBox.vgrow="ALWAYS" styleClass="chat-titled-pane">
-            <VBox fx:id="chatContainer" spacing="5.0" VBox.vgrow="ALWAYS" prefWidth="280.0" minWidth="250.0">
-                <!-- ChatComponent will be added here programmatically -->
-                <!-- Ensure VBox.setVgrow is called on the added ChatComponent view in the controller -->
-            </VBox>
-        </TitledPane>
-    </right>
-
     <center>
-        <StackPane fx:id="gameBoardContainer" styleClass="game-board-container"
-                   onDragOver="#handleDragOver"
-                   onDragDropped="#handleDragDropped">
-            <Canvas fx:id="gameCanvas"/>
-            <!-- Adjustment UI elements are added programmatically -->
+        <StackPane fx:id="gameBoardContainer" styleClass="game-board-container">
+            <Canvas fx:id="gameCanvas" width="600" height="400" onDragOver="#handleDragOver" onDragDropped="#handleDragDropped"/>
         </StackPane>
     </center>
 
     <bottom>
         <VBox spacing="5">
-            <TitledPane text="Cards" collapsible="true" expanded="true">
+            <TitledPane text="Cards" collapsible="true">
                 <HBox spacing="10" styleClass="card-section">
-                    <!-- Artifacts Section -->
                     <VBox spacing="5">
                         <Label text="Artifacts:" styleClass="card-category"/>
                         <HBox fx:id="artifactHand" spacing="8">
-                            <!-- 3 Artifact Slots -->
                             <Pane fx:id="artifact1" styleClass="card,artifact-card" prefWidth="80" prefHeight="120"
                                   onMouseClicked="#handleCardClick"
-                                  onDragDetected="#handleCardDragDetected"
                                   onMouseEntered="#handleCardMouseEntered"
-                                  onMouseExited="#handleCardMouseExited"
-                                  onDragDone="#handleCardDragDone"/>
+                                  onMouseExited="#handleCardMouseExited"/>
                             <Pane fx:id="artifact2" styleClass="card,artifact-card" prefWidth="80" prefHeight="120"
                                   onMouseClicked="#handleCardClick"
-                                  onDragDetected="#handleCardDragDetected"
                                   onMouseEntered="#handleCardMouseEntered"
-                                  onMouseExited="#handleCardMouseExited"
-                                  onDragDone="#handleCardDragDone"/>
+                                  onMouseExited="#handleCardMouseExited"/>
                             <Pane fx:id="artifact3" styleClass="card,artifact-card" prefWidth="80" prefHeight="120"
                                   onMouseClicked="#handleCardClick"
-                                  onDragDetected="#handleCardDragDetected"
                                   onMouseEntered="#handleCardMouseEntered"
-                                  onMouseExited="#handleCardMouseExited"
-                                  onDragDone="#handleCardDragDone"/>
+                                  onMouseExited="#handleCardMouseExited"/>
                         </HBox>
                     </VBox>
 
                     <Separator orientation="VERTICAL" styleClass="section-divider"/>
 
-                    <!-- Structures Section -->
-                    <VBox spacing="5">
+                    <VBox spacing="5" HBox.hgrow="ALWAYS">
                         <Label text="Structures:" styleClass="card-category"/>
                         <FlowPane fx:id="structureHand" hgap="8" vgap="8">
-                            <!-- 5 Structure Slots -->
                             <Pane fx:id="structure1" styleClass="card,structure-card" prefWidth="80" prefHeight="120"
                                   onMouseClicked="#handleCardClick"
                                   onDragDetected="#handleCardDragDetected"
@@ -160,26 +137,33 @@
                                   onMouseEntered="#handleCardMouseEntered"
                                   onMouseExited="#handleCardMouseExited"
                                   onDragDone="#handleCardDragDone"/>
-                        </FlowPane>
-                    </VBox>
-
-                    <Separator orientation="VERTICAL" styleClass="section-divider"/>
-
-                    <!-- Statue Section -->
-                    <VBox spacing="5">
-                        <Label text="Statue:" styleClass="card-category"/>
-                        <HBox fx:id="statueHand" spacing="8">
-                            <!-- 1 Statue Slot -->
-                            <Pane fx:id="statueCard" styleClass="card,statue-card" prefWidth="80" prefHeight="120"
+                            <Pane fx:id="structure6" styleClass="card,structure-card" prefWidth="80" prefHeight="120"
                                   onMouseClicked="#handleCardClick"
                                   onDragDetected="#handleCardDragDetected"
                                   onMouseEntered="#handleCardMouseEntered"
                                   onMouseExited="#handleCardMouseExited"
                                   onDragDone="#handleCardDragDone"/>
-                        </HBox>
+                            <Pane fx:id="statue" styleClass="card,structure-card" prefWidth="80" prefHeight="120"
+                                  onMouseClicked="#handleCardClick"
+                                  onDragDetected="#handleCardDragDetected"
+                                  onMouseEntered="#handleCardMouseEntered"
+                                  onMouseExited="#handleCardMouseExited"
+                                  onDragDone="#handleCardDragDone"/>
+                        </FlowPane>
                     </VBox>
                 </HBox>
             </TitledPane>
         </VBox>
     </bottom>
+
+    <!-- Add the right section for the chat -->
+    <right>
+        <!-- Wrap chat in a TitledPane for collapsibility and consistent look -->
+        <TitledPane text="Chat" collapsible="true" expanded="true" VBox.vgrow="ALWAYS" styleClass="chat-titled-pane">
+            <VBox fx:id="chatContainer" spacing="5.0" VBox.vgrow="ALWAYS" prefWidth="280.0" minWidth="250.0">
+                <!-- ChatComponent will be added here programmatically -->
+                <!-- Ensure VBox.setVgrow is called on the added ChatComponent view in the controller -->
+            </VBox>
+        </TitledPane>
+    </right>
 </BorderPane>

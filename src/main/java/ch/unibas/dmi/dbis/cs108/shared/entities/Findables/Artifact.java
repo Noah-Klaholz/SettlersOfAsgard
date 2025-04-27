@@ -30,7 +30,7 @@ public class Artifact extends FindableEntity {
         DESCRIPTOR("Descriptor");
 
         /**
-         * The type of this entity.
+         *  The type of this entity.
          */
         private final String type;
 
@@ -39,18 +39,14 @@ public class Artifact extends FindableEntity {
          *
          * @param type The type of this entity
          */
-        UseType(String type) {
-            this.type = type;
-        }
+        UseType(String type) {this.type = type;}
 
         /**
          * Returns the type of this entity.
          *
          * @return The type of this entity
          */
-        public String getType() {
-            return type;
-        }
+        public String getType() {return type;}
 
         /**
          * Returns the UseType corresponding to the given string.
@@ -74,6 +70,7 @@ public class Artifact extends FindableEntity {
      */
     private UseType useType;
 
+
     /**
      * The chance of finding this artifact.
      * This value is between 0 and 1, where 1 means 100% chance to find.
@@ -83,8 +80,7 @@ public class Artifact extends FindableEntity {
     /**
      * The effect of this artifact.
      * This value represents the magnitude of the artifact's effect.
-     * In the case of Traps, it represents the id of the structure to place as an
-     * ActiveTrap.
+     * In the case of Traps, it represents the id of the structure to place as an ActiveTrap.
      */
     private double effect;
 
@@ -96,21 +92,19 @@ public class Artifact extends FindableEntity {
     /**
      * Default constructor for Artifact.
      */
-    public Artifact() {
-    }
+    public Artifact() {}
 
     /**
      * Constructs a new Artifact with specified values.
      *
-     * @param id           The unique identifier for this artifact
-     * @param name         The name of this artifact
-     * @param description  The description of this artifact
-     * @param useType      The type of functionality this artifact provides
+     * @param id The unique identifier for this artifact
+     * @param name The name of this artifact
+     * @param description The description of this artifact
+     * @param useType The type of functionality this artifact provides
      * @param chanceToFind The chance to find this artifact
-     * @param effect       The effect of this artifact
+     * @param effect The effect of this artifact
      */
-    public Artifact(int id, String name, String description, String usage, String useType, double chanceToFind,
-            double effect, String cardImagePath) {
+    public Artifact(int id, String name, String description, String usage, String useType, double chanceToFind, double effect, String cardImagePath) {
         super(id, name, description, usage);
         this.chanceToFind = chanceToFind;
         this.effect = effect;
@@ -190,6 +184,7 @@ public class Artifact extends FindableEntity {
         return useType == UseType.PLAYER;
     }
 
+
     /**
      * Gets the effect of this artifact.
      *
@@ -241,8 +236,7 @@ public class Artifact extends FindableEntity {
 
     /**
      * Returns a clone of this Artifact.
-     * This method creates a new instance of the Artifact with the same properties
-     * as the original.
+     * This method creates a new instance of the Artifact with the same properties as the original.
      *
      * @return A new Artifact object that is a clone of this one
      */

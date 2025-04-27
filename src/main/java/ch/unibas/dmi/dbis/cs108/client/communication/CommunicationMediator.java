@@ -50,8 +50,7 @@ public class CommunicationMediator {
      * @param networkController The network controller to handle network
      *                          communication.
      */
-    public CommunicationMediator(NetworkController networkController, GameStateManager gameStateManager,
-            Player player) {
+    public CommunicationMediator(NetworkController networkController, GameStateManager gameStateManager, Player player) {
         this.player = player;
         this.gameStateManager = gameStateManager;
         this.networkController = networkController;
@@ -138,7 +137,7 @@ public class CommunicationMediator {
                 event -> networkController.endTurn());
 
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.game.BuyTileUIEvent.class,
-                event -> networkController.buyTile(event.getCol(), event.getRow()));
+                event -> networkController.buyTile(event.getX(), event.getY()));
 
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.game.PlaceStructureUIEvent.class,
                 event -> networkController.placeStructure(event.getX(), event.getY(), event.getStructureId()));
@@ -153,8 +152,7 @@ public class CommunicationMediator {
                 event -> networkController.upgradeStatue(event.getX(), event.getY(), event.getStatueId()));
 
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.game.UseStatueUIEvent.class,
-                event -> networkController.useStatue(event.getX(), event.getY(), event.getStatueId(),
-                        event.getParams()));
+                event -> networkController.useStatue(event.getX(), event.getY(), event.getStatueId(), event.getParams()));
 
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.game.UseFieldArtifactUIEvent.class,
                 event -> networkController.useFieldArtifact(event.getX(), event.getY(), event.getArtifactId()));
@@ -279,8 +277,7 @@ public class CommunicationMediator {
                 new EventDispatcher.EventListener<ConnectionEvent>() {
                     @Override
                     public void onEvent(ConnectionEvent event) {
-                        UIEventBus.getInstance()
-                                .publish(new ConnectionStatusEvent(event.getState(), event.getMessage()));
+                        UIEventBus.getInstance().publish(new ConnectionStatusEvent(event.getState(), event.getMessage()));
                     }
 
                     @Override
@@ -333,13 +330,11 @@ public class CommunicationMediator {
                                         new Object[] { event.getPlayerName() });
                                 if (event.getPlayerName().equals(player.getName())) {
                                     // Local player left the lobby
-                                    UIEventBus.getInstance()
-                                            .publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyLeftEvent(
-                                                    event.getLobbyName()));
+                                    UIEventBus.getInstance().publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyLeftEvent(
+                                            event.getLobbyName()));
                                 } else {
-                                    UIEventBus.getInstance().publish(
-                                            new ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.PlayerLeftLobbyEvent(
-                                                    event.getPlayerName(), event.getLobbyName()));
+                                    UIEventBus.getInstance().publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.PlayerLeftLobbyEvent(
+                                            event.getPlayerName(), event.getLobbyName()));
                                 }
                                 break;
                             case CREATED:
@@ -398,8 +393,7 @@ public class CommunicationMediator {
                     public void onEvent(StartGameEvent event) {
                         // Publish UI event. Pass null as lobbyId since StartGameEvent doesn't provide
                         // it.
-                        // UI does not need lobbyId for game start event. -> I (noah) changed it so that
-                        // it can handle null-lobbies
+                        // UI does not need lobbyId for game start event. -> I (noah) changed it so that it can handle null-lobbies
                         // Server checks every error angle, does not need to be done here!!
                         UIEventBus.getInstance().publish(new GameStartedEvent(null)); // Pass null instead of
                                                                                       // event.getLobbyId()
@@ -473,11 +467,8 @@ public class CommunicationMediator {
                     public void onEvent(GameSyncEvent event) {
                         // Publish game sync event to UI
                         UIEventBus.getInstance()
-                                .publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.game.GameSyncEvent(
-                                        "SYNC$" + event.getMessage(), gameStateManager)); // SYNC$ Necessary for proper
-                                                                                          // parsing
+                                .publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.game.GameSyncEvent("SYNC$" + event.getMessage(), gameStateManager)); // SYNC$ Necessary for proper parsing
                     }
-
                     @Override
                     public Class<GameSyncEvent> getEventType() {
                         return GameSyncEvent.class;
