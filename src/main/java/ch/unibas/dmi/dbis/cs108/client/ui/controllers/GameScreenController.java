@@ -782,6 +782,15 @@ public class GameScreenController extends BaseController {
         drawMapAndGrid();
         eventBus.publish(new TileClickEvent(row, col));
 
+        if (localPlayer != null &&  getTile(row, col) != null) {
+            Tile t = getTile(row, col);
+            if (selectedCard != null) {
+                CardDetails s = getCardDetails(selectedCard.getId());
+                eventBus.publish(new PlaceStructureUIEvent(col, row, s.getID()));
+            }
+        }
+
+        /**
         // Handle interaction with structures/statues
         Tile clickedTile = getTile(row, col);
         if (clickedTile != null && clickedTile.hasEntity()) {
@@ -815,6 +824,7 @@ public class GameScreenController extends BaseController {
                 }
             }
         }
+         */
     }
 
     /**
