@@ -677,7 +677,7 @@ public class GameScreenController extends BaseController {
                 // Immediately buy the tile without confirmation
                 eventBus.publish(new BuyTileUIEvent(row, col));
             } else {
-                showNotification("Not enough runes to buy this tile (Cost: " + price + ").");
+                showNotification("Not enough gold to buy this tile (Cost: " + price + ").");
             }
         } else if (localPlayer != null && ownerId.equals(localPlayer.getId())) {
             showNotification("You already own this tile.");
