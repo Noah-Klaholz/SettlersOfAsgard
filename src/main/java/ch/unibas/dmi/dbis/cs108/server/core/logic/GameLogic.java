@@ -98,7 +98,7 @@ public class GameLogic implements GameLogicInterface {
             if (notifier != null && response != null) {
                 // Send the response of the command (e.g. Error or Ok message)
                 if (response.startsWith(CommunicationAPI.NetworkProtocol.Commands.ERROR.getCommand())) {
-                    LOGGER.warning("Error processing game command: " + response);
+                    LOGGER.warning("Error processing game command: " + command + " led to response: " + response);
                     notifier.sendMessageToPlayer(command.getPlayer().getName(), response);
                 } else {
                     LOGGER.info("Command processed successfully: " + response);
