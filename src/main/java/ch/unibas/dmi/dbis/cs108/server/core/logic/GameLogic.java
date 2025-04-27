@@ -106,7 +106,6 @@ public class GameLogic implements GameLogicInterface {
                 // Send an updated version of the GameState to all players
                 notifier.broadcastMessage(gameState.createDetailedStatusMessage());
             }
-
         }
     }
 
