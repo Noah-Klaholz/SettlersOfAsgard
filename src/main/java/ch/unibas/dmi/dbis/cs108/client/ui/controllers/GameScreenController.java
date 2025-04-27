@@ -49,6 +49,7 @@ import javafx.util.Duration;
 
 import javax.swing.text.html.parser.Entity;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -85,6 +86,8 @@ public class GameScreenController extends BaseController {
      * Game / UI state
      * --------------------------------------------------
      */
+    private final AtomicBoolean uiInitialized = new AtomicBoolean(false);
+
     private final PlayerIdentityManager playerManager;
     private Player localPlayer;
     private Player gamePlayer;
@@ -171,35 +174,52 @@ public class GameScreenController extends BaseController {
      */
     public GameScreenController() {
         super(new ResourceLoader(), UIEventBus.getInstance(), SceneManager.getInstance());
-
+        LOGGER.setLevel(Level.ALL);
         playerManager = PlayerIdentityManager.getInstance();
-        localPlayer = playerManager.getLocalPlayer();
         playerManager.addPlayerUpdateListener(this::handlePlayerUpdate);
 
+        currentLobbyId = GameApplication.getCurrentLobbyId();
+        localPlayer = playerManager.getLocalPlayer();
         Logger.getGlobal().info("Game state uses Local Player: " + localPlayer.getName());
         gameState = new GameState();
         subscribeEvents();
         Logger.getGlobal().info("GameScreenController created and subscribed to events.");
+
     }
 
     /**
      * Invoked by the FXMLLoader after all @FXML fields have been injected.
      * <p>
-     * This method wires UI bindings, subscribes to the event bus, initialises
-     * helper classes and loads the map image.
+     * Only light initialization should happen here. Heavy lifting and game-state relevant
+     * initialization should be done in the {@link #initializeUI()} method.
      */
     @FXML
     private void initialize() {
-        LOGGER.setLevel(Level.ALL);
-        LOGGER.info("GameScreenController initialisation started");
+
+        initialiseSettingsDialog();
+        initialiseChatComponent();
+
+        Logger.getGlobal().info("GameScreenController initialized");
+    }
+
+    /*
+     * --------------------------------------------------
+     * UI helper initialisation
+     * --------------------------------------------------
+     */
+
+    /**
+     * Initialises the UI components and sets up the game state.
+     *
+     */
+    private void initializeUI() {
 
         if (localPlayer == null) {
             LOGGER.severe("LocalPlayer is null during GameScreenController initialisation!");
             localPlayer = new Player("ErrorGuest"); // Fail‑safe stub
         }
 
-        currentLobbyId = GameApplication.getCurrentLobbyId();
-
+        initialisePlayerColours();
         setupUI();
         loadMapImage();
         createAdjustmentUI();
@@ -211,19 +231,8 @@ public class GameScreenController extends BaseController {
                 this::drawMapAndGrid);
 
         setupCanvasListeners();
-        initialiseSettingsDialog();
-        initialiseChatComponent();
-        initialisePlayerColours();
         updateCardImages();
-
-        Logger.getGlobal().info("GameScreenController initialized");
     }
-
-    /*
-     * --------------------------------------------------
-     * UI helper initialisation
-     * --------------------------------------------------
-     */
 
     /**
      * Wires UI controls to their backing properties and assigns sensible
@@ -367,11 +376,9 @@ public class GameScreenController extends BaseController {
             return;
         }
 
-        // Create a copy of the game state to avoid concurrent modification issues
         GameState updatedState = e.getGameState();
 
         Platform.runLater(() -> {
-            // Update the game State with the new game state
             gameState = updatedState;
             LOGGER.info("GameSyncEvent received. Searching for player " + localPlayer.getName());
             gamePlayer = gameState.findPlayerByName(localPlayer.getName());
@@ -381,17 +388,22 @@ public class GameScreenController extends BaseController {
                 return;
             }
 
-            // Update the artifacts list
             artifacts = gamePlayer.getArtifacts();
 
-            // Update UI components
             updateCardImages();
             refreshCardAffordability();
             updateRunesAndEnergyBar();
             updatePlayerList();
             updateMap();
+
+            // ✅ Real initialization only after first GameSyncEvent
+            if (uiInitialized.compareAndSet(false, true)) {
+                LOGGER.info("First GameSyncEvent processed. Proceeding to full UI initialization...");
+                initializeUI();
+            }
         });
     }
+
 
     /*
      * --------------------------------------------------
@@ -1611,7 +1623,7 @@ public class GameScreenController extends BaseController {
     // Helper methods for better gameState access
 
     private Tile getTile(int row, int col) {
-        return gameState.getBoardManager().getTile(col, row);
+        return gameState.getBoardManager().getTile(row, col);
     }
 
     private boolean isTileOwnedByPlayer(int row, int col) {
