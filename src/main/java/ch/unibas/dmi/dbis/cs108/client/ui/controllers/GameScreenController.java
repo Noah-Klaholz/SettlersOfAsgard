@@ -366,23 +366,25 @@ public class GameScreenController extends BaseController {
             LOGGER.warning("Received null GameSyncEvent or GameState");
             return;
         }
-        // Update the game State with the new game state
-        gameState = e.getGameState();
-        LOGGER.info("GameSyncEvent received. Searching for player " + localPlayer.getName());
-        gamePlayer = gameState.findPlayerByName(localPlayer.getName());
 
-        if (gamePlayer == null) {
-            LOGGER.warning("Game player not found in game state.");
-            return;
-        } else {
-            LOGGER.fine(() -> "Game player found: " + gamePlayer.getName() + " Runes: " + gamePlayer.getRunes());
-        }
+        // Create a copy of the game state to avoid concurrent modification issues
+        GameState updatedState = e.getGameState();
 
-        // Update the artifacts list
-        artifacts = gamePlayer.getArtifacts();
-
-        // Update card images after game state changes
         Platform.runLater(() -> {
+            // Update the game State with the new game state
+            gameState = updatedState;
+            LOGGER.info("GameSyncEvent received. Searching for player " + localPlayer.getName());
+            gamePlayer = gameState.findPlayerByName(localPlayer.getName());
+
+            if (gamePlayer == null) {
+                LOGGER.warning("Game player not found in game state.");
+                return;
+            }
+
+            // Update the artifacts list
+            artifacts = gamePlayer.getArtifacts();
+
+            // Update UI components
             updateCardImages();
             refreshCardAffordability();
             updateRunesAndEnergyBar();
