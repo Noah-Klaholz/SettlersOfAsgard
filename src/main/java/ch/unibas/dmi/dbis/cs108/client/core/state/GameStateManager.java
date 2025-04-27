@@ -411,7 +411,7 @@ public class GameStateManager {
                 structure.setDisabled(disabled ? 1 : 0);
                 structure.setActivated(activated);
             }
-            return structure;
+            return structure; // returns the structure
         }
     }
 }
