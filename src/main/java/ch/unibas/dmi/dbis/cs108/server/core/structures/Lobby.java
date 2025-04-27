@@ -108,7 +108,7 @@ public class Lobby implements GameEventNotifier {
             logger.warning("Player is null, cannot add player to lobby.");
             return false;
         }
-        if (!isFull()) {
+        if (!isFull() && !players.contains(player) && status == LobbyStatus.IN_LOBBY) {
             players.add(player);
             logger.info(player.getPlayerName() + " has joined Lobby: " + id);
             return true;
