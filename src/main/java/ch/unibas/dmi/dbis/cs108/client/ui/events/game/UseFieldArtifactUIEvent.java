@@ -14,10 +14,12 @@ public class UseFieldArtifactUIEvent implements UIEvent {
     /**
      * Constructs a new UseFieldArtifactUIEvent.
      *
-     * @param x          the x-coordinate of the location where the artifact is to be used
-     * @param y          the y-coordinate of the location where the artifact is to be used
-     * @param artifactId  the ID of the artifact being used
-     * @param useType     the type of use (e.g., "use", "drop")
+     * @param x          the x-coordinate of the location where the artifact is to
+     *                   be used
+     * @param y          the y-coordinate of the location where the artifact is to
+     *                   be used
+     * @param artifactId the ID of the artifact being used
+     * @param useType    the type of use (e.g., "use", "drop")
      */
     public UseFieldArtifactUIEvent(int x, int y, int artifactId, String useType) {
         this.x = x;
