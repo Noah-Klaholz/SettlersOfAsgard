@@ -75,11 +75,7 @@ public class LobbyScreenController extends BaseController {
     @FXML
     private ListView<String> playerList;
     @FXML
-    private VBox hostControlsPanel;
-    @FXML
     private ComboBox<Integer> maxPlayersCombo;
-    @FXML
-    private ComboBox<Integer> maxPlayersHostCombo;
     @FXML
     private VBox chatContainer;
     @FXML
@@ -125,7 +121,6 @@ public class LobbyScreenController extends BaseController {
             setupLobbyTable();
             setupPlayerList();
             setupLobbyControls();
-            setupHostControls();
             setupSearchFilter();
             setupChatComponent(); // Call after localPlayer is set
             setupSettingsDialog(); // Call after localPlayer is set
@@ -183,27 +178,6 @@ public class LobbyScreenController extends BaseController {
     private void setupLobbyControls() {
         maxPlayersCombo.setItems(FXCollections.observableArrayList(2, 3, 4, 5, 6, 8));
         maxPlayersCombo.getSelectionModel().select(Integer.valueOf(4));
-        maxPlayersCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null && isHost && currentLobbyId != null && !newVal.equals(oldVal)) {
-                LOGGER.info("Host changed max players to: " + newVal);
-                eventBus.publish(new UpdateLobbySettingsEvent(currentLobbyId, "maxPlayers", newVal.toString()));
-            }
-        });
-        hostControlsPanel.setVisible(false);
-        hostControlsPanel.setManaged(false);
-    }
-
-    /**
-     * Configures the host controls, including showing the max players combo box.
-     */
-    private void setupHostControls() {
-        // Set up max players display in host controls (read-only)
-        maxPlayersHostCombo.setItems(FXCollections.observableArrayList(2, 3, 4, 5, 6, 8));
-        maxPlayersHostCombo.getSelectionModel().select(maxPlayersCombo.getValue());
-        maxPlayersHostCombo.setDisable(true); // Make it non-editable
-
-        maxPlayersHostCombo.setVisible(false);
-        maxPlayersHostCombo.setManaged(false);
     }
 
     /**
@@ -343,10 +317,7 @@ public class LobbyScreenController extends BaseController {
         }
         // Get selected max players value
         Integer maxPlayers = maxPlayersCombo.getValue();
-        maxLobbyPlayers = maxPlayers == null ? 1 : maxPlayers;
-        if (maxPlayers == null) {
-            maxPlayers = 4; // Fallback if somehow not selected
-        }
+        maxLobbyPlayers = maxPlayers;
         clearError();
         eventBus.publish(new CreateLobbyRequestEvent(name, localPlayer.getName(), maxPlayers));
         lobbyNameField.clear();
@@ -441,11 +412,17 @@ public class LobbyScreenController extends BaseController {
             }
 
             LOGGER.info("Successfully joined lobby: " + currentLobbyId + " (Host: " + isHost + ")");
-            // playerNameLabel.setText("Player: " + localPlayer.getName()); // Already
-            // updated above if needed
+
+            // Get max players information from the event or find it in the lobby list
+            allLobbies.stream()
+                    .filter(lobby -> lobby.getId().equals(currentLobbyId))
+                    .findFirst()
+                    .ifPresent(lobby -> {
+                        maxLobbyPlayers = lobby.getMaxPlayers();
+                        LOGGER.fine("Updated maxLobbyPlayers to: " + maxLobbyPlayers);
+                    });
+
             playersInCurrentLobby.setAll(event.getPlayers());
-            hostControlsPanel.setVisible(isHost);
-            hostControlsPanel.setManaged(isHost);
             updateStartGameButtonStyle();
             leaveLobbyButton.setDisable(false);
             lobbyNameField.clear();
@@ -477,6 +454,7 @@ public class LobbyScreenController extends BaseController {
                     if (chatComponentController != null) {
                         chatComponentController.addSystemMessage(joinedPlayerName + " joined the lobby.");
                     }
+                    updateStartGameButtonStyle();
                     updateLobbyPlayerCountInTable(currentLobbyId, playersInCurrentLobby.size());
                 } else {
                     LOGGER.warning("Received PlayerJoinedLobbyEvent for player already in list: " + joinedPlayerName);
@@ -516,10 +494,12 @@ public class LobbyScreenController extends BaseController {
         Objects.requireNonNull(event, "LobbyLeftEvent cannot be null");
         if (currentLobbyId != null && currentLobbyId.equals(event.getLobbyId())) {
             playersInCurrentLobby.removeAll();
+            leaveLobbyButton.setDisable(true);
             Platform.runLater(() -> {
                 LOGGER.info("Left lobby: " + currentLobbyId);
                 resetLobbyState();
                 requestLobbyList();
+                updateStartGameButtonStyle();
                 if (chatComponentController != null) {
                     chatComponentController.addSystemMessage("You left the lobby.");
                 }
@@ -685,8 +665,6 @@ public class LobbyScreenController extends BaseController {
         currentLobbyId = null;
         isHost = false;
         playersInCurrentLobby.clear();
-        hostControlsPanel.setVisible(false);
-        hostControlsPanel.setManaged(false);
         leaveLobbyButton.setDisable(true);
         clearError();
         lobbyNameField.setDisable(false);
@@ -824,7 +802,7 @@ public class LobbyScreenController extends BaseController {
         boolean isValid = !name.isEmpty() && name.length() <= 30;
 
         if (isValid) {
-            createLobbyButton.setStyle("-fx-background-color: #5cb85c;"); // Bootstrap-like green
+            createLobbyButton.setStyle("-fx-background-color: #-color-accent-green;"); // Bootstrap-like green
         } else {
             createLobbyButton.setStyle(""); // Reset to default style
         }
@@ -835,13 +813,12 @@ public class LobbyScreenController extends BaseController {
      * conditions.
      */
     private void updateStartGameButtonStyle() {
-        int minPlayers = maxLobbyPlayers;
-        boolean isValid = isHost && currentLobbyId != null && playersInCurrentLobby.size() >= minPlayers;
+        boolean isValid = isHost && currentLobbyId != null && playersInCurrentLobby.size() == maxLobbyPlayers;
 
         if (isValid) {
-            startGameButton.setStyle("-fx-background-color: #5cb85c;"); // Bootstrap-like green
+            startGameButton.setStyle("-fx-background-color: -color-accent-green;"); // Bootstrap-like green
         } else {
-            startGameButton.setStyle(""); // Reset to default style
+            startGameButton.setStyle("-fx-background-color: -color-accent-secondary"); // Reset to default style
         }
     }
 

@@ -4,6 +4,7 @@ import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.client.app.GameApplication;
 import ch.unibas.dmi.dbis.cs108.client.core.PlayerIdentityManager;
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
+import ch.unibas.dmi.dbis.cs108.client.networking.events.EndTurnEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
@@ -15,6 +16,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeRequestEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyJoinedEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.CardDetails;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
@@ -60,6 +62,21 @@ import java.util.stream.Collectors;
  * Handles rendering of the game board, user interactions such as drag-and-drop
  * for game pieces,
  * and communication with the game logic through the UIEventBus.
+ * JavaFX controller for the in‑game screen.
+ * <p>
+ *
+ * <ul>
+ * <li>Renders the map and hex‑grid overlay.</li>
+ * <li>Dispatches user interaction to the {@link UIEventBus}.</li>
+ * <li>Provides grid‑adjustment tooling through
+ * {@link GridAdjustmentManager}.</li>
+ * <li>Hosts auxiliary UI (chat component, settings overlay, etc.).</li>
+ * </ul>
+ *
+ * <p>
+ * Functionality that is not yet implemented is explicitly marked with TODO tags
+ * so that future work is easy to track.
+ * </p>
  */
 public class GameScreenController extends BaseController {
 
@@ -206,6 +223,9 @@ public class GameScreenController extends BaseController {
      * and setting initial values.
      */
     private void setupUI() {
+        for (Player player : gameState.getPlayers()) {
+            players.add(player.getName());
+        }
         playersList.setItems(players);
         energyBar.setProgress(0.5);
         runesLabel.setText("0");
@@ -372,6 +392,10 @@ public class GameScreenController extends BaseController {
     /**
      * Handles the action to go back to the main menu.
      */
+
+    /**
+     * Switches back to the main‑menu scene.
+     */
     @FXML
     private void handleBackToMainMenu() {
         sceneManager.switchToScene(SceneManager.SceneType.MAIN_MENU);
@@ -379,6 +403,9 @@ public class GameScreenController extends BaseController {
 
     /**
      * Handles the settings button click by showing the settings dialog.
+     */
+    /**
+     * Opens the in‑game {@link SettingsDialog}.
      */
     @FXML
     private void handleSettings() {
@@ -589,7 +616,16 @@ public class GameScreenController extends BaseController {
         gameCanvas.widthProperty().addListener((o, ov, nv) -> drawMapAndGrid());
         gameCanvas.heightProperty().addListener((o, ov, nv) -> drawMapAndGrid());
         gameCanvas.setFocusTraversable(true);
+
+        // Single click handler - just selects tile
         gameCanvas.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> handleCanvasClick(e.getX(), e.getY()));
+
+        // Double click handler - for purchases
+        gameCanvas.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            if (e.getClickCount() == 2) {
+                handleCanvasDoubleClick(e.getX(), e.getY());
+            }
+        });
 
         if (gameCanvas.getParent() instanceof StackPane parent) {
             parent.addEventHandler(MouseEvent.MOUSE_PRESSED, ev -> {
@@ -598,6 +634,18 @@ public class GameScreenController extends BaseController {
                         local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
                     handleCanvasClick(local.getX(), local.getY());
                     ev.consume();
+                }
+            });
+
+            // Add double-click handler to parent as well
+            parent.addEventHandler(MouseEvent.MOUSE_CLICKED, ev -> {
+                if (ev.getClickCount() == 2) {
+                    Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
+                    if (local.getX() >= 0 && local.getY() >= 0 &&
+                            local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
+                        handleCanvasDoubleClick(local.getX(), local.getY());
+                        ev.consume();
+                    }
                 }
             });
         }
@@ -898,7 +946,7 @@ public class GameScreenController extends BaseController {
                 double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2);
                 double cy = gridOffsetY + r * vSpacing;
                 if (pointInHex(px, py, cx, cy, effectiveHexSize)) {
-                    return new int[] { r, c };
+                    return new int[]{r, c};
                 }
             }
         }
@@ -1501,10 +1549,10 @@ public class GameScreenController extends BaseController {
      */
     public void updateRunesAndEnergyBar() {
         if (gamePlayer != null) {
-            runesLabel.setText("Runes: " + gamePlayer.getRunes());
+            runesLabel.setText(gamePlayer.getRunes() + "");
             energyBar.setProgress((double) gamePlayer.getEnergy() / SETTINGS.Config.MAX_ENERGY.getValue());
         } else {
-            runesLabel.setText("Runes: 0");
+            runesLabel.setText("0");
             energyBar.setProgress(0.0);
         }
     }
@@ -1520,6 +1568,7 @@ public class GameScreenController extends BaseController {
         LOGGER.info("Updating player list");
         players.clear();
         String currentPlayerName = gameState.getPlayerTurn();
+        Logger.getGlobal().info("Current player turn: " + currentPlayerName);
 
         for (Player player : gameState.getPlayers()) {
             players.add(player.getName());
@@ -1532,7 +1581,7 @@ public class GameScreenController extends BaseController {
                 if (empty || playerName == null) {
                     setText(null);
                     setGraphic(null);
-                    getStyleClass().remove("current-turn-player");
+                    getStyleClass().removeAll("current-player");
                 } else {
                     setText(playerName);
                     Player player = gameState.findPlayerByName(playerName);

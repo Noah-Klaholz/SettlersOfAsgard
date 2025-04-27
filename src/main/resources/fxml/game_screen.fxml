@@ -33,36 +33,45 @@
     </top>
 
     <left>
-        <VBox spacing="10" styleClass="side-panel" prefWidth="220.0" minWidth="180.0">
+        <BorderPane styleClass="side-panel" prefWidth="220.0" minWidth="180.0"> <!-- Change VBox to BorderPane -->
             <padding>
                 <Insets top="20.0" right="15.0" bottom="20.0" left="15.0"/>
             </padding>
 
-            <Label text="Resources" styleClass="section-title"/>
-            <VBox spacing="8" styleClass="resource-section">
-                <HBox spacing="10" alignment="CENTER_LEFT">
-                    <Label text="Energy:" minWidth="60"/>
-                    <ProgressBar fx:id="energyBar" styleClass="energy-bar" progress="0.5" HBox.hgrow="ALWAYS"/>
-                </HBox>
-                <HBox spacing="10" alignment="CENTER_LEFT">
-                    <Label text="Runes:" minWidth="60"/>
-                    <Label fx:id="runesLabel" text="5" styleClass="resource-value"/>
-                </HBox>
-            </VBox>
+            <top>
+                <VBox spacing="10">
+                    <Label text="Resources" styleClass="section-title"/>
+                    <VBox spacing="8" styleClass="resource-section">
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="Energy:" minWidth="60"/>
+                            <ProgressBar fx:id="energyBar" styleClass="energy-bar" progress="0.5" HBox.hgrow="ALWAYS"/>
+                        </HBox>
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="Runes:" minWidth="60"/>
+                            <Label fx:id="runesLabel" text="5" styleClass="resource-value"/>
+                        </HBox>
+                    </VBox>
 
-            <Separator/>
+                    <Separator/>
 
-            <Label text="Players" styleClass="section-title"/>
-            <ListView fx:id="playersList" VBox.vgrow="ALWAYS" styleClass="players-list" minHeight="150"/>
+                    <Label text="Players" styleClass="section-title"/>
+                </VBox>
+            </top>
 
-            <VBox spacing="8" VBox.vgrow="NEVER">
-                <Button text="Resource Overview" onAction="#handleResourceOverview" styleClass="action-button"
-                        maxWidth="Infinity"/>
-                <Button text="Leaderboard" onAction="#handleLeaderboard" styleClass="action-button"
-                        maxWidth="Infinity"/>
-                <Button text="End Turn" onAction="#handleGameRound" styleClass="action-button" maxWidth="Infinity"/>
-            </VBox>
-        </VBox>
+            <center>
+                <ListView fx:id="playersList" styleClass="players-list" minHeight="100"/> <!-- Set in center -->
+            </center>
+
+            <bottom>
+                <VBox spacing="8"> <!-- Put buttons in bottom -->
+                    <Button text="Resource Overview" onAction="#handleResourceOverview" styleClass="action-button"
+                            maxWidth="Infinity"/>
+                    <Button text="Leaderboard" onAction="#handleLeaderboard" styleClass="action-button"
+                            maxWidth="Infinity"/>
+                    <Button text="End Turn" onAction="#handleEndTurn" styleClass="action-button" maxWidth="Infinity"/>
+                </VBox>
+            </bottom>
+        </BorderPane>
     </left>
 
     <center>

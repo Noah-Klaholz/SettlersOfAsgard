@@ -179,8 +179,10 @@ public class GameState {
     public void reset() {
         stateLock.writeLock().lock();
         try {
-            players.forEach(Player::reset);
+            players.clear();
             boardManager.reset();
+            playerRound = 0;
+            gameRound = 0;
         } finally {
             stateLock.writeLock().unlock();
         }

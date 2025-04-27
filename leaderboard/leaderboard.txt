@@ -1,0 +1,4 @@
+loki: 88
+thor: 50
+freya: 50
+odin: 50

@@ -28,7 +28,7 @@ public class Player {
     private List<PurchasableEntity> purchasableEntities;
     private Status status;
     private int roundBoughtTiles;
-    private List<Monument> monuments;
+    private List<Monument> monuments = new ArrayList<>();
 
     /**
      * Constructor for Player class
@@ -416,6 +416,10 @@ public class Player {
     public void reset() {
         this.ownedTiles.clear();
         this.purchasableEntities.clear();
+        this.monuments.clear();
+        this.status = new Status();
+        this.roundBoughtTiles = 0;
+        this.name = "";
         this.artifacts.clear();
         this.runes = 0;
         this.energy = 0;
