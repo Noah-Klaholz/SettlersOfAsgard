@@ -13,10 +13,7 @@ import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Logger;
 
 /**
@@ -244,6 +241,7 @@ public class GameStateManager {
                 switch (keyValue[0]) {
                     case "HE": tile.setHasEntity(keyValue[1].equals("1")); break;
                     case "O": tile.setOwner(keyValue[1].equals("null") ? null : keyValue[1]); break;
+                    case "P": tile.setPrice(Integer.parseInt(keyValue[1])); break;
                     case "AR":
                         if (!keyValue[1].equals("null")) {
                             tile.setArtifact(EntityRegistry.getArtifact(Integer.parseInt(keyValue[1])));
@@ -251,9 +249,11 @@ public class GameStateManager {
                             tile.setArtifact(null);
                         }
                         break;
+                    case "W": tile.setWorld(keyValue[1]); break;
                     case "PU": tile.setPurchased(keyValue[1].equals("1")); break;
                     case "RV": tile.setResourceValue(Integer.parseInt(keyValue[1])); break;
                     case "HR": tile.setHasRiver(keyValue[1].equals("1")); break;
+                    case "ID": tile.setTileID(Integer.parseInt(keyValue[1])); break;
                     case "ST":
                         // Tile status buffs
                         String[] buffs = keyValue[1].substring(1, keyValue[1].length()-1).split(",");
@@ -282,20 +282,52 @@ public class GameStateManager {
      * @return the Statue object
      */
     private Statue parseStatue(String props) {
-        String[] parts = props.split("STA,")[1].split(","); // Split after "STA,"
-        // Format: STA,id,DI<disabled>,AC<activated>,LV<level>
-        int id = Integer.parseInt(parts[0]);
-        int disabled = Integer.parseInt(parts[1].substring(2));
-        boolean activated = parts[2].substring(2).equals("1");
-        int level = Integer.parseInt(parts[3].substring(2));
+        // Match format "STAid,DI<disabled>,AC<activated>,LV<level>"
+        String staPattern = "STA\\d+,";
+        if (props.contains("STA,")) {
+            // Handle format with comma: "STA,id,DI<disabled>,AC<activated>,LV<level>"
+            String[] parts = props.split("STA,")[1].split(",");
+            int id = Integer.parseInt(parts[0]);
+            int disabled = Integer.parseInt(parts[1].substring(2));
+            boolean activated = Boolean.parseBoolean(parts[2].substring(2));
+            int level = Integer.parseInt(parts[3].substring(2));
 
-        Statue statue = EntityRegistry.getStatue(id);
-        if (statue != null) {
-            statue.setDisabled(disabled);
-            statue.setActivated(activated);
-            statue.setLevel(level);
+            Statue statue = EntityRegistry.getStatue(id);
+            if (statue != null) {
+                statue.setDisabled(disabled);
+                statue.setActivated(activated);
+                statue.setLevel(level);
+            }
+            return statue;
+        } else {
+            // Handle format without comma: "STAid,DI<disabled>,AC<activated>,LV<level>"
+            String idStr = props.substring(props.indexOf("STA") + 3, props.indexOf(",DI"));
+            int id = Integer.parseInt(idStr);
+
+            // Extract other properties
+            String[] segments = props.split(",");
+            int disabled = 0;
+            boolean activated = false;
+            int level = 1;
+
+            for (String segment : segments) {
+                if (segment.startsWith("DI")) {
+                    disabled = Integer.parseInt(segment.substring(2));
+                } else if (segment.startsWith("AC")) {
+                    activated = segment.substring(2).equalsIgnoreCase("true") || segment.substring(2).equals("1");
+                } else if (segment.startsWith("LV")) {
+                    level = Integer.parseInt(segment.substring(2));
+                }
+            }
+
+            Statue statue = EntityRegistry.getStatue(id);
+            if (statue != null) {
+                statue.setDisabled(disabled);
+                statue.setActivated(activated);
+                statue.setLevel(level);
+            }
+            return statue;
         }
-        return statue;
     }
 
     /**
@@ -305,16 +337,35 @@ public class GameStateManager {
      * @return the monument object
      */
     private Monument parseMonument(String props) {
-        String[] parts = props.split("MON,")[1].split(","); // Split after "MON,"
-        // Format: MON,id,DI<disabled>
-        int id = Integer.parseInt(parts[0]);
-        int disabled = Integer.parseInt(parts[1].substring(2));
+        if (props.contains("MON,")) {
+            // Format with comma: "MON,id,DI<disabled>"
+            String[] parts = props.split("MON,")[1].split(",");
+            int id = Integer.parseInt(parts[0]);
+            int disabled = Integer.parseInt(parts[1].substring(2));
 
-        Monument monument = EntityRegistry.getMonument(id);
-        if (monument != null) {
-            monument.setDisabled(disabled);
+            Monument monument = EntityRegistry.getMonument(id);
+            if (monument != null) {
+                monument.setDisabled(disabled);
+            }
+            return monument;
+        } else {
+            // Format without comma: "MONid,DI<disabled>"
+            String idStr = props.substring(props.indexOf("MON") + 3, props.indexOf(",DI"));
+            int id = Integer.parseInt(idStr);
+
+            // Extract disabled property
+            String disabledStr = props.substring(props.indexOf("DI") + 2);
+            if (disabledStr.contains(",")) {
+                disabledStr = disabledStr.substring(0, disabledStr.indexOf(","));
+            }
+            int disabled = Integer.parseInt(disabledStr);
+
+            Monument monument = EntityRegistry.getMonument(id);
+            if (monument != null) {
+                monument.setDisabled(disabled);
+            }
+            return monument;
         }
-        return monument;
     }
 
     /**
@@ -324,17 +375,43 @@ public class GameStateManager {
      * @return the Structure object
      */
     private Structure parseStructure(String props) {
-        String[] parts = props.split("STR,")[1].split(","); // Split after "STR,"
-        // Format: STR,id,DI<disabled>,AC<activated>
-        int id = Integer.parseInt(parts[0]);
-        int disabled = Integer.parseInt(parts[1].substring(2));
-        boolean activated = parts[2].substring(2).equals("1");
+        if (props.contains("STR,")) {
+            // Format with comma: "STR,id,DI<disabled>,AC<activated>"
+            String[] parts = props.split("STR,")[1].split(",");
+            int id = Integer.parseInt(parts[0]);
+            int disabled = Integer.parseInt(parts[1].substring(2));
+            boolean activated = parts[2].substring(2).equalsIgnoreCase("true") || parts[2].substring(2).equals("1");
 
-        Structure structure = EntityRegistry.getStructure(id);
-        if (structure != null) {
-            structure.setDisabled(disabled);
-            structure.setActivated(activated);
+            Structure structure = EntityRegistry.getStructure(id);
+            if (structure != null) {
+                structure.setDisabled(disabled);
+                structure.setActivated(activated);
+            }
+            return structure;
+        } else {
+            // Format without comma: "STRid,DI<disabled>,AC<activated>"
+            String idStr = props.substring(props.indexOf("STR") + 3, props.indexOf(",DI"));
+            int id = Integer.parseInt(idStr);
+
+            // Extract other properties
+            String[] segments = props.split(",");
+            boolean disabled = false;
+            boolean activated = false;
+
+            for (String segment : segments) {
+                if (segment.startsWith("DI")) {
+                    disabled = Boolean.parseBoolean(segment.substring(2));
+                } else if (segment.startsWith("AC")) {
+                    activated = segment.substring(2).equalsIgnoreCase("true") || segment.substring(2).equals("1");
+                }
+            }
+
+            Structure structure = EntityRegistry.getStructure(id);
+            if (structure != null) {
+                structure.setDisabled(disabled ? 1 : 0);
+                structure.setActivated(activated);
+            }
+            return structure;
         }
-        return structure;
     }
 }

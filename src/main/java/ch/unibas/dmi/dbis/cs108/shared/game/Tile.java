@@ -19,11 +19,11 @@ public class Tile {
     private int price;
     private GameEntity entity; // Not an artifact
     private Artifact artefact;
-    private final String world;
+    private String world;
     private boolean purchased;
     private int resourceValue; //Runes: bei spezifischen sind es energy: dort vermerkt
     private boolean hasRiver; //has a river = true
-    private final int tileID;
+    private int tileID;
     private Status status;
 
     /**
@@ -277,6 +277,14 @@ public class Tile {
      */
     public boolean hasOwner() {
         return owner != null;
+    }
+
+    public void setWorld(String s) {
+        this.world = s;
+    }
+
+    public void setTileID(int i) {
+        this.tileID = i;
     }
 
     /**
