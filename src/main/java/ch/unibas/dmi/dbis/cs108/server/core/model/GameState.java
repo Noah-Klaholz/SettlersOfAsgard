@@ -45,6 +45,7 @@ public class GameState {
      */
     public GameState(GameEventNotifier notifier) {
         this.boardManager = new BoardManager(stateLock);
+        this.boardManager.initializeBoard(8, 7);
         this.notifier = notifier;
     }
 
