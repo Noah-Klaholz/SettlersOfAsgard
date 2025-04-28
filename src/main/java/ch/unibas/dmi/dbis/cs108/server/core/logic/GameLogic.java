@@ -238,6 +238,16 @@ public class GameLogic implements GameLogicInterface {
     }
 
     /**
+     * Cheat: The player claims all tiles that are not already owned by someone.
+     *
+     * @param playerName the name of the player.
+     * @return true if the action was successful, false otherwise.
+     */
+    public boolean claimAll(String playerName) {
+        return tileActionHandler.claimAllTiles(playerName);
+    }
+
+    /**
      * Gets the current state of the TurnManager.
      * @return The current TurnManager object.
      */
@@ -285,5 +295,4 @@ public class GameLogic implements GameLogicInterface {
         return statueActionHandler;
     }
 
-    public boolean claimAll(String playerName) { return tileActionHandler.claimAllTiles(playerName); }
 }
