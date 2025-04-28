@@ -74,7 +74,7 @@
 
     <center>
         <StackPane fx:id="gameBoardContainer" styleClass="game-board-container">
-            <Canvas fx:id="gameCanvas" width="600" height="400" onDragOver="#handleDragOver" onDragDropped="#handleDragDropped"/>
+            <Canvas fx:id="gameCanvas" width="600" height="400"/>
         </StackPane>
     </center>
 
