@@ -110,8 +110,16 @@ public class StructureActionHandler {
      */
     public boolean ragnarok(String playerName) {
         return executeWithLock(() -> {
+            for (Tile[] tiles : gameState.getBoardManager().getBoard().getTiles()){
+                for (Tile tile : tiles) {
+                    if (tile.hasEntity() && !tile.getOwner().equals(playerName)) {
+                        tile.setHasEntity(false);
+                        tile.setEntity(null);
+                    }
+                }
+            }
             for (Player p : gameState.getPlayers()) {
-                if(Objects.equals(playerName, p.getName())) continue;
+                if (Objects.equals(p.getName(), playerName)) continue;
                 p.setPurchasableEntities(null);
             }
             return true;
