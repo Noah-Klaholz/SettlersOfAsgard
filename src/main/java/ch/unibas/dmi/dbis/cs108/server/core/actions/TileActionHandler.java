@@ -77,6 +77,12 @@ public class TileActionHandler {
         }
     }
 
+    /**
+     * Cheat: the player claims all tiles that aren't already purchased.
+     *
+     * @param playerName the name of the player.
+     * @return true if the action was successful, false otherwise.
+     */
     public boolean claimAllTiles(String playerName) {
         gameLock.writeLock().lock();
         try {
