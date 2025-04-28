@@ -32,6 +32,7 @@ public class TurnManager {
         gameState.setGameRound(0);
         gameState.setPlayerRound(0);
         gameState.setPlayerTurn(null);
+        structureBehaviorRegistry = new StructureBehaviorRegistry();
     }
 
     /**

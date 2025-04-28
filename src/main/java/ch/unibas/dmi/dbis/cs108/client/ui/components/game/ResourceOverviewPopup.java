@@ -13,6 +13,7 @@ import javafx.stage.Popup;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 public class ResourceOverviewPopup extends Popup {
@@ -33,18 +34,14 @@ public class ResourceOverviewPopup extends Popup {
 
         // Load CSS
         container.getStylesheets().addAll(
-                getClass().getResource("/css/variables.css").toExternalForm(),
-                getClass().getResource("/css/common.css").toExternalForm()
+                Objects.requireNonNull(getClass().getResource("/css/variables.css")).toExternalForm(),
+                Objects.requireNonNull(getClass().getResource("/css/common.css")).toExternalForm()
         );
 
-        container.setStyle("-fx-background-color: -color-background-primary; " +
-                "-fx-border-color: -color-accent-gold; " +
-                "-fx-border-width: 2px; " +
-                "-fx-border-radius: 5px;");
 
         // Title
         Label title = new Label("Player Resources");
-        title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: -color-text-primary;");
+        title.getStyleClass().add("popup-title");
         container.getChildren().add(title);
 
         // Add scroll container for players
@@ -52,7 +49,7 @@ public class ResourceOverviewPopup extends Popup {
         scrollPane.setFitToWidth(true);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+        scrollPane.getStyleClass().add("scroll-bar:vertical");
 
         // Player list container
         VBox playerList = new VBox(10);
@@ -89,41 +86,39 @@ public class ResourceOverviewPopup extends Popup {
         row.setPrefWidth(450);
 
         // Set styling
-        if (isCurrentTurn) {
-            row.setStyle("-fx-background-color: -color-accent-gold-transparent-low; -fx-border-radius: 5px;");
-        } else {
-            row.setStyle("-fx-background-color: -color-background-secondary; -fx-border-radius: 5px;");
-        }
+        row.getStyleClass().add(isCurrentTurn ? "player-row-current" : "player-row");
 
         // Player color indicator and name
         Color playerColor = playerColors.getOrDefault(player.getName(), Color.GRAY);
         Circle colorIndicator = new Circle(8);
         colorIndicator.setFill(playerColor);
+        colorIndicator.getStyleClass().add("player-color-indicator");
 
         Label nameLabel = new Label(player.getName());
-        nameLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: -color-text-primary;");
+        nameLabel.getStyleClass().add("player-name");
         nameLabel.setMinWidth(100);
 
         // Resources
         VBox resourcesBox = new VBox(5);
+        resourcesBox.getStyleClass().add("resources-container");
 
         HBox runesBox = new HBox(5);
         runesBox.setAlignment(Pos.CENTER_LEFT);
         Label runesLabel = new Label("Runes: " + player.getRunes());
-        runesLabel.setStyle("-fx-text-fill: -color-text-secondary;");
+        runesLabel.getStyleClass().add("resource-label");
         runesBox.getChildren().add(runesLabel);
 
         HBox energyBox = new HBox(5);
         energyBox.setAlignment(Pos.CENTER_LEFT);
         Label energyLabel = new Label("Energy: " + player.getEnergy() + "/4");
-        energyLabel.setStyle("-fx-text-fill: -color-text-secondary;");
+        energyLabel.getStyleClass().add("resource-label");
         energyBox.getChildren().add(energyLabel);
 
         // Add tile count
         HBox tilesBox = new HBox(5);
         tilesBox.setAlignment(Pos.CENTER_LEFT);
         Label tilesLabel = new Label("Tiles: " + player.getOwnedTiles().size());
-        tilesLabel.setStyle("-fx-text-fill: -color-text-secondary;");
+        tilesLabel.getStyleClass().add("resource-label");
         tilesBox.getChildren().add(tilesLabel);
 
         resourcesBox.getChildren().addAll(runesBox, energyBox, tilesBox);
@@ -131,9 +126,10 @@ public class ResourceOverviewPopup extends Popup {
         // Status effects
         VBox statusEffectsBox = new VBox(5);
         statusEffectsBox.setMinWidth(200);
+        statusEffectsBox.getStyleClass().add("status-effects-container");
 
         Label statusLabel = new Label("Status Effects:");
-        statusLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: -color-text-primary;");
+        statusLabel.getStyleClass().add("status-header");
         statusEffectsBox.getChildren().add(statusLabel);
 
         Status status = player.getStatus();
@@ -150,11 +146,11 @@ public class ResourceOverviewPopup extends Popup {
                 Label effectLabel = new Label(effect);
 
                 if (value > 1.0) {
-                    effectLabel.setStyle("-fx-text-fill: -color-accent-positive;");
+                    effectLabel.getStyleClass().add("buff-positive");
                 } else if (value < 1.0) {
-                    effectLabel.setStyle("-fx-text-fill: -color-accent-negative;");
+                    effectLabel.getStyleClass().add("buff-negative");
                 } else {
-                    effectLabel.setStyle("-fx-text-fill: -color-text-secondary;");
+                    effectLabel.getStyleClass().add("buff-neutral");
                 }
 
                 statusEffectsBox.getChildren().add(effectLabel);
@@ -163,7 +159,7 @@ public class ResourceOverviewPopup extends Popup {
 
         if (!hasEffects) {
             Label noEffectsLabel = new Label("No active effects");
-            noEffectsLabel.setStyle("-fx-text-fill: -color-text-secondary; -fx-font-style: italic;");
+            noEffectsLabel.getStyleClass().add("no-effects-label");
             statusEffectsBox.getChildren().add(noEffectsLabel);
         }
 
