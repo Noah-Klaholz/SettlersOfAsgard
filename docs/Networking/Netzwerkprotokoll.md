@@ -41,6 +41,7 @@ Dieser Befehl bedeutet, dass Spieler PL01 eine Struktur vom Typ "Castle" auf das
 | `GSTS` | **C→S**       | Spielstatus abrufen   (temporär)                              |                                       | `GSTS$`                                         |
 | `GPRC` | **C→S**       | Preise für verschiedene Kaufbare Elemente abfragen (temporär) |                                       | `GPRC$`                                         |
 | `SYNC` | **S→C**       | Sendet den aktuellen Zustand des Spiels                       | `DetaillierteStatusNachricht`         | `SYNC$(siehe GameState_Networking_Explanation)` |
+| `LEAD` | **C→S**       | Fragt das aktuelle Leaderboard ab                             |                                       | `LEAD$`                                         |
 | `OK`   | **S→C**       | Protokoll-Antwort bei erfolgreichen Befehlen                  | `[Arg1][$Arg2]...`                    | `OK$`                                           |
 
 ### Spielmechanik

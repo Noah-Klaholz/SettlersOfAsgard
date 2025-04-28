@@ -385,7 +385,7 @@ public class Lobby implements GameEventNotifier {
      * Sends an OK message with the leaderboard (as a String).
      */
     public void broadcastGlobalLeaderboard() {
-        broadcastMessage(CommunicationAPI.NetworkProtocol.Commands.OK.getCommand() + "$" + leaderboard);
+        broadcastMessage("OK$" + CommunicationAPI.NetworkProtocol.Commands.LEADERBOARD.getCommand() + "$" + leaderboard);
     }
 
 }
