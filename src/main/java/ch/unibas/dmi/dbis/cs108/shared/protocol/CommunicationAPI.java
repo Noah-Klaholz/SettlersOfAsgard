@@ -186,6 +186,10 @@ public interface CommunicationAPI {
              * Entity notifies player
              */
             INFO("INFO"),
+            /**
+             *
+             */
+            LEADERBOARD("LEAD"),
 
             // Response codes
             /**
