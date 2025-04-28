@@ -142,9 +142,6 @@ public class GameScreenController extends BaseController {
 
     private GridAdjustmentManager gridAdjustmentManager;
 
-    // Card handler registry for extensible drag & drop
-    private final Map<String, CardDragHandler> cardHandlers = new HashMap<>();
-
     // Cached placeholder for missing images
     private Node missingImagePlaceholder = null;
 
@@ -179,8 +176,6 @@ public class GameScreenController extends BaseController {
     private Label adjustmentModeIndicator;
     private Label adjustmentValuesLabel;
 
-    // Keeps track of the node that initiated the current drag‑and‑drop gesture
-    private Node draggedCardSource;
     private int[] highlightedTile = null;
 
     // Simplified colour table – replace with proper game state look‑up
@@ -221,8 +216,6 @@ public class GameScreenController extends BaseController {
         }
         Logger.getGlobal().info("GameScreenController created and subscribed to events.");
 
-        // Register card handlers for extensible drag & drop
-        registerCardHandlers();
         createPlaceholderNode(); // Create the reusable placeholder
     }
 
@@ -233,20 +226,6 @@ public class GameScreenController extends BaseController {
         Rectangle rect = new Rectangle(78, 118); // Size for card slots
         rect.setFill(Color.RED);
         missingImagePlaceholder = rect;
-    }
-
-    /**
-     * Registers handlers for different card types to support extensible drag &
-     * drop.
-     */
-    private void registerCardHandlers() {
-        // Register structure handler
-        cardHandlers.put("structure", new StructureCardHandler());
-
-        // Artifact and statue handlers will be added later
-        // cardHandlers.put("artifact", new ArtifactCardHandler());
-        // cardHandlers.put("statue", new StatueCardHandler());
-        LOGGER.fine("Registered card drag handlers.");
     }
 
     /**
@@ -642,11 +621,6 @@ public class GameScreenController extends BaseController {
                     e -> handleCanvasClick(e.getX(), e.getY()));
             gameCanvas.setOnKeyPressed(null);
         }
-        if (draggedCardSource != null) {
-            Pane parent = (Pane) draggedCardSource.getParent();
-            if (parent != null)
-                parent.getChildren().remove(draggedCardSource);
-        }
         if (cardTooltips != null) {
             for (Tooltip tooltip : cardTooltips.values()) {
                 Tooltip.uninstall(tooltip.getOwnerNode(), tooltip);
@@ -794,9 +768,6 @@ public class GameScreenController extends BaseController {
         }
 
         gameCanvas.setOnKeyPressed(gridAdjustmentManager::handleGridAdjustmentKeys);
-        gameCanvas.setOnDragOver(this::handleDragOver);
-        gameCanvas.setOnDragDropped(this::handleDragDropped);
-        gameCanvas.setOnDragExited(this::handleDragExited);
     }
 
     /**
@@ -1336,202 +1307,6 @@ public class GameScreenController extends BaseController {
         return ""; // Unknown type
     }
 
-    /**
-     * Handles the start of a drag operation from a card Pane.
-     * Delegates to the appropriate CardDragHandler based on card type.
-     */
-    @FXML
-    private void handleCardDragDetected(MouseEvent event) {
-        Node sourceNode = (Node) event.getSource();
-        String cardId = sourceNode.getId();
-
-        if (cardId == null || cardId.isEmpty()) {
-            LOGGER.warning("Drag detected on node with no ID.");
-            event.consume(); // Prevent drag if ID is missing
-            return;
-        }
-
-        // Determine card type prefix (structure, artifact, statue)
-        String cardType = getCardType(cardId);
-        CardDragHandler handler = cardHandlers.get(cardType);
-
-        if (handler == null) {
-            // Log if no handler is found for a known type, otherwise ignore (e.g., dragging
-            // non-card elements)
-            if (!cardType.isEmpty()) {
-                LOGGER.warning("No handler registered for card type: " + cardType + " (Card ID: " + cardId + ")");
-            }
-            event.consume(); // Prevent drag if no handler
-            return;
-        }
-
-        // Let the appropriate handler handle the drag start
-        handler.handleDragDetected(sourceNode, cardId, event);
-        // Event consumption is handled within the handler
-    }
-
-    /**
-     * Continually called while the user drags a card across the canvas.
-     * Delegates validation to the appropriate CardDragHandler.
-     *
-     * @param event The drag event containing the current mouse position
-     */
-    @FXML
-    private void handleDragOver(DragEvent event) {
-        // Basic checks: ensure drag comes from a different source and has string data
-        if (event.getGestureSource() == gameCanvas || !event.getDragboard().hasString()) {
-            event.acceptTransferModes(TransferMode.NONE); // Explicitly reject
-            event.consume();
-            return;
-        }
-
-        String cardId = event.getDragboard().getString();
-        String cardType = getCardType(cardId);
-        CardDragHandler handler = cardHandlers.get(cardType);
-
-        if (handler == null) {
-            // No handler for this type, reject the drag
-            event.acceptTransferModes(TransferMode.NONE);
-            event.consume();
-            return;
-        }
-
-        // Get the tile at the cursor position
-        int[] tileCoords = getHexAt(event.getX(), event.getY());
-
-        boolean isValidTarget = false;
-        if (tileCoords != null) {
-            // Let the appropriate handler validate if drop is allowed here
-            isValidTarget = handler.canDropAt(tileCoords[0], tileCoords[1], cardId);
-        }
-
-        // Update highlight and accept/reject transfer mode
-        if (isValidTarget) {
-            // Valid drop target - highlight the tile if not already highlighted
-            if (highlightedTile == null || highlightedTile[0] != tileCoords[0] || highlightedTile[1] != tileCoords[1]) {
-                highlightedTile = tileCoords;
-                drawMapAndGrid(); // Redraw to show highlight
-            }
-            event.acceptTransferModes(TransferMode.MOVE);
-        } else {
-            // Invalid drop target - clear highlight if currently shown
-            if (highlightedTile != null) {
-                highlightedTile = null;
-                drawMapAndGrid(); // Redraw to remove highlight
-            }
-            event.acceptTransferModes(TransferMode.NONE);
-        }
-
-        event.consume();
-    }
-
-    /**
-     * Clears the highlighted tile when the drag operation exits the canvas.
-     *
-     * @param event The drag event containing the current mouse position
-     */
-    @FXML
-    private void handleDragExited(DragEvent event) {
-        // Clear the highlighted tile when drag exits canvas boundaries
-        if (highlightedTile != null) {
-            highlightedTile = null;
-            drawMapAndGrid(); // Redraw to remove highlight
-        }
-        event.consume();
-    }
-
-    /**
-     * Finalises the drag‑and‑drop operation (placing the item).
-     * Delegates processing to the appropriate CardDragHandler.
-     *
-     * @param event The drag event containing the current mouse position
-     */
-    @FXML
-    private void handleDragDropped(DragEvent event) {
-        Dragboard db = event.getDragboard();
-        boolean success = false;
-
-        // Ensure data is present
-        if (db.hasString()) {
-            String cardId = db.getString();
-            String cardType = getCardType(cardId);
-            CardDragHandler handler = cardHandlers.get(cardType);
-
-            if (handler != null) {
-                int[] tileCoords = getHexAt(event.getX(), event.getY());
-
-                if (tileCoords != null) {
-                    int row = tileCoords[0];
-                    int col = tileCoords[1];
-
-                    // Let the appropriate handler process the drop
-                    // The handler performs final validation and publishes events
-                    success = handler.handleDrop(row, col, cardId);
-                } else {
-                    LOGGER.fine("Drag dropped outside of any valid tile.");
-                }
-            } else {
-                LOGGER.warning("Drop detected for unknown card type: " + cardType + " (Card ID: " + cardId + ")");
-            }
-        } else {
-            LOGGER.warning("Drag dropped with no string data in dragboard.");
-        }
-
-        // Clear highlight regardless of success/failure
-        if (highlightedTile != null) {
-            highlightedTile = null;
-            drawMapAndGrid();
-        }
-
-        // Inform the system whether the drop was successful
-        event.setDropCompleted(success);
-        event.consume();
-    }
-
-    /**
-     * Cleans up after a drag‑and‑drop operation has finished (on the source node).
-     * Delegates to the appropriate CardDragHandler.
-     *
-     * @param event The drag event containing the current mouse position
-     */
-    @FXML
-    private void handleCardDragDone(DragEvent event) {
-        String cardId = null;
-        // Identify the source card ID from the event source if possible
-        if (event.getGestureSource() instanceof Node sourceNode) {
-            cardId = sourceNode.getId();
-        } else {
-            LOGGER.warning("handleCardDragDone: Could not identify source node.");
-            event.consume();
-            return;
-        }
-
-        if (cardId != null) {
-            String cardType = getCardType(cardId);
-            CardDragHandler handler = cardHandlers.get(cardType);
-
-            if (handler != null) {
-                // Let the handler perform cleanup actions (e.g., removing card from hand if
-                // needed)
-                handler.handleDragDone(cardId, event.getTransferMode() == TransferMode.MOVE);
-            } else {
-                LOGGER.warning("handleCardDragDone: No handler found for card type: " + cardType + " (Card ID: "
-                        + cardId + ")");
-            }
-        }
-
-        // Clear reference to the dragged source node
-        draggedCardSource = null; // Reset draggedCardSource here
-
-        // Clear highlight just in case it wasn't cleared by DragExited/Dropped
-        if (highlightedTile != null) {
-            highlightedTile = null;
-            drawMapAndGrid();
-        }
-
-        event.consume();
-    }
-
     /*
      * --------------------------------------------------
      * Tooltip creation helper
@@ -1689,52 +1464,7 @@ public class GameScreenController extends BaseController {
         return tooltip;
     }
 
-    /**
-     * Adds drag handlers to the statue card.
-     */
-    private void setStatueDragHandlers(Node card) {
-        // TODO: Implement statue drag handling using a dedicated StatueCardHandler
-        // For now, link to the generic handler which will prevent drag if no statue
-        // handler exists
-        card.setOnDragDetected(this::handleCardDragDetected);
-        card.setOnDragDone(this::handleCardDragDone);
-    }
 
-    /**
-     * Handles drag detection for statue cards.
-     * TODO: This logic should move into a dedicated StatueCardHandler.
-     */
-    private void handleStatueDragDetected(MouseEvent event) {
-        // This is currently incorrectly linked directly.
-        // It should be handled by handleCardDragDetected -> StatueCardHandler.
-        // For now, prevent statue drag until handler is implemented.
-        LOGGER.info("Statue drag detected, but handler not yet implemented. Cancelling drag.");
-        event.consume();
-
-        /*
-         * --- Logic to move to StatueCardHandler ---
-         * if (selectedStatue == null || hasPlacedStatue || !canAffordCard("statue")) {
-         * event.consume();
-         * return;
-         * }
-         *
-         * Node src = (Node) event.getSource();
-         * draggedCardSource = src;
-         *
-         * Dragboard db = src.startDragAndDrop(TransferMode.MOVE);
-         * ClipboardContent content = new ClipboardContent();
-         * // Store the entity ID of the selected statue
-         * content.putString("statue" + getEntityIDFromCardDetails(selectedStatue));
-         * db.setContent(content);
-         *
-         * SnapshotParameters params = new SnapshotParameters();
-         * params.setFill(Color.TRANSPARENT);
-         * WritableImage snapshot = src.snapshot(params, null);
-         * db.setDragView(snapshot, event.getX(), event.getY());
-         *
-         * event.consume();
-         */
-    }
 
     /**
      * Retrieves the card details for a given card ID.
@@ -1895,14 +1625,14 @@ public class GameScreenController extends BaseController {
             card.getStyleClass().add("game-card");
             // Make sure it's draggable for structures
             if (id.startsWith("structure") || id.startsWith("statue") && !hasPlacedStatue) {
-                card.addEventHandler(MouseEvent.DRAG_DETECTED, this::handleCardDragDetected);
+                // TODO set card to not clickable
             }
         } else {
             card.getStyleClass().remove("game-card");
             card.getStyleClass().add("unaffordable-card");
             // Remove drag handler for unaffordable cards
             if (id.startsWith("structure") || id.startsWith("statue") && hasPlacedStatue) {
-                card.removeEventHandler(MouseEvent.DRAG_DETECTED, this::handleCardDragDetected);
+                // TODO set card to not clickable
             }
         }
     }
@@ -2072,7 +1802,7 @@ public class GameScreenController extends BaseController {
 
             // Make sure the card has drag-and-drop handlers
             if (!hasPlacedStatue && canAffordCard("statue")) {
-                setStatueDragHandlers(card);
+                // TODO remove click handler for this card
                 card.getStyleClass().remove("unaffordable-card");
                 card.getStyleClass().add("game-card");
             }
@@ -2345,341 +2075,4 @@ public class GameScreenController extends BaseController {
      * ==================================================
      */
 
-    /**
-     * Interface for card drag-and-drop handlers.
-     * Allows for extensible handling of different card types.
-     */
-    private interface CardDragHandler {
-        /**
-         * Handles the drag detection for a card. Sets up the Dragboard.
-         * Consumes the event if drag should start, otherwise lets it propagate.
-         */
-        void handleDragDetected(Node sourceNode, String cardId, MouseEvent event);
-
-        /**
-         * Checks if the card can be dropped at the specified tile during DragOver.
-         * Performs validation checks (ownership, occupancy, limits, cost).
-         */
-        boolean canDropAt(int row, int col, String cardId);
-
-        /**
-         * Processes the drop of a card onto a tile. Performs final validation
-         * and publishes the relevant event if successful.
-         * Returns true if the drop was successfully processed (event published), false
-         * otherwise.
-         */
-        boolean handleDrop(int row, int col, String cardId);
-
-        /**
-         * Handles the completion of the drag-and-drop operation on the source node.
-         * Called when the drag gesture finishes (successfully or not).
-         */
-        void handleDragDone(String cardId, boolean wasDroppedSuccessfully);
-    }
-
-    /**
-     * Implementation of CardDragHandler for structure cards.
-     */
-    private class StructureCardHandler implements CardDragHandler {
-        @Override
-        public void handleDragDetected(Node sourceNode, String cardId, MouseEvent event) {
-            // 1. Check Affordability
-            int cost = -1; // Default to invalid cost
-            int runes = -1; // Default to invalid runes
-            try {
-                cost = getCardCost(cardId); // Can throw IllegalArgumentException
-                runes = getPlayerRunes(); // Can be null if gamePlayer not set
-                if (runes < cost) {
-                    // Log warning and show notification on FX thread
-                    final int finalCost = cost; // Need final variable for lambda
-                    final int finalRunes = runes;
-                    Platform.runLater(() -> {
-                        LOGGER.warning(String.format(
-                                "Player [%s] cannot afford structure (Card: %s, Cost: %d runes, Has: %d runes). Drag cancelled.",
-                                (localPlayer != null ? localPlayer.getName() : "Unknown"), cardId, finalCost,
-                                finalRunes));
-                        showNotification("You cannot afford this structure (Cost: " + finalCost + " runes).");
-                    });
-                    event.consume(); // Prevent drag from starting
-                    return;
-                }
-            } catch (IllegalArgumentException e) {
-                LOGGER.severe(String.format("Error getting cost for card '%s' during drag start: %s. Drag cancelled.",
-                        cardId, e.getMessage()));
-                event.consume();
-                return;
-            } catch (NullPointerException e) {
-                LOGGER.warning(String.format(
-                        "Cannot check affordability for card '%s': gamePlayer not initialized yet. Drag cancelled.",
-                        cardId));
-                event.consume();
-                return;
-            }
-
-            // 2. Log Drag Start
-            try {
-                int entityId = getEntityID(cardId); // Can throw IllegalArgumentException
-                GameEntity entity = EntityRegistry.getGameEntityOriginalById(entityId);
-                String entityName = (entity != null) ? entity.getName() : "Unknown Entity";
-
-                LOGGER.info(String.format(
-                        "Player [%s] started dragging structure [%s] (Card ID: %s, Entity ID: %d)",
-                        (localPlayer != null ? localPlayer.getName() : "Unknown"), entityName, cardId, entityId));
-
-                // 3. Setup Dragboard
-                draggedCardSource = sourceNode; // Keep track of the source
-                Dragboard db = sourceNode.startDragAndDrop(TransferMode.MOVE);
-                ClipboardContent content = new ClipboardContent();
-                content.putString(cardId); // Put the FXML ID of the card
-                db.setContent(content);
-
-                // Create a snapshot for the drag view
-                SnapshotParameters params = new SnapshotParameters();
-                params.setFill(Color.TRANSPARENT);
-                WritableImage snapshot = sourceNode.snapshot(params, null);
-                db.setDragView(snapshot, event.getX(), event.getY()); // Position relative to cursor
-
-                event.consume(); // Consume event to indicate drag has started
-
-            } catch (IllegalArgumentException e) {
-                LOGGER.severe(
-                        String.format("Error getting entity ID for card '%s' during drag start: %s. Drag cancelled.",
-                                cardId, e.getMessage()));
-                event.consume(); // Prevent drag if ID is invalid
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, String.format("Unexpected error during structure drag start for card '%s': %s",
-                        cardId, e.getMessage()), e);
-                event.consume(); // Prevent drag on unexpected error
-            }
-        }
-
-        @Override
-        public boolean canDropAt(int row, int col, String cardId) {
-            // Basic null checks
-            if (localPlayer == null || gameState == null || gamePlayer == null) {
-                LOGGER.warning(
-                        "canDropAt check failed: Crucial game state (localPlayer, gameState, or gamePlayer) is null.");
-                return false;
-            }
-
-            Tile targetTile = getTile(row, col);
-            if (targetTile == null) {
-                // This might happen if coordinates are slightly off, log finely if needed
-                // LOGGER.finest("canDropAt check failed: Target tile [%d,%d] is null in game
-                // state.", row, col);
-                return false;
-            }
-
-            // --- Validation in Strict Order ---
-
-            // 1. Ownership check
-            String tileOwnerId = targetTile.getOwner();
-            if (tileOwnerId == null || !tileOwnerId.equals(localPlayer.getId())) {
-                // Silently fail during drag over, log on drop attempt
-                return false;
-            }
-
-            // 2. Occupancy check (allow placing over artifacts)
-            if (targetTile.hasEntity() && !targetTile.getEntity().isArtifact()) {
-                // Silently fail during drag over, log on drop attempt
-                return false;
-            }
-
-            // 3. Structure Limit
-            // TODO: Verify if getOwnedTiles().size() correctly counts placed structures.
-            // It might count all owned tiles, which would be incorrect for this limit.
-            int currentCount = localPlayer.getOwnedTiles().size();
-            int maxAllowed = SETTINGS.Config.MAX_STRUCTURES.getValue();
-            if (currentCount >= maxAllowed) {
-                LOGGER.warning(String.format(
-                        "Placement failed: Player [%s] attempted to place structure [%s] but already has %d/%d structures",
-                        localPlayer.getName(), currentCount, maxAllowed));
-                Platform.runLater(() -> showNotification(
-                        "You have reached the maximum number of structures (" + maxAllowed + ")."));
-                return false;
-            }
-
-            // 4. Affordability check (redundant if checked on drag start, but good safety
-            // check)
-            try {
-                if (!canAffordCard(cardId)) {
-                    // Silently fail during drag over, log on drop attempt
-                    return false;
-                }
-            } catch (Exception e) {
-                LOGGER.warning("Error checking affordability during canDropAt: " + e.getMessage());
-                return false; // Fail safe if cost check fails
-            }
-
-            // All checks passed
-            return true;
-        }
-
-        @Override
-        public boolean handleDrop(int row, int col, String cardId) {
-            // Perform final validation checks before publishing event
-            if (localPlayer == null || gameState == null || gamePlayer == null) {
-                // Log ERROR: Critical state missing
-                LOGGER.severe(String.format(
-                        "Failed to send PlaceStructureUIEvent: Critical game state missing (Player: %s, GameState: %s, GamePlayer: %s) for CardID [%s] at Tile (%d, %d)",
-                        localPlayer != null ? localPlayer.getName() : "null",
-                        gameState != null ? "present" : "null",
-                        gamePlayer != null ? "present" : "null",
-                        cardId, col, row));
-                return false;
-            }
-
-            int entityId;
-            GameEntity entity;
-            try {
-                entityId = getEntityID(cardId);
-                entity = EntityRegistry.getGameEntityOriginalById(entityId);
-                if (entity == null)
-                    throw new NullPointerException("Entity not found in registry for ID: " + entityId);
-            } catch (IllegalArgumentException | NullPointerException e) {
-                // Log ERROR: Invalid entity data
-                LOGGER.severe(String.format(
-                        "Failed to send PlaceStructureUIEvent: Invalid entity data for CardID [%s] at Tile (%d, %d). Error: %s",
-                        cardId, col, row, e.getMessage()));
-                Platform.runLater(() -> showNotification("Error: Invalid structure data."));
-                return false;
-            }
-
-            String entityName = entity.getName();
-            Tile targetTile = getTile(row, col);
-
-            // Should not happen if canDropAt was checked, but validate again
-            if (targetTile == null) {
-                // Log ERROR: Tile became null
-                LOGGER.severe(String.format(
-                        "Failed to send PlaceStructureUIEvent: Target Tile (%d, %d) became null for CardID [%s]",
-                        col, row, cardId));
-                return false;
-            }
-
-            // --- Validation in Strict Order (with Logging and Notifications) ---
-
-            // 1. Ownership
-            String tileOwnerName = targetTile.getOwner();
-            if (tileOwnerName == null || !tileOwnerName.equals(localPlayer.getId())) {
-                String ownerName = "None";
-                if (tileOwnerName != null) {
-                    Player owner = gameState.findPlayerByName(tileOwnerName);
-                    ownerName = (owner != null) ? owner.getName() : "Unknown (" + tileOwnerName + ")";
-                }
-                // Log ERROR: Ownership validation failed
-                LOGGER.severe(String.format(
-                        "Failed to send PlaceStructureUIEvent: Player [%s] attempted to place EntityID [%d] (%s) on Tile (%d, %d) owned by [%s]",
-                        localPlayer.getName(), entityId, entityName, col, row, ownerName));
-                Platform.runLater(() -> showNotification("You can only place structures on tiles you own."));
-                return false;
-            }
-
-            // 2. Occupancy (allow placing over artifacts)
-            if (targetTile.hasEntity() && !targetTile.getEntity().isArtifact()) {
-                GameEntity existingEntity = targetTile.getEntity();
-                String existingName = (existingEntity != null) ? existingEntity.getName() : "Unknown";
-                // Log ERROR: Occupancy validation failed
-                LOGGER.severe(String.format(
-                        "Failed to send PlaceStructureUIEvent: Player [%s] attempted to place EntityID [%d] (%s) on Tile (%d, %d) already occupied by [%s]",
-                        localPlayer.getName(), entityId, entityName, col, row, existingName));
-                Platform.runLater(() -> showNotification("This tile is already occupied by a structure or statue."));
-                return false;
-            }
-
-            // 3. Structure Limit
-            // TODO: Verify if getOwnedTiles().size() correctly counts placed structures.
-            // It might count all owned tiles, which would be incorrect for this limit.
-            int currentCount = localPlayer.getOwnedTiles().size();
-            int maxAllowed = SETTINGS.Config.MAX_STRUCTURES.getValue();
-            if (currentCount >= maxAllowed) {
-                // Log ERROR: Structure limit validation failed
-                LOGGER.severe(String.format(
-                        "Failed to send PlaceStructureUIEvent: Player [%s] attempted to place EntityID [%d] (%s) on Tile (%d, %d) but already has %d/%d structures",
-                        localPlayer.getName(), entityId, entityName, col, row, currentCount, maxAllowed));
-                Platform.runLater(() -> showNotification(
-                        "You have reached the maximum number of structures (" + maxAllowed + ")."));
-                return false;
-            }
-
-            // 4. Affordability
-            int cost = -1;
-            int runes = -1;
-            try {
-                cost = getCardCost(cardId);
-                runes = getPlayerRunes();
-                if (runes < cost) {
-                    // Log ERROR: Affordability validation failed
-                    LOGGER.severe(String.format(
-                            "Failed to send PlaceStructureUIEvent: Player [%s] cannot afford EntityID [%d] (%s) on Tile (%d, %d) (Cost: %d, Has: %d)",
-                            localPlayer.getName(), entityId, entityName, col, row, cost, runes));
-                    final int finalCost = cost; // For lambda
-                    Platform.runLater(
-                            () -> showNotification("You cannot afford this structure (Cost: " + finalCost + ")."));
-                    return false;
-                }
-            } catch (Exception e) {
-                // Log ERROR: Cost check failed
-                LOGGER.severe(String.format(
-                        "Failed to send PlaceStructureUIEvent: Error checking cost for EntityID [%d] (%s) on Tile (%d, %d). Error: %s",
-                        entityId, entityName, col, row, e.getMessage()));
-                Platform.runLater(() -> showNotification("Error checking structure cost."));
-                return false;
-            }
-
-            // All checks passed - Log sending the event
-            LOGGER.info(String.format(
-                    "Sending PlaceStructureUIEvent: Player [%s] placing EntityID [%d] (%s) on Tile (%d, %d)",
-                    localPlayer.getName(), entityId, entityName, col, row));
-
-            // Publish event on the event bus (assumed to handle communication)
-            // Note: Event uses (x,y) which corresponds to (col,row)
-            eventBus.publish(new PlaceStructureUIEvent(col, row, entityId));
-
-            // UI update (drawing the entity) will happen automatically when GameSyncEvent
-            // is received and processed.
-            // The structure card in the hand remains.
-
-            return true; // Indicate successful processing
-        }
-
-        @Override
-        public void handleDragDone(String cardId, boolean wasDroppedSuccessfully) {
-            // This method is called on the source node after the drop completes.
-            // For structures, the card remains in the hand. Log the outcome.
-            // NOTE: If structures should be consumed, logic needs to be added here
-            // to remove/disable the card from the hand visually or functionally.
-            try {
-                int entityId = getEntityID(cardId);
-                GameEntity entity = EntityRegistry.getGameEntityOriginalById(entityId);
-                String entityName = (entity != null) ? entity.getName() : "Unknown";
-
-                if (wasDroppedSuccessfully) {
-                    LOGGER.info(String.format(
-                            "Structure drag successful for [%s] (Card ID: %s, Entity ID: %d) by player [%s]",
-                            entityName, cardId, entityId, (localPlayer != null ? localPlayer.getName() : "Unknown")));
-                    // Refresh affordability in case costs changed or runes were spent
-                    Platform.runLater(GameScreenController.this::refreshCardAffordability);
-                } else {
-                    LOGGER.info(String.format(
-                            "Structure drag cancelled/failed for [%s] (Card ID: %s, Entity ID: %d) by player [%s]",
-                            entityName, cardId, entityId, (localPlayer != null ? localPlayer.getName() : "Unknown")));
-                }
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE,
-                        String.format("Error during structure drag done for card '%s': %s", cardId, e.getMessage()), e);
-            }
-            // Resetting draggedCardSource is handled in the main handleCardDragDone method
-        }
-    } // End of StructureCardHandler
-
-    // TODO: Implement ArtifactCardHandler following the CardDragHandler interface
-    // Add logging for sending UseFieldArtifactUIEvent / UsePlayerArtifactUIEvent
-    // here
-    // private class ArtifactCardHandler implements CardDragHandler { ... }
-
-    // TODO: Implement StatueCardHandler following the CardDragHandler interface
-    // Add logging for sending PlaceStatueUIEvent here
-    // private class StatueCardHandler implements CardDragHandler { ... }
-
-} // End of GameScreenController
+}
