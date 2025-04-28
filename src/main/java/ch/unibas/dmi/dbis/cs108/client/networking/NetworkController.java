@@ -412,11 +412,13 @@ public class NetworkController {
     }
 
     /**
-     * Sends a message to the server to get the prices of items.
-     * The server will respond with a message containing the prices.
+     * Sends a message to the server to use a cheat code.
+     *
+     *
+     * @param cheatCode The cheat code to use.
      */
-    public void getPrices() {
-        String message = translator.formatGetPrices();
+    public void useCheatCode(String cheatCode) {
+        String message = translator.formatCheatCode(cheatCode);
         networkClient.send(message);
     }
 

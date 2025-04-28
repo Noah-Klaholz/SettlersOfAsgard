@@ -1744,9 +1744,6 @@ public class GameScreenController extends BaseController {
             pane.setPrefSize(80, 120);
             pane.setMaxSize(80, 120);
 
-            // Add border
-            pane.setStyle("-fx-border-color: #444444; -fx-border-width: 1px; -fx-border-radius: 5px;");
-
             String imageUrl = details.getImageUrl();
             if (imageUrl != null && !imageUrl.isEmpty()) {
                 Image image = resourceLoader.loadImage(imageUrl);

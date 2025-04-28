@@ -162,6 +162,9 @@ public class CommunicationMediator {
                 event -> networkController.usePlayerArtifact(event.getArtifactId(),
                         event.getTargetPlayer().orElse(null)));
 
+        UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.game.CheatEvent.class,
+                event -> networkController.useCheatCode(event.getCheatCode()));
+
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.game.EndTurnUIEvent.class,
                 event -> networkController.endTurn());
 

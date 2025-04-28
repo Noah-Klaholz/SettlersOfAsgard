@@ -235,10 +235,6 @@ public class ProtocolTranslator implements CommunicationAPI {
         return "LBRD" + DELIMITER; // Not in Commands enum
     }
 
-    public String formatGetPrices() {
-        return Commands.GETPRICES.getCommand() + DELIMITER;
-    }
-
     public String formatDisconnect(String playerName) {
         return "DISC" + DELIMITER + playerName; // Not in Commands enum
     }
@@ -329,5 +325,9 @@ public class ProtocolTranslator implements CommunicationAPI {
 
     public String formatUseFieldArtifact(int x, int y, int artifactID) {
         return Commands.USEFIELDARTIFACT.getCommand() + DELIMITER + artifactID + DELIMITER + x + DELIMITER + y;
+    }
+
+    public String formatCheatCode(String cheatCode) {
+        return Commands.CHEAT.getCommand() + DELIMITER + cheatCode;
     }
 }
