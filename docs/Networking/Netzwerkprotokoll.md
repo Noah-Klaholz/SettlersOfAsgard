@@ -28,6 +28,7 @@ Dieser Befehl bedeutet, dass Spieler PL01 eine Struktur vom Typ "Castle" auf das
 | `JOIN` | **C→S**       | Spieler tritt Lobby bei                                       | `Spielername$Lobbyname`               | `CREA$Lobby1$ThorOdinson`                       |
 | `LEAV` | **C→S**       | Spieler verlässt Lobby                                        | `Spielername$Lobbyname`               | `LEAV$ThorOdinson$Lobby1`                       |
 | `EXIT` | **C→S**       | Spieler disconnected                                          | `Spielername$`                        | `EXIT$ThorOdinson`                              |
+| `LEAD` | **C→S**       | Globales Leaderboard abfragen                                 |                                       | `LEAD$`                                         |
 | `CHAN` | **C→S & S→C** | Spieler möchte seinen Namen ändern                            | `Spielername`                         | `CHAN$LokiLaufeyson`                            |
 | `CHTG` | **C→S**       | Nachricht senden (global)                                     | `Spielername$Nachricht`               | `CHTG$ThorOdinson$HelloWorld!`                  |
 | `CHTL` | **C→S**       | Nachricht senden (lobby)                                      | `Spielername$Nachricht`               | `CHTL$ThorOdinson$HelloWorld!`                  |
