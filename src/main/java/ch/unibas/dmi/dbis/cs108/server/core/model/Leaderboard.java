@@ -161,4 +161,40 @@ public class Leaderboard {
             lock.readLock().unlock();
         }
     }
+
+    /**
+     * Creates a Leaderboard object from its string representation.
+     *
+     * @param leaderboardString the string representation of a leaderboard
+     * @return a new Leaderboard object populated with the parsed data
+     */
+    public static Leaderboard fromString(String leaderboardString) {
+        Leaderboard leaderboard = new Leaderboard();
+
+        // Remove the curly braces
+        String content = leaderboardString.substring(1, leaderboardString.length() - 1);
+
+        // Skip if empty
+        if (content.trim().isEmpty()) {
+            return leaderboard;
+        }
+
+        // Split by comma and space
+        String[] entries = content.split(", ");
+
+        for (String entry : entries) {
+            String[] parts = entry.split("=");
+            if (parts.length == 2) {
+                String playerName = parts[0];
+                try {
+                    int points = Integer.parseInt(parts[1]);
+                    leaderboard.update(playerName, points);
+                } catch (NumberFormatException e) {
+                    LOGGER.log(Level.WARNING, "Failed to parse points for player: " + playerName);
+                }
+            }
+        }
+
+        return leaderboard;
+    }
 }
