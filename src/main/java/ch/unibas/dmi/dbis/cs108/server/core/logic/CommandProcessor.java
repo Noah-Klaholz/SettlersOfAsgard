@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.server.core.logic;
 
+import ch.unibas.dmi.dbis.cs108.client.ui.events.game.CheatEvent;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
@@ -340,7 +341,7 @@ public class CommandProcessor {
             String playerName = cmd.getPlayer().getName();
             boolean success = gameLogic.claimAll(playerName);
             return success ?
-                    formatSuccess(Commands.CLAIMALL.getCommand() + "$" + playerName) :
+                    formatSuccess(Commands.CHEAT.getCommand() + "$" + CheatEvent.Cheat.RAGNAROK.getCode() + "$" + playerName) :
                     formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$CHEAT");
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error while cheating", e);
@@ -353,7 +354,7 @@ public class CommandProcessor {
             String playerName = cmd.getPlayer().getName();
             boolean success = gameLogic.ragnarok(playerName);
             return success ?
-                    formatSuccess((Commands.RAGNAROK.getCommand()) + "$" + playerName) :
+                    formatSuccess((Commands.CHEAT.getCommand()) + "$" + CheatEvent.Cheat.CLAIMALL.getCode() + "$" + playerName) :
                     formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$CHEAT");
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error while cheating", e);
