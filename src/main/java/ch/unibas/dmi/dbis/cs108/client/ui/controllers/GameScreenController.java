@@ -1551,11 +1551,11 @@ public class GameScreenController extends BaseController {
      * Updates the cards in the hands with the correct images.
      */
     private void updateCardImages() {
+        refreshCardAffordability();
         // Update artifact cards
         for (Node card : artifactHand.getChildren()) {
             if (card.getId() != null && card.getId().startsWith("artifact")) {
                 updateCardImage(card);
-                updateCardAffordability(card);
             }
         }
 
@@ -1563,7 +1563,6 @@ public class GameScreenController extends BaseController {
         for (Node card : structureHand.getChildren()) {
             if (card.getId() != null && (card.getId().startsWith("structure"))) {
                 updateCardImage(card);
-                updateCardAffordability(card);
             } else if (card.getId() != null && card.getId().startsWith("statue")) {
                 updateStatueCard(card, selectedStatue);
             }
@@ -1635,7 +1634,6 @@ public class GameScreenController extends BaseController {
         pane.setMinSize(80, 120);
         pane.setPrefSize(80, 120);
         pane.setMaxSize(80, 120);
-        pane.setStyle("-fx-border-color: #444444; -fx-border-width: 1px; -fx-border-radius: 5px;"); // Base style
 
         try {
             CardDetails details = getCardDetails(id); // Uses isCard=true internally
