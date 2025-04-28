@@ -377,6 +377,7 @@ public class Lobby implements GameEventNotifier {
      */
     private void broadcastTurnUpdate() {
         broadcastMessage("TURN$" + gameLogic.getGameState().getPlayerTurn());
+        broadcastMessage(gameLogic.getGameState().createDetailedStatusMessage());
     }
 
 }
