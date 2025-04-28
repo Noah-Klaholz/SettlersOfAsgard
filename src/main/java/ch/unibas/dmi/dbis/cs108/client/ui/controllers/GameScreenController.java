@@ -1602,7 +1602,7 @@ public class GameScreenController extends BaseController {
             card.getStyleClass().add("game-card");
             // Make sure it's draggable for structures
             if (id.startsWith("structure") || id.startsWith("statue") && !hasPlacedStatue) {
-                // TODO set card to not clickable
+                // TODO set card to clickable
             }
         } else {
             card.getStyleClass().remove("game-card");
