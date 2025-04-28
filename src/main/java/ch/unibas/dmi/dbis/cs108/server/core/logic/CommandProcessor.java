@@ -320,6 +320,19 @@ public class CommandProcessor {
         }
     }
 
+    private String handleClaimAll(Command cmd) {
+        try {
+            String playerName = cmd.getPlayer().getName();
+            boolean success = gameLogic.claimAll(playerName);
+            return success ?
+                    formatSuccess(Commands.CLAIMALL.getCommand() + "$" + playerName) :
+                    formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$USEPLAYERARTIFACT");
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error while cheating", e);
+            return formatError(e.getMessage());
+        }
+    }
+
     /**
      * Helper method to format success responses
      */

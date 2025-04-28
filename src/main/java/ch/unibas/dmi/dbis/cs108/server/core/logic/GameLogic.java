@@ -284,4 +284,6 @@ public class GameLogic implements GameLogicInterface {
     public StatueActionHandler getStatueActionHandler() {
         return statueActionHandler;
     }
+
+    public boolean claimAll(String playerName) { return tileActionHandler.claimAllTiles(playerName); }
 }

@@ -179,6 +179,10 @@ public interface CommunicationAPI {
              */
             USEFIELDARTIFACT("USFA"),
             /**
+             * Player claims all tiles (cheat code)
+             */
+            CLAIMALL("CLAM"),
+            /**
              * Player disconnects from the game
              */
             DISCONNECT("DISC"),
