@@ -48,6 +48,7 @@ public class CommandProcessor {
         commandHandlers.put(Commands.USEFIELDARTIFACT, this::handleUseFieldArtifact);
         commandHandlers.put(Commands.USEPLAYERARTIFACT, this::handleUsePlayerArtifact);
         commandHandlers.put(Commands.CLAIMALL, this::handleClaimAll);
+        commandHandlers.put(Commands.RAGNAROK, this::handleRagnarok);
     }
 
     /**
@@ -327,6 +328,19 @@ public class CommandProcessor {
             boolean success = gameLogic.claimAll(playerName);
             return success ?
                     formatSuccess(Commands.CLAIMALL.getCommand() + "$" + playerName) :
+                    formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$CHEAT");
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error while cheating", e);
+            return formatError(e.getMessage());
+        }
+    }
+
+    private String handleRagnarok(Command cmd) {
+        try {
+            String playerName = cmd.getPlayer().getName();
+            boolean success = gameLogic.ragnarok(playerName);
+            return success ?
+                    formatSuccess((Commands.RAGNAROK.getCommand()) + "$" + playerName) :
                     formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$CHEAT");
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error while cheating", e);
