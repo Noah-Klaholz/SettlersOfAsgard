@@ -37,7 +37,12 @@
                             focusTraversable="true" defaultButton="true"/>
 
                     <Button fx:id="settingsButton" text="Settings" onAction="#handleSettings"
-                            styleClass="menu-button" maxWidth="Infinity"/>
+                            styleClass="menu-button" maxWidth="Infinity"
+                            focusTraversable="true" defaultButton="true"/>
+
+                    <Button fx:id="leaderboardButton" text="Leaderboard" onAction="#handleLeaderboard"
+                            styleClass="menu-button" maxWidth="Infinity"
+                            focusTraversable="true" defaultButton="true"/>
 
                     <Button fx:id="aboutButton" text="About" onAction="#handleAbout"
                             styleClass="menu-button" maxWidth="Infinity"/>

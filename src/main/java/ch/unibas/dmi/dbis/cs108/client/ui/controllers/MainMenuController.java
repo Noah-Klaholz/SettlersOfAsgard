@@ -3,7 +3,8 @@ package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 import ch.unibas.dmi.dbis.cs108.client.app.GameApplication; // Import GameApplication
 import ch.unibas.dmi.dbis.cs108.client.core.PlayerIdentityManager;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.components.LeaderboardDialog;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.*;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player; // Use shared Player
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.AboutDialog;
@@ -11,8 +12,6 @@ import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -59,6 +58,7 @@ public class MainMenuController extends BaseController {
 
     private AboutDialog aboutDialog;
     private SettingsDialog settingsDialog;
+    private LeaderboardDialog leaderboardDialog;
     private ChatComponent chatComponentController;
 
     /**
@@ -115,6 +115,7 @@ public class MainMenuController extends BaseController {
     private void initializeDialogs() {
         aboutDialog = new AboutDialog();
         settingsDialog = new SettingsDialog();
+        leaderboardDialog = new LeaderboardDialog();
         // Set initial player name in settings dialog
         if (localPlayer != null) {
             settingsDialog.playerNameProperty().set(localPlayer.getName());
@@ -151,6 +152,7 @@ public class MainMenuController extends BaseController {
         eventBus.subscribe(ConnectionStatusEvent.class, this::handleConnectionStatus);
         eventBus.subscribe(ErrorEvent.class, this::handleErrorEvent);
         eventBus.subscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
+        eventBus.subscribe(LeaderboardResponseUIEvent.class, this::handleLeaderboardResponse);
     }
 
     /**
@@ -251,6 +253,24 @@ public class MainMenuController extends BaseController {
     }
 
     /**
+     * Handles the response from the leaderboard request.
+     * Displays the leaderboard dialog with the received data.
+     *
+     * @param event The leaderboard response event.
+     */
+    private void handleLeaderboardResponse(LeaderboardResponseUIEvent event) {
+        Objects.requireNonNull(event, "LeaderboardResponseEvent cannot be null");
+        Platform.runLater(() -> {
+            if (leaderboardDialog == null) {
+                LOGGER.severe("LeaderboardDialog is null. Cannot display leaderboard.");
+                return;
+            }
+            leaderboardDialog.setLeaderboard(event.getLeaderboard());
+            showDialogAsOverlay(leaderboardDialog, mainMenuRoot);
+        });
+    }
+
+    /**
      * Handles the "Play Game" button click. Switches to the lobby scene if
      * connected.
      */
@@ -309,6 +329,16 @@ public class MainMenuController extends BaseController {
         });
 
         showDialogAsOverlay(settingsDialog, mainMenuRoot);
+    }
+
+    /**
+     * Handles the "Leaderboard" button click. Opens the LeaderboardDialog as an
+     * overlay.
+     */
+    @FXML
+    private void handleLeaderboard() {
+        eventBus.publish(new LeaderboardRequestUIEvent());
+        LOGGER.info("Leaderboard button clicked.");
     }
 
     @FXML
@@ -434,6 +464,7 @@ public class MainMenuController extends BaseController {
         eventBus.unsubscribe(ConnectionStatusEvent.class, this::handleConnectionStatus);
         eventBus.unsubscribe(ErrorEvent.class, this::handleErrorEvent);
         eventBus.unsubscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
+        eventBus.unsubscribe(LeaderboardResponseUIEvent.class, this::handleLeaderboardResponse);
 
         playerManager.removePlayerUpdateListener(this::handlePlayerUpdate);
 
