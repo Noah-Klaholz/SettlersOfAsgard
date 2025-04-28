@@ -135,6 +135,7 @@ public class GameScreenController extends BaseController {
     private Node selectedCard;
     private CardDetails selectedStatue;
     private boolean hasPlacedStatue = false;
+    private Tile highlightedTile = null;
 
     // Tooltips for cards are cached to avoid recreating them on every hover event
     private final Map<Node, Tooltip> cardTooltips = new HashMap<>();
@@ -696,7 +697,9 @@ public class GameScreenController extends BaseController {
         gameCanvas.setFocusTraversable(true);
 
         // Single click handler - just selects tile
-        gameCanvas.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> handleCanvasClick(e.getX(), e.getY()));
+        gameCanvas.addEventHandler(MouseEvent.MOUSE_PRESSED, e ->
+                handleCanvasClick(e.getX(), e.getY())
+        );
 
         // Double click handler - for purchases
         gameCanvas.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
@@ -705,44 +708,19 @@ public class GameScreenController extends BaseController {
             }
         });
 
-        /** //TODO this code might be problematic
-         // Mouse move handler for tile tooltips
-         gameCanvas.addEventHandler(MouseEvent.MOUSE_MOVED, e -> {
-         double mouseX = e.getX();
-         double mouseY = e.getY();
+        gameCanvas.addEventHandler(MouseEvent.MOUSE_MOVED, e ->
+                handleCanvasMouseMove(e.getX(), e.getY())
+        );
 
-         int[] hexCoords = getHexAt(mouseX, mouseY);
-         if (hexCoords != null) {
-         int row = hexCoords[0];
-         int col = hexCoords[1];
+        gameCanvas.addEventHandler(MouseEvent.MOUSE_ENTERED_TARGET, e ->
+                handleCanvasEntered(e.getX(), e.getY())
+        );
 
-         // Only show tooltip if the hex coordinates changed (to avoid tooltip flicker)
-         if (highlightedTile == null || highlightedTile[0] != row || highlightedTile[1] != col) {
-         // Hide any existing tooltip
-         Tooltip.uninstall(gameCanvas, null);
-
-         Tile tile = getTile(row, col);
-         if (tile != null) {
-         // Create and show tooltip
-         TileTooltip tooltip = new TileTooltip(tile, tile.getOwner());
-         tooltip.show(gameCanvas, e.getScreenX() + 15, e.getScreenY() + 15);
-
-         // Update highlighted tile
-         highlightedTile = new int[] { row, col };
-         }
-         }
-         } else if (highlightedTile != null) {
-         // Mouse is not over a valid tile, hide any active tooltip
-         Tooltip.uninstall(gameCanvas, null);
-         highlightedTile = null;
-         }
-         });
-
-         // Hide tooltip when mouse exits canvas
-         gameCanvas.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
-         Tooltip.uninstall(gameCanvas, null);
-         highlightedTile = null;
-         }); */
+        gameCanvas.addEventHandler(MouseEvent.MOUSE_EXITED_TARGET, e -> {
+            Logger.getGlobal().info("Game canvas excited");
+            highlightedTile = null;
+            drawMapAndGrid();
+        });
 
         if (gameCanvas.getParent() instanceof StackPane parent) {
             parent.addEventHandler(MouseEvent.MOUSE_PRESSED, ev -> {
@@ -781,8 +759,6 @@ public class GameScreenController extends BaseController {
 
         int row = tile[0];
         int col = tile[1];
-        selectedRow = row;
-        selectedCol = col;
         drawMapAndGrid();
         eventBus.publish(new TileClickEvent(row, col));
 
@@ -870,6 +846,51 @@ public class GameScreenController extends BaseController {
     }
 
     /**
+     * Handles mouse entering the canvas - highlights the tile under the cursor
+     */
+    private void handleCanvasEntered(double px, double py) {
+        Logger.getGlobal().info("Game canvas entered");
+        int[] tile = getHexAt(px, py);
+        if (tile == null)
+            return;
+
+        int row = tile[0];
+        int col = tile[1];
+
+        // Highlight the tile under the cursor
+        highlightedTile = getTile(row, col);
+        drawMapAndGrid();
+    }
+
+    /**
+     * Handles mouse movement within the canvas
+     */
+    private void handleCanvasMouseMove(double px, double py) {
+        Logger.getGlobal().info("Game canvas moved at " + px + ", " + py);
+        int[] tile = getHexAt(px, py);
+        if (tile == null) {
+            // If no tile under cursor, clear highlight
+            if (highlightedTile != null) {
+                highlightedTile = null;
+                drawMapAndGrid();
+            }
+            return;
+        }
+
+        int row = tile[0];
+        int col = tile[1];
+
+        Tile tileUnderCursor = getTile(row, col);
+
+        // Only redraw if the highlighted tile has changed
+        if (tileUnderCursor != highlightedTile) {
+            highlightedTile = tileUnderCursor;
+            drawMapAndGrid();
+        }
+        Logger.getGlobal().info("Highlighted Tile at " + row + ", " + col + " is " + highlightedTile.getX() + ", " + highlightedTile.getY());
+    }
+
+    /**
      * Repaints the map and hex‑grid. Invoked whenever the canvas is resized or
      * one of the grid parameters changes.
      */
@@ -944,7 +965,9 @@ public class GameScreenController extends BaseController {
             for (int c = 0; c < HEX_COLS; c++) {
                 double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2);
                 double cy = gridOffsetY + r * vSpacing;
-                boolean selected = (r == selectedRow && c == selectedCol);
+                boolean selected = (highlightedTile != null &&
+                        getTile(r, c) != null &&
+                        getTile(r, c).equals(highlightedTile));
                 drawHex(gc, cx, cy, size, r, c, selected);
             }
         }
@@ -1000,9 +1023,10 @@ public class GameScreenController extends BaseController {
             double oldAlpha = gc.getGlobalAlpha();
             gc.setStroke(Color.YELLOW);
             gc.setLineWidth(3);
-            gc.setGlobalAlpha(oldAlpha);
+            gc.setGlobalAlpha(1.0);
             gc.stroke();
             gc.setStroke(oldStroke);
+            gc.setGlobalAlpha(oldAlpha);
         } else {
             gc.stroke();
         }
@@ -1122,6 +1146,8 @@ public class GameScreenController extends BaseController {
     int[] getHexAt(double px, double py) {
         if (!isMapLoaded || effectiveHexSize <= 0)
             return null;
+
+        LOGGER.info("Getting hex at px=" + px + ", py=" + py);
 
         double hSpacing = effectiveHexSize * gridAdjustmentManager.getHorizontalSpacingFactor();
         double vSpacing = effectiveHexSize * gridAdjustmentManager.getVerticalSpacingFactor();
