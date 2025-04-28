@@ -10,6 +10,7 @@ import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 
+import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 
 /**
@@ -98,6 +99,22 @@ public class StructureActionHandler {
             }
 
             return success;
+        });
+    }
+
+    /**
+     * Cheat: A player destroy all enemy structures.
+     *
+     * @param playerName the name of the player
+     * @return if the action was successful, false otherwise
+     */
+    public boolean ragnarok(String playerName) {
+        return executeWithLock(() -> {
+            for (Player p : gameState.getPlayers()) {
+                if(Objects.equals(playerName, p.getName())) continue;
+                p.setPurchasableEntities(null);
+            }
+            return true;
         });
     }
 
