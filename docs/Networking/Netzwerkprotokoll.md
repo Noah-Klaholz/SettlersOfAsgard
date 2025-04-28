@@ -59,6 +59,8 @@ Dieser Befehl bedeutet, dass Spieler PL01 eine Struktur vom Typ "Castle" auf das
 | `USFA` | **C→S**  | Benutzen eines Feld-Artefakts (auf Feld anwenden)       | `X$Y$ArtifactID$UseType`    | `USFA$2$Runes`                          |
 | `ENDG` | **S→C**  | Beenden des Spiels                                      | `Leaderboard`               | `ENDG$ThorOdinson$210$Freya$300`        |
 | `INFO` | **S→C**  | Schickt eine Notifikation über GameEvents an den Client | `PARAM1$[PARAM2$]...`       | `INFO$CURSE`                            |
+| `CHEA` | **C→S**  | Wendet einen geheimen CheatCode an                      | `CheatCode`                 | `CHEA$RAGN`                             |
+
 
 ## 4. Fehlerbehandlung
 Eine allgemeine Fehlernachricht hat folgendes Format:  

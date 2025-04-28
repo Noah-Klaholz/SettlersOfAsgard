@@ -47,8 +47,7 @@ public class CommandProcessor {
         commandHandlers.put(Commands.USESTATUE, this::handleUseStatue);
         commandHandlers.put(Commands.USEFIELDARTIFACT, this::handleUseFieldArtifact);
         commandHandlers.put(Commands.USEPLAYERARTIFACT, this::handleUsePlayerArtifact);
-        commandHandlers.put(Commands.CLAIMALL, this::handleClaimAll);
-        commandHandlers.put(Commands.RAGNAROK, this::handleRagnarok);
+        commandHandlers.put(Commands.CHEAT, this::handleCheatCode);
     }
 
     /**
@@ -318,6 +317,20 @@ public class CommandProcessor {
                     formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$USEPLAYERARTIFACT");
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error using player artifact", e);
+            return formatError(e.getMessage());
+        }
+    }
+
+    private String handleCheatCode(Command cmd) {
+        try {
+            String cheatCode = cmd.getArgs()[0];
+            return switch (cheatCode) {
+                case "CLAM" -> handleClaimAll(cmd);
+                case "RAGN" -> handleRagnarok(cmd);
+                default -> formatError(ErrorsAPI.Errors.INVALID_PARAMETERS.getError() + "$CHEAT");
+            };
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error while cheating", e);
             return formatError(e.getMessage());
         }
     }

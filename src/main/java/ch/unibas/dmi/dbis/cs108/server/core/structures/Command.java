@@ -79,7 +79,7 @@ public class Command {
      */
     public boolean checkArgumentsSize() {
         return switch (commandType) {
-            case LISTLOBBIES, START, SHUTDOWN, SYNCHRONIZE, STARTTURN, ENDTURN, GETGAMESTATUS, GETPRICES, LEADERBOARD, CLAIMALL, RAGNAROK -> args.length == 0;
+            case LISTLOBBIES, START, SHUTDOWN, SYNCHRONIZE, STARTTURN, ENDTURN, GETGAMESTATUS, GETPRICES, LEADERBOARD, CHEAT -> args.length == 0;
             case REGISTER, LEAVE, CHANGENAME, PING, EXIT, BUYSTRUCTURE, BUYSTATUE, DISCONNECT  -> args.length == 1;
             case JOIN, CHATGLOBAL, CHATLOBBY, BUYTILE -> args.length == 2;
             case CHATPRIVATE, PLACESTRUCTURE, USEPLAYERARTIFACT, UPGRADESTATUE, CREATELOBBY, USESTRUCTURE -> args.length == 3;

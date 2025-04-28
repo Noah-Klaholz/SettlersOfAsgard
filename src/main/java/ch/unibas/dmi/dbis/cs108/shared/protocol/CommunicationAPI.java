@@ -179,14 +179,6 @@ public interface CommunicationAPI {
              */
             USEFIELDARTIFACT("USFA"),
             /**
-             * Player claims all tiles (cheat code)
-             */
-            CLAIMALL("CLAM"),
-            /**
-             * Player destroys all enemy structures
-             */
-            RAGNAROK("RAGN"),
-            /**
              * Player disconnects from the game
              */
             DISCONNECT("DISC"),
@@ -207,7 +199,11 @@ public interface CommunicationAPI {
             /**
              * Error response
              */
-            ERROR("ERR");
+            ERROR("ERR"),
+            /**
+             * Secret CheatCode Command
+             */
+            CHEAT("CHEA");
 
             private final String command;
 
