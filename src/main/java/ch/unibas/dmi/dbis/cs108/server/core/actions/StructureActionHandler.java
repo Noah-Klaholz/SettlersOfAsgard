@@ -10,6 +10,7 @@ import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 
@@ -120,7 +121,7 @@ public class StructureActionHandler {
             }
             for (Player p : gameState.getPlayers()) {
                 if (Objects.equals(p.getName(), playerName)) continue;
-                p.setPurchasableEntities(null);
+                p.setPurchasableEntities(new ArrayList<>());
             }
             return true;
         });
