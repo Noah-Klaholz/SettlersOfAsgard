@@ -321,6 +321,10 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                     break;
                 case PING:
                     break;
+                case LEADERBOARD:
+                    answer = false;
+                    worked = ch.handleGetLeaderboard();
+                    break;
                 case TEST:
                     answer = false;
                     logger.info("TEST");
