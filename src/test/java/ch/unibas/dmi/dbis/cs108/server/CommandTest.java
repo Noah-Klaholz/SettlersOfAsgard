@@ -68,7 +68,7 @@ public class CommandTest {
         assertTrue(new Command("ENDT$", mockPlayer).isValid());
         assertTrue(new Command("JOIN$player$lobby", mockPlayer).isValid());
         assertTrue(new Command("CHTP$player2$player3$msg", mockPlayer).isValid());
-        assertTrue(new Command("USSR$1$2$3$4", mockPlayer).isValid());
+        assertTrue(new Command("USSR$1$2$3", mockPlayer).isValid());
     }
 
     /**
@@ -81,7 +81,7 @@ public class CommandTest {
         assertFalse(new Command("PING$2$2$", mockPlayer).isValid()); // Missing arg
         assertFalse(new Command("JOIN$lobby", mockPlayer).isValid()); // Missing arg
         assertFalse(new Command("CHTP$1$2$3$4", mockPlayer).isValid()); // Missing arg
-        assertFalse(new Command("USSR$1$2$3", mockPlayer).isValid()); // Missing arg
+        assertFalse(new Command("USSR$1$2$3$4", mockPlayer).isValid()); // Missing arg
         assertFalse(new Command("PING$1$extra", mockPlayer).isValid()); // Extra arg
     }
 
@@ -145,7 +145,7 @@ public class CommandTest {
      */
     @Test
     void testMaxArguments() {
-        assertTrue(new Command("USSR$1$2$3$4", mockPlayer).isValid());
+        assertTrue(new Command("USSR$1$2$3", mockPlayer).isValid());
     }
 
     /**
