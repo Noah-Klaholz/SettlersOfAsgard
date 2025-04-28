@@ -84,8 +84,8 @@ public class Command {
             case LISTLOBBIES, START, SHUTDOWN, SYNCHRONIZE, STARTTURN, ENDTURN, GETGAMESTATUS, GETPRICES -> args.length == 0;
             case REGISTER, LEAVE, CHANGENAME, PING, EXIT, BUYSTRUCTURE, BUYSTATUE, DISCONNECT  -> args.length == 1;
             case JOIN, CHATGLOBAL, CHATLOBBY, BUYTILE -> args.length == 2;
-            case CHATPRIVATE, PLACESTRUCTURE, USEPLAYERARTIFACT, UPGRADESTATUE, CREATELOBBY -> args.length == 3;
-            case USESTATUE, USESTRUCTURE, USEFIELDARTIFACT -> args.length == 4;
+            case CHATPRIVATE, PLACESTRUCTURE, USEPLAYERARTIFACT, UPGRADESTATUE, CREATELOBBY, USESTRUCTURE -> args.length == 3;
+            case USESTATUE, USEFIELDARTIFACT -> args.length == 4;
             case LISTPLAYERS -> (args.length == 1 && args[0].equals("SERVER"))|| (args.length == 2 && args[0].equals("LOBBY"));
             default -> {
                 logger.warning("Invalid Command arguments size: " + command + " " + args.length);

@@ -817,7 +817,7 @@ public class GameScreenController extends BaseController {
 
         if (localPlayer != null &&  getTile(row, col) != null) {
             Tile t = getTile(row, col);
-            if (selectedCard != null) {
+            if (selectedCard != null && !t.hasEntity()) {
                 CardDetails s = getCardDetails(selectedCard.getId());
                 eventBus.publish(new PlaceStructureUIEvent(col, row, s.getID()));
             }
@@ -884,8 +884,15 @@ public class GameScreenController extends BaseController {
             } else {
                 showNotification("Not enough runes to buy this tile (Cost: " + price + ").");
             }
-        } else if (localPlayer != null && ownerId.equals(localPlayer.getId())) {
-            showNotification("You already own this tile.");
+        } else if (localPlayer != null && ownerId.equals(localPlayer.getName())) {
+            if (getTile(row, col) != null) {
+                Tile t = getTile(row, col);
+                if (t.hasEntity() && t.getEntity().getId() == 1) {
+                    eventBus.publish(new UseStructureUIEvent(col, row, t.getEntity().getId()));
+                }
+            } else {
+                showNotification("You already own this tile.");
+            }
         } else {
             showNotification("This tile is owned by another player.");
         }
@@ -1083,9 +1090,8 @@ public class GameScreenController extends BaseController {
         double placeholderSizeRatio = 0.7; // Make placeholder 70% of hex width
         double placeholderWidth = 1.7 * hexSize * hSquish * placeholderSizeRatio;
         // Maintain aspect ratio 1:1 for square placeholder, adjust if needed
-        double placeholderHeight = placeholderWidth;
         double placeholderX = centerX - placeholderWidth / 2;
-        double placeholderY = centerY - placeholderHeight / 2;
+        double placeholderY = centerY - placeholderWidth / 2;
 
         // Helper function to draw placeholder
         Runnable drawPlaceholder = () -> {
@@ -1093,7 +1099,7 @@ public class GameScreenController extends BaseController {
             double oldAlpha = gc.getGlobalAlpha();
             gc.setFill(Color.RED); // Use red for placeholder
             gc.setGlobalAlpha(1.0); // Ensure placeholder is opaque
-            gc.fillRect(placeholderX, placeholderY, placeholderWidth, placeholderHeight);
+            gc.fillRect(placeholderX, placeholderY, placeholderWidth, placeholderWidth);
             gc.setFill(oldFill);
             gc.setGlobalAlpha(oldAlpha);
         };
@@ -1122,7 +1128,7 @@ public class GameScreenController extends BaseController {
             double maxHeight = 1.732 * hexSize; // Approximation
 
             // Calculate scale to fit within both max width and max height
-            double scale = Math.min(maxWidth / image.getWidth(), maxHeight / image.getHeight());
+            double scale = maxWidth / image.getWidth();
 
             // Calculate scaled dimensions
             double scaledWidth = image.getWidth() * scale;
