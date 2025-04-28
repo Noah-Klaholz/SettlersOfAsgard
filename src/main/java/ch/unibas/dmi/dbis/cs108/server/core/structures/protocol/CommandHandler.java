@@ -377,6 +377,11 @@ public class CommandHandler {
         }
     }
 
+    public boolean handleGetLeaderboard() {
+        gameLogic.getNotifier().broadcastGlobalLeaderboard();
+        return true;
+    }
+
     /**
      * This method returns the current game logic.
      *
