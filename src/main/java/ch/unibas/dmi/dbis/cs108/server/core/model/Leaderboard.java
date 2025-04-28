@@ -10,23 +10,45 @@ import java.util.concurrent.locks.*;
 import java.util.logging.*;
 import java.util.stream.Collectors;
 
+/**
+ * This class manages a Leaderboard. It handles loading, updating, saving and sending
+ * of the leaderboard.txt file (@see leaderboard/leaderboard.txt)
+ */
 public class Leaderboard {
+    /** Logger to log logging */
     private static final Logger LOGGER = Logger.getLogger(Leaderboard.class.getName());
-
+    /** Map for the leaderboard (name -> points (runes) */
     private final Map<String, Integer> leaderboard = new ConcurrentHashMap<>();
+    /** The path to the leaderboard */
     private final Path leaderboardPath;
+    /** ReadWriteLock to ensure thread-safe handling */
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
+    /**
+     * Instantiates a Leaderboard object. Initializes the Path field from the current file.
+     * Ensures the directory exists and loads the file.
+     */
     public Leaderboard() {
         this(Paths.get("leaderboard", "Leaderboard.txt").toAbsolutePath());
+        ensureDirectoryExists();
+        load();
     }
 
+    /**
+     * Instantiates a Leaderboard object. Initializes the Path field from the parameter.
+     * Ensures the directory exists and loads the file.
+     *
+     * @param customPath the path to the file
+     */
     public Leaderboard(Path customPath) {
         this.leaderboardPath = customPath;
         ensureDirectoryExists();
         load();
     }
 
+    /**
+     * Ensures the leaderboard directory exists.
+     */
     private void ensureDirectoryExists() {
         try {
             Files.createDirectories(leaderboardPath.getParent());
@@ -35,16 +57,24 @@ public class Leaderboard {
         }
     }
 
+    /**
+     * Updates the leaderboard by adding a key and value to the map.
+     *
+     * @param playerName the name of the player
+     * @param points the points of the player
+     */
     public void update(String playerName, int points) {
         lock.writeLock().lock();
         try {
             leaderboard.merge(playerName, points, Integer::sum);
-            save();
         } finally {
             lock.writeLock().unlock();
         }
     }
 
+    /**
+     * Saves the current leaderboard.
+     */
     public void save() {
         lock.readLock().lock();
         try (BufferedWriter writer = Files.newBufferedWriter(leaderboardPath,
@@ -61,6 +91,12 @@ public class Leaderboard {
         }
     }
 
+    /**
+     * Writes an entry of the map to the BufferedWriter. Helper Method for save().
+     *
+     * @param writer the BufferedWriter to write to
+     * @param entry the entry of the Map to write
+     */
     private void writeEntry(BufferedWriter writer, Map.Entry<String, Integer> entry) {
         try {
             writer.write(entry.getKey() + ": " + entry.getValue() + "\n");
@@ -69,6 +105,9 @@ public class Leaderboard {
         }
     }
 
+    /**
+     * Loads the leaderboard map from the file.
+     */
     public void load() {
         lock.writeLock().lock();
         try {
@@ -87,6 +126,10 @@ public class Leaderboard {
         }
     }
 
+    /**
+     * Gets the leaderboard map (sorted from highest to lowest).
+     * @return
+     */
     public Map<String, Integer> getLeaderboard() {
         lock.readLock().lock();
         try {
