@@ -47,6 +47,7 @@ public class CommandProcessor {
         commandHandlers.put(Commands.USESTATUE, this::handleUseStatue);
         commandHandlers.put(Commands.USEFIELDARTIFACT, this::handleUseFieldArtifact);
         commandHandlers.put(Commands.USEPLAYERARTIFACT, this::handleUsePlayerArtifact);
+        commandHandlers.put(Commands.CLAIMALL, this::handleClaimAll);
     }
 
     /**
