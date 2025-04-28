@@ -70,8 +70,6 @@ public class Command {
         }
         // Check arguments for each command individually
         return checkArgumentsSize();
-        // Later: add argument checking for game logic commands
-
     }
 
     /**
@@ -81,7 +79,7 @@ public class Command {
      */
     public boolean checkArgumentsSize() {
         return switch (commandType) {
-            case LISTLOBBIES, START, SHUTDOWN, SYNCHRONIZE, STARTTURN, ENDTURN, GETGAMESTATUS, GETPRICES -> args.length == 0;
+            case LISTLOBBIES, START, SHUTDOWN, SYNCHRONIZE, STARTTURN, ENDTURN, GETGAMESTATUS, GETPRICES, LEADERBOARD -> args.length == 0;
             case REGISTER, LEAVE, CHANGENAME, PING, EXIT, BUYSTRUCTURE, BUYSTATUE, DISCONNECT  -> args.length == 1;
             case JOIN, CHATGLOBAL, CHATLOBBY, BUYTILE -> args.length == 2;
             case CHATPRIVATE, PLACESTRUCTURE, USEPLAYERARTIFACT, UPGRADESTATUE, CREATELOBBY, USESTRUCTURE -> args.length == 3;
@@ -148,7 +146,7 @@ public class Command {
      */
     public boolean isAdministrative() {
         return switch (commandType) {
-            case LISTLOBBIES, START, SHUTDOWN, SYNCHRONIZE, REGISTER, LEAVE, CHANGENAME, PING, EXIT, JOIN, CHATGLOBAL, CHATLOBBY, CHATPRIVATE, CREATELOBBY, LISTPLAYERS, OK, DISCONNECT -> true;
+            case LEADERBOARD, LISTLOBBIES, START, SHUTDOWN, SYNCHRONIZE, REGISTER, LEAVE, CHANGENAME, PING, EXIT, JOIN, CHATGLOBAL, CHATLOBBY, CHATPRIVATE, CREATELOBBY, LISTPLAYERS, OK, DISCONNECT -> true;
             case BUYSTRUCTURE, BUYSTATUE, GETGAMESTATUS, GETPRICES, STARTTURN, ENDTURN, BUYTILE, PLACESTRUCTURE, USEPLAYERARTIFACT, UPGRADESTATUE, USESTATUE, USESTRUCTURE, USEFIELDARTIFACT  -> false;
             default -> {
                 logger.warning("Invalid Command " + command + " " + Arrays.toString(args));
