@@ -354,7 +354,7 @@ public class CommandProcessor {
             String playerName = cmd.getPlayer().getName();
             boolean success = gameLogic.ragnarok(playerName);
             return success ?
-                    formatSuccess((Commands.CHEAT.getCommand()) + "$" + CheatEvent.Cheat.CLAIMALL.getCode() + "$" + playerName) :
+                    formatSuccess((Commands.CHEAT.getCommand()) + "$" + CheatEvent.Cheat.RAGNAROK.getCode() + "$" + playerName) :
                     formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$CHEAT");
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error while cheating", e);
