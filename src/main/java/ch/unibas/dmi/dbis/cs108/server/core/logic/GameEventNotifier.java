@@ -1,5 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.core.logic;
 
+import ch.unibas.dmi.dbis.cs108.server.core.model.Leaderboard;
+
 /**
  * This interface defines the interactions between Lobby and GameLogic.
  */
@@ -28,4 +30,6 @@ public interface GameEventNotifier {
      * @param message The message to send.
      */
     void sendMessageToPlayer(String player, String message);
+
+    void broadcastGlobalLeaderboard();
 }
