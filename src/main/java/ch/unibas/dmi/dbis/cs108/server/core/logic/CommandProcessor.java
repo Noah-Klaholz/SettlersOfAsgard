@@ -326,7 +326,7 @@ public class CommandProcessor {
             boolean success = gameLogic.claimAll(playerName);
             return success ?
                     formatSuccess(Commands.CLAIMALL.getCommand() + "$" + playerName) :
-                    formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$USEPLAYERARTIFACT");
+                    formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$CHEAT");
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error while cheating", e);
             return formatError(e.getMessage());
