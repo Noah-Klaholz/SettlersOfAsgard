@@ -302,6 +302,7 @@ public class Lobby implements GameEventNotifier {
             gameLogic.getGameState().getPlayers().forEach(player -> {
                 leaderboard.update(player.getName(), player.getRunes());
             });
+            leaderboard.save();
             gameLogic.getGameState().reset();
             stopTurnScheduler();
         }
