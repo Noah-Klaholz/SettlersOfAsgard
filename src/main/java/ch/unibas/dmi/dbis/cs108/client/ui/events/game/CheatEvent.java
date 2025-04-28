@@ -2,6 +2,9 @@ package ch.unibas.dmi.dbis.cs108.client.ui.events.game;
 
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
 
+import java.util.Arrays;
+import java.util.regex.Pattern;
+
 /**
  * CheatEvent is an event that represents a cheat code entered by the user.
  * It contains the cheat code as a string.
@@ -9,6 +12,22 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
 public class CheatEvent implements UIEvent {
     /** The cheat code entered by the user. */
     private final Cheat cheatCode;
+    /** The regex pattern for valid cheat codes. */
+    private static final Pattern CHEAT_PATTERN;
+
+    /**
+     * The regex pattern for valid cheat codes.
+     * It is built dynamically based on the available cheat codes.
+     */
+    static {
+        // Dynamically build the regex for valid cheat codes
+        String cheatCodes = String.join("|",
+                Arrays.stream(CheatEvent.Cheat.values())
+                        .map(CheatEvent.Cheat::getCode)
+                        .toArray(String[]::new)
+        );
+        CHEAT_PATTERN = Pattern.compile("^/cheatcode\\s+(" + cheatCodes + ")$", Pattern.CASE_INSENSITIVE);
+    }
 
     /**
      * Constructs a CheatEvent with the specified cheat code.
@@ -35,6 +54,15 @@ public class CheatEvent implements UIEvent {
      */
     public Cheat getCheat() {
         return cheatCode;
+    }
+
+    /**
+     * Returns the regex pattern for valid cheat codes.
+     *
+     * @return the regex pattern
+     */
+    public static Pattern getCheatPattern() {
+        return CHEAT_PATTERN;
     }
 
     /**
@@ -72,6 +100,20 @@ public class CheatEvent implements UIEvent {
          */
         public String getCode() {
             return code;
+        }
+
+        /**
+         * Returns the cheat code as a string.
+         *
+         * @return the cheat code
+         */
+        public static Cheat fromCode(String code) {
+            for (Cheat cheat : Cheat.values()) {
+                if (cheat.code.equalsIgnoreCase(code)) {
+                    return cheat;
+                }
+            }
+            return null;
         }
     }
 }

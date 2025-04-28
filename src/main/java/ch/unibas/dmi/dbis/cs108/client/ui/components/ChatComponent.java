@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.components;
 
+import ch.unibas.dmi.dbis.cs108.client.ui.events.game.CheatEvent;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player; // Use shared Player
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
@@ -30,6 +31,7 @@ public class ChatComponent extends UIComponent<BorderPane> {
     private static final Logger LOGGER = Logger.getLogger(ChatComponent.class.getName());
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
     private static final Pattern WHISPER_PATTERN = Pattern.compile("^/w\\s+(\\S+)\\s+(.*)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern CHEAT_PATTERN = CheatEvent.getCheatPattern();
 
     private final ObservableList<String> messages = FXCollections.observableArrayList();
     private final UIEventBus eventBus;
@@ -185,6 +187,7 @@ public class ChatComponent extends UIComponent<BorderPane> {
             return;
         }
         Matcher whisperMatcher = WHISPER_PATTERN.matcher(input);
+        Matcher cheatCodeMatcher = CHEAT_PATTERN.matcher(input);
         try {
             if (whisperMatcher.matches()) {
                 String recipient = whisperMatcher.group(1);
@@ -203,6 +206,10 @@ public class ChatComponent extends UIComponent<BorderPane> {
                         addSystemMessage("Invalid whisper format. Missing message. Use /w <username> <message>");
                     }
                 }
+            } else if (cheatCodeMatcher.matches()) {
+                String cheatCode = cheatCodeMatcher.group(1);
+                LOGGER.fine("Sending cheat code: " + cheatCode);
+                eventBus.publish(new CheatEvent(CheatEvent.Cheat.fromCode(cheatCode)));
             } else if (globalChatButton.isSelected()) {
                 LOGGER.fine("Sending global message: " + input);
                 eventBus.publish(new GlobalChatEvent(input, GlobalChatEvent.ChatType.GLOBAL));
