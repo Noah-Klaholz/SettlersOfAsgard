@@ -248,6 +248,16 @@ public class GameLogic implements GameLogicInterface {
     }
 
     /**
+     * Cheat: The player invokes ragnarok and destroys all enemy structures.
+     *
+     * @param playerName the name of the player.
+     * @return true if the action was successful, false otherwise.
+     */
+    public boolean ragnarok(String playerName) {
+        return structureActionHandler.ragnarok(playerName);
+    }
+
+    /**
      * Gets the current state of the TurnManager.
      * @return The current TurnManager object.
      */
