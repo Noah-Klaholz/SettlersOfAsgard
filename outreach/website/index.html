@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settlers Of Asgard</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Add this line for the favicon -->
+    <link rel="icon" type="image/x-icon" href="images/game-logo.png"> <!-- Adjust href path as needed -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Lato:wght@300;400;700&display=swap"
+        rel="stylesheet">
+    <!-- AOS library for scroll animations -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+</head>
+
+<body>
+    <header class="sticky-nav">
+        <nav>
+            <div class="logo" data-aos="fade-down">SOA</div>
+            <ul data-aos="fade-down" data-aos-delay="100">
+                <li><a href="#hero">Home</a></li>
+                <li><a href="#story">Story</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#resources">Docs</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="hero" class="hero-section">
+            <div class="hero-content">
+                <h1 data-aos="zoom-in" data-aos-duration="1000">Settlers Of Asgard</h1>
+                <p class="tagline" data-aos="fade-up" data-aos-delay="300" data-aos-duration="800">Forge Your Saga in
+                    the Realm of Gods</p>
+                <p class="description" data-aos="fade-up" data-aos-delay="500" data-aos-duration="800">
+                    Build, strategize, and conquer in Settlers Of Asgard, a multiplayer game inspired by Norse
+                    mythology. Gather resources, construct powerful structures, invoke ancient gods, and outwit your
+                    rivals to claim victory.
+                </p>
+                <a href="#story" class="cta-button" data-aos="zoom-in-up" data-aos-delay="700"
+                    data-aos-duration="600">Discover the Story</a>
+            </div>
+            <div class="hero-overlay"></div>
+        </section>
+
+        <!-- Story Section -->
+        <section id="story" class="content-section">
+            <h2 data-aos="fade-up">The Saga Begins</h2>
+            <p data-aos="fade-up" data-aos-delay="100">
+                In the mythical realms touched by Yggdrasil, aspiring chieftains rise to claim their place among
+                legends. As a settler in the lands of Asgard, you must harness the power of runes, build formidable
+                settlements, and seek the favor of the gods themselves. Navigate treacherous landscapes, manage
+                resources wisely, and engage in strategic battles against rivals vying for dominance. Will you build a
+                legacy worthy of the sagas, or fade into oblivion?
+            </p>
+            <!-- Optional: Add an image related to the story -->
+            <!-- <img src="assets/images/story-image.jpg" alt="Norse settlement concept" data-aos="zoom-in" data-aos-delay="200"> -->
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features-section">
+            <h2 data-aos="fade-up">Key Features</h2>
+            <div class="features-grid">
+                <!-- Feature 1 -->
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                    <img src="images/cards/s_sulturssmithy_card.png" alt="Sutur's Smithy Icon" class="icon">
+                    <h3>Build Your Settlement</h3>
+                    <p>Acquire land and construct vital structures like Runetables and Surtur's Smeltery to expand your
+                        influence.</p>
+                </div>
+                <!-- Feature 2 -->
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                    <img src="images/cards/s_huginnandmuninn_card.png" alt="Huginn and Muninn" class="icon">
+                    <h3>Invoke the Gods</h3>
+                    <p>Pledge allegiance to powerful Norse deities like Freyr or Loki. Build statues and utilize their
+                        unique blessings or deals.</p>
+                </div>
+                <!-- Feature 3 -->
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                    <img src="images/cards/s_mimisbrunnr_card.png" alt="Mimisbrunnr" class="icon">
+                    <h3>Discover Artifacts</h3>
+                    <p>Unearth potent artifacts like Mjölnir Charms or Odin's Eye hidden across the land to gain
+                        strategic advantages.</p>
+                </div>
+                <!-- Feature 4 -->
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+                    <img src="images/cards/a_nilfheimsicesplinter_card.png" alt="Nilfheim Ice Shard" class="icon">
+                    <h3>Multiplayer Strategy</h3>
+                    <p>Compete against other players in engaging, turn-based gameplay. Outsmart your opponents to
+                        achieve victory.</p>
+                </div>
+                <!-- Feature 5: Artist Credit -->
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="500">
+                    <img src="images/cards/st_loki_card.png" alt="Loki Card Icon" class="icon">
+                    <h3>Unique Art Style</h3>
+                    <p>Experience a visually distinct world brought to life with original artwork and card designs
+                        created by our team's artist.</p>
+                </div>
+                <!-- Feature 6: Norse Mythology -->
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="600">
+                    <!-- Make sure to add an appropriate icon image here -->
+                    <img src="images/cards/a_mjoelnircharm_card.png" alt="Yggdrasil Icon" class="icon">
+                    <!-- Example icon -->
+                    <h3>Explore Norse Mythology</h3>
+                    <p>Immerse yourself in a world inspired by ancient myths, featuring legendary gods, artifacts, and
+                        realms from Norse lore.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Game World Section -->
+        <section id="world" class="content-section world-section">
+            <h2 data-aos="fade-up">Explore the Realms</h2>
+            <p data-aos="fade-up" data-aos-delay="100">
+                Navigate the diverse landscapes of Asgard, from fiery Muspelheim to icy Niflheim. Discover pre-placed
+                structures offering unique advantages and challenges across the interconnected realms. Strategic
+                expansion is key!
+            </p>
+            <img src="images/map_prelook.png" alt="Game Map Overview" class="world-map-image" data-aos="zoom-in"
+                data-aos-delay="200">
+            <!-- Make sure the image path is correct -->
+        </section>
+
+        <!-- Resources Section -->
+        <section id="resources" class="resources-section">
+            <h2 data-aos="zoom-in-up">Resources & Documentation</h2>
+            <ul data-aos="zoom-in-up" data-aos-delay="100">
+                <li><a href="../docs/Spielbeschreibungen/GameManual.md" target="_blank" rel="noopener noreferrer">Game
+                        Manual</a></li>
+                <li><a href="../docs/Spielbeschreibungen/GameDesign Code Edition.md" target="_blank"
+                        rel="noopener noreferrer">Game Design Details</a></li>
+                <!-- Add more links if needed -->
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Gruppe 3 - University Project. All rights reserved.</p>
+        <p class="artist-credit">Original artwork and card designs by [Artist's Name/Alias].</p>
+        <!-- Add artist credit here -->
+    </footer>
+
+    <!-- AOS Script -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- Custom Script -->
+    <script src="script.js"></script>
+</body>
+
+</html>
