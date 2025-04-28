@@ -381,4 +381,7 @@ public class Lobby implements GameEventNotifier {
         broadcastMessage(gameLogic.getGameState().createDetailedStatusMessage());
     }
 
+    public void broadcastGlobalLeaderboard() {
+        broadcastMessage(CommunicationAPI.NetworkProtocol.Commands.OK.getCommand() + "$" + leaderboard);
+    }
 }
