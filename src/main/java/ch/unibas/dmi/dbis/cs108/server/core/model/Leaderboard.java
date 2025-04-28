@@ -128,7 +128,8 @@ public class Leaderboard {
 
     /**
      * Gets the leaderboard map (sorted from highest to lowest).
-     * @return
+     *
+     * @return the leaderboard.
      */
     public Map<String, Integer> getLeaderboard() {
         lock.readLock().lock();
@@ -141,6 +142,21 @@ public class Leaderboard {
                             (e1, e2) -> e1,
                             LinkedHashMap::new
                     ));
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    /**
+     * Returns the leaderboard as a String. Needed to send it to clients.
+     *
+     * @return the leaderboard as a String.
+     */
+    @Override
+    public String toString(){
+        lock.readLock().lock();
+        try {
+            return getLeaderboard().toString();
         } finally {
             lock.readLock().unlock();
         }
