@@ -37,6 +37,7 @@ public class ChatComponent extends UIComponent<BorderPane> {
     private final UIEventBus eventBus;
     private String currentLobbyId;
     private Player localPlayer; // Use shared.game.Player
+    private boolean inGame = false; // Flag to check if the player is in-game
 
     @FXML
     private ListView<String> chatMessages;
@@ -206,7 +207,7 @@ public class ChatComponent extends UIComponent<BorderPane> {
                         addSystemMessage("Invalid whisper format. Missing message. Use /w <username> <message>");
                     }
                 }
-            } else if (cheatCodeMatcher.matches()) {
+            } else if (cheatCodeMatcher.matches() && inGame) {
                 String cheatCode = cheatCodeMatcher.group(1);
                 LOGGER.fine("Sending cheat code: " + cheatCode);
                 eventBus.publish(new CheatEvent(CheatEvent.Cheat.fromCode(cheatCode)));
@@ -413,6 +414,16 @@ public class ChatComponent extends UIComponent<BorderPane> {
         } else {
             LOGGER.warning("Attempted to set null player in ChatComponent");
         }
+    }
+
+    /**
+     * Sets the in-game status of the player.
+     *
+     * @param inGame True if the player is in-game, false otherwise.
+     */
+    public void setInGame(boolean inGame) {
+        this.inGame = inGame;
+        LOGGER.fine("ChatComponent in-game status updated to: " + inGame);
     }
 
     /**

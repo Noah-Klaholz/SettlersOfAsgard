@@ -317,6 +317,7 @@ public class GameScreenController extends BaseController {
 
         chatComponentController.setPlayer(localPlayer);
         chatComponentController.setCurrentLobbyId(currentLobbyId);
+        chatComponentController.setInGame(true);
     }
 
     /**
@@ -560,10 +561,12 @@ public class GameScreenController extends BaseController {
             dialog.setOnMenuAction(() -> {
                 eventBus.publish(new LeaveLobbyRequestEvent(currentLobbyId));
                 sceneManager.switchToScene(SceneManager.SceneType.MAIN_MENU);
+                chatComponentController.setInGame(false);
             });
             dialog.setOnLobbyAction(() -> {
                 eventBus.publish(new LeaveLobbyRequestEvent(currentLobbyId));
                 sceneManager.switchToScene(SceneManager.SceneType.LOBBY);
+                chatComponentController.setInGame(false);
             });
             StackPane root = (StackPane) gameCanvas.getParent();
             root.getChildren().add(dialog.getView());
