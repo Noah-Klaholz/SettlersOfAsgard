@@ -211,7 +211,7 @@ public class GameScreenController extends BaseController {
             selectedStatue = new CardDetails(defaultStatueEntity, true);
         } else {
             LOGGER.severe("Failed to load default statue entity (ID 38).");
-            // Handle error case, maybe create a dummy CardDetails or throw exception
+            // Handle an error case, maybe create a dummy CardDetails or throw exception
             selectedStatue = new CardDetails(38, "Error Statue", "Failed to load", "", "", 0);
         }
         Logger.getGlobal().info("GameScreenController created and subscribed to events.");
@@ -830,7 +830,7 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Handles a double-click on the canvas – attempts to purchase the tile
+     * Handles a double click on the canvas – attempts to purchase the tile
      * immediately
      * without a confirmation dialog.
      */
@@ -1043,7 +1043,7 @@ public class GameScreenController extends BaseController {
     /**
      * Draws an entity image centered in a hex tile.
      * The image is scaled to fit the hex width while preserving its aspect ratio.
-     * Uses EntityRegistry.getURL(isCard=true) for loading the image, with a red
+     * Use EntityRegistry.getURL(isCard=true) for loading the image with a red
      * placeholder if missing.
      *
      * @param gc       The graphics context to draw on
@@ -1226,7 +1226,7 @@ public class GameScreenController extends BaseController {
      */
 
     /**
-     * Toggles card selection (golden frame) when clicked.
+     * Toggle card selection (golden frame) when clicked.
      */
     @FXML
     public void handleCardClick(MouseEvent event) {
@@ -1345,7 +1345,7 @@ public class GameScreenController extends BaseController {
             titleLabel.setWrapText(true);
             content.getChildren().add(titleLabel);
 
-            // Only add separator if next section has content
+            // Only add separator if the next section has content
             if ((details.getDescription() != null && !details.getDescription().isEmpty()) ||
                     (details.getLore() != null && !details.getLore().isEmpty()) ||
                     details.getPrice() > 0) {
@@ -1359,7 +1359,7 @@ public class GameScreenController extends BaseController {
             descLabel.setWrapText(true);
             content.getChildren().add(descLabel);
 
-            // Only add separator if next section has content
+            // Only add separator if the next section has content
             if ((details.getLore() != null && !details.getLore().isEmpty()) ||
                     details.getPrice() > 0) {
                 content.getChildren().add(new Separator());
@@ -1372,7 +1372,7 @@ public class GameScreenController extends BaseController {
             loreLabel.setWrapText(true);
             content.getChildren().add(loreLabel);
 
-            // Only add separator if next section has content
+            // Only add separator if the next section has content
             if (details.getPrice() > 0) {
                 content.getChildren().add(new Separator());
             }
@@ -1705,7 +1705,7 @@ public class GameScreenController extends BaseController {
                     String.format("Unexpected error updating card image for ID '%s': %s", id, e.getMessage()), e);
             addPlaceholderToPane(pane); // Show error placeholder
         } finally {
-            // Ensure card is visible even if only placeholder is shown
+            // Ensure the card is visible even if only placeholder is shown
             pane.setVisible(true);
             pane.setOpacity(1.0);
         }
@@ -1988,7 +1988,7 @@ public class GameScreenController extends BaseController {
 
     /**
      * Shows a transient notification via the chat component. A dedicated toast
-     * system might be preferable long‑term, but this suffices for now.
+     * system might be preferable long term, but this suffices for now.
      */
     private void showNotification(String message) {
         LOGGER.info("Notification: " + message);
