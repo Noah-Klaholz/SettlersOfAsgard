@@ -201,76 +201,179 @@ public class GameStateManager {
      */
     private void parseBoardSection(String boardSection) {
         Board board = gameState.getBoardManager().getBoard();
-        String[] tileEntries = boardSection.substring(6).split(";(?=\\d+,\\d+\\{)"); // Split on ; before coordinates
+        // Entferne "BOARD:" und splitte auf ";"
+        String[] tileEntries = boardSection.substring(6).split(";");
 
         for (String entry : tileEntries) {
             if (entry.isEmpty()) continue;
-
-            // Extract coordinates and properties
-            int braceOpen = entry.indexOf('{');
-            String[] coords = entry.substring(0, braceOpen).split(",");
-            int x = Integer.parseInt(coords[0]);
-            int y = Integer.parseInt(coords[1]);
-            String props = entry.substring(braceOpen + 1, entry.length() - 1);
-
-            Tile tile = board.getTileByCoordinates(x, y);
-            if (tile == null) continue;
-
-            // First: handle entity-specific properties
-            GameEntity entity = null;
-            if (props.contains("STA")) {
-                entity = parseStatue(props);
-            }
-            else if (props.contains("MON")) {
-                entity = parseMonument(props);
-            }
-            else if (props.contains("STR")) {
-                entity = parseStructure(props);
-            }
-
-            if (entity != null) {
-                tile.setEntity(entity);
-                tile.setHasEntity(true);
-            }
-
-            // Second: handle regular properties
-            for (String prop : props.split(",(?=[A-Z]{1,2}:)")) {
-                String[] keyValue = prop.split(":", 2);
-                if (keyValue.length != 2) continue;
-
-                switch (keyValue[0]) {
-                    case "HE": tile.setHasEntity(keyValue[1].equals("1")); break;
-                    case "O": tile.setOwner(keyValue[1].equals("null") ? null : keyValue[1]); break;
-                    case "P": tile.setPrice(Integer.parseInt(keyValue[1])); break;
-                    case "AR":
-                        if (!keyValue[1].equals("null")) {
-                            tile.setArtifact(EntityRegistry.getArtifact(Integer.parseInt(keyValue[1])));
-                        } else {
-                            tile.setArtifact(null);
-                        }
-                        break;
-                    case "W": tile.setWorld(keyValue[1]); break;
-                    case "PU": tile.setPurchased(keyValue[1].equals("1")); break;
-                    case "RV": tile.setResourceValue(Integer.parseInt(keyValue[1])); break;
-                    case "HR": tile.setHasRiver(keyValue[1].equals("1")); break;
-                    case "ID": tile.setTileID(Integer.parseInt(keyValue[1])); break;
-                    case "ST":
-                        // Tile status buffs
-                        String[] buffs = keyValue[1].substring(1, keyValue[1].length()-1).split(",");
-                        for (String buff : buffs) {
-                            String[] buffParts = buff.split(":");
-                            double value = Double.parseDouble(buffParts[1]);
-                            switch (buffParts[0]) {
-                                case "RG": tile.addBuff(Status.BuffType.RUNE_GENERATION, value - tile.getStatus().get(Status.BuffType.RUNE_GENERATION)); break;
-                                case "EG": tile.addBuff(Status.BuffType.ENERGY_GENERATION, value - tile.getStatus().get(Status.BuffType.ENERGY_GENERATION)); break;
-                                case "RR": tile.addBuff(Status.BuffType.RIVER_RUNE_GENERATION, value - tile.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION)); break;
-                                case "SP": tile.addBuff(Status.BuffType.SHOP_PRICE, value - tile.getStatus().get(Status.BuffType.SHOP_PRICE)); break;
-                                case "AC": tile.addBuff(Status.BuffType.ARTIFACT_CHANCE, value - tile.getStatus().get(Status.BuffType.ARTIFACT_CHANCE)); break;
-                                case "DB": tile.addBuff(Status.BuffType.DEBUFFABLE, value > 0 ? 1 : -1); break;
-                            }
-                        }
-                        break;
+            try {
+                int braceOpen = entry.indexOf('{');
+                if (braceOpen == -1) {
+                    LOGGER.warning("Tile entry format error: " + entry);
+                    continue;
                 }
+                String[] coords = entry.substring(0, braceOpen).split(",");
+                int x = Integer.parseInt(coords[0]);
+                int y = Integer.parseInt(coords[1]);
+                Tile tile = board.getTileByCoordinates(x, y);
+                if (tile == null) continue;
+
+                String props = entry.substring(braceOpen + 1, entry.length() - 1);
+                String[] tokens = props.split("\\|");
+                for (String token : tokens) {
+                    if (token.isEmpty()) continue;
+                    String[] keyValue = token.split("=", 2);
+                    if (keyValue.length != 2) continue;
+                    String key = keyValue[0];
+                    String value = keyValue[1];
+                    try {
+                        switch (key) {
+                            case "HE":
+                                tile.setHasEntity("1".equals(value));
+                                break;
+                            case "O":
+                                tile.setOwner("null".equals(value) ? null : value);
+                                break;
+                            case "P":
+                                tile.setPrice(Integer.parseInt(value));
+                                break;
+                            case "ENT":
+                                if ("NONE".equals(value)) {
+                                    tile.setEntity(null);
+                                    tile.setHasEntity(false);
+                                } else {
+                                    String[] entParts = value.split(",", 2);
+                                    String entType = entParts[0];
+                                    String[] entProps = entParts.length > 1 ? entParts[1].split(",") : new String[0];
+                                    if ("STA".equals(entType)) {
+                                        int id = Integer.parseInt(entProps[0]);
+                                        int disabled = 0, level = 1;
+                                        boolean activated = false;
+                                        for (String p : entProps) {
+                                            if (p.startsWith("DI=")) {
+                                                String disabledStr = p.substring(3);
+                                                // Convert boolean strings to integers
+                                                if (disabledStr.equalsIgnoreCase("true"))
+                                                    disabled = 1;
+                                                else if (disabledStr.equalsIgnoreCase("false"))
+                                                    disabled = 0;
+                                                else
+                                                    disabled = Integer.parseInt(disabledStr);
+                                            }
+                                            else if (p.startsWith("AC=")) activated = Boolean.parseBoolean(p.substring(3));
+                                            else if (p.startsWith("LV=")) level = Integer.parseInt(p.substring(3));
+                                        }
+                                        Statue statue = EntityRegistry.getStatue(id);
+                                        if (statue != null) {
+                                            statue.setDisabled(disabled);
+                                            statue.setActivated(activated);
+                                            statue.setLevel(level);
+                                            tile.setEntity(statue);
+                                            tile.setHasEntity(true);
+                                        }
+                                    } else if ("MON".equals(entType)) {
+                                        int id = Integer.parseInt(entProps[0]);
+                                        int disabled = 0;
+                                        for (String p : entProps) {
+                                            if (
+                                                p.startsWith("DI=")) {
+                                                String disabledStr = p.substring(3);
+                                                // Convert boolean strings to integers
+                                                if (disabledStr.equalsIgnoreCase("true"))
+                                                    disabled = 1;
+                                                else if (disabledStr.equalsIgnoreCase("false"))
+                                                    disabled = 0;
+                                                else
+                                                    disabled = Integer.parseInt(disabledStr);
+                                            }
+                                        }
+                                        Monument monument = EntityRegistry.getMonument(id);
+                                        if (monument != null) {
+                                            monument.setDisabled(disabled);
+                                            tile.setEntity(monument);
+                                            tile.setHasEntity(true);
+                                        }
+                                    } else if ("STR".equals(entType)) {
+                                        int id = Integer.parseInt(entProps[0]);
+                                        int disabled = 0;
+                                        boolean activated = false;
+                                        for (String p : entProps) {
+                                            if (p.startsWith("DI=")) {
+                                                String disabledStr = p.substring(3);
+                                                // Convert boolean strings to integers
+                                                if (disabledStr.equalsIgnoreCase("true"))
+                                                    disabled = 1;
+                                                else if (disabledStr.equalsIgnoreCase("false"))
+                                                    disabled = 0;
+                                                else
+                                                    disabled = Integer.parseInt(disabledStr);
+                                            }
+                                            else if (p.startsWith("AC=")) activated = Boolean.parseBoolean(p.substring(3));
+                                        }
+                                        Structure structure = EntityRegistry.getStructure(id);
+                                        if (structure != null) {
+                                            structure.setDisabled(disabled);
+                                            structure.setActivated(activated);
+                                            tile.setEntity(structure);
+                                            tile.setHasEntity(true);
+                                        }
+                                    }
+                                }
+                                break;
+                            case "AR":
+                                tile.setArtifact("null".equals(value) ? null : EntityRegistry.getArtifact(Integer.parseInt(value)));
+                                break;
+                            case "W":
+                                tile.setWorld(value);
+                                break;
+                            case "PU":
+                                tile.setPurchased("1".equals(value));
+                                break;
+                            case "RV":
+                                tile.setResourceValue(Integer.parseInt(value));
+                                break;
+                            case "HR":
+                                tile.setHasRiver("1".equals(value));
+                                break;
+                            case "ID":
+                                tile.setTileID(Integer.parseInt(value));
+                                break;
+                            case "ST":
+                                // Format: RG:<val>,EG:<val>,RR:<val>,SP:<val>,AC:<val>,DB:<val>
+                                String[] buffs = value.split(",");
+                                for (String buff : buffs) {
+                                    String[] buffParts = buff.split(":");
+                                    if (buffParts.length != 2) continue;
+                                    double buffVal = Double.parseDouble(buffParts[1]);
+                                    switch (buffParts[0]) {
+                                        case "RG":
+                                            tile.addBuff(Status.BuffType.RUNE_GENERATION, buffVal - tile.getStatus().get(Status.BuffType.RUNE_GENERATION));
+                                            break;
+                                        case "EG":
+                                            tile.addBuff(Status.BuffType.ENERGY_GENERATION, buffVal - tile.getStatus().get(Status.BuffType.ENERGY_GENERATION));
+                                            break;
+                                        case "RR":
+                                            tile.addBuff(Status.BuffType.RIVER_RUNE_GENERATION, buffVal - tile.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION));
+                                            break;
+                                        case "SP":
+                                            tile.addBuff(Status.BuffType.SHOP_PRICE, buffVal - tile.getStatus().get(Status.BuffType.SHOP_PRICE));
+                                            break;
+                                        case "AC":
+                                            tile.addBuff(Status.BuffType.ARTIFACT_CHANCE, buffVal - tile.getStatus().get(Status.BuffType.ARTIFACT_CHANCE));
+                                            break;
+                                        case "DB":
+                                            tile.addBuff(Status.BuffType.DEBUFFABLE, buffVal > 0 ? 1 : -1);
+                                            break;
+                                    }
+                                }
+                                break;
+                        }
+                    } catch (Exception ex) {
+                        LOGGER.warning("Error parsing property '" + key + "=" + value + "' for tile (" + x + "," + y + "): " + ex.getMessage());
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.severe("Error parsing board entry (" + entry + "): " + e.getMessage());
             }
         }
     }

@@ -94,7 +94,7 @@ public class GameStateSerializer {
             }
             sb.append("|");
 
-            // 3. All Tiles
+            // 3. All Tiles (Simplified and consistent board section)
             sb.append("BOARD:");
             Tile[][] tiles = gameState.getBoardManager().getBoard().getTiles();
             for (int x = 0; x < tiles.length; x++) {
@@ -102,43 +102,46 @@ public class GameStateSerializer {
                     Tile t = tiles[x][y];
                     GameEntity e = t.getEntity();
 
-                    sb.append(x).append(",").append(y).append("{")
-                            .append("HE:").append(t.hasEntity() ? 1 : 0).append(",")
-                            .append("O:").append(t.getOwner() != null ? t.getOwner() : "null").append(",")
-                            .append("P:").append(t.getPrice()).append(",");
+                    sb.append(x).append(",").append(y).append("{");
+                    sb.append("HE=").append(t.hasEntity() ? 1 : 0).append("|");
+                    sb.append("O=").append(t.getOwner() != null ? t.getOwner() : "null").append("|");
+                    sb.append("P=").append(t.getPrice()).append("|");
 
-                    if (e instanceof Statue statue) {
-                        sb.append("STA").append(",").append(statue.getId()).append(",")
-                                .append("DI").append(statue.getDisabled()).append(",")
-                                .append("AC").append(statue.isActivated()).append(",")
-                                .append("LV").append(statue.getLevel()).append(",");
+                    // Entity section
+                    if (e == null) {
+                        sb.append("ENT=NONE|");
+                    } else if (e instanceof Statue statue) {
+                        sb.append("ENT=STA,")
+                          .append(statue.getId()).append(",")
+                          .append("DI=").append(statue.getDisabled()).append(",")
+                          .append("AC=").append(statue.isActivated()).append(",")
+                          .append("LV=").append(statue.getLevel()).append("|");
+                    } else if (e instanceof Monument monument) {
+                        sb.append("ENT=MON,")
+                          .append(monument.getId()).append(",")
+                          .append("DI=").append(monument.isDisabled()).append("|");
+                    } else if (e instanceof Structure structure) {
+                        sb.append("ENT=STR,")
+                          .append(structure.getId()).append(",")
+                          .append("DI=").append(structure.isDisabled()).append(",")
+                          .append("AC=").append(structure.isActivated()).append("|");
                     }
-                    else if (e instanceof Monument monument) {
-                        sb.append("MON").append(monument.getId()).append(",")
-                                .append("DI").append(monument.isDisabled()).append(",");
-                    }
-                    else if (e instanceof Structure structure) {
-                        sb.append("STR").append(structure.getId()).append(",")
-                                .append("DI").append(structure.isDisabled()).append(",")
-                                .append("AC").append(structure.isActivated()).append(",");
 
-                    }
-                    sb.append("AR:").append(t.getArtifact() != null ? t.getArtifact().getId() : "null").append(",")
-                            .append("W:").append(t.getWorld()).append(",")
-                            .append("PU:").append(t.isPurchased() ? 1 : 0).append(",")
-                            .append("RV:").append(t.getResourceValue()).append(",")
-                            .append("HR:").append(t.hasRiver() ? 1 : 0).append(",")
-                            .append("ID:").append(t.getTileID()).append(",")
+                    sb.append("AR=").append(t.getArtifact() != null ? t.getArtifact().getId() : "null").append("|");
+                    sb.append("W=").append(t.getWorld()).append("|");
+                    sb.append("PU=").append(t.isPurchased() ? 1 : 0).append("|");
+                    sb.append("RV=").append(t.getResourceValue()).append("|");
+                    sb.append("HR=").append(t.hasRiver() ? 1 : 0).append("|");
+                    sb.append("ID=").append(t.getTileID()).append("|");
 
-                            // Tile status
-                            .append("ST:{")
-                            .append("RG:").append(t.getStatus().get(Status.BuffType.RUNE_GENERATION)).append(",")
-                            .append("EG:").append(t.getStatus().get(Status.BuffType.ENERGY_GENERATION)).append(",")
-                            .append("RR:").append(t.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION)).append(",")
-                            .append("SP:").append(t.getStatus().get(Status.BuffType.SHOP_PRICE)).append(",")
-                            .append("AC:").append(t.getStatus().get(Status.BuffType.ARTIFACT_CHANCE)).append(",")
-                            .append("DB:").append(t.getStatus().get(Status.BuffType.DEBUFFABLE))
-                            .append("}};");
+                    // Tile status
+                    sb.append("ST=RG:").append(t.getStatus().get(Status.BuffType.RUNE_GENERATION)).append(",");
+                    sb.append("EG:").append(t.getStatus().get(Status.BuffType.ENERGY_GENERATION)).append(",");
+                    sb.append("RR:").append(t.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION)).append(",");
+                    sb.append("SP:").append(t.getStatus().get(Status.BuffType.SHOP_PRICE)).append(",");
+                    sb.append("AC:").append(t.getStatus().get(Status.BuffType.ARTIFACT_CHANCE)).append(",");
+                    sb.append("DB:").append(t.getStatus().get(Status.BuffType.DEBUFFABLE));
+                    sb.append("};");
                 }
             }
 
