@@ -2,6 +2,7 @@ package ch.unibas.dmi.dbis.cs108.client.networking.protocol;
 
 import ch.unibas.dmi.dbis.cs108.client.networking.events.*;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.GameSyncEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.LeaderboardResponseUIEvent;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol.Commands;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.ErrorsAPI.Errors;
@@ -54,6 +55,7 @@ public class ProtocolTranslator implements CommunicationAPI {
         commandHandlers.put(Commands.DISCONNECT.getCommand(), this::processDisconnectMessage);
         commandHandlers.put(Commands.ENDGAME.getCommand(), this::processEndGameMessage);
         commandHandlers.put(Commands.SYNCHRONIZE.getCommand(), this::processSyncMessage);
+        commandHandlers.put(Commands.LEADERBOARD.getCommand(), this::processLeaderboard);
     }
 
     public void processIncomingMessage(String message) {
@@ -214,6 +216,11 @@ public class ProtocolTranslator implements CommunicationAPI {
         }
     }
 
+    private void processLeaderboard(String args) {
+        Logger.getGlobal().info("Processing leaderboard message: " + args);
+        eventDispatcher.dispatchEvent(new LeaderboardResponseEvent(args));
+    }
+
     private void processPingMessage(String args) {
         // Handled in NetworkController
     }
@@ -232,11 +239,11 @@ public class ProtocolTranslator implements CommunicationAPI {
     }
 
     public String formatGetLeaderboard() {
-        return "LBRD" + DELIMITER; // Not in Commands enum
+        return Commands.LEADERBOARD.getCommand() + DELIMITER;
     }
 
     public String formatDisconnect(String playerName) {
-        return "DISC" + DELIMITER + playerName; // Not in Commands enum
+        return Commands.DISCONNECT.getCommand() + DELIMITER + playerName; // Not in Commands enum
     }
 
     public String formatPong(String playerName) {

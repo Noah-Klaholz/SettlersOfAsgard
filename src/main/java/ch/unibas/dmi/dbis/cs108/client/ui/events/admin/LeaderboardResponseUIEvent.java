@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.events.admin;
 
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
+import ch.unibas.dmi.dbis.cs108.server.core.model.Leaderboard;
 
 import java.util.List;
 import java.util.Map;
@@ -9,16 +10,15 @@ import java.util.Map;
  * UIEvent triggered when leaderboard data is received from the server.
  */
 public class LeaderboardResponseUIEvent implements UIEvent {
-    private final List<Map<String, Object>> leaderboardEntries;
+    private final Leaderboard leaderboard;
 
     /**
-     * Constructs a new LeaderboardResponseUIEvent.
+     * Constructor for LeaderboardResponseUIEvent.
      *
-     * @param leaderboardEntries A list of maps containing player data (name, score,
-     *                           rank, etc.)
+     * @param leaderboard The leaderboard data received from the server.
      */
-    public LeaderboardResponseUIEvent(List<Map<String, Object>> leaderboardEntries) {
-        this.leaderboardEntries = leaderboardEntries;
+    public LeaderboardResponseUIEvent(Leaderboard leaderboard) {
+        this.leaderboard = leaderboard;
     }
 
     /**
@@ -26,8 +26,8 @@ public class LeaderboardResponseUIEvent implements UIEvent {
      *
      * @return A list of maps containing player data.
      */
-    public List<Map<String, Object>> getLeaderboardEntries() {
-        return leaderboardEntries;
+    public Leaderboard getLeaderboard() {
+        return leaderboard;
     }
 
     /**
