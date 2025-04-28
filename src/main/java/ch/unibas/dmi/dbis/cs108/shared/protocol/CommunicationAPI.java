@@ -183,6 +183,10 @@ public interface CommunicationAPI {
              */
             CLAIMALL("CLAM"),
             /**
+             * Player destroys all enemy structures
+             */
+            RAGNAROK("RAGN"),
+            /**
              * Player disconnects from the game
              */
             DISCONNECT("DISC"),
