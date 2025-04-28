@@ -30,6 +30,4 @@ public interface GameEventNotifier {
      * @param message The message to send.
      */
     void sendMessageToPlayer(String player, String message);
-
-    void broadcastGlobalLeaderboard();
 }

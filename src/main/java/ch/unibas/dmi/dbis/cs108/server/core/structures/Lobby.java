@@ -380,12 +380,4 @@ public class Lobby implements GameEventNotifier {
         broadcastMessage("TURN$" + gameLogic.getGameState().getPlayerTurn());
         broadcastMessage(gameLogic.getGameState().createDetailedStatusMessage());
     }
-
-    /**
-     * Sends an OK message with the leaderboard (as a String).
-     */
-    public void broadcastGlobalLeaderboard() {
-        broadcastMessage("OK$" + CommunicationAPI.NetworkProtocol.Commands.LEADERBOARD.getCommand() + "$" + leaderboard);
-    }
-
 }
