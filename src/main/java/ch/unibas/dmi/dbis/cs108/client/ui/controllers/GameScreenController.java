@@ -9,7 +9,6 @@ import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.WinScreenDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.GridAdjustmentManager;
-import ch.unibas.dmi.dbis.cs108.client.ui.components.game.InteractionPopups.RuneTableInteractionPopup;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.InteractionPopups.StatueInteractionPopup;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.ResourceOverviewPopup;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.StatueSelectionPopup;
@@ -176,8 +175,6 @@ public class GameScreenController extends BaseController {
     private Label adjustmentModeIndicator;
     private Label adjustmentValuesLabel;
 
-    private int[] highlightedTile = null;
-
     // Simplified colour table – replace with proper game state look‑up
     private final Map<String, Color> playerColors = new HashMap<>();
 
@@ -261,21 +258,21 @@ public class GameScreenController extends BaseController {
             localPlayer = new Player("ErrorGuest"); // Fail‑safe stub
         }
 
-        initialisePlayerColours();
-        resourceOverviewPopup = new ResourceOverviewPopup(resourceLoader, playerColors);
 
-        setupUI();
-        loadMapImage();
         createAdjustmentUI();
-
         gridAdjustmentManager = new GridAdjustmentManager(
                 this,
                 adjustmentModeIndicator,
                 adjustmentValuesLabel,
                 this::drawMapAndGrid);
 
-        setupCanvasListeners();
+        initialisePlayerColours();
+        resourceOverviewPopup = new ResourceOverviewPopup(resourceLoader, playerColors);
+
+        setupUI();
+        loadMapImage();
         updateCardImages();
+        setupCanvasListeners();
     }
 
     /**
@@ -1005,25 +1002,6 @@ public class GameScreenController extends BaseController {
             gc.setStroke(oldStroke);
         } else {
             gc.stroke();
-        }
-
-        // Add drag target highlight (bright green) ------------------------------
-        boolean isDragTarget = highlightedTile != null &&
-                highlightedTile[0] == row &&
-                highlightedTile[1] == col;
-        if (isDragTarget) {
-            Paint oldStroke = gc.getStroke();
-            double oldLineWidth = gc.getLineWidth();
-            double oldAlpha = gc.getGlobalAlpha();
-
-            gc.setStroke(Color.ORANGE); // for better visibility against green tile
-            gc.setLineWidth(4);
-            gc.setGlobalAlpha(0.8);
-            gc.stroke();
-
-            gc.setStroke(oldStroke);
-            gc.setLineWidth(oldLineWidth);
-            gc.setGlobalAlpha(oldAlpha);
         }
 
         // Draw the Entity if it exists -----------------------------------------
@@ -1820,7 +1798,6 @@ public class GameScreenController extends BaseController {
             if (card.getId() != null && card.getId().startsWith("statue")) {
                 card.getStyleClass().remove("game-card");
                 card.getStyleClass().add("unaffordable-card");
-                card.setOnDragDetected(null);
                 card.setOnMouseClicked(null);
             }
         }
