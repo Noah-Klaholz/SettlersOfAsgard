@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.core.actions;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
+import ch.unibas.dmi.dbis.cs108.server.core.model.BoardManager;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors.StructureBehaviorRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
@@ -70,6 +71,32 @@ public class TileActionHandler {
                 tile.setArtifact(null);
             }
 
+            return true;
+        } finally {
+            gameLock.writeLock().unlock();
+        }
+    }
+
+    /**
+     * Cheat: the player claims all tiles that aren't already purchased.
+     *
+     * @param playerName the name of the player.
+     * @return true if the action was successful, false otherwise.
+     */
+    public boolean claimAllTiles(String playerName) {
+        gameLock.writeLock().lock();
+        try {
+            Player player = findPlayerByName(playerName);
+            assert player != null;
+            for(Tile[] tiles : gameState.getBoardManager().getBoard().getTiles()) {
+                for(Tile tile : tiles) {
+                    if (!tile.isPurchased()) {
+                        tile.setPurchased(true);
+                        player.addOwnedTile(tile);
+                        player.addBoughtTile();
+                    }
+                }
+            }
             return true;
         } finally {
             gameLock.writeLock().unlock();

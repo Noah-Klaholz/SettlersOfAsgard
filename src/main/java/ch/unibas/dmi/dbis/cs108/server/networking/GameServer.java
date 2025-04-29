@@ -49,7 +49,6 @@ public class GameServer {
         executor = Executors.newCachedThreadPool();
         this.lobbies = new CopyOnWriteArrayList<>();
         this.leaderboard = new Leaderboard();
-        this.leaderboard.load();
     }
 
     /**

@@ -70,8 +70,6 @@ public class Command {
         }
         // Check arguments for each command individually
         return checkArgumentsSize();
-        // Later: add argument checking for game logic commands
-
     }
 
     /**
@@ -81,10 +79,10 @@ public class Command {
      */
     public boolean checkArgumentsSize() {
         return switch (commandType) {
-            case LISTLOBBIES, START, SHUTDOWN, SYNCHRONIZE, STARTTURN, ENDTURN, GETGAMESTATUS, GETPRICES -> args.length == 0;
-            case REGISTER, LEAVE, CHANGENAME, PING, EXIT, BUYSTRUCTURE, BUYSTATUE, DISCONNECT  -> args.length == 1;
+            case LISTLOBBIES, START, SHUTDOWN, SYNCHRONIZE, STARTTURN, ENDTURN, GETGAMESTATUS, GETPRICES, LEADERBOARD -> args.length == 0;
+            case REGISTER, LEAVE, CHANGENAME, PING, EXIT, DISCONNECT, CHEAT -> args.length == 1;
             case JOIN, CHATGLOBAL, CHATLOBBY, BUYTILE -> args.length == 2;
-            case CHATPRIVATE, PLACESTRUCTURE, USEPLAYERARTIFACT, UPGRADESTATUE, CREATELOBBY, USESTRUCTURE -> args.length == 3;
+            case CHATPRIVATE, PLACESTRUCTURE, PLACESTATUE, USEPLAYERARTIFACT, UPGRADESTATUE, CREATELOBBY, USESTRUCTURE -> args.length == 3;
             case USESTATUE, USEFIELDARTIFACT -> args.length == 4;
             case LISTPLAYERS -> (args.length == 1 && args[0].equals("SERVER"))|| (args.length == 2 && args[0].equals("LOBBY"));
             default -> {
@@ -148,8 +146,8 @@ public class Command {
      */
     public boolean isAdministrative() {
         return switch (commandType) {
-            case LISTLOBBIES, START, SHUTDOWN, SYNCHRONIZE, REGISTER, LEAVE, CHANGENAME, PING, EXIT, JOIN, CHATGLOBAL, CHATLOBBY, CHATPRIVATE, CREATELOBBY, LISTPLAYERS, OK, DISCONNECT -> true;
-            case BUYSTRUCTURE, BUYSTATUE, GETGAMESTATUS, GETPRICES, STARTTURN, ENDTURN, BUYTILE, PLACESTRUCTURE, USEPLAYERARTIFACT, UPGRADESTATUE, USESTATUE, USESTRUCTURE, USEFIELDARTIFACT  -> false;
+            case LEADERBOARD, LISTLOBBIES, START, SHUTDOWN, SYNCHRONIZE, REGISTER, LEAVE, CHANGENAME, PING, EXIT, JOIN, CHATGLOBAL, CHATLOBBY, CHATPRIVATE, CREATELOBBY, LISTPLAYERS, OK, DISCONNECT -> true;
+            case CHEAT, GETGAMESTATUS, GETPRICES, STARTTURN, ENDTURN, BUYTILE, PLACESTRUCTURE, USEPLAYERARTIFACT, PLACESTATUE, UPGRADESTATUE, USESTATUE, USESTRUCTURE, USEFIELDARTIFACT  -> false;
             default -> {
                 logger.warning("Invalid Command " + command + " " + Arrays.toString(args));
                 yield false;

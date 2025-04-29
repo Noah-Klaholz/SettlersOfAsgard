@@ -1,0 +1,72 @@
+.dialog-content-box {
+    -fx-background-color: -fx-background;
+    -fx-background-radius: 12px;
+    -fx-padding: 24px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.18), 16, 0.2, 0, 4);
+}
+
+.dialog-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-fill: -color-accent-gold;
+}
+
+.dialog-scrollpane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.leaderboard-cell {
+    -fx-background-color: -fx-control-inner-background;
+    -fx-background-radius: 7px;
+    -fx-border-radius: 7px;
+    -fx-border-width: 1px;
+    -fx-border-color: -color-border-secondary;
+    -fx-font-size: 16px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 2, 0.1, 0, 1);
+}
+
+.leaderboard-gold {
+    -fx-background-color: linear-gradient(to right, #ffe066, #fffbe6);
+    -fx-border-color: #ffd700;
+    -fx-font-weight: bold;
+}
+
+.leaderboard-silver {
+    -fx-background-color: linear-gradient(to right, #e0e0e0, #f8f8f8);
+    -fx-border-color: #b0b0b0;
+    -fx-font-weight: bold;
+}
+
+.leaderboard-bronze {
+    -fx-background-color: linear-gradient(to right, #e6b07a, #fbeee0);
+    -fx-border-color: #cd7f32;
+    -fx-font-weight: bold;
+}
+
+.leaderboard-rank {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text-secondary;
+    -fx-min-width: 32px;
+    -fx-alignment: center;
+}
+
+.leaderboard-name {
+    -fx-font-size: 16px;
+    -fx-font-weight: normal;
+    -fx-text-fill: -fx-text-base-color;
+}
+
+.leaderboard-score {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-accent-gold;
+    -fx-min-width: 48px;
+    -fx-alignment: center-right;
+}
+
+.leaderboard-rank.leaderboard-top-players, .leaderboard-name.leaderboard-top-players {
+    -fx-text-fill: #000000;
+}

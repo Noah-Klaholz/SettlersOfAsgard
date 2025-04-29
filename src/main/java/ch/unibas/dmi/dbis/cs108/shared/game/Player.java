@@ -23,12 +23,12 @@ public class Player {
     private String name;
     private int runes;
     private int energy;
-    private List<Tile> ownedTiles;
-    private List<Artifact> artifacts;
-    private List<PurchasableEntity> purchasableEntities;
+    private List<Tile> ownedTiles = new ArrayList<>();
+    private List<Artifact> artifacts = new ArrayList<>();
+    private List<PurchasableEntity> purchasableEntities = new ArrayList<>();
+    private List<Monument> monuments = new ArrayList<>();
     private Status status;
     private int roundBoughtTiles;
-    private List<Monument> monuments = new ArrayList<>();
 
     /**
      * Constructor for Player class
@@ -42,9 +42,6 @@ public class Player {
         this.name = name;
         runes = SETTINGS.Config.START_RUNES.getValue(); //Startrunen
         energy = SETTINGS.Config.START_ENERGY.getValue(); //Startenergie
-        ownedTiles = new ArrayList<>();
-        artifacts = new ArrayList<>();
-        purchasableEntities = new ArrayList<>();
         status = new Status();
         roundBoughtTiles = 0;
     }

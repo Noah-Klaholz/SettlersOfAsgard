@@ -15,6 +15,7 @@ import ch.unibas.dmi.dbis.cs108.server.core.model.BoardManager;
 
 import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.logging.Logger;
 
 /**
  * Handles all statue-related actions in the game.
@@ -60,17 +61,26 @@ public class StatueActionHandler {
         return executeWithLock(() -> {
             // Validate player and tile
             ValidationResult result = validatePlayerAndTile(x, y, playerName, true, false);
-            if (!result.isValid()) return false;
+            if (!result.isValid()) {
+                Logger.getGlobal().info("StatueActionHandler: placeStatue: Validation failed");
+                return false;
+            }
 
             Player player = result.getPlayer();
             Tile tile = result.getTile();
 
             // Get statue and check if player already has one
             Statue statue = EntityRegistry.getStatue(statueId);
-            if (statue == null || player.hasStatue() || !Objects.equals(tile.getWorld(), statue.getWorld())) return false;
+            if (statue == null || player.hasStatue() || !Objects.equals(tile.getWorld(), statue.getWorld())) {
+                Logger.getGlobal().info("StatueActionHandler: placeStatue: Statue not found or player already has one or world is incorrect.");
+                return false;
+            }
 
             // Check if player can afford the statue
-            if (!player.buy(statue.getPrice())) return false;
+            if (!player.buy(statue.getPrice())) {
+                Logger.getGlobal().info("StatueActionHandler: placeStatue: Player cannot afford statue");
+                return false;
+            }
 
             tile.setEntity(statue);
 
@@ -275,7 +285,7 @@ public class StatueActionHandler {
         Tile tile = boardManager.getTile(x, y);
 
         // Validate tile state
-        if (tile == null ||
+        if (tile == null || tile.getOwner() == null ||
                 !tile.getOwner().equals(playerName) ||
                 (requireEmptyTile && tile.hasEntity()) ||
                 (requireEntityOnTile && !tile.hasEntity())) {

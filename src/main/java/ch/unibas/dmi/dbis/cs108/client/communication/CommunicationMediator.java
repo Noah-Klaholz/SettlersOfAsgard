@@ -162,6 +162,9 @@ public class CommunicationMediator {
                 event -> networkController.usePlayerArtifact(event.getArtifactId(),
                         event.getTargetPlayer().orElse(null)));
 
+        UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.game.CheatEvent.class,
+                event -> networkController.useCheatCode(event.getCheatCode()));
+
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.game.EndTurnUIEvent.class,
                 event -> networkController.endTurn());
 
@@ -474,12 +477,24 @@ public class CommunicationMediator {
                         return GameSyncEvent.class;
                     }
                 });
+
+        // Leaderboard Event
+        EventDispatcher.getInstance().registerListener(LeaderboardResponseEvent.class,
+                new EventDispatcher.EventListener<LeaderboardResponseEvent>() {
+                    @Override
+                    public void onEvent(LeaderboardResponseEvent event) {
+                        Logger.getGlobal().info("Communication mediator: LeaderboardResponseEvent: " + event.getLeaderboard());
+                        // Publish leaderboard event to UI
+                        UIEventBus.getInstance()
+                                .publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.admin.LeaderboardResponseUIEvent(event.getLeaderboard()));
+                    }
+
+                    @Override
+                    public Class<LeaderboardResponseEvent> getEventType() {
+                        return LeaderboardResponseEvent.class;
+                    }
+                });
+
     }
 
-    // ToDo: Implement this method to update the game state and UI based on network
-    // events.
-    // private void updateGameFromNetworkEvent(GameStateUpdateEvent event) {
-    // // Logic to update the game based on network events
-    // // For example: update resources, board state, etc.
-    // }
 }

@@ -28,6 +28,7 @@ Dieser Befehl bedeutet, dass Spieler PL01 eine Struktur vom Typ "Castle" auf das
 | `JOIN` | **C→S**       | Spieler tritt Lobby bei                                       | `Spielername$Lobbyname`               | `CREA$Lobby1$ThorOdinson`                       |
 | `LEAV` | **C→S**       | Spieler verlässt Lobby                                        | `Spielername$Lobbyname`               | `LEAV$ThorOdinson$Lobby1`                       |
 | `EXIT` | **C→S**       | Spieler disconnected                                          | `Spielername$`                        | `EXIT$ThorOdinson`                              |
+| `LEAD` | **C→S**       | Globales Leaderboard abfragen                                 |                                       | `LEAD$`                                         |
 | `CHAN` | **C→S & S→C** | Spieler möchte seinen Namen ändern                            | `Spielername`                         | `CHAN$LokiLaufeyson`                            |
 | `CHTG` | **C→S**       | Nachricht senden (global)                                     | `Spielername$Nachricht`               | `CHTG$ThorOdinson$HelloWorld!`                  |
 | `CHTL` | **C→S**       | Nachricht senden (lobby)                                      | `Spielername$Nachricht`               | `CHTL$ThorOdinson$HelloWorld!`                  |
@@ -40,6 +41,7 @@ Dieser Befehl bedeutet, dass Spieler PL01 eine Struktur vom Typ "Castle" auf das
 | `GSTS` | **C→S**       | Spielstatus abrufen   (temporär)                              |                                       | `GSTS$`                                         |
 | `GPRC` | **C→S**       | Preise für verschiedene Kaufbare Elemente abfragen (temporär) |                                       | `GPRC$`                                         |
 | `SYNC` | **S→C**       | Sendet den aktuellen Zustand des Spiels                       | `DetaillierteStatusNachricht`         | `SYNC$(siehe GameState_Networking_Explanation)` |
+| `LEAD` | **C→S**       | Fragt das aktuelle Leaderboard ab                             |                                       | `LEAD$`                                         |
 | `OK`   | **S→C**       | Protokoll-Antwort bei erfolgreichen Befehlen                  | `[Arg1][$Arg2]...`                    | `OK$`                                           |
 
 ### Spielmechanik
@@ -58,6 +60,8 @@ Dieser Befehl bedeutet, dass Spieler PL01 eine Struktur vom Typ "Castle" auf das
 | `USFA` | **C→S**  | Benutzen eines Feld-Artefakts (auf Feld anwenden)       | `X$Y$ArtifactID$UseType`    | `USFA$2$Runes`                          |
 | `ENDG` | **S→C**  | Beenden des Spiels                                      | `Leaderboard`               | `ENDG$ThorOdinson$210$Freya$300`        |
 | `INFO` | **S→C**  | Schickt eine Notifikation über GameEvents an den Client | `PARAM1$[PARAM2$]...`       | `INFO$CURSE`                            |
+| `CHEA` | **C→S**  | Wendet einen geheimen CheatCode an                      | `CheatCode`                 | `CHEA$RAGN`                             |
+
 
 ## 4. Fehlerbehandlung
 Eine allgemeine Fehlernachricht hat folgendes Format:  

@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.server.core.structures.protocol;
 
+import ch.unibas.dmi.dbis.cs108.server.core.model.Leaderboard;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
@@ -378,12 +379,23 @@ public class CommandHandler {
     }
 
     /**
+     * This method handles the ending of a game.
+     *
+     * @return true if the game was ended successfully, false otherwise
+     */
+    public boolean handleGetLeaderboard() {
+        Leaderboard leaderboard = server.getLeaderboard();
+        sendMessage("OK$" + CommunicationAPI.NetworkProtocol.Commands.LEADERBOARD.getCommand() + "$" + leaderboard);
+        return true;
+    }
+
+    /**
      * This method returns the current game logic.
      *
      * @return the current game logic
      */
     public GameLogic getGameLogic() {
-        // Refresh gameLogic if it's null but the lobby has one
+        // Refresh gameLogic if it's null, but the lobby has one
         if (gameLogic == null && currentLobby != null) {
             gameLogic = currentLobby.getGameLogic();
         }

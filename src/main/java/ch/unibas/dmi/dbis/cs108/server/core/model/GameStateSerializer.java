@@ -144,7 +144,6 @@ public class GameStateSerializer {
                     sb.append("};");
                 }
             }
-
             return sb.toString();
         } finally {
             lock.readLock().unlock();

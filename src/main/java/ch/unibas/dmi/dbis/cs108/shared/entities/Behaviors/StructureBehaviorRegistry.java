@@ -91,7 +91,7 @@ public class StructureBehaviorRegistry {
             int numberOfBuffs = (int) structure.getParams().get(0).getValue();
 
             for (int i = 0; i < numberOfBuffs; i++) {
-                int random = (int)Math.ceil(Math.random() * buffTypes.length);
+                int random = (int)Math.ceil(Math.random() * buffTypes.length) - 1; // -1 because the array is 0-indexed
                 double val = (int)structure.getParams().get(random+2).getValue();
                 player.addBuff(buffTypes[random],val); // +2 because 0 is the number of buffs and 1 is debuffOtherplayers
 

@@ -10,6 +10,8 @@ import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 
+import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 
 /**
@@ -56,7 +58,7 @@ public class StructureActionHandler {
             // Get structure and check if player can afford it
             Structure structure = EntityRegistry.getStructure(structureID);
             if (structure == null) return false;
-            if (structure.getId() == 7 && !tile.hasRiver()) return false;
+            if (structure.getId() == 5 && !tile.hasRiver()) return false;
 
             // Check if player can afford the structure
             if(!player.buy(structure.getPrice())) return false;
@@ -98,6 +100,30 @@ public class StructureActionHandler {
             }
 
             return success;
+        });
+    }
+
+    /**
+     * Cheat: A player destroy all enemy structures.
+     *
+     * @param playerName the name of the player
+     * @return if the action was successful, false otherwise
+     */
+    public boolean ragnarok(String playerName) {
+        return executeWithLock(() -> {
+            for (Tile[] tiles : gameState.getBoardManager().getBoard().getTiles()){
+                for (Tile tile : tiles) {
+                    if (tile.hasEntity() && !tile.getOwner().equals(playerName)) {
+                        tile.setHasEntity(false);
+                        tile.setEntity(null);
+                    }
+                }
+            }
+            for (Player p : gameState.getPlayers()) {
+                if (Objects.equals(p.getName(), playerName)) continue;
+                p.setPurchasableEntities(new ArrayList<>());
+            }
+            return true;
         });
     }
 

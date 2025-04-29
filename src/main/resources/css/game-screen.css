@@ -297,13 +297,6 @@
     -fx-vgap: 8;
 }
 
-/* Selected card styling with golden frame */
-.selected-card {
-    -fx-border-color: -color-accent-gold;
-    -fx-border-width: 3px;
-    -fx-effect: dropshadow(three-pass-box, -color-accent-gold, 10, 0, 0, 0);
-}
-
 .tooltip-content {
     -fx-background-color: transparent;
 }
@@ -350,11 +343,31 @@
 .unaffordable-card {
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 5, 0, 0, 0);
     -fx-opacity: 0.6;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 0) sepia(0.5);
+}
+
+/* Selected card styling with golden frame */
+.selected-card {
+    -fx-border-color: -color-accent-gold;
+    -fx-border-width: 3px;
+    -fx-effect: dropshadow(three-pass-box, -color-accent-gold, 10, 0, 0, 0);
 }
 
 .current-turn-player {
     -fx-background-color: #e0f7e0;
     -fx-font-weight: bold;
     -fx-text-fill: #006400;
+}
+
+.statue-select-button {
+    -fx-background-color: rgba(255, 215, 0, 0.8);
+    -fx-background-radius: 12px;
+    -fx-text-fill: #333;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 2, 0.2, 0, 1);
+    -fx-cursor: hand;
+}
+
+.statue-select-button:hover {
+    -fx-background-color: rgba(255, 215, 0, 1.0);
 }

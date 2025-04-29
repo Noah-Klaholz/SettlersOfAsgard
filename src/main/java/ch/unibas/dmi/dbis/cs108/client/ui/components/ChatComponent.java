@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.components;
 
+import ch.unibas.dmi.dbis.cs108.client.ui.events.game.CheatEvent;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player; // Use shared Player
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
@@ -30,11 +31,13 @@ public class ChatComponent extends UIComponent<BorderPane> {
     private static final Logger LOGGER = Logger.getLogger(ChatComponent.class.getName());
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
     private static final Pattern WHISPER_PATTERN = Pattern.compile("^/w\\s+(\\S+)\\s+(.*)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern CHEAT_PATTERN = CheatEvent.getCheatPattern();
 
     private final ObservableList<String> messages = FXCollections.observableArrayList();
     private final UIEventBus eventBus;
     private String currentLobbyId;
     private Player localPlayer; // Use shared.game.Player
+    private boolean inGame = false; // Flag to check if the player is in-game
 
     @FXML
     private ListView<String> chatMessages;
@@ -185,6 +188,7 @@ public class ChatComponent extends UIComponent<BorderPane> {
             return;
         }
         Matcher whisperMatcher = WHISPER_PATTERN.matcher(input);
+        Matcher cheatCodeMatcher = CHEAT_PATTERN.matcher(input);
         try {
             if (whisperMatcher.matches()) {
                 String recipient = whisperMatcher.group(1);
@@ -203,6 +207,10 @@ public class ChatComponent extends UIComponent<BorderPane> {
                         addSystemMessage("Invalid whisper format. Missing message. Use /w <username> <message>");
                     }
                 }
+            } else if (cheatCodeMatcher.matches() && inGame) {
+                String cheatCode = cheatCodeMatcher.group(1);
+                LOGGER.fine("Sending cheat code: " + cheatCode);
+                eventBus.publish(new CheatEvent(CheatEvent.Cheat.fromCode(cheatCode)));
             } else if (globalChatButton.isSelected()) {
                 LOGGER.fine("Sending global message: " + input);
                 eventBus.publish(new GlobalChatEvent(input, GlobalChatEvent.ChatType.GLOBAL));
@@ -406,6 +414,16 @@ public class ChatComponent extends UIComponent<BorderPane> {
         } else {
             LOGGER.warning("Attempted to set null player in ChatComponent");
         }
+    }
+
+    /**
+     * Sets the in-game status of the player.
+     *
+     * @param inGame True if the player is in-game, false otherwise.
+     */
+    public void setInGame(boolean inGame) {
+        this.inGame = inGame;
+        LOGGER.fine("ChatComponent in-game status updated to: " + inGame);
     }
 
     /**

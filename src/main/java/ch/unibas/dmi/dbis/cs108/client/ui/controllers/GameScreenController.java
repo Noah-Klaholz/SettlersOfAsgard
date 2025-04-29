@@ -9,10 +9,8 @@ import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.WinScreenDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.GridAdjustmentManager;
-import ch.unibas.dmi.dbis.cs108.client.ui.components.game.InteractionPopups.StatueInteractionPopup;
-import ch.unibas.dmi.dbis.cs108.client.ui.components.game.ResourceOverviewPopup;
+import ch.unibas.dmi.dbis.cs108.client.ui.components.game.ResourceOverviewDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.StatueSelectionPopup;
-import ch.unibas.dmi.dbis.cs108.client.ui.components.game.TileTooltip;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
@@ -38,23 +36,19 @@ import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Window;
 import javafx.util.Duration;
-
-import javax.swing.text.html.parser.Entity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -123,9 +117,6 @@ public class GameScreenController extends BaseController {
     double gridOffsetX;
     double gridOffsetY;
 
-    private int selectedRow = -1;
-    private int selectedCol = -1;
-
     private String currentLobbyId;
 
     private Image mapImage;
@@ -135,14 +126,12 @@ public class GameScreenController extends BaseController {
     private Node selectedCard;
     private CardDetails selectedStatue;
     private boolean hasPlacedStatue = false;
+    private Tile highlightedTile = null;
 
     // Tooltips for cards are cached to avoid recreating them on every hover event
     private final Map<Node, Tooltip> cardTooltips = new HashMap<>();
 
     private GridAdjustmentManager gridAdjustmentManager;
-
-    // Cached placeholder for missing images
-    private Node missingImagePlaceholder = null;
 
     /*
      * --------------------------------------------------
@@ -165,11 +154,9 @@ public class GameScreenController extends BaseController {
     private Label connectionStatusLabel;
     @FXML
     private VBox chatContainer;
-    @FXML
-    private Button resourceOverviewButton;
 
     private ChatComponent chatComponentController;
-    private ResourceOverviewPopup resourceOverviewPopup;
+    private ResourceOverviewDialog resourceOverviewDialog;
 
     // Grid‑adjustment overlay controls (created programmatically)
     private Label adjustmentModeIndicator;
@@ -203,26 +190,14 @@ public class GameScreenController extends BaseController {
         gameState = new GameState();
         subscribeEvents();
         // Initialize selectedStatue safely
-        GameEntity defaultStatueEntity = EntityRegistry.getGameEntityOriginalById(38);
+        GameEntity defaultStatueEntity = EntityRegistry.getGameEntityOriginalById(30);
         if (defaultStatueEntity != null) {
             selectedStatue = new CardDetails(defaultStatueEntity, true);
         } else {
             LOGGER.severe("Failed to load default statue entity (ID 38).");
-            // Handle an error case, maybe create a dummy CardDetails or throw exception
-            selectedStatue = new CardDetails(38, "Error Statue", "Failed to load", "", "", 0);
+            selectedStatue = new CardDetails(EntityRegistry.getGameEntityOriginalById(38), true);
         }
         Logger.getGlobal().info("GameScreenController created and subscribed to events.");
-
-        createPlaceholderNode(); // Create the reusable placeholder
-    }
-
-    /**
-     * Creates a reusable red rectangle placeholder node.
-     */
-    private void createPlaceholderNode() {
-        Rectangle rect = new Rectangle(78, 118); // Size for card slots
-        rect.setFill(Color.RED);
-        missingImagePlaceholder = rect;
     }
 
     /**
@@ -267,7 +242,7 @@ public class GameScreenController extends BaseController {
                 this::drawMapAndGrid);
 
         initialisePlayerColours();
-        resourceOverviewPopup = new ResourceOverviewPopup(resourceLoader, playerColors);
+        resourceOverviewDialog = new ResourceOverviewDialog(resourceLoader, playerColors);
 
         setupUI();
         loadMapImage();
@@ -317,6 +292,7 @@ public class GameScreenController extends BaseController {
 
         chatComponentController.setPlayer(localPlayer);
         chatComponentController.setCurrentLobbyId(currentLobbyId);
+        chatComponentController.setInGame(true);
     }
 
     /**
@@ -429,9 +405,9 @@ public class GameScreenController extends BaseController {
 
             artifacts = gamePlayer.getArtifacts();
 
-            updateCardImages();
-            refreshCardAffordability();
             updateRunesAndEnergyBar();
+            refreshCardAffordability();
+            updateCardImages();
             updatePlayerList();
             updateMap();
 
@@ -560,10 +536,12 @@ public class GameScreenController extends BaseController {
             dialog.setOnMenuAction(() -> {
                 eventBus.publish(new LeaveLobbyRequestEvent(currentLobbyId));
                 sceneManager.switchToScene(SceneManager.SceneType.MAIN_MENU);
+                chatComponentController.setInGame(false);
             });
             dialog.setOnLobbyAction(() -> {
                 eventBus.publish(new LeaveLobbyRequestEvent(currentLobbyId));
                 sceneManager.switchToScene(SceneManager.SceneType.LOBBY);
+                chatComponentController.setInGame(false);
             });
             StackPane root = (StackPane) gameCanvas.getParent();
             root.getChildren().add(dialog.getView());
@@ -693,7 +671,9 @@ public class GameScreenController extends BaseController {
         gameCanvas.setFocusTraversable(true);
 
         // Single click handler - just selects tile
-        gameCanvas.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> handleCanvasClick(e.getX(), e.getY()));
+        gameCanvas.addEventHandler(MouseEvent.MOUSE_PRESSED, e ->
+                handleCanvasClick(e.getX(), e.getY())
+        );
 
         // Double click handler - for purchases
         gameCanvas.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
@@ -702,44 +682,18 @@ public class GameScreenController extends BaseController {
             }
         });
 
-        /** //TODO this code might be problematic
-         // Mouse move handler for tile tooltips
-         gameCanvas.addEventHandler(MouseEvent.MOUSE_MOVED, e -> {
-         double mouseX = e.getX();
-         double mouseY = e.getY();
+        gameCanvas.addEventHandler(MouseEvent.MOUSE_MOVED, e ->
+                handleCanvasMouseMove(e.getX(), e.getY())
+        );
 
-         int[] hexCoords = getHexAt(mouseX, mouseY);
-         if (hexCoords != null) {
-         int row = hexCoords[0];
-         int col = hexCoords[1];
+        gameCanvas.addEventHandler(MouseEvent.MOUSE_ENTERED_TARGET, e ->
+                handleCanvasEntered(e.getX(), e.getY())
+        );
 
-         // Only show tooltip if the hex coordinates changed (to avoid tooltip flicker)
-         if (highlightedTile == null || highlightedTile[0] != row || highlightedTile[1] != col) {
-         // Hide any existing tooltip
-         Tooltip.uninstall(gameCanvas, null);
-
-         Tile tile = getTile(row, col);
-         if (tile != null) {
-         // Create and show tooltip
-         TileTooltip tooltip = new TileTooltip(tile, tile.getOwner());
-         tooltip.show(gameCanvas, e.getScreenX() + 15, e.getScreenY() + 15);
-
-         // Update highlighted tile
-         highlightedTile = new int[] { row, col };
-         }
-         }
-         } else if (highlightedTile != null) {
-         // Mouse is not over a valid tile, hide any active tooltip
-         Tooltip.uninstall(gameCanvas, null);
-         highlightedTile = null;
-         }
-         });
-
-         // Hide tooltip when mouse exits canvas
-         gameCanvas.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
-         Tooltip.uninstall(gameCanvas, null);
-         highlightedTile = null;
-         }); */
+        gameCanvas.addEventHandler(MouseEvent.MOUSE_EXITED_TARGET, e -> {
+            highlightedTile = null;
+            drawMapAndGrid();
+        });
 
         if (gameCanvas.getParent() instanceof StackPane parent) {
             parent.addEventHandler(MouseEvent.MOUSE_PRESSED, ev -> {
@@ -751,7 +705,6 @@ public class GameScreenController extends BaseController {
                 }
             });
 
-            // Add double-click handler to parent as well
             parent.addEventHandler(MouseEvent.MOUSE_CLICKED, ev -> {
                 if (ev.getClickCount() == 2) {
                     Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
@@ -761,6 +714,36 @@ public class GameScreenController extends BaseController {
                         ev.consume();
                     }
                 }
+            });
+
+            parent.addEventHandler(MouseEvent.MOUSE_MOVED, ev -> {
+                    Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
+                    if (local.getX() >= 0 && local.getY() >= 0 &&
+                            local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
+                        handleCanvasMouseMove(local.getX(), local.getY());
+                        ev.consume();
+                    }
+                }
+            );
+
+            parent.addEventHandler(MouseEvent.MOUSE_ENTERED_TARGET, ev -> {
+                        Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
+                        if (local.getX() >= 0 && local.getY() >= 0 &&
+                                local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
+                            handleCanvasEntered(local.getX(), local.getY());
+                            ev.consume();
+                        }
+                    }
+            );
+
+            parent.addEventHandler(MouseEvent.MOUSE_EXITED_TARGET, ev -> {
+                    Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
+                    if (local.getX() >= 0 && local.getY() >= 0 &&
+                            local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
+                        highlightedTile = null;
+                        drawMapAndGrid();
+                        ev.consume();
+                    }
             });
         }
 
@@ -778,8 +761,6 @@ public class GameScreenController extends BaseController {
 
         int row = tile[0];
         int col = tile[1];
-        selectedRow = row;
-        selectedCol = col;
         drawMapAndGrid();
         eventBus.publish(new TileClickEvent(row, col));
 
@@ -787,7 +768,12 @@ public class GameScreenController extends BaseController {
             Tile t = getTile(row, col);
             if (selectedCard != null && !t.hasEntity()) {
                 CardDetails s = getCardDetails(selectedCard.getId());
-                eventBus.publish(new PlaceStructureUIEvent(col, row, s.getID()));
+                if (s != null && s.getID() == selectedStatue.getID()) {
+                    eventBus.publish(new PlaceStatueUIEvent(col, row, s.getID()));
+                    markStatuePlaced();
+                } else if (s != null) {
+                    eventBus.publish(new PlaceStructureUIEvent(col, row, s.getID()));
+                }
             }
         }
 
@@ -824,6 +810,8 @@ public class GameScreenController extends BaseController {
          }
          }
          */
+
+        selectedCard = null;
     }
 
     /**
@@ -863,6 +851,53 @@ public class GameScreenController extends BaseController {
             }
         } else {
             showNotification("This tile is owned by another player.");
+        }
+
+        selectedCard = null;
+    }
+
+    /**
+     * Handles mouse entering the canvas - highlights the tile under the cursor
+     */
+    private void handleCanvasEntered(double px, double py) {
+        int[] tile = getHexAt(px, py);
+        if (tile == null)
+            return;
+
+        int row = tile[0];
+        int col = tile[1];
+
+        // Highlight the tile under the cursor
+        highlightedTile = getTile(row, col);
+        drawMapAndGrid();
+    }
+
+    /**
+     * Handles mouse movement within the canvas
+     */
+    private void handleCanvasMouseMove(double px, double py) {
+        int[] tile = getHexAt(px, py);
+        if (tile == null) {
+            // If no tile under cursor, clear highlight
+            if (highlightedTile != null) {
+                highlightedTile = null;
+                drawMapAndGrid();
+            }
+            return;
+        }
+
+        int row = tile[0];
+        int col = tile[1];
+
+        Tile tileUnderCursor = getTile(row, col);
+
+        // Only redraw if the highlighted tile has changed (compare by coordinates)
+        if (highlightedTile == null ||
+            tileUnderCursor == null ||
+            highlightedTile.getX() != tileUnderCursor.getX() ||
+            highlightedTile.getY() != tileUnderCursor.getY()) {
+            highlightedTile = tileUnderCursor;
+            drawMapAndGrid();
         }
     }
 
@@ -941,7 +976,16 @@ public class GameScreenController extends BaseController {
             for (int c = 0; c < HEX_COLS; c++) {
                 double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2);
                 double cy = gridOffsetY + r * vSpacing;
-                boolean selected = (r == selectedRow && c == selectedCol);
+                // Use coordinate comparison for selection
+                boolean selected = false;
+                if (highlightedTile != null) {
+                    Tile t = getTile(r, c);
+                    if (t != null &&
+                        t.getX() == highlightedTile.getX() &&
+                        t.getY() == highlightedTile.getY()) {
+                        selected = true;
+                    }
+                }
                 drawHex(gc, cx, cy, size, r, c, selected);
             }
         }
@@ -995,11 +1039,14 @@ public class GameScreenController extends BaseController {
         if (selected) {
             Paint oldStroke = gc.getStroke();
             double oldAlpha = gc.getGlobalAlpha();
+            double oldWidth = gc.getLineWidth();
             gc.setStroke(Color.YELLOW);
             gc.setLineWidth(3);
-            gc.setGlobalAlpha(oldAlpha);
+            gc.setGlobalAlpha(1.0);
             gc.stroke();
             gc.setStroke(oldStroke);
+            gc.setLineWidth(oldWidth);
+            gc.setGlobalAlpha(oldAlpha);
         } else {
             gc.stroke();
         }
@@ -1072,9 +1119,7 @@ public class GameScreenController extends BaseController {
             }
 
             // Calculate maximum width based on hex size and squish factor
-            double maxWidth = 1.7 * hexSize * hSquish;
-            // Calculate maximum height based on hex size (approx sqrt(3)*size)
-            double maxHeight = 1.732 * hexSize; // Approximation
+            double maxWidth = 2.3 * hexSize * hSquish;
 
             // Calculate scale to fit within both max width and max height
             double scale = maxWidth / image.getWidth();
@@ -1199,7 +1244,7 @@ public class GameScreenController extends BaseController {
 
     /*
      * --------------------------------------------------
-     * Card tooltip & drag‑and‑drop handling
+     * Card tooltip & tile choose handling
      * --------------------------------------------------
      */
 
@@ -1222,26 +1267,24 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Handles click on the statue card, showing the statue selection popup.
+     * Handles the selection of a statue from the popup.
      */
-    @FXML
-    public void handleStatueCardClick(MouseEvent event) {
-        if (hasPlacedStatue) {
-            // Player already placed a statue, ignore click
-            return;
-        }
+    private void handleStatueSelectButtonClick(MouseEvent event) {
+        // Stop event propagation to prevent triggering the card click handler
+        event.consume();
 
-        // Check if this is the statue card
-        Node card = (Node) event.getSource();
-        if (card.getId() != null && card.getId().startsWith("statue")) {
-            // Create and show the statue selection popup
-            StatueSelectionPopup popup = new StatueSelectionPopup(resourceLoader, this::onStatueSelected);
-            popup.show(card,
-                    event.getScreenX() - 175, // Center horizontally
-                    event.getScreenY() - 200); // Position above the cursor
+        // Get the source button
+        Node source = (Node) event.getSource();
 
-            event.consume();
-        }
+        // Create the statue selection popup
+        StatueSelectionPopup statuePopup = new StatueSelectionPopup(resourceLoader, this::onStatueSelected);
+
+        // Position and show the popup near the button
+        Window window = source.getScene().getWindow();
+        Point2D point = source.localToScreen(new Point2D(0, 0));
+        statuePopup.show(window, point.getX(), point.getY() + source.getBoundsInLocal().getHeight());
+
+        LOGGER.info("Statue selection popup opened");
     }
 
     /**
@@ -1285,6 +1328,11 @@ public class GameScreenController extends BaseController {
         return ""; // Unknown type
     }
 
+    /*
+     * --------------------------------------------------
+     * Tooltip creation helper
+     * --------------------------------------------------
+     */
     /*
      * --------------------------------------------------
      * Tooltip creation helper
@@ -1693,6 +1741,7 @@ public class GameScreenController extends BaseController {
      * @param pane The target Pane.
      */
     private void addPlaceholderToPane(Pane pane) {
+        Node missingImagePlaceholder = createPlaceHolderNode();
         if (missingImagePlaceholder != null) {
             // Ensure placeholder is not already parented elsewhere
             if (missingImagePlaceholder.getParent() != null) {
@@ -1713,9 +1762,19 @@ public class GameScreenController extends BaseController {
         }
     }
 
-    // Remove the old addPlaceholder methods as they created new nodes each time
-    // private void addPlaceholder(Pane pane, String title) { ... }
-    // private void addPlaceholder(Pane pane, String title, Color bgColor) { ... }
+    /**
+     * Creates a red placeholder node for missing images.
+     * This is a cached instance to avoid creating multiple identical nodes.
+     *
+     * @return A red rectangle as a placeholder.
+     */
+    private Node createPlaceHolderNode() {
+        Rectangle placeholder = new Rectangle(78, 118);
+        placeholder.setFill(Color.RED);
+        placeholder.setOpacity(0.5); // Semi-transparent
+        return placeholder;
+        // TODO add actual placeholder image
+    }
 
     /**
      * Called when a statue is selected from the popup.
@@ -1736,51 +1795,53 @@ public class GameScreenController extends BaseController {
      */
     private void updateStatueCard(Node card, CardDetails details) {
         if (card instanceof Pane pane) {
-            // Clear existing content
             pane.getChildren().clear();
 
-            // Set dimensions
-            pane.setMinSize(80, 120);
-            pane.setPrefSize(80, 120);
-            pane.setMaxSize(80, 120);
-
-            // Add border
-            pane.setStyle("-fx-border-color: #444444; -fx-border-width: 1px; -fx-border-radius: 5px;");
-
-            String imageUrl = details.getImageUrl();
-            if (imageUrl != null && !imageUrl.isEmpty()) {
-                Image image = resourceLoader.loadImage(imageUrl);
-
-                if (image != null && !image.isError()) {
-                    ImageView imageView = new ImageView(image);
-                    imageView.setPreserveRatio(true);
-                    imageView.setFitWidth(78);
-                    imageView.setFitHeight(118);
-
-                    StackPane wrapper = new StackPane(imageView);
-                    wrapper.setPrefSize(78, 118);
-
-                    pane.getChildren().add(wrapper);
+            try {
+                // Load the statue image first (your existing code)
+                String imageUrl = details.getImageUrl();
+                if (imageUrl != null && !imageUrl.isEmpty()) {
+                    Image image = resourceLoader.loadImage(imageUrl);
+                    if (image != null && !image.isError()) {
+                        ImageView imageView = new ImageView(image);
+                        imageView.setFitWidth(78);
+                        imageView.setFitHeight(118);
+                        imageView.setPreserveRatio(true);
+                        imageView.setSmooth(true);
+                        pane.getChildren().add(imageView);
+                    } else {
+                        addPlaceholderToPane(pane);
+                    }
                 } else {
-                    LOGGER.warning("Failed to load image for statue");
-                    addPlaceholderToPane(pane); // Use red placeholder
+                    addPlaceholderToPane(pane);
                 }
-            } else {
-                LOGGER.warning("No image URL for statue");
-                addPlaceholderToPane(pane); // Use red placeholder
-            }
 
-            // Update tooltip
-            Tooltip tooltip = cardTooltips.computeIfAbsent(card, this::createTooltipForCard);
-            Tooltip.uninstall(card, tooltip);
-            cardTooltips.remove(card);
-            cardTooltips.put(card, createStatueTooltip(details));
+                // Create and add the selection indicator button
+                Button statueSelectButton = new Button("⚙"); // Gear icon or you can use another symbol
+                statueSelectButton.getStyleClass().add("statue-select-button");
+                statueSelectButton.setMinSize(24, 24);
+                statueSelectButton.setPrefSize(24, 24);
+                statueSelectButton.setMaxSize(24, 24);
+                statueSelectButton.setTooltip(new Tooltip("Select different statue"));
 
-            // Make sure the card has drag-and-drop handlers
-            if (!hasPlacedStatue && canAffordCard("statue")) {
-                // TODO remove click handler for this card
-                card.getStyleClass().remove("unaffordable-card");
-                card.getStyleClass().add("game-card");
+                // Position in top-right corner
+                StackPane.setAlignment(statueSelectButton, Pos.TOP_RIGHT);
+                StackPane.setMargin(statueSelectButton, new Insets(2, 2, 0, 0));
+
+                // Add the selection button to the card
+                pane.getChildren().add(statueSelectButton);
+
+                // Add event handler to the button
+                statueSelectButton.setOnMouseClicked(this::handleStatueSelectButtonClick);
+
+                // Update tooltip
+                Tooltip tooltip = createStatueTooltip(details);
+                Tooltip.install(pane, tooltip);
+                cardTooltips.put(pane, tooltip);
+
+            } catch (Exception e) {
+                LOGGER.severe("Error updating statue card: " + e.getMessage());
+                addPlaceholderToPane(pane);
             }
         }
     }
@@ -1986,16 +2047,15 @@ public class GameScreenController extends BaseController {
             return;
         }
 
-        // Update the popup with current players
-        resourceOverviewPopup.updatePlayers(gameState.getPlayers(), gameState.getPlayerTurn());
-
-        // Position and show the popup
-        if (!resourceOverviewPopup.isShowing()) {
-            Node source = resourceOverviewButton;
-            resourceOverviewPopup.show(source.getScene().getWindow(),
-                    source.localToScreen(source.getBoundsInLocal()).getCenterX() - 225,
-                    source.localToScreen(source.getBoundsInLocal()).getCenterY() + 20);
+        if (resourceOverviewDialog == null) {
+            resourceOverviewDialog = new ResourceOverviewDialog(resourceLoader, playerColors);
         }
+
+        Pane root = (StackPane) gameCanvas.getParent();
+
+        // Update the popup with current players
+        resourceOverviewDialog.updatePlayers(gameState.getPlayers(), gameState.getPlayerTurn());
+        showDialogAsOverlay(resourceOverviewDialog, root);
     }
 
     @FXML
@@ -2043,11 +2103,5 @@ public class GameScreenController extends BaseController {
         // This will need statue-specific UI for different blessing types
         showNotification("Receiving blessing from statue at (" + tile.getX() + "," + tile.getY() + ")");
     }
-
-    /*
-     * ==================================================
-     * Inner Classes for Extensibility Drag & Drop Handling
-     * ==================================================
-     */
 
 }

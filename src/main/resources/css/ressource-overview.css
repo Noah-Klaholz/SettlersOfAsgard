@@ -1,0 +1,156 @@
+
+/* Overlay background */
+#resourceOverview-overlay {
+    -fx-background-color: rgba(26, 33, 51, 0.7);
+    -fx-alignment: center;
+    -fx-padding: 0;
+    -fx-background-radius: 0;
+    -fx-view-order: -100;
+}
+
+/* Dialog content box */
+.dialog-content-box {
+    -fx-background-color: -color-background-tertiary;
+    -fx-background-radius: 10px;
+    -fx-padding: 25px 20px 25px 20px;
+    -fx-border-color: -color-border-primary;
+    -fx-border-width: 1px;
+    -fx-border-radius: 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 10, 0, 0, 4);
+    -fx-max-width: 500px;
+    -fx-max-height: 600px;
+}
+
+/* Dialog title */
+.dialog-title {
+    -fx-font-family: "Cinzel", serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 22px;
+    -fx-text-fill: -color-accent-gold;
+    -fx-padding: 0 0 10 0;
+}
+
+/* Separator */
+.dialog-separator {
+    -fx-background-color: -color-border-primary;
+    -fx-min-height: 1px;
+    -fx-max-height: 1px;
+    -fx-pref-height: 1px;
+    -fx-opacity: 0.5;
+    -fx-margin: 10 0 10 0;
+}
+
+/* ScrollPane styling */
+.dialog-scrollpane {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-border-width: 0;
+    -fx-max-height: 320px;
+}
+
+/* Player row */
+.player-row, .player-row-current {
+    -fx-background-color: transparent;
+    -fx-background-radius: 6px;
+    -fx-padding: 6 8 6 8;
+    -fx-spacing: 10;
+    -fx-alignment: center-left;
+    -fx-border-width: 0 0 1px 0;
+    -fx-border-color: -color-border-primary;
+}
+
+.player-row-current {
+    -fx-background-color: -color-accent-gold-transparent-very-low;
+    -fx-border-color: -color-accent-gold;
+    -fx-border-width: 0 0 2px 0;
+}
+
+/* Player color indicator */
+.player-color-indicator {
+    -fx-stroke: -color-border-primary;
+    -fx-stroke-width: 1.5;
+}
+
+/* Player name */
+.player-name {
+    -fx-font-family: "Roboto", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-accent-gold;
+}
+
+/* Resources container */
+.resources-container {
+    -fx-spacing: 3;
+    -fx-padding: 0 0 0 0;
+}
+
+/* Resource label */
+.resource-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-text-primary;
+    -fx-font-family: "Roboto", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Status effects container */
+.status-effects-container {
+    -fx-background-color: -color-background-tertiary-transparent-low;
+    -fx-background-radius: 6px;
+    -fx-padding: 6 10 6 10;
+    -fx-spacing: 3;
+    -fx-min-width: 160px;
+    -fx-max-width: 220px;
+}
+
+/* Status header */
+.status-header {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-accent-blue;
+    -fx-padding: 0 0 3 0;
+}
+
+/* Buff effect labels */
+.buff-positive {
+    -fx-text-fill: -color-accent-green;
+    -fx-font-weight: bold;
+}
+.buff-negative {
+    -fx-text-fill: -color-accent-red;
+    -fx-font-weight: bold;
+}
+.buff-neutral {
+    -fx-text-fill: -color-text-muted;
+}
+.no-effects-label {
+    -fx-text-fill: -color-text-muted;
+    -fx-font-style: italic;
+    -fx-font-size: 12px;
+}
+
+/* Dialog button */
+.dialog-button {
+    -fx-background-color: -color-button-secondary-bg;
+    -fx-text-fill: -color-button-secondary-text;
+    -fx-border-color: -color-button-secondary-border;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 16px;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+    -fx-margin: 10 0 0 0;
+}
+.dialog-button-cancel {
+    -fx-background-color: -color-button-cancel-bg;
+    -fx-text-fill: -color-button-cancel-text;
+    -fx-border-color: -color-button-cancel-border;
+}
+.dialog-button:hover {
+    -fx-background-color: -color-button-secondary-hover;
+}
+.dialog-button-cancel:hover {
+    -fx-background-color: -color-button-cancel-hover;
+}

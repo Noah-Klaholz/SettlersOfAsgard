@@ -143,14 +143,6 @@ public interface CommunicationAPI {
              */
             BUYTILE("BUYT"),
             /**
-             * Player buys a statue at coordinates
-             */
-            BUYSTATUE("BYST"),
-            /**
-             * Player buys a Structure with structure ID
-             */
-            BUYSTRUCTURE("BUST"),
-            /**
              * Player places a structure at coordinates
              */
             PLACESTRUCTURE("PLST"),
@@ -186,6 +178,10 @@ public interface CommunicationAPI {
              * Entity notifies player
              */
             INFO("INFO"),
+            /**
+             *
+             */
+            LEADERBOARD("LEAD"),
 
             // Response codes
             /**
@@ -195,7 +191,11 @@ public interface CommunicationAPI {
             /**
              * Error response
              */
-            ERROR("ERR");
+            ERROR("ERR"),
+            /**
+             * Secret CheatCode Command
+             */
+            CHEAT("CHEA");
 
             private final String command;
 
