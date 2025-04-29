@@ -1,8 +1,12 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.components.game;
 
+import ch.unibas.dmi.dbis.cs108.client.ui.components.UIComponent;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
+import ch.unibas.dmi.dbis.cs108.client.ui.utils.StylesheetLoader;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
+import javafx.animation.FadeTransition;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -10,65 +14,89 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Popup;
+import javafx.util.Duration;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 
-public class ResourceOverviewPopup extends Popup {
-    private static final Logger LOGGER = Logger.getLogger(ResourceOverviewPopup.class.getName());
-    private final VBox container;
+public class ResourceOverviewDialog extends UIComponent<StackPane> {
+    private static final Logger LOGGER = Logger.getLogger(ResourceOverviewDialog.class.getName());
     private final ResourceLoader resourceLoader;
+    private VBox content;
     private final Map<String, Color> playerColors;
 
-    public ResourceOverviewPopup(ResourceLoader resourceLoader, Map<String, Color> playerColors) {
+    public ResourceOverviewDialog(ResourceLoader resourceLoader, Map<String, Color> playerColors) {
+        super("");
         this.resourceLoader = resourceLoader;
         this.playerColors = playerColors;
 
-        // Main container
-        container = new VBox(10);
-        container.setPadding(new Insets(15));
-        container.setMaxWidth(500);
-        container.setMaxHeight(600);
 
-        // Load CSS
-        container.getStylesheets().addAll(
-                Objects.requireNonNull(getClass().getResource("/css/variables.css")).toExternalForm(),
-                Objects.requireNonNull(getClass().getResource("/css/common.css")).toExternalForm()
-        );
+        this.view = new StackPane();
+        this.view.setId("resourceOverview-overlay");
+        this.view.getStyleClass().add("dialog-overlay");
 
+        StylesheetLoader.loadDialogStylesheets(this.view);
+        StylesheetLoader.loadStylesheet(this.view, "/css/ressource-overview.css");
+
+        this.view.setAlignment(Pos.CENTER);
+        VBox dialogContent = createDialogContent();
+        StackPane.setAlignment(dialogContent, Pos.CENTER);
+        this.view.getChildren().add(dialogContent);
+        this.view.setViewOrder(-100);
+
+        this.view.setOnMouseClicked(event -> {
+            if (event.getTarget() == this.view) {
+                close();
+                event.consume();
+            }
+        });
+        this.view.setVisible(false);
+        this.view.setManaged(false);
+    }
+
+    public VBox createDialogContent() {
+        content = new VBox(15);
+        content.getStyleClass().add("dialog-content-box");
+        content.setAlignment(Pos.CENTER);
+        content.setOnMouseClicked(e -> e.consume());
+        content.setPadding(new Insets(30, 30, 30, 30));
+        content.setMaxWidth(400);
 
         // Title
         Label title = new Label("Player Resources");
-        title.getStyleClass().add("popup-title");
-        container.getChildren().add(title);
+        title.getStyleClass().add("dialog-title");
+
+        // Player list container
+        VBox playerList = new VBox(10);
+        playerList.setPadding(new Insets(5));
 
         // Add scroll container for players
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setFitToWidth(true);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scrollPane.getStyleClass().add("scroll-bar:vertical");
-
-        // Player list container
-        VBox playerList = new VBox(10);
-        playerList.setPadding(new Insets(5));
+        scrollPane.getStyleClass().add("dialog-scrollpane");
         scrollPane.setContent(playerList);
 
         // Add a close button
         Button closeButton = new Button("Close");
-        closeButton.getStyleClass().addAll("standard-button", "primary-button");
-        closeButton.setOnAction(e -> this.hide());
+        closeButton.getStyleClass().addAll("dialog-button", "dialog-button-cancel");
+        closeButton.setOnAction(e -> close());
 
-        container.getChildren().addAll(scrollPane, closeButton);
-        this.getContent().add(container);
-        this.setAutoHide(true);
+        content.getChildren().addAll(
+                title,
+                new DialogSeparator(),
+                scrollPane,
+                new DialogSeparator(),
+                closeButton);
+        return content;
     }
 
     public void updatePlayers(List<Player> players, String currentTurnPlayer) {
         // Clear existing player rows
-        ScrollPane scrollPane = (ScrollPane) container.getChildren().get(1);
+        ScrollPane scrollPane = (ScrollPane) content.getChildren().get(1);
         VBox playerList = (VBox) scrollPane.getContent();
         playerList.getChildren().clear();
 
@@ -203,5 +231,53 @@ public class ResourceOverviewPopup extends Popup {
             case DEBUFFABLE -> "Determines if player can be debuffed";
             default -> "Affects gameplay mechanics";
         };
+    }
+
+    /**
+     * Makes the component visible. Subclasses must implement how visibility is
+     * handled (e.g., setting properties, adding to parent, animations).
+     * This method is called by BaseController.showDialogAsOverlay.
+     */
+    @Override
+    public void show() {
+        this.view.setVisible(true);
+        this.view.setManaged(true);
+        this.view.setOpacity(0);
+        this.view.toFront();
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(200), this.view);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+        fadeIn.play();
+    }
+
+    /**
+     * Closes the dialog with a fade-out animation.
+     * This method is called by BaseController.closeDialog.
+     */
+    public void close() {
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(200), this.view);
+        fadeOut.setFromValue(1);
+        fadeOut.setToValue(0);
+        fadeOut.setOnFinished(e -> {
+            this.view.setVisible(false);
+            this.view.setManaged(false);
+            if (this.view.getParent() instanceof Pane parentPane) {
+                parentPane.getChildren().remove(this.view);
+            }
+            Runnable action = getOnCloseAction();
+            if (action != null) {
+                action.run();
+            }
+        });
+        fadeOut.play();
+    }
+
+    /**
+     * Custom separator using CSS styling.
+     */
+    private static class DialogSeparator extends Region {
+        public DialogSeparator() {
+            getStyleClass().add("dialog-separator"); // Use style class
+        }
     }
 }
