@@ -47,6 +47,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Window;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
@@ -1129,9 +1130,7 @@ public class GameScreenController extends BaseController {
             }
 
             // Calculate maximum width based on hex size and squish factor
-            double maxWidth = 1.7 * hexSize * hSquish;
-            // Calculate maximum height based on hex size (approx sqrt(3)*size)
-            double maxHeight = 1.732 * hexSize; // Approximation
+            double maxWidth = 2.3 * hexSize * hSquish;
 
             // Calculate scale to fit within both max width and max height
             double scale = maxWidth / image.getWidth();
@@ -1256,7 +1255,7 @@ public class GameScreenController extends BaseController {
 
     /*
      * --------------------------------------------------
-     * Card tooltip & drag‑and‑drop handling
+     * Card tooltip & tile choose handling
      * --------------------------------------------------
      */
 
@@ -1279,26 +1278,24 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Handles click on the statue card, showing the statue selection popup.
+     * Handles the selection of a statue from the popup.
      */
-    @FXML
-    public void handleStatueCardClick(MouseEvent event) {
-        if (hasPlacedStatue) {
-            // Player already placed a statue, ignore click
-            return;
-        }
+    private void handleStatueSelectButtonClick(MouseEvent event) {
+        // Stop event propagation to prevent triggering the card click handler
+        event.consume();
 
-        // Check if this is the statue card
-        Node card = (Node) event.getSource();
-        if (card.getId() != null && card.getId().startsWith("statue")) {
-            // Create and show the statue selection popup
-            StatueSelectionPopup popup = new StatueSelectionPopup(resourceLoader, this::onStatueSelected);
-            popup.show(card,
-                    event.getScreenX() - 175, // Center horizontally
-                    event.getScreenY() - 200); // Position above the cursor
+        // Get the source button
+        Node source = (Node) event.getSource();
 
-            event.consume();
-        }
+        // Create the statue selection popup
+        StatueSelectionPopup statuePopup = new StatueSelectionPopup(resourceLoader, this::onStatueSelected);
+
+        // Position and show the popup near the button
+        Window window = source.getScene().getWindow();
+        Point2D point = source.localToScreen(new Point2D(0, 0));
+        statuePopup.show(window, point.getX(), point.getY() + source.getBoundsInLocal().getHeight());
+
+        LOGGER.info("Statue selection popup opened");
     }
 
     /**
@@ -1775,10 +1772,6 @@ public class GameScreenController extends BaseController {
         }
     }
 
-    // Remove the old addPlaceholder methods as they created new nodes each time
-    // private void addPlaceholder(Pane pane, String title) { ... }
-    // private void addPlaceholder(Pane pane, String title, Color bgColor) { ... }
-
     /**
      * Called when a statue is selected from the popup.
      */
@@ -1798,48 +1791,53 @@ public class GameScreenController extends BaseController {
      */
     private void updateStatueCard(Node card, CardDetails details) {
         if (card instanceof Pane pane) {
-            // Clear existing content
             pane.getChildren().clear();
 
-            // Set dimensions
-            pane.setMinSize(80, 120);
-            pane.setPrefSize(80, 120);
-            pane.setMaxSize(80, 120);
-
-            String imageUrl = details.getImageUrl();
-            if (imageUrl != null && !imageUrl.isEmpty()) {
-                Image image = resourceLoader.loadImage(imageUrl);
-
-                if (image != null && !image.isError()) {
-                    ImageView imageView = new ImageView(image);
-                    imageView.setPreserveRatio(true);
-                    imageView.setFitWidth(78);
-                    imageView.setFitHeight(118);
-
-                    StackPane wrapper = new StackPane(imageView);
-                    wrapper.setPrefSize(78, 118);
-
-                    pane.getChildren().add(wrapper);
+            try {
+                // Load the statue image first (your existing code)
+                String imageUrl = details.getImageUrl();
+                if (imageUrl != null && !imageUrl.isEmpty()) {
+                    Image image = resourceLoader.loadImage(imageUrl);
+                    if (image != null && !image.isError()) {
+                        ImageView imageView = new ImageView(image);
+                        imageView.setFitWidth(78);
+                        imageView.setFitHeight(118);
+                        imageView.setPreserveRatio(true);
+                        imageView.setSmooth(true);
+                        pane.getChildren().add(imageView);
+                    } else {
+                        addPlaceholderToPane(pane);
+                    }
                 } else {
-                    LOGGER.warning("Failed to load image for statue");
-                    addPlaceholderToPane(pane); // Use red placeholder
+                    addPlaceholderToPane(pane);
                 }
-            } else {
-                LOGGER.warning("No image URL for statue");
-                addPlaceholderToPane(pane); // Use red placeholder
-            }
 
-            // Update tooltip
-            Tooltip tooltip = cardTooltips.computeIfAbsent(card, this::createTooltipForCard);
-            Tooltip.uninstall(card, tooltip);
-            cardTooltips.remove(card);
-            cardTooltips.put(card, createStatueTooltip(details));
+                // Create and add the selection indicator button
+                Button statueSelectButton = new Button("⚙"); // Gear icon or you can use another symbol
+                statueSelectButton.getStyleClass().add("statue-select-button");
+                statueSelectButton.setMinSize(24, 24);
+                statueSelectButton.setPrefSize(24, 24);
+                statueSelectButton.setMaxSize(24, 24);
+                statueSelectButton.setTooltip(new Tooltip("Select different statue"));
 
-            // Make sure the card has drag-and-drop handlers
-            if (!hasPlacedStatue && canAffordCard("statue")) {
-                // TODO remove click handler for this card
-                card.getStyleClass().remove("unaffordable-card");
-                card.getStyleClass().add("game-card");
+                // Position in top-right corner
+                StackPane.setAlignment(statueSelectButton, Pos.TOP_RIGHT);
+                StackPane.setMargin(statueSelectButton, new Insets(2, 2, 0, 0));
+
+                // Add the selection button to the card
+                pane.getChildren().add(statueSelectButton);
+
+                // Add event handler to the button
+                statueSelectButton.setOnMouseClicked(this::handleStatueSelectButtonClick);
+
+                // Update tooltip
+                Tooltip tooltip = createStatueTooltip(details);
+                Tooltip.install(pane, tooltip);
+                cardTooltips.put(pane, tooltip);
+
+            } catch (Exception e) {
+                LOGGER.severe("Error updating statue card: " + e.getMessage());
+                addPlaceholderToPane(pane);
             }
         }
     }
