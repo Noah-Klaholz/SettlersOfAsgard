@@ -25,6 +25,7 @@ public class ResourceOverviewDialog extends UIComponent<StackPane> {
     private static final Logger LOGGER = Logger.getLogger(ResourceOverviewDialog.class.getName());
     private final ResourceLoader resourceLoader;
     private VBox content;
+    ScrollPane scrollPane;
     private final Map<String, Color> playerColors;
 
     public ResourceOverviewDialog(ResourceLoader resourceLoader, Map<String, Color> playerColors) {
@@ -62,7 +63,8 @@ public class ResourceOverviewDialog extends UIComponent<StackPane> {
         content.setAlignment(Pos.CENTER);
         content.setOnMouseClicked(e -> e.consume());
         content.setPadding(new Insets(30, 30, 30, 30));
-        content.setMaxWidth(400);
+        content.setMaxWidth(700);
+        content.setMaxHeight(500);
 
         // Title
         Label title = new Label("Player Resources");
@@ -73,7 +75,7 @@ public class ResourceOverviewDialog extends UIComponent<StackPane> {
         playerList.setPadding(new Insets(5));
 
         // Add scroll container for players
-        ScrollPane scrollPane = new ScrollPane();
+        scrollPane = new ScrollPane();
         scrollPane.setFitToWidth(true);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
@@ -96,7 +98,6 @@ public class ResourceOverviewDialog extends UIComponent<StackPane> {
 
     public void updatePlayers(List<Player> players, String currentTurnPlayer) {
         // Clear existing player rows
-        ScrollPane scrollPane = (ScrollPane) content.getChildren().get(2);
         VBox playerList = (VBox) scrollPane.getContent();
         playerList.getChildren().clear();
 
@@ -111,7 +112,7 @@ public class ResourceOverviewDialog extends UIComponent<StackPane> {
         HBox row = new HBox(15);
         row.setAlignment(Pos.CENTER_LEFT);
         row.setPadding(new Insets(10));
-        row.setPrefWidth(450);
+        row.setPrefWidth(700);
 
         // Set styling
         row.getStyleClass().add(isCurrentTurn ? "player-row-current" : "player-row");
