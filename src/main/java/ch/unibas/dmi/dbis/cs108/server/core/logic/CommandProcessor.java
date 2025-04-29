@@ -238,7 +238,7 @@ public class CommandProcessor {
             String playerName = cmd.getPlayer().getName();
 
             boolean success = gameLogic.upgradeStatue(x, y, statueId, playerName);
-            return success ? formatSuccess(Commands.BUYSTATUE.getCommand() + "$" + x + "$" + y + "$" + statueId + "$" + playerName) :
+            return success ? formatSuccess(Commands.UPGRADESTATUE.getCommand() + "$" + x + "$" + y + "$" + statueId + "$" + playerName) :
                     formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$UPGRADESTATUE");
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error upgrading statue", e);

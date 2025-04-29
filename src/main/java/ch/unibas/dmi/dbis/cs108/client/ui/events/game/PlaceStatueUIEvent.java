@@ -25,7 +25,7 @@ public class PlaceStatueUIEvent implements UIEvent {
      *
      * @param statueId The ID of the statue being purchased.
      */
-    public PlaceStatueUIEvent(int statueId, int x, int y) {
+    public PlaceStatueUIEvent(int x, int y, int statueId) {
         this.x = x;
         this.y = y;
         this.statueId = statueId;

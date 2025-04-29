@@ -143,14 +143,6 @@ public interface CommunicationAPI {
              */
             BUYTILE("BUYT"),
             /**
-             * Player buys a statue at coordinates
-             */
-            BUYSTATUE("BYST"),
-            /**
-             * Player buys a Structure with structure ID
-             */
-            BUYSTRUCTURE("BUST"),
-            /**
              * Player places a structure at coordinates
              */
             PLACESTRUCTURE("PLST"),

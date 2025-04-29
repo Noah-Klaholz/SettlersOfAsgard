@@ -4,6 +4,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.utils.CardDetails;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -79,6 +80,16 @@ public class StatueSelectionPopup extends Popup {
         row.setStyle("-fx-background-color: #444444; -fx-border-radius: 3px;");
 
         GameEntity entity = EntityRegistry.getGameEntityOriginalById(statueId);
+        String world = "UNKNOWN";
+        if (entity == null) {
+            LOGGER.warning("Entity with ID " + statueId + " not found.");
+            return row; // Return empty row if entity is not found
+        } else if (!(entity instanceof Statue statue)) {
+            LOGGER.warning("Entity with ID " + statueId + " is not a statue.");
+            return row; // Return empty row if entity is not a statue
+        } else {
+            world = statue.getWorld();
+        }
         String imageUrl = EntityRegistry.getURL(statueId, true);
         String title = entity.getName();
         String description = entity.getUsage();
@@ -110,11 +121,13 @@ public class StatueSelectionPopup extends Popup {
         nameLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: white;");
         Label priceLabel = new Label("Price: " + price + " runes");
         priceLabel.setStyle("-fx-text-fill: #aaaaaa;");
+        Label worldLabel = new Label("World: " + world);
+        worldLabel.setStyle("-fx-text-fill: white;");
         Label descLabel = new Label(description);
         descLabel.setStyle("-fx-text-fill: white;");
         descLabel.setWrapText(true);
 
-        infoBox.getChildren().addAll(nameLabel, priceLabel, descLabel);
+        infoBox.getChildren().addAll(nameLabel, priceLabel, worldLabel, descLabel);
         HBox.setHgrow(infoBox, Priority.ALWAYS);
 
         row.getChildren().addAll(imageView, infoBox);
