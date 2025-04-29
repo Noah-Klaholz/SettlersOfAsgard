@@ -117,9 +117,6 @@ public class GameScreenController extends BaseController {
     double gridOffsetX;
     double gridOffsetY;
 
-    private int selectedRow = -1;
-    private int selectedCol = -1;
-
     private String currentLobbyId;
 
     private Image mapImage;
@@ -135,9 +132,6 @@ public class GameScreenController extends BaseController {
     private final Map<Node, Tooltip> cardTooltips = new HashMap<>();
 
     private GridAdjustmentManager gridAdjustmentManager;
-
-    // Cached placeholder for missing images
-    private Node missingImagePlaceholder = null;
 
     /*
      * --------------------------------------------------
@@ -160,8 +154,6 @@ public class GameScreenController extends BaseController {
     private Label connectionStatusLabel;
     @FXML
     private VBox chatContainer;
-    @FXML
-    private Button resourceOverviewButton;
 
     private ChatComponent chatComponentController;
     private ResourceOverviewDialog resourceOverviewDialog;
@@ -206,16 +198,6 @@ public class GameScreenController extends BaseController {
             selectedStatue = new CardDetails(EntityRegistry.getGameEntityOriginalById(38), true);
         }
         Logger.getGlobal().info("GameScreenController created and subscribed to events.");
-        createPlaceholderNode(); // Create the reusable placeholder
-    }
-
-    /**
-     * Creates a reusable red rectangle placeholder node.
-     */
-    private void createPlaceholderNode() {
-        Rectangle rect = new Rectangle(78, 118); // Size for card slots
-        rect.setFill(Color.RED);
-        missingImagePlaceholder = rect;
     }
 
     /**
@@ -1755,6 +1737,7 @@ public class GameScreenController extends BaseController {
      * @param pane The target Pane.
      */
     private void addPlaceholderToPane(Pane pane) {
+        Node missingImagePlaceholder = createPlaceHolderNode();
         if (missingImagePlaceholder != null) {
             // Ensure placeholder is not already parented elsewhere
             if (missingImagePlaceholder.getParent() != null) {
@@ -1773,6 +1756,20 @@ public class GameScreenController extends BaseController {
             errorLabel.setPrefSize(78, 118);
             pane.getChildren().add(errorLabel);
         }
+    }
+
+    /**
+     * Creates a red placeholder node for missing images.
+     * This is a cached instance to avoid creating multiple identical nodes.
+     *
+     * @return A red rectangle as a placeholder.
+     */
+    private Node createPlaceHolderNode() {
+        Rectangle placeholder = new Rectangle(78, 118);
+        placeholder.setFill(Color.RED);
+        placeholder.setOpacity(0.5); // Semi-transparent
+        return placeholder;
+        // TODO add actual placeholder image
     }
 
     /**
