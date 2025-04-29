@@ -19,13 +19,19 @@ import java.util.stream.Collectors;
  * LeaderboardDialog is a UI component that represents a dialog for displaying
  */
 public class LeaderboardDialog extends UIComponent<StackPane> {
-
-    private static final String LEADERBOARD_TITLE = "Leaderboard";
+    /** The title of the leaderboard dialog */
+    private static final String LEADERBOARD_TITLE = "Global Leaderboard";
+    /** The leaderboard  */
     private Leaderboard leaderboard;
+    /** The VBox for all entries in the dialog */
     private VBox leaderboardBox;
+    /** The search field for the highScore List */
     private TextField searchField;
-    private StackPane overlayPane;
 
+    /**
+     * Constructor for the LeaderboardDialog.
+     * Initializes the dialog with a title and sets up the layout and styles.
+     */
     public LeaderboardDialog() {
         super("");
         this.view = new StackPane();
@@ -51,6 +57,11 @@ public class LeaderboardDialog extends UIComponent<StackPane> {
         this.view.setManaged(false);
     }
 
+    /**
+     * Creates the content of the leaderboard dialog.
+     *
+     * @return VBox containing the dialog content
+     */
     private VBox createDialogContent() {
         VBox content = new VBox(15);
         content.getStyleClass().add("dialog-content-box");
@@ -90,6 +101,10 @@ public class LeaderboardDialog extends UIComponent<StackPane> {
         return content;
     }
 
+    /**
+     * Updates the leaderboard entries in the dialog based on the current leaderboard data.
+     * Filters the entries based on the search field input and sorts them by score.
+     */
     private void updateLeaderboardEntries() {
         leaderboardBox.getChildren().clear();
         if (leaderboard == null) return;
@@ -99,7 +114,7 @@ public class LeaderboardDialog extends UIComponent<StackPane> {
         List<Map.Entry<String, Integer>> sorted = entries.entrySet().stream()
                 .filter(e -> filter.isEmpty() || e.getKey().toLowerCase().contains(filter))
                 .sorted((a, b) -> b.getValue().compareTo(a.getValue()))
-                .collect(Collectors.toList());
+                .toList();
 
         int rank = 1;
         for (Map.Entry<String, Integer> entry : sorted) {
@@ -108,6 +123,14 @@ public class LeaderboardDialog extends UIComponent<StackPane> {
         }
     }
 
+    /**
+     * Creates a cell for the leaderboard entry.
+     *
+     * @param rank The rank of the player
+     * @param name The name of the player
+     * @param score The score of the player
+     * @return HBox representing the leaderboard cell
+     */
     private HBox createLeaderboardCell(int rank, String name, int score) {
         HBox cell = new HBox(10);
         cell.setAlignment(Pos.CENTER_LEFT);
@@ -141,6 +164,9 @@ public class LeaderboardDialog extends UIComponent<StackPane> {
         return cell;
     }
 
+    /**
+     * Shows the leaderboard dialog.
+     */
     @Override
     public void show() {
         updateLeaderboardEntries();
@@ -155,6 +181,9 @@ public class LeaderboardDialog extends UIComponent<StackPane> {
         Platform.runLater(() -> searchField.requestFocus());
     }
 
+    /**
+     * Closes the leaderboard dialog.
+     */
     public void close() {
         FadeTransition fadeOut = new FadeTransition(Duration.millis(200), this.view);
         fadeOut.setFromValue(1);
@@ -173,6 +202,11 @@ public class LeaderboardDialog extends UIComponent<StackPane> {
         fadeOut.play();
     }
 
+    /**
+     * Sets the leaderboard data for the dialog and updates the entries.
+     *
+     * @param leaderboard
+     */
     public void setLeaderboard(Leaderboard leaderboard) {
         this.leaderboard = leaderboard;
         updateLeaderboardEntries();
