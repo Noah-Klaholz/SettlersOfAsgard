@@ -96,7 +96,7 @@ public class ResourceOverviewDialog extends UIComponent<StackPane> {
 
     public void updatePlayers(List<Player> players, String currentTurnPlayer) {
         // Clear existing player rows
-        ScrollPane scrollPane = (ScrollPane) content.getChildren().get(1);
+        ScrollPane scrollPane = (ScrollPane) content.getChildren().get(2);
         VBox playerList = (VBox) scrollPane.getContent();
         playerList.getChildren().clear();
 
