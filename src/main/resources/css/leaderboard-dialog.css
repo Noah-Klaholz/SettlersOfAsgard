@@ -45,10 +45,14 @@
     -fx-font-weight: bold;
 }
 
+.leaderboard-top-players {
+    -fx-text-fill: #000000;
+}
+
 .leaderboard-rank {
     -fx-font-size: 18px;
     -fx-font-weight: bold;
-    -fx-text-fill: #888;
+    -fx-text-fill: -color-text-secondary;
     -fx-min-width: 32px;
     -fx-alignment: center;
 }

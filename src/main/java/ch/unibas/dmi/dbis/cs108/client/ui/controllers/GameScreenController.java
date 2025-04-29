@@ -9,10 +9,8 @@ import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.WinScreenDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.GridAdjustmentManager;
-import ch.unibas.dmi.dbis.cs108.client.ui.components.game.InteractionPopups.StatueInteractionPopup;
-import ch.unibas.dmi.dbis.cs108.client.ui.components.game.ResourceOverviewPopup;
+import ch.unibas.dmi.dbis.cs108.client.ui.components.game.ResourceOverviewDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.StatueSelectionPopup;
-import ch.unibas.dmi.dbis.cs108.client.ui.components.game.TileTooltip;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
@@ -38,14 +36,11 @@ import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -53,8 +48,6 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
-
-import javax.swing.text.html.parser.Entity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -170,7 +163,7 @@ public class GameScreenController extends BaseController {
     private Button resourceOverviewButton;
 
     private ChatComponent chatComponentController;
-    private ResourceOverviewPopup resourceOverviewPopup;
+    private ResourceOverviewDialog resourceOverviewDialog;
 
     // Grid‑adjustment overlay controls (created programmatically)
     private Label adjustmentModeIndicator;
@@ -268,7 +261,7 @@ public class GameScreenController extends BaseController {
                 this::drawMapAndGrid);
 
         initialisePlayerColours();
-        resourceOverviewPopup = new ResourceOverviewPopup(resourceLoader, playerColors);
+        resourceOverviewDialog = new ResourceOverviewDialog(resourceLoader, playerColors);
 
         setupUI();
         loadMapImage();
@@ -431,9 +424,9 @@ public class GameScreenController extends BaseController {
 
             artifacts = gamePlayer.getArtifacts();
 
-            updateCardImages();
-            refreshCardAffordability();
             updateRunesAndEnergyBar();
+            refreshCardAffordability();
+            updateCardImages();
             updatePlayerList();
             updateMap();
 
@@ -717,7 +710,6 @@ public class GameScreenController extends BaseController {
         );
 
         gameCanvas.addEventHandler(MouseEvent.MOUSE_EXITED_TARGET, e -> {
-            Logger.getGlobal().info("Game canvas excited");
             highlightedTile = null;
             drawMapAndGrid();
         });
@@ -732,7 +724,6 @@ public class GameScreenController extends BaseController {
                 }
             });
 
-            // Add double-click handler to parent as well
             parent.addEventHandler(MouseEvent.MOUSE_CLICKED, ev -> {
                 if (ev.getClickCount() == 2) {
                     Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
@@ -742,6 +733,36 @@ public class GameScreenController extends BaseController {
                         ev.consume();
                     }
                 }
+            });
+
+            parent.addEventHandler(MouseEvent.MOUSE_MOVED, ev -> {
+                    Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
+                    if (local.getX() >= 0 && local.getY() >= 0 &&
+                            local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
+                        handleCanvasMouseMove(local.getX(), local.getY());
+                        ev.consume();
+                    }
+                }
+            );
+
+            parent.addEventHandler(MouseEvent.MOUSE_ENTERED_TARGET, ev -> {
+                        Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
+                        if (local.getX() >= 0 && local.getY() >= 0 &&
+                                local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
+                            handleCanvasEntered(local.getX(), local.getY());
+                            ev.consume();
+                        }
+                    }
+            );
+
+            parent.addEventHandler(MouseEvent.MOUSE_EXITED_TARGET, ev -> {
+                    Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
+                    if (local.getX() >= 0 && local.getY() >= 0 &&
+                            local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
+                        highlightedTile = null;
+                        drawMapAndGrid();
+                        ev.consume();
+                    }
             });
         }
 
@@ -849,7 +870,6 @@ public class GameScreenController extends BaseController {
      * Handles mouse entering the canvas - highlights the tile under the cursor
      */
     private void handleCanvasEntered(double px, double py) {
-        Logger.getGlobal().info("Game canvas entered");
         int[] tile = getHexAt(px, py);
         if (tile == null)
             return;
@@ -866,7 +886,6 @@ public class GameScreenController extends BaseController {
      * Handles mouse movement within the canvas
      */
     private void handleCanvasMouseMove(double px, double py) {
-        Logger.getGlobal().info("Game canvas moved at " + px + ", " + py);
         int[] tile = getHexAt(px, py);
         if (tile == null) {
             // If no tile under cursor, clear highlight
@@ -882,12 +901,14 @@ public class GameScreenController extends BaseController {
 
         Tile tileUnderCursor = getTile(row, col);
 
-        // Only redraw if the highlighted tile has changed
-        if (tileUnderCursor != highlightedTile) {
+        // Only redraw if the highlighted tile has changed (compare by coordinates)
+        if (highlightedTile == null ||
+            tileUnderCursor == null ||
+            highlightedTile.getX() != tileUnderCursor.getX() ||
+            highlightedTile.getY() != tileUnderCursor.getY()) {
             highlightedTile = tileUnderCursor;
             drawMapAndGrid();
         }
-        Logger.getGlobal().info("Highlighted Tile at " + row + ", " + col + " is " + highlightedTile.getX() + ", " + highlightedTile.getY());
     }
 
     /**
@@ -965,9 +986,16 @@ public class GameScreenController extends BaseController {
             for (int c = 0; c < HEX_COLS; c++) {
                 double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2);
                 double cy = gridOffsetY + r * vSpacing;
-                boolean selected = (highlightedTile != null &&
-                        getTile(r, c) != null &&
-                        getTile(r, c).equals(highlightedTile));
+                // Use coordinate comparison for selection
+                boolean selected = false;
+                if (highlightedTile != null) {
+                    Tile t = getTile(r, c);
+                    if (t != null &&
+                        t.getX() == highlightedTile.getX() &&
+                        t.getY() == highlightedTile.getY()) {
+                        selected = true;
+                    }
+                }
                 drawHex(gc, cx, cy, size, r, c, selected);
             }
         }
@@ -1021,11 +1049,13 @@ public class GameScreenController extends BaseController {
         if (selected) {
             Paint oldStroke = gc.getStroke();
             double oldAlpha = gc.getGlobalAlpha();
+            double oldWidth = gc.getLineWidth();
             gc.setStroke(Color.YELLOW);
             gc.setLineWidth(3);
             gc.setGlobalAlpha(1.0);
             gc.stroke();
             gc.setStroke(oldStroke);
+            gc.setLineWidth(oldWidth);
             gc.setGlobalAlpha(oldAlpha);
         } else {
             gc.stroke();
@@ -1146,8 +1176,6 @@ public class GameScreenController extends BaseController {
     int[] getHexAt(double px, double py) {
         if (!isMapLoaded || effectiveHexSize <= 0)
             return null;
-
-        LOGGER.info("Getting hex at px=" + px + ", py=" + py);
 
         double hSpacing = effectiveHexSize * gridAdjustmentManager.getHorizontalSpacingFactor();
         double vSpacing = effectiveHexSize * gridAdjustmentManager.getVerticalSpacingFactor();
@@ -1314,6 +1342,11 @@ public class GameScreenController extends BaseController {
         return ""; // Unknown type
     }
 
+    /*
+     * --------------------------------------------------
+     * Tooltip creation helper
+     * --------------------------------------------------
+     */
     /*
      * --------------------------------------------------
      * Tooltip creation helper
@@ -2012,16 +2045,15 @@ public class GameScreenController extends BaseController {
             return;
         }
 
-        // Update the popup with current players
-        resourceOverviewPopup.updatePlayers(gameState.getPlayers(), gameState.getPlayerTurn());
-
-        // Position and show the popup
-        if (!resourceOverviewPopup.isShowing()) {
-            Node source = resourceOverviewButton;
-            resourceOverviewPopup.show(source.getScene().getWindow(),
-                    source.localToScreen(source.getBoundsInLocal()).getCenterX() - 225,
-                    source.localToScreen(source.getBoundsInLocal()).getCenterY() + 20);
+        if (resourceOverviewDialog == null) {
+            resourceOverviewDialog = new ResourceOverviewDialog(resourceLoader, playerColors);
         }
+
+        Pane root = (StackPane) gameCanvas.getParent();
+
+        // Update the popup with current players
+        resourceOverviewDialog.updatePlayers(gameState.getPlayers(), gameState.getPlayerTurn());
+        showDialogAsOverlay(resourceOverviewDialog, root);
     }
 
     @FXML
@@ -2069,11 +2101,5 @@ public class GameScreenController extends BaseController {
         // This will need statue-specific UI for different blessing types
         showNotification("Receiving blessing from statue at (" + tile.getX() + "," + tile.getY() + ")");
     }
-
-    /*
-     * ==================================================
-     * Inner Classes for Extensibility Drag & Drop Handling
-     * ==================================================
-     */
 
 }
