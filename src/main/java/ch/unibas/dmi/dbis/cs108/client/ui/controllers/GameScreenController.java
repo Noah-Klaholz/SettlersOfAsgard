@@ -424,9 +424,9 @@ public class GameScreenController extends BaseController {
 
             artifacts = gamePlayer.getArtifacts();
 
-            updateCardImages();
-            refreshCardAffordability();
             updateRunesAndEnergyBar();
+            refreshCardAffordability();
+            updateCardImages();
             updatePlayerList();
             updateMap();
 
@@ -724,7 +724,6 @@ public class GameScreenController extends BaseController {
                 }
             });
 
-            // Add double-click handler to parent as well
             parent.addEventHandler(MouseEvent.MOUSE_CLICKED, ev -> {
                 if (ev.getClickCount() == 2) {
                     Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
@@ -734,6 +733,36 @@ public class GameScreenController extends BaseController {
                         ev.consume();
                     }
                 }
+            });
+
+            parent.addEventHandler(MouseEvent.MOUSE_MOVED, ev -> {
+                    Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
+                    if (local.getX() >= 0 && local.getY() >= 0 &&
+                            local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
+                        handleCanvasMouseMove(local.getX(), local.getY());
+                        ev.consume();
+                    }
+                }
+            );
+
+            parent.addEventHandler(MouseEvent.MOUSE_ENTERED_TARGET, ev -> {
+                        Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
+                        if (local.getX() >= 0 && local.getY() >= 0 &&
+                                local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
+                            handleCanvasEntered(local.getX(), local.getY());
+                            ev.consume();
+                        }
+                    }
+            );
+
+            parent.addEventHandler(MouseEvent.MOUSE_EXITED_TARGET, ev -> {
+                    Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
+                    if (local.getX() >= 0 && local.getY() >= 0 &&
+                            local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
+                        highlightedTile = null;
+                        drawMapAndGrid();
+                        ev.consume();
+                    }
             });
         }
 
