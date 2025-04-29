@@ -45,10 +45,6 @@
     -fx-font-weight: bold;
 }
 
-.leaderboard-top-players {
-    -fx-text-fill: #000000;
-}
-
 .leaderboard-rank {
     -fx-font-size: 18px;
     -fx-font-weight: bold;
@@ -69,4 +65,8 @@
     -fx-text-fill: -color-accent-gold;
     -fx-min-width: 48px;
     -fx-alignment: center-right;
+}
+
+.leaderboard-rank.leaderboard-top-players, .leaderboard-name.leaderboard-top-players {
+    -fx-text-fill: #000000;
 }
