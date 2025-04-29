@@ -108,6 +108,8 @@ public class GameScreenController extends BaseController {
     private double scaledMapHeight;
     private double mapOffsetX;
     private double mapOffsetY;
+    private double vSpacing;
+    private double hSpacing;
 
     /*
      * The following fields are package‑private because the adjustment manager
@@ -127,6 +129,7 @@ public class GameScreenController extends BaseController {
     private CardDetails selectedStatue;
     private boolean hasPlacedStatue = false;
     private Tile highlightedTile = null;
+    private int[] lastHighlightedTileCoords = null;
 
     // Tooltips for cards are cached to avoid recreating them on every hover event
     private final Map<Node, Tooltip> cardTooltips = new HashMap<>();
@@ -224,7 +227,6 @@ public class GameScreenController extends BaseController {
 
     /**
      * Initialises the UI components and sets up the game state.
-     *
      */
     private void initializeUI() {
 
@@ -404,6 +406,7 @@ public class GameScreenController extends BaseController {
             }
 
             artifacts = gamePlayer.getArtifacts();
+            markStatuePlaced(gamePlayer.hasStatue());
 
             updateRunesAndEnergyBar();
             refreshCardAffordability();
@@ -691,8 +694,11 @@ public class GameScreenController extends BaseController {
         );
 
         gameCanvas.addEventHandler(MouseEvent.MOUSE_EXITED_TARGET, e -> {
+            if (lastHighlightedTileCoords != null) {
+                redrawSingleTile(lastHighlightedTileCoords[0], lastHighlightedTileCoords[1], false);
+            }
             highlightedTile = null;
-            drawMapAndGrid();
+            lastHighlightedTileCoords = null;
         });
 
         if (gameCanvas.getParent() instanceof StackPane parent) {
@@ -717,13 +723,13 @@ public class GameScreenController extends BaseController {
             });
 
             parent.addEventHandler(MouseEvent.MOUSE_MOVED, ev -> {
-                    Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
-                    if (local.getX() >= 0 && local.getY() >= 0 &&
-                            local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
-                        handleCanvasMouseMove(local.getX(), local.getY());
-                        ev.consume();
+                        Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
+                        if (local.getX() >= 0 && local.getY() >= 0 &&
+                                local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
+                            handleCanvasMouseMove(local.getX(), local.getY());
+                            ev.consume();
+                        }
                     }
-                }
             );
 
             parent.addEventHandler(MouseEvent.MOUSE_ENTERED_TARGET, ev -> {
@@ -737,13 +743,19 @@ public class GameScreenController extends BaseController {
             );
 
             parent.addEventHandler(MouseEvent.MOUSE_EXITED_TARGET, ev -> {
-                    Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
-                    if (local.getX() >= 0 && local.getY() >= 0 &&
-                            local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
-                        highlightedTile = null;
-                        drawMapAndGrid();
-                        ev.consume();
-                    }
+                // Check if the exit event is still within the canvas bounds; if so, ignore.
+                // This prevents flicker when moving quickly near the edge.
+                Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
+                boolean trulyExited = local.getX() < 0 || local.getY() < 0 ||
+                        local.getX() > gameCanvas.getWidth() || local.getY() > gameCanvas.getHeight();
+
+                if (trulyExited && lastHighlightedTileCoords != null) {
+                    redrawSingleTile(lastHighlightedTileCoords[0], lastHighlightedTileCoords[1], false);
+                    highlightedTile = null;
+                    lastHighlightedTileCoords = null;
+                    // Don't consume here, let the canvas handler potentially catch it too if needed.
+                }
+                // If not truly exited, the MOUSE_MOVED handler will manage the highlight.
             });
         }
 
@@ -761,18 +773,21 @@ public class GameScreenController extends BaseController {
 
         int row = tile[0];
         int col = tile[1];
-        drawMapAndGrid();
         eventBus.publish(new TileClickEvent(row, col));
 
-        if (localPlayer != null &&  getTile(row, col) != null) {
+        if (localPlayer != null && getTile(row, col) != null) {
             Tile t = getTile(row, col);
-            if (selectedCard != null && !t.hasEntity()) {
-                CardDetails s = getCardDetails(selectedCard.getId());
-                if (s != null && s.getID() == selectedStatue.getID()) {
-                    eventBus.publish(new PlaceStatueUIEvent(col, row, s.getID()));
-                    markStatuePlaced();
-                } else if (s != null) {
-                    eventBus.publish(new PlaceStructureUIEvent(col, row, s.getID()));
+            if (selectedCard != null) {
+                if (!t.hasEntity()) {
+                    CardDetails s = getCardDetails(selectedCard.getId());
+                    if (s != null && s.getID() == selectedStatue.getID()) {
+                        eventBus.publish(new PlaceStatueUIEvent(col, row, s.getID()));
+                    } else if (s != null) {
+                        eventBus.publish(new PlaceStructureUIEvent(col, row, s.getID()));
+                    }
+                    selectedCard.getStyleClass().remove("selected-card");
+                    selectedCard = null;
+                    updateCardImages();
                 }
             }
         }
@@ -810,8 +825,6 @@ public class GameScreenController extends BaseController {
          }
          }
          */
-
-        selectedCard = null;
     }
 
     /**
@@ -853,52 +866,163 @@ public class GameScreenController extends BaseController {
             showNotification("This tile is owned by another player.");
         }
 
-        selectedCard = null;
+        if (selectedCard != null) {
+            selectedCard = null;
+            updateCardImages();
+        }
     }
 
     /**
      * Handles mouse entering the canvas - highlights the tile under the cursor
      */
     private void handleCanvasEntered(double px, double py) {
-        int[] tile = getHexAt(px, py);
-        if (tile == null)
-            return;
-
-        int row = tile[0];
-        int col = tile[1];
-
-        // Highlight the tile under the cursor
-        highlightedTile = getTile(row, col);
-        drawMapAndGrid();
+        // Directly handle highlight here instead of calling handleCanvasEntered
+        int[] tileCoords = getHexAt(px, py);
+        if (tileCoords != null) {
+            int row = tileCoords[0];
+            int col = tileCoords[1];
+            Tile tileUnderCursor = getTile(row, col);
+            if (tileUnderCursor != null) {
+                // Ensure no previous highlight is lingering if mouse exited/entered quickly
+                if (lastHighlightedTileCoords != null && (lastHighlightedTileCoords[0] != row || lastHighlightedTileCoords[1] != col)) {
+                    redrawSingleTile(lastHighlightedTileCoords[0], lastHighlightedTileCoords[1], false);
+                }
+                redrawSingleTile(row, col, true);
+                highlightedTile = tileUnderCursor;
+                lastHighlightedTileCoords = new int[]{row, col};
+            }
+        } else {
+            // Entered canvas but not over a tile, clear any old highlight
+            if (lastHighlightedTileCoords != null) {
+                redrawSingleTile(lastHighlightedTileCoords[0], lastHighlightedTileCoords[1], false);
+                lastHighlightedTileCoords = null;
+            }
+            highlightedTile = null;
+        }
     }
 
     /**
-     * Handles mouse movement within the canvas
+     * Handles mouse movement within the canvas, highlighting the tile under the cursor
+     * by redrawing only the affected tiles.
      */
     private void handleCanvasMouseMove(double px, double py) {
-        int[] tile = getHexAt(px, py);
-        if (tile == null) {
-            // If no tile under cursor, clear highlight
-            if (highlightedTile != null) {
+        int[] tileCoords = getHexAt(px, py);
+
+        if (tileCoords == null) {
+            // Cursor moved off the grid, remove highlight from the last tile
+            if (lastHighlightedTileCoords != null) {
+                redrawSingleTile(lastHighlightedTileCoords[0], lastHighlightedTileCoords[1], false);
                 highlightedTile = null;
-                drawMapAndGrid();
+                lastHighlightedTileCoords = null;
             }
             return;
         }
 
-        int row = tile[0];
-        int col = tile[1];
+        int row = tileCoords[0];
+        int col = tileCoords[1];
+        Tile tileUnderCursor = getTile(row, col); // Assuming getTile uses col, row
 
-        Tile tileUnderCursor = getTile(row, col);
-
-        // Only redraw if the highlighted tile has changed (compare by coordinates)
-        if (highlightedTile == null ||
-            tileUnderCursor == null ||
-            highlightedTile.getX() != tileUnderCursor.getX() ||
-            highlightedTile.getY() != tileUnderCursor.getY()) {
-            highlightedTile = tileUnderCursor;
-            drawMapAndGrid();
+        // Check if the highlighted tile actually changed
+        boolean needsRedraw = false;
+        if (highlightedTile == null && tileUnderCursor != null) {
+            needsRedraw = true; // Moving onto a tile for the first time
+        } else if (highlightedTile != null && tileUnderCursor == null) {
+            needsRedraw = true; // Moving off a tile (handled above, but good check)
+        } else if (highlightedTile != null && tileUnderCursor != null &&
+                (highlightedTile.getX() != tileUnderCursor.getX() || highlightedTile.getY() != tileUnderCursor.getY())) {
+            needsRedraw = true; // Moving from one tile to another
+        } else if (highlightedTile == null && lastHighlightedTileCoords != null) {
+            // Case where cursor re-enters the last highlighted tile after leaving grid
+            needsRedraw = true;
         }
+
+        if (needsRedraw) {
+            // Remove highlight from the previously highlighted tile
+            if (lastHighlightedTileCoords != null) {
+                // Avoid redrawing the same tile if it's the target
+                if (lastHighlightedTileCoords[0] != row || lastHighlightedTileCoords[1] != col) {
+                    redrawSingleTile(lastHighlightedTileCoords[0], lastHighlightedTileCoords[1], false);
+                }
+            }
+
+            // Add highlight to the new tile
+            if (tileUnderCursor != null) {
+                redrawSingleTile(row, col, true);
+                highlightedTile = tileUnderCursor;
+                lastHighlightedTileCoords = new int[]{row, col};
+            } else {
+                // If tileUnderCursor is null but we determined a redraw is needed,
+                // it means we are moving off the grid. Clear the state.
+                highlightedTile = null;
+                lastHighlightedTileCoords = null;
+            }
+        }
+    }
+
+    /**
+     * Redraws a single tile by first restoring the background map image and then redrawing the hex.
+     *
+     * @param row      The row of the tile.
+     * @param col      The column of the tile.
+     * @param selected Whether the tile should be drawn with selection highlight.
+     */
+    private void redrawSingleTile(int row, int col, boolean selected) {
+        if (effectiveHexSize <= 0 || gridAdjustmentManager == null || !isMapLoaded) {
+            LOGGER.finer("Cannot redraw tile, invalid parameters or map not loaded");
+            return;
+        }
+
+        GraphicsContext gc = gameCanvas.getGraphicsContext2D();
+
+        // Save ALL original graphics state
+        Paint originalFill = gc.getFill();
+        Paint originalStroke = gc.getStroke();
+        double originalLineWidth = gc.getLineWidth();
+        double originalGlobalAlpha = gc.getGlobalAlpha();
+
+        // Calculate positioning
+        double cx = gridOffsetX + col * hSpacing + (row % 2) * (hSpacing / 2);
+        double cy = gridOffsetY + row * vSpacing;
+
+        double hSquish = gridAdjustmentManager.getHorizontalSquishFactor();
+        double vSquish = gridAdjustmentManager.getVerticalSquishFactor();
+        double clearRadius = effectiveHexSize * Math.max(hSquish, vSquish) * 1.2; // 20% margin
+
+        double x = cx - clearRadius;
+        double y = cy - clearRadius;
+        double width = clearRadius * 2;
+        double height = clearRadius * 2;
+
+        // Restore the background by drawing from the original map image
+        double sourceX = (x - mapOffsetX) / scaledMapWidth * mapImage.getWidth();
+        double sourceY = (y - mapOffsetY) / scaledMapHeight * mapImage.getHeight();
+        double sourceWidth = width / scaledMapWidth * mapImage.getWidth();
+        double sourceHeight = height / scaledMapHeight * mapImage.getHeight();
+
+        // Ensure we stay within bounds for both source and destination
+        gc.drawImage(
+                mapImage,
+                Math.max(0, sourceX), Math.max(0, sourceY),
+                Math.min(sourceWidth, mapImage.getWidth() - Math.max(0, sourceX)),
+                Math.min(sourceHeight, mapImage.getHeight() - Math.max(0, sourceY)),
+                Math.max(0, x), Math.max(0, y),
+                Math.min(width, gameCanvas.getWidth() - Math.max(0, x)),
+                Math.min(height, gameCanvas.getHeight() - Math.max(0, y))
+        );
+
+        // Set exact states as in drawHexGrid()
+        gc.setGlobalAlpha(0.7);
+        gc.setStroke(Color.WHITE);
+        gc.setLineWidth(1.5);
+
+        // Draw the hex with current settings
+        drawHex(gc, cx, cy, effectiveHexSize, row, col, selected);
+
+        // Fully restore original state to prevent any state leakage
+        gc.setFill(originalFill);
+        gc.setStroke(originalStroke);
+        gc.setLineWidth(originalLineWidth);
+        gc.setGlobalAlpha(originalGlobalAlpha);
     }
 
     /**
@@ -961,8 +1085,8 @@ public class GameScreenController extends BaseController {
         gc.setLineWidth(1.5);
         gc.setGlobalAlpha(0.7);
 
-        double hSpacing = size * gridAdjustmentManager.getHorizontalSpacingFactor();
-        double vSpacing = size * gridAdjustmentManager.getVerticalSpacingFactor();
+        hSpacing = size * gridAdjustmentManager.getHorizontalSpacingFactor();
+        vSpacing = size * gridAdjustmentManager.getVerticalSpacingFactor();
 
         double totalW = hSpacing * (HEX_COLS - 0.5);
         double totalH = vSpacing * HEX_ROWS;
@@ -981,8 +1105,8 @@ public class GameScreenController extends BaseController {
                 if (highlightedTile != null) {
                     Tile t = getTile(r, c);
                     if (t != null &&
-                        t.getX() == highlightedTile.getX() &&
-                        t.getY() == highlightedTile.getY()) {
+                            t.getX() == highlightedTile.getX() &&
+                            t.getY() == highlightedTile.getY()) {
                         selected = true;
                     }
                 }
@@ -1159,7 +1283,7 @@ public class GameScreenController extends BaseController {
      * Transforms canvas coordinates to logical grid coordinates.
      *
      * @return {@code int[]{row,col}} or {@code null} if the point is not inside
-     *         any tile.
+     * any tile.
      */
     int[] getHexAt(double px, double py) {
         if (!isMapLoaded || effectiveHexSize <= 0)
@@ -1173,7 +1297,7 @@ public class GameScreenController extends BaseController {
                 double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2);
                 double cy = gridOffsetY + r * vSpacing;
                 if (pointInHex(px, py, cx, cy, effectiveHexSize)) {
-                    return new int[] { r, c };
+                    return new int[]{r, c};
                 }
             }
         }
@@ -1489,7 +1613,6 @@ public class GameScreenController extends BaseController {
 
         return tooltip;
     }
-
 
 
     /**
@@ -1849,15 +1972,21 @@ public class GameScreenController extends BaseController {
     /**
      * Marks that a statue has been placed and disables the statue card.
      */
-    public void markStatuePlaced() {
-        hasPlacedStatue = true;
+    public void markStatuePlaced(boolean hasPlacedStatue) {
+        this.hasPlacedStatue = hasPlacedStatue;
 
         // Update the statue card to be non-interactive
         for (Node card : structureHand.getChildren()) {
             if (card.getId() != null && card.getId().startsWith("statue")) {
-                card.getStyleClass().remove("game-card");
-                card.getStyleClass().add("unaffordable-card");
-                card.setOnMouseClicked(null);
+                if (hasPlacedStatue) {
+                    card.getStyleClass().remove("game-card");
+                    card.getStyleClass().add("unaffordable-card");
+                    card.setOnMouseClicked(null);
+                } else {
+                    card.getStyleClass().remove("unaffordable-card");
+                    card.getStyleClass().add("game-card");
+                    card.setOnMouseClicked(this::handleCardClick);
+                }
             }
         }
     }

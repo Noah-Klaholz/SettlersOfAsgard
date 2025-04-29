@@ -1,6 +1,6 @@
-noahklaholz2: 808
+noahklaholz2: 1640
+noahklaholz: 966
 thor: 640
-noahklaholz: 495
 loki: 402
 freya: 334
 odin: 284
