@@ -152,10 +152,13 @@ public class LeaderboardDialog extends UIComponent<StackPane> {
 
         // Special styling for top 3
         if (rank == 1) {
+            rankLabel.setStyle("-fx-text-fill: #000000;");
             cell.getStyleClass().add("leaderboard-gold");
         } else if (rank == 2) {
+            rankLabel.setStyle("-fx-text-fill: #000000;");
             cell.getStyleClass().add("leaderboard-silver");
         } else if (rank == 3) {
+            rankLabel.setStyle("-fx-text-fill: #000000;");
             cell.getStyleClass().add("leaderboard-bronze");
         }
 
