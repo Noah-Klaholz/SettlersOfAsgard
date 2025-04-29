@@ -94,8 +94,10 @@ public class LeaderboardDialog extends UIComponent<StackPane> {
 
         content.getChildren().addAll(
                 title,
+                new DialogSeparator(),
                 searchField,
                 scrollPane,
+                new DialogSeparator(),
                 closeButton
         );
         return content;
@@ -210,5 +212,14 @@ public class LeaderboardDialog extends UIComponent<StackPane> {
     public void setLeaderboard(Leaderboard leaderboard) {
         this.leaderboard = leaderboard;
         updateLeaderboardEntries();
+    }
+
+    /**
+     * Custom separator using CSS styling.
+     */
+    private static class DialogSeparator extends Region {
+        public DialogSeparator() {
+            getStyleClass().add("dialog-separator"); // Use style class
+        }
     }
 }
