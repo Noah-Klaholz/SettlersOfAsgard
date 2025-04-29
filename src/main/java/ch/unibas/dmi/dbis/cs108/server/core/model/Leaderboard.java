@@ -25,13 +25,13 @@ public class Leaderboard {
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     /**
-     * Instantiates a Leaderboard object. Initializes the Path field from the current file.
-     * Ensures the directory exists and loads the file.
+     * Instantiates a Leaderboard object. Creates the correct path.
      */
     public Leaderboard() {
-        this(Paths.get("leaderboard", "Leaderboard.txt").toAbsolutePath());
-        ensureDirectoryExists();
-        load();
+        this(Paths.get("").toAbsolutePath() // working directory (build/libs)
+                .getParent().getParent() // go up two directories (root)
+                .resolve("leaderboard") // folder "leaderboard"
+                .resolve("leaderboard.txt")); // file "leaderboard.txt"
     }
 
     /**
@@ -101,9 +101,10 @@ public class Leaderboard {
         try {
             writer.write(entry.getKey() + ": " + entry.getValue() + "\n");
         } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Failed to write leaderboard entry", e);
+            LOGGER.log(Level.SEVERE, "Failed to write leaderboard entry", e);
         }
     }
+
 
     /**
      * Loads the leaderboard map from the file.
@@ -190,7 +191,7 @@ public class Leaderboard {
                     int points = Integer.parseInt(parts[1]);
                     leaderboard.update(playerName, points);
                 } catch (NumberFormatException e) {
-                    LOGGER.log(Level.WARNING, "Failed to parse points for player: " + playerName);
+                    LOGGER.log(Level.WARNING, "Failed to parse points for player: " + playerName, e);
                 }
             }
         }

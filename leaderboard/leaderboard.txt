@@ -2,3 +2,7 @@ thor: 640
 loki: 402
 freya: 334
 odin: 284
+vincent2: 232
+vincent1: 220
+vincent3: 50
+vincent4: 50
