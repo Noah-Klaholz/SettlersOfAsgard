@@ -198,16 +198,14 @@ public class GameScreenController extends BaseController {
         gameState = new GameState();
         subscribeEvents();
         // Initialize selectedStatue safely
-        GameEntity defaultStatueEntity = EntityRegistry.getGameEntityOriginalById(38);
+        GameEntity defaultStatueEntity = EntityRegistry.getGameEntityOriginalById(30);
         if (defaultStatueEntity != null) {
             selectedStatue = new CardDetails(defaultStatueEntity, true);
         } else {
             LOGGER.severe("Failed to load default statue entity (ID 38).");
-            // Handle an error case, maybe create a dummy CardDetails or throw exception
-            selectedStatue = new CardDetails(38, "Error Statue", "Failed to load", "", "", 0);
+            selectedStatue = new CardDetails(EntityRegistry.getGameEntityOriginalById(38), true);
         }
         Logger.getGlobal().info("GameScreenController created and subscribed to events.");
-
         createPlaceholderNode(); // Create the reusable placeholder
     }
 
@@ -788,7 +786,12 @@ public class GameScreenController extends BaseController {
             Tile t = getTile(row, col);
             if (selectedCard != null && !t.hasEntity()) {
                 CardDetails s = getCardDetails(selectedCard.getId());
-                eventBus.publish(new PlaceStructureUIEvent(col, row, s.getID()));
+                if (s != null && s.getID() == selectedStatue.getID()) {
+                    eventBus.publish(new PlaceStatueUIEvent(col, row, s.getID()));
+                    markStatuePlaced();
+                } else if (s != null) {
+                    eventBus.publish(new PlaceStructureUIEvent(col, row, s.getID()));
+                }
             }
         }
 
