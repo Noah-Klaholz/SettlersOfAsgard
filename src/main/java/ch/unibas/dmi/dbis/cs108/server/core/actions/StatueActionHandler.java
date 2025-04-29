@@ -72,7 +72,7 @@ public class StatueActionHandler {
             // Get statue and check if player already has one
             Statue statue = EntityRegistry.getStatue(statueId);
             if (statue == null || player.hasStatue() || !Objects.equals(tile.getWorld(), statue.getWorld())) {
-                Logger.getGlobal().info("StatueActionHandler: placeStatue: Statue not found or player already has one");
+                Logger.getGlobal().info("StatueActionHandler: placeStatue: Statue not found or player already has one or world is incorrect.");
                 return false;
             }
 
