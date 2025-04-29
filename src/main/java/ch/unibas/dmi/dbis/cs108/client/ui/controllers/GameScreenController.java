@@ -810,6 +810,8 @@ public class GameScreenController extends BaseController {
          }
          }
          */
+
+        selectedCard = null;
     }
 
     /**
@@ -850,6 +852,8 @@ public class GameScreenController extends BaseController {
         } else {
             showNotification("This tile is owned by another player.");
         }
+
+        selectedCard = null;
     }
 
     /**
