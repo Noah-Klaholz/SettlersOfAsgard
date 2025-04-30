@@ -1764,7 +1764,7 @@ public class GameScreenController extends BaseController {
                 // Load the statue image first (your existing code)
                 String imageUrl = details.getImageUrl();
                 if (imageUrl != null && !imageUrl.isEmpty()) {
-                    Image image = resourceLoader.loadImage(imageUrl);
+                    Image image = resourceLoader.getCardImage(details.getID());
                     if (image != null && !image.isError()) {
                         ImageView imageView = new ImageView(image);
                         imageView.setFitWidth(78);
