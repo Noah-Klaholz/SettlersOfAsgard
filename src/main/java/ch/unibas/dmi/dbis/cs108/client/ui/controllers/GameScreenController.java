@@ -20,8 +20,8 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LeaveLobbyRequestEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyJoinedEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.CardDetails;
+import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
@@ -41,7 +41,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.*;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -50,12 +51,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Window;
 import javafx.util.Duration;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -79,15 +75,14 @@ import java.util.logging.Logger;
  */
 public class GameScreenController extends BaseController {
 
+    static final int HEX_ROWS = 7;
+    static final int HEX_COLS = 8;
     /*
      * --------------------------------------------------
      * Static configuration
      * --------------------------------------------------
      */
     private static final Logger LOGGER = Logger.getLogger(GameScreenController.class.getName());
-    static final int HEX_ROWS = 7;
-    static final int HEX_COLS = 8;
-
     /*
      * --------------------------------------------------
      * Game / UI state
@@ -96,21 +91,12 @@ public class GameScreenController extends BaseController {
     private final AtomicBoolean uiInitialized = new AtomicBoolean(false);
 
     private final PlayerIdentityManager playerManager;
-    private Player localPlayer;
-    private Player gamePlayer;
     private final ObservableList<String> players = FXCollections.observableArrayList();
-    private GameState gameState;
-    private List<Artifact> artifacts = new ArrayList<>();
+    // Tooltips for cards are cached to avoid recreating them on every hover event
+    private final Map<Node, Tooltip> cardTooltips = new HashMap<>();
+    // Simplified colour table – replace with proper game state look‑up
+    private final Map<String, Color> playerColors = new HashMap<>();
     List<Color> playerColours;
-
-    // Map and grid dimensions calculated at runtime
-    private double scaledMapWidth;
-    private double scaledMapHeight;
-    private double mapOffsetX;
-    private double mapOffsetY;
-    private double vSpacing;
-    private double hSpacing;
-
     /*
      * The following fields are package‑private because the adjustment manager
      * accesses them directly.
@@ -118,24 +104,27 @@ public class GameScreenController extends BaseController {
     double effectiveHexSize;
     double gridOffsetX;
     double gridOffsetY;
-
+    private Player localPlayer;
+    private Player gamePlayer;
+    private GameState gameState;
+    private List<Artifact> artifacts = new ArrayList<>();
+    // Map and grid dimensions calculated at runtime
+    private double scaledMapWidth;
+    private double scaledMapHeight;
+    private double mapOffsetX;
+    private double mapOffsetY;
+    private double vSpacing;
+    private double hSpacing;
     private String currentLobbyId;
-
     private Image mapImage;
     private boolean isMapLoaded;
-
     private SettingsDialog settingsDialog;
     private Node selectedCard;
     private CardDetails selectedStatue;
     private boolean hasPlacedStatue = false;
     private Tile highlightedTile = null;
     private int[] lastHighlightedTileCoords = null;
-
-    // Tooltips for cards are cached to avoid recreating them on every hover event
-    private final Map<Node, Tooltip> cardTooltips = new HashMap<>();
-
     private GridAdjustmentManager gridAdjustmentManager;
-
     /*
      * --------------------------------------------------
      * FXML‑injected UI elements
@@ -157,16 +146,11 @@ public class GameScreenController extends BaseController {
     private Label connectionStatusLabel;
     @FXML
     private VBox chatContainer;
-
     private ChatComponent chatComponentController;
     private ResourceOverviewDialog resourceOverviewDialog;
-
     // Grid‑adjustment overlay controls (created programmatically)
     private Label adjustmentModeIndicator;
     private Label adjustmentValuesLabel;
-
-    // Simplified colour table – replace with proper game state look‑up
-    private final Map<String, Color> playerColors = new HashMap<>();
 
     /*
      * --------------------------------------------------
@@ -1232,7 +1216,7 @@ public class GameScreenController extends BaseController {
         }
 
         try {
-            Image image = resourceLoader.loadImage(imageUrl);
+            Image image = resourceLoader.getEntityImage(entityId);
             if (image == null || image.isError()) {
                 // Log ERROR for image loading failure
                 LOGGER.severe(

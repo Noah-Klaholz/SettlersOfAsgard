@@ -1,17 +1,17 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.utils;
 
+import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import javafx.scene.image.Image;
 
 import java.net.URL;
-import java.util.logging.Level;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 /**
  * Utility for loading resources such as FXML, images, CSS, and fonts.
  */
 public class ResourceLoader {
-    private static final Logger LOGGER = Logger.getLogger(ResourceLoader.class.getName());
-
     public static final String SPLASH_SCREEN_FXML = "/fxml/splash_screen.fxml";
     public static final String MAIN_MENU_FXML = "/fxml/main_menu.fxml";
     public static final String LOBBY_SCREEN_FXML = "/fxml/lobby_screen.fxml";
@@ -33,6 +33,8 @@ public class ResourceLoader {
     public static final String SETTINGS_DIALOG_CSS = "/css/settings-dialog.css";
     public static final String ABOUT_DIALOG_CSS = "/css/about-dialog.css";
     public static final String DESCRIPTION_DIALOG_CSS = "/css/description-dialog.css";
+    private static final Logger LOGGER = Logger.getLogger(ResourceLoader.class.getName());
+    private final Map<Integer, Image> entityImageCache = new ConcurrentHashMap<>();
 
     // Private constructor to prevent instantiation
     public ResourceLoader() {
@@ -98,5 +100,12 @@ public class ResourceLoader {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public Image getEntityImage(int entityId) {
+        return entityImageCache.computeIfAbsent(entityId, id -> {
+            String url = EntityRegistry.getURL(id, false);
+            return loadImage(url);
+        });
     }
 }
