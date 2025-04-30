@@ -29,6 +29,7 @@ import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -100,8 +101,7 @@ public class GameScreenController extends BaseController {
     /*
      * The following fields are package‑private because the adjustment manager
      * accesses them directly.
-     */
-    double effectiveHexSize;
+     */ double effectiveHexSize;
     double gridOffsetX;
     double gridOffsetY;
     private Player localPlayer;
@@ -151,6 +151,8 @@ public class GameScreenController extends BaseController {
     // Grid‑adjustment overlay controls (created programmatically)
     private Label adjustmentModeIndicator;
     private Label adjustmentValuesLabel;
+    private Canvas backgroundCanvas;   // map + white grid (static)
+    private Canvas overlayCanvas;      // yellow hover outline (dynamic)
 
     /*
      * --------------------------------------------------
@@ -172,8 +174,7 @@ public class GameScreenController extends BaseController {
         currentLobbyId = GameApplication.getCurrentLobbyId();
         localPlayer = playerManager.getLocalPlayer();
         // Use localPlayer's name for initial log, gamePlayer might not be set yet
-        Logger.getGlobal()
-                .info("Game state uses Local Player: " + (localPlayer != null ? localPlayer.getName() : "null"));
+        Logger.getGlobal().info("Game state uses Local Player: " + (localPlayer != null ? localPlayer.getName() : "null"));
         gameState = new GameState();
         subscribeEvents();
         // Initialize selectedStatue safely
@@ -221,19 +222,37 @@ public class GameScreenController extends BaseController {
 
 
         createAdjustmentUI();
-        gridAdjustmentManager = new GridAdjustmentManager(
-                this,
-                adjustmentModeIndicator,
-                adjustmentValuesLabel,
-                this::drawMapAndGrid);
+        gridAdjustmentManager = new GridAdjustmentManager(this, adjustmentModeIndicator, adjustmentValuesLabel, this::drawMapAndGrid);
 
         initialisePlayerColours();
         resourceOverviewDialog = new ResourceOverviewDialog(resourceLoader, playerColors);
 
         setupUI();
-        loadMapImage();
         updateCardImages();
+        setupCanvasStack();
         setupCanvasListeners();
+        loadMapImage();
+    }
+
+    /**
+     * Builds the three-layer canvas stack:
+     * backgroundCanvas  – map & hex lines (repainted rarely)
+     * gameCanvas        – entities / structures   (already exists)
+     * overlayCanvas     – hover / selection glow  (repainted every mouse-move)
+     */
+    private void setupCanvasStack() {
+        StackPane board = (StackPane) gameCanvas.getParent();
+
+        backgroundCanvas = new Canvas();
+        overlayCanvas = new Canvas();
+
+        backgroundCanvas.widthProperty().bind(gameCanvas.widthProperty());
+        backgroundCanvas.heightProperty().bind(gameCanvas.heightProperty());
+        overlayCanvas.widthProperty().bind(gameCanvas.widthProperty());
+        overlayCanvas.heightProperty().bind(gameCanvas.heightProperty());
+
+        // order matters: back → middle → front
+        board.getChildren().setAll(backgroundCanvas, gameCanvas, overlayCanvas);
     }
 
     /**
@@ -310,13 +329,11 @@ public class GameScreenController extends BaseController {
      */
     private void createAdjustmentUI() {
         adjustmentModeIndicator = new Label("GRID ADJUSTMENT MODE (Press G to exit)");
-        adjustmentModeIndicator.setStyle(
-                "-fx-background-color: rgba(255,165,0,0.7); -fx-text-fill:white; -fx-padding:5 10; -fx-background-radius:5; -fx-font-weight:bold;");
+        adjustmentModeIndicator.setStyle("-fx-background-color: rgba(255,165,0,0.7); -fx-text-fill:white; -fx-padding:5 10; -fx-background-radius:5; -fx-font-weight:bold;");
         adjustmentModeIndicator.setVisible(false);
 
         adjustmentValuesLabel = new Label();
-        adjustmentValuesLabel.setStyle(
-                "-fx-background-color: rgba(0,0,0,0.7); -fx-text-fill:white; -fx-padding:5; -fx-font-size:11; -fx-background-radius:3;");
+        adjustmentValuesLabel.setStyle("-fx-background-color: rgba(0,0,0,0.7); -fx-text-fill:white; -fx-padding:5; -fx-font-size:11; -fx-background-radius:3;");
         adjustmentValuesLabel.setVisible(false);
 
         VBox panel = new VBox(5, adjustmentModeIndicator, adjustmentValuesLabel);
@@ -333,16 +350,14 @@ public class GameScreenController extends BaseController {
      */
 
     private void onConnectionStatus(ConnectionStatusEvent e) {
-        if (e == null)
-            return;
+        if (e == null) return;
 
         Platform.runLater(() -> {
             connectionStatusLabel.setText(Optional.ofNullable(e.getState()).map(Object::toString).orElse("UNKNOWN"));
             if (e.getMessage() != null && !e.getMessage().isEmpty()) {
                 chatComponentController.addSystemMessage(e.getMessage());
             }
-            if (settingsDialog != null)
-                updateSettingsConnectionStatus();
+            if (settingsDialog != null) updateSettingsConnectionStatus();
         });
     }
 
@@ -376,8 +391,7 @@ public class GameScreenController extends BaseController {
         GameState updatedState = e.getGameState();
 
         // Log details about the received event
-        LOGGER.info(String.format("Received GameSyncEvent: Updating game state. Board size: %d tiles. Player turn: %s",
-                updatedState.getBoardManager().getBoard().getTiles().length, updatedState.getPlayerTurn()));
+        LOGGER.info(String.format("Received GameSyncEvent: Updating game state. Board size: %d tiles. Player turn: %s", updatedState.getBoardManager().getBoard().getTiles().length, updatedState.getPlayerTurn()));
 
         Platform.runLater(() -> {
             gameState = updatedState;
@@ -455,8 +469,7 @@ public class GameScreenController extends BaseController {
             boolean muted = settingsDialog.muteProperty().get();
             double volume = settingsDialog.volumeProperty().get();
             String requested = settingsDialog.playerNameProperty().get();
-            LOGGER.info("Settings dialog save requested – Volume: " + volume + ", Muted: " + muted
-                    + ", Requested Name: " + requested);
+            LOGGER.info("Settings dialog save requested – Volume: " + volume + ", Muted: " + muted + ", Requested Name: " + requested);
 
             if (requested != null && !requested.trim().isEmpty() && !requested.equals(localPlayer.getName())) {
                 requestNameChange(requested.trim());
@@ -465,8 +478,7 @@ public class GameScreenController extends BaseController {
                 settingsDialog.playerNameProperty().set(localPlayer.getName());
             }
 
-            chatComponentController
-                    .addSystemMessage("Audio settings saved. " + (muted ? "Muted." : "Volume: " + (int) volume + "%"));
+            chatComponentController.addSystemMessage("Audio settings saved. " + (muted ? "Muted." : "Volume: " + (int) volume + "%"));
         });
 
         showDialogAsOverlay(settingsDialog, root);
@@ -574,13 +586,10 @@ public class GameScreenController extends BaseController {
 
         playerManager.removePlayerUpdateListener(this::handlePlayerUpdate);
 
-        if (chatComponentController != null)
-            chatComponentController.cleanup();
-        if (settingsDialog != null)
-            settingsDialog.close();
+        if (chatComponentController != null) chatComponentController.cleanup();
+        if (settingsDialog != null) settingsDialog.close();
         if (gameCanvas != null) {
-            gameCanvas.getParent().removeEventHandler(MouseEvent.MOUSE_PRESSED,
-                    e -> handleCanvasClick(e.getX(), e.getY()));
+            gameCanvas.getParent().removeEventHandler(MouseEvent.MOUSE_PRESSED, e -> handleCanvasClick(e.getX(), e.getY()));
             gameCanvas.setOnKeyPressed(null);
         }
         if (cardTooltips != null) {
@@ -642,54 +651,60 @@ public class GameScreenController extends BaseController {
     private void loadMapImage() {
         mapImage = resourceLoader.loadImage(ResourceLoader.MAP_IMAGE);
         isMapLoaded = mapImage != null;
-        if (isMapLoaded)
-            drawMapAndGrid();
-        else
-            LOGGER.severe("Map image missing");
+        if (isMapLoaded) drawMapAndGrid();
+        else LOGGER.severe("Map image missing");
     }
 
     /**
-     * Installs listeners so that the grid is redrawn when the canvas size changes
-     * and so that mouse and keyboard events are intercepted.
+     * Installs all mouse / keyboard listeners for the board.
+     * After the refactor:
+     * – the yellow hover outline is drawn on overlayCanvas via showHighlight()
+     * – leaving the canvas just clears overlayCanvas via clearHighlight()
      */
     private void setupCanvasListeners() {
-        gameCanvas.widthProperty().addListener((o, ov, nv) -> drawMapAndGrid());
-        gameCanvas.heightProperty().addListener((o, ov, nv) -> drawMapAndGrid());
+
+    /* ---------------------------------------------------------------------
+       Resize → redraw the static background (map + white grid)
+     --------------------------------------------------------------------- */
+        ChangeListener<Number> resize = (obs, oldV, newV) -> drawMapAndGrid();
+        gameCanvas.widthProperty().addListener(resize);
+        gameCanvas.heightProperty().addListener(resize);
+
         gameCanvas.setFocusTraversable(true);
 
-        // Single click handler - just selects tile
-        gameCanvas.addEventHandler(MouseEvent.MOUSE_PRESSED, e ->
-                handleCanvasClick(e.getX(), e.getY())
-        );
+    /* ---------------------------------------------------------------------
+       Click & double-click are unchanged – they operate on game state
+     --------------------------------------------------------------------- */
+        gameCanvas.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> handleCanvasClick(e.getX(), e.getY()));
 
-        // Double click handler - for purchases
         gameCanvas.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             if (e.getClickCount() == 2) {
                 handleCanvasDoubleClick(e.getX(), e.getY());
             }
         });
 
-        gameCanvas.addEventHandler(MouseEvent.MOUSE_MOVED, e ->
-                handleCanvasMouseMove(e.getX(), e.getY())
-        );
+    /* ---------------------------------------------------------------------
+       Hover-highlight (overlayCanvas) – uses new helper methods
+     --------------------------------------------------------------------- */
+        gameCanvas.addEventHandler(MouseEvent.MOUSE_ENTERED_TARGET, e -> handleCanvasEntered(e.getX(), e.getY()));       // → showHighlight()
 
-        gameCanvas.addEventHandler(MouseEvent.MOUSE_ENTERED_TARGET, e ->
-                handleCanvasEntered(e.getX(), e.getY())
-        );
+        gameCanvas.addEventHandler(MouseEvent.MOUSE_MOVED, e -> handleCanvasMouseMove(e.getX(), e.getY()));     // → show / clear
 
         gameCanvas.addEventHandler(MouseEvent.MOUSE_EXITED_TARGET, e -> {
-            if (lastHighlightedTileCoords != null) {
-                redrawSingleTile(lastHighlightedTileCoords[0], lastHighlightedTileCoords[1], false);
-            }
+            clearHighlight();                                        // <-- replaces redrawSingleTile()
             highlightedTile = null;
             lastHighlightedTileCoords = null;
         });
 
+    /* ---------------------------------------------------------------------
+       Duplicate listeners on the surrounding StackPane so that
+       events coming from the two overlay canvasses are also handled.
+     --------------------------------------------------------------------- */
         if (gameCanvas.getParent() instanceof StackPane parent) {
+
             parent.addEventHandler(MouseEvent.MOUSE_PRESSED, ev -> {
                 Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
-                if (local.getX() >= 0 && local.getY() >= 0 &&
-                        local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
+                if (local.getX() >= 0 && local.getY() >= 0 && local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
                     handleCanvasClick(local.getX(), local.getY());
                     ev.consume();
                 }
@@ -698,8 +713,7 @@ public class GameScreenController extends BaseController {
             parent.addEventHandler(MouseEvent.MOUSE_CLICKED, ev -> {
                 if (ev.getClickCount() == 2) {
                     Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
-                    if (local.getX() >= 0 && local.getY() >= 0 &&
-                            local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
+                    if (local.getX() >= 0 && local.getY() >= 0 && local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
                         handleCanvasDoubleClick(local.getX(), local.getY());
                         ev.consume();
                     }
@@ -707,42 +721,36 @@ public class GameScreenController extends BaseController {
             });
 
             parent.addEventHandler(MouseEvent.MOUSE_MOVED, ev -> {
-                        Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
-                        if (local.getX() >= 0 && local.getY() >= 0 &&
-                                local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
-                            handleCanvasMouseMove(local.getX(), local.getY());
-                            ev.consume();
-                        }
-                    }
-            );
+                Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
+                if (local.getX() >= 0 && local.getY() >= 0 && local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
+                    handleCanvasMouseMove(local.getX(), local.getY());
+                    ev.consume();
+                }
+            });
 
             parent.addEventHandler(MouseEvent.MOUSE_ENTERED_TARGET, ev -> {
-                        Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
-                        if (local.getX() >= 0 && local.getY() >= 0 &&
-                                local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
-                            handleCanvasEntered(local.getX(), local.getY());
-                            ev.consume();
-                        }
-                    }
-            );
+                Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
+                if (local.getX() >= 0 && local.getY() >= 0 && local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
+                    handleCanvasEntered(local.getX(), local.getY());
+                    ev.consume();
+                }
+            });
 
             parent.addEventHandler(MouseEvent.MOUSE_EXITED_TARGET, ev -> {
-                // Check if the exit event is still within the canvas bounds; if so, ignore.
-                // This prevents flicker when moving quickly near the edge.
                 Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
-                boolean trulyExited = local.getX() < 0 || local.getY() < 0 ||
-                        local.getX() > gameCanvas.getWidth() || local.getY() > gameCanvas.getHeight();
+                boolean trulyExited = local.getX() < 0 || local.getY() < 0 || local.getX() > gameCanvas.getWidth() || local.getY() > gameCanvas.getHeight();
 
-                if (trulyExited && lastHighlightedTileCoords != null) {
-                    redrawSingleTile(lastHighlightedTileCoords[0], lastHighlightedTileCoords[1], false);
+                if (trulyExited) {
+                    clearHighlight();                                // <-- replaces redrawSingleTile()
                     highlightedTile = null;
                     lastHighlightedTileCoords = null;
-                    // Don't consume here, let the canvas handler potentially catch it too if needed.
                 }
-                // If not truly exited, the MOUSE_MOVED handler will manage the highlight.
             });
         }
 
+    /* ---------------------------------------------------------------------
+       Keyboard shortcuts for grid-adjustment
+     --------------------------------------------------------------------- */
         gameCanvas.setOnKeyPressed(gridAdjustmentManager::handleGridAdjustmentKeys);
     }
 
@@ -752,8 +760,7 @@ public class GameScreenController extends BaseController {
      */
     private void handleCanvasClick(double px, double py) {
         int[] tile = getHexAt(px, py);
-        if (tile == null)
-            return;
+        if (tile == null) return;
 
         int row = tile[0];
         int col = tile[1];
@@ -818,8 +825,7 @@ public class GameScreenController extends BaseController {
      */
     private void handleCanvasDoubleClick(double px, double py) {
         int[] tile = getHexAt(px, py);
-        if (tile == null)
-            return;
+        if (tile == null) return;
 
         int row = tile[0];
         int col = tile[1];
@@ -856,177 +862,41 @@ public class GameScreenController extends BaseController {
         }
     }
 
-    /**
-     * Handles mouse entering the canvas - highlights the tile under the cursor
-     */
     private void handleCanvasEntered(double px, double py) {
-        // Directly handle highlight here instead of calling handleCanvasEntered
-        int[] tileCoords = getHexAt(px, py);
-        if (tileCoords != null) {
-            int row = tileCoords[0];
-            int col = tileCoords[1];
-            Tile tileUnderCursor = getTile(row, col);
-            if (tileUnderCursor != null) {
-                // Ensure no previous highlight is lingering if mouse exited/entered quickly
-                if (lastHighlightedTileCoords != null && (lastHighlightedTileCoords[0] != row || lastHighlightedTileCoords[1] != col)) {
-                    redrawSingleTile(lastHighlightedTileCoords[0], lastHighlightedTileCoords[1], false);
-                }
-                redrawSingleTile(row, col, true);
-                highlightedTile = tileUnderCursor;
-                lastHighlightedTileCoords = new int[]{row, col};
-            }
-        } else {
-            // Entered canvas but not over a tile, clear any old highlight
-            if (lastHighlightedTileCoords != null) {
-                redrawSingleTile(lastHighlightedTileCoords[0], lastHighlightedTileCoords[1], false);
-                lastHighlightedTileCoords = null;
-            }
-            highlightedTile = null;
-        }
+        int[] t = getHexAt(px, py);
+        if (t != null) showHighlight(t[0], t[1]);
     }
 
-    /**
-     * Handles mouse movement within the canvas, highlighting the tile under the cursor
-     * by redrawing only the affected tiles.
-     */
     private void handleCanvasMouseMove(double px, double py) {
-        int[] tileCoords = getHexAt(px, py);
-
-        if (tileCoords == null) {
-            // Cursor moved off the grid, remove highlight from the last tile
-            if (lastHighlightedTileCoords != null) {
-                redrawSingleTile(lastHighlightedTileCoords[0], lastHighlightedTileCoords[1], false);
-                highlightedTile = null;
-                lastHighlightedTileCoords = null;
-            }
-            return;
-        }
-
-        int row = tileCoords[0];
-        int col = tileCoords[1];
-        Tile tileUnderCursor = getTile(row, col); // Assuming getTile uses col, row
-
-        // Check if the highlighted tile actually changed
-        boolean needsRedraw = false;
-        if (highlightedTile == null && tileUnderCursor != null) {
-            needsRedraw = true; // Moving onto a tile for the first time
-        } else if (highlightedTile != null && tileUnderCursor == null) {
-            needsRedraw = true; // Moving off a tile (handled above, but good check)
-        } else if (highlightedTile != null && tileUnderCursor != null &&
-                (highlightedTile.getX() != tileUnderCursor.getX() || highlightedTile.getY() != tileUnderCursor.getY())) {
-            needsRedraw = true; // Moving from one tile to another
-        } else if (highlightedTile == null && lastHighlightedTileCoords != null) {
-            // Case where cursor re-enters the last highlighted tile after leaving grid
-            needsRedraw = true;
-        }
-
-        if (needsRedraw) {
-            // Remove highlight from the previously highlighted tile
-            if (lastHighlightedTileCoords != null) {
-                // Avoid redrawing the same tile if it's the target
-                if (lastHighlightedTileCoords[0] != row || lastHighlightedTileCoords[1] != col) {
-                    redrawSingleTile(lastHighlightedTileCoords[0], lastHighlightedTileCoords[1], false);
-                }
-            }
-
-            // Add highlight to the new tile
-            if (tileUnderCursor != null) {
-                redrawSingleTile(row, col, true);
-                highlightedTile = tileUnderCursor;
-                lastHighlightedTileCoords = new int[]{row, col};
-            } else {
-                // If tileUnderCursor is null but we determined a redraw is needed,
-                // it means we are moving off the grid. Clear the state.
-                highlightedTile = null;
-                lastHighlightedTileCoords = null;
-            }
+        int[] t = getHexAt(px, py);
+        if (t != null) {
+            showHighlight(t[0], t[1]);
+        } else {
+            clearHighlight();
         }
     }
 
-    /**
-     * Redraws a single tile by first restoring the background map image and then redrawing the hex.
-     *
-     * @param row      The row of the tile.
-     * @param col      The column of the tile.
-     * @param selected Whether the tile should be drawn with selection highlight.
-     */
-    private void redrawSingleTile(int row, int col, boolean selected) {
-        if (effectiveHexSize <= 0 || gridAdjustmentManager == null || !isMapLoaded) {
-            LOGGER.finer("Cannot redraw tile, invalid parameters or map not loaded");
-            return;
-        }
-
-        GraphicsContext gc = gameCanvas.getGraphicsContext2D();
-
-        // Save ALL original graphics state
-        Paint originalFill = gc.getFill();
-        Paint originalStroke = gc.getStroke();
-        double originalLineWidth = gc.getLineWidth();
-        double originalGlobalAlpha = gc.getGlobalAlpha();
-
-        // Calculate positioning
-        double cx = gridOffsetX + col * hSpacing + (row % 2) * (hSpacing / 2);
-        double cy = gridOffsetY + row * vSpacing;
-
-        double hSquish = gridAdjustmentManager.getHorizontalSquishFactor();
-        double vSquish = gridAdjustmentManager.getVerticalSquishFactor();
-        double clearRadius = effectiveHexSize * Math.max(hSquish, vSquish) * 1.2; // 20% margin
-
-        double x = cx - clearRadius;
-        double y = cy - clearRadius;
-        double width = clearRadius * 2;
-        double height = clearRadius * 2;
-
-        // Restore the background by drawing from the original map image
-        double sourceX = (x - mapOffsetX) / scaledMapWidth * mapImage.getWidth();
-        double sourceY = (y - mapOffsetY) / scaledMapHeight * mapImage.getHeight();
-        double sourceWidth = width / scaledMapWidth * mapImage.getWidth();
-        double sourceHeight = height / scaledMapHeight * mapImage.getHeight();
-
-        // Ensure we stay within bounds for both source and destination
-        gc.drawImage(
-                mapImage,
-                Math.max(0, sourceX), Math.max(0, sourceY),
-                Math.min(sourceWidth, mapImage.getWidth() - Math.max(0, sourceX)),
-                Math.min(sourceHeight, mapImage.getHeight() - Math.max(0, sourceY)),
-                Math.max(0, x), Math.max(0, y),
-                Math.min(width, gameCanvas.getWidth() - Math.max(0, x)),
-                Math.min(height, gameCanvas.getHeight() - Math.max(0, y))
-        );
-
-        // Set exact states as in drawHexGrid()
-        gc.setGlobalAlpha(0.7);
-        gc.setStroke(Color.WHITE);
-        gc.setLineWidth(1.5);
-
-        // Draw the hex with current settings
-        drawHex(gc, cx, cy, effectiveHexSize, row, col, selected);
-
-        // Fully restore original state to prevent any state leakage
-        gc.setFill(originalFill);
-        gc.setStroke(originalStroke);
-        gc.setLineWidth(originalLineWidth);
-        gc.setGlobalAlpha(originalGlobalAlpha);
+    private void handleCanvasExited() {   // call from your MOUSE_EXITED handler
+        clearHighlight();
     }
 
     /**
-     * Repaints the map and hex‑grid. Invoked whenever the canvas is resized or
-     * one of the grid parameters changes.
+     * Repaints only the backgroundCanvas (map + white grid).
      */
     void drawMapAndGrid() {
-        if (!isMapLoaded)
-            return;
-        double cW = gameCanvas.getWidth();
-        double cH = gameCanvas.getHeight();
-        if (cW <= 0 || cH <= 0)
-            return;
+        if (!isMapLoaded || backgroundCanvas == null) return;
 
-        GraphicsContext gc = gameCanvas.getGraphicsContext2D();
+        double cW = backgroundCanvas.getWidth();
+        double cH = backgroundCanvas.getHeight();
+        if (cW <= 0 || cH <= 0) return;
+
+        GraphicsContext gc = backgroundCanvas.getGraphicsContext2D();
         gc.clearRect(0, 0, cW, cH);
 
-        // --- Draw background map ---------------------------------------------
+        // ----------- draw map image --------------------------------------------
         double imgRatio = mapImage.getWidth() / mapImage.getHeight();
         double canvasRatio = cW / cH;
+
         if (canvasRatio > imgRatio) {
             scaledMapHeight = cH;
             scaledMapWidth = scaledMapHeight * imgRatio;
@@ -1038,33 +908,87 @@ public class GameScreenController extends BaseController {
         mapOffsetY = (cH - scaledMapHeight) / 2;
         gc.drawImage(mapImage, mapOffsetX, mapOffsetY, scaledMapWidth, scaledMapHeight);
 
-        // --- Prepare grid dimensions ----------------------------------------
+        // ----------- hex geometry ----------------------------------------------
         double gridW = scaledMapWidth * gridAdjustmentManager.getGridWidthPercentage();
         double gridH = scaledMapHeight * gridAdjustmentManager.getGridHeightPercentage();
+
         double hLimit = gridW / ((HEX_COLS - 1) * 0.75 + 1);
         double vLimit = gridH / ((HEX_ROWS - 0.5) * 0.866 * 2);
         effectiveHexSize = Math.min(hLimit, vLimit) * 0.5 * gridAdjustmentManager.getGridScaleFactor();
 
+        hSpacing = effectiveHexSize * gridAdjustmentManager.getHorizontalSpacingFactor();
+        vSpacing = effectiveHexSize * gridAdjustmentManager.getVerticalSpacingFactor();
+
         double addHX = gridAdjustmentManager.getGridHorizontalOffset() * scaledMapWidth;
         double addHY = gridAdjustmentManager.getGridVerticalOffset() * scaledMapHeight;
 
-        drawHexGrid(gc, effectiveHexSize, gridW, gridH, addHX, addHY);
+        double totalW = hSpacing * (HEX_COLS - 0.5);
+        double totalH = vSpacing * HEX_ROWS;
 
-        // Ensure adjustment overlay is visible in adjustment mode
-        boolean active = gridAdjustmentManager.isGridAdjustmentModeActive();
-        adjustmentModeIndicator.setVisible(active);
-        adjustmentValuesLabel.setVisible(active);
+        double baseX = mapOffsetX + (scaledMapWidth - gridW) / 2;
+        double baseY = mapOffsetY + (scaledMapHeight - gridH) / 2;
+        gridOffsetX = baseX + (gridW - totalW) / 2 + addHX;
+        gridOffsetY = baseY + (gridH - totalH) / 2 + addHY;
+
+        // ----------- draw white grid -------------------------------------------
+        gc.setStroke(Color.WHITE);
+        gc.setLineWidth(1.5);
+        gc.setGlobalAlpha(0.7);
+
+        for (int r = 0; r < HEX_ROWS; r++) {
+            for (int c = 0; c < HEX_COLS; c++) {
+                double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2);
+                double cy = gridOffsetY + r * vSpacing;
+                drawHex(gc, cx, cy, effectiveHexSize, r, c, false);
+            }
+        }
+        gc.setGlobalAlpha(1);
+    }
+
+    /**
+     * Clears the overlay canvas.
+     */
+    private void clearHighlight() {
+        if (overlayCanvas != null) {
+            GraphicsContext g = overlayCanvas.getGraphicsContext2D();
+            g.clearRect(0, 0, overlayCanvas.getWidth(), overlayCanvas.getHeight());
+        }
+    }
+
+    /**
+     * Draws the yellow outline for the given tile on the overlay canvas.
+     */
+    private void showHighlight(int row, int col) {
+        if (overlayCanvas == null || effectiveHexSize <= 0) return;
+
+        GraphicsContext gc = overlayCanvas.getGraphicsContext2D();
+        gc.clearRect(0, 0, overlayCanvas.getWidth(), overlayCanvas.getHeight());
+
+        double cx = gridOffsetX + col * hSpacing + (row % 2) * (hSpacing / 2);
+        double cy = gridOffsetY + row * vSpacing;
+
+        double rot = Math.toRadians(gridAdjustmentManager.getHexRotationDegrees());
+        double hSquish = gridAdjustmentManager.getHorizontalSquishFactor();
+        double vSquish = gridAdjustmentManager.getVerticalSquishFactor();
+
+        double[] xs = new double[6];
+        double[] ys = new double[6];
+        for (int i = 0; i < 6; i++) {
+            double a = rot + 2 * Math.PI / 6 * i;
+            xs[i] = cx + effectiveHexSize * Math.cos(a) * hSquish;
+            ys[i] = cy + effectiveHexSize * Math.sin(a) * vSquish;
+        }
+
+        gc.setStroke(Color.YELLOW);
+        gc.setLineWidth(3);
+        gc.setGlobalAlpha(1);
+        gc.strokePolygon(xs, ys, 6);
     }
 
     /**
      * Draws the complete grid (including ownership highlighting and selection).
      */
-    private void drawHexGrid(GraphicsContext gc,
-                             double size,
-                             double gridW,
-                             double gridH,
-                             double addHX,
-                             double addHY) {
+    private void drawHexGrid(GraphicsContext gc, double size, double gridW, double gridH, double addHX, double addHY) {
         gc.setStroke(Color.WHITE);
         gc.setLineWidth(1.5);
         gc.setGlobalAlpha(0.7);
@@ -1088,9 +1012,7 @@ public class GameScreenController extends BaseController {
                 boolean selected = false;
                 if (highlightedTile != null) {
                     Tile t = getTile(r, c);
-                    if (t != null &&
-                            t.getX() == highlightedTile.getX() &&
-                            t.getY() == highlightedTile.getY()) {
+                    if (t != null && t.getX() == highlightedTile.getX() && t.getY() == highlightedTile.getY()) {
                         selected = true;
                     }
                 }
@@ -1104,13 +1026,7 @@ public class GameScreenController extends BaseController {
      * Draws a single hexagon, optionally highlighting ownership and selection.
      * Also draws the entity image if present.
      */
-    private void drawHex(GraphicsContext gc,
-                         double cx,
-                         double cy,
-                         double size,
-                         int row,
-                         int col,
-                         boolean selected) {
+    private void drawHex(GraphicsContext gc, double cx, double cy, double size, int row, int col, boolean selected) {
         double[] xs = new double[6];
         double[] ys = new double[6];
 
@@ -1187,8 +1103,7 @@ public class GameScreenController extends BaseController {
      * @param hSquish  The horizontal squish factor
      * @param entityId The ID of the entity being drawn (for logging)
      */
-    private void drawEntityImage(GraphicsContext gc, String imageUrl, double centerX, double centerY,
-                                 double hexSize, double hSquish, int entityId) {
+    private void drawEntityImage(GraphicsContext gc, String imageUrl, double centerX, double centerY, double hexSize, double hSquish, int entityId) {
         // Calculate placeholder size relative to hex (adjust as needed for map
         // entities)
         double placeholderSizeRatio = 0.7; // Make placeholder 70% of hex width
@@ -1219,9 +1134,7 @@ public class GameScreenController extends BaseController {
             Image image = resourceLoader.getEntityImage(entityId);
             if (image == null || image.isError()) {
                 // Log ERROR for image loading failure
-                LOGGER.severe(
-                        String.format("Failed to load map entity image: %s (Entity ID: %d). Drawing red placeholder.",
-                                imageUrl, entityId));
+                LOGGER.severe(String.format("Failed to load map entity image: %s (Entity ID: %d). Drawing red placeholder.", imageUrl, entityId));
                 drawPlaceholder.run();
                 return;
             }
@@ -1241,18 +1154,13 @@ public class GameScreenController extends BaseController {
             gc.setGlobalAlpha(1.0); // Full opacity for the image
 
             // Draw image centered in the hex
-            gc.drawImage(image,
-                    centerX - scaledWidth / 2,
-                    centerY - scaledHeight / 2,
-                    scaledWidth,
-                    scaledHeight);
+            gc.drawImage(image, centerX - scaledWidth / 2, centerY - scaledHeight / 2, scaledWidth, scaledHeight);
 
             // Restore graphics state
             gc.setGlobalAlpha(oldAlpha);
         } catch (Exception e) {
             // Log ERROR for any other exception during drawing
-            LOGGER.log(Level.SEVERE,
-                    String.format("Error drawing map entity image for ID %d: %s", entityId, e.getMessage()), e);
+            LOGGER.log(Level.SEVERE, String.format("Error drawing map entity image for ID %d: %s", entityId, e.getMessage()), e);
             drawPlaceholder.run();
         }
     }
@@ -1270,8 +1178,7 @@ public class GameScreenController extends BaseController {
      * any tile.
      */
     int[] getHexAt(double px, double py) {
-        if (!isMapLoaded || effectiveHexSize <= 0)
-            return null;
+        if (!isMapLoaded || effectiveHexSize <= 0) return null;
 
         double hSpacing = effectiveHexSize * gridAdjustmentManager.getHorizontalSpacingFactor();
         double vSpacing = effectiveHexSize * gridAdjustmentManager.getVerticalSpacingFactor();
@@ -1306,8 +1213,7 @@ public class GameScreenController extends BaseController {
 
         boolean inside = false;
         for (int i = 0, j = 5; i < 6; j = i++) {
-            if (((ys[i] > py) != (ys[j] > py)) &&
-                    (px < (xs[j] - xs[i]) * (py - ys[i]) / (ys[j] - ys[i]) + xs[i])) {
+            if (((ys[i] > py) != (ys[j] > py)) && (px < (xs[j] - xs[i]) * (py - ys[i]) / (ys[j] - ys[i]) + xs[i])) {
                 inside = !inside;
             }
         }
@@ -1366,8 +1272,7 @@ public class GameScreenController extends BaseController {
             card.getStyleClass().remove("selected-card");
             selectedCard = null;
         } else {
-            if (selectedCard != null)
-                selectedCard.getStyleClass().remove("selected-card");
+            if (selectedCard != null) selectedCard.getStyleClass().remove("selected-card");
             card.getStyleClass().add("selected-card");
             selectedCard = card;
         }
@@ -1413,8 +1318,7 @@ public class GameScreenController extends BaseController {
     public void handleCardMouseExited(MouseEvent event) {
         Node card = (Node) event.getSource();
         Tooltip tip = cardTooltips.get(card);
-        if (tip != null)
-            Tooltip.uninstall(card, tip);
+        if (tip != null) Tooltip.uninstall(card, tip);
         event.consume();
     }
 
@@ -1425,14 +1329,10 @@ public class GameScreenController extends BaseController {
      * Returns "structure", "artifact", "statue", or an empty string.
      */
     private String getCardType(String cardId) {
-        if (cardId == null)
-            return "";
-        if (cardId.startsWith("structure"))
-            return "structure";
-        if (cardId.startsWith("artifact"))
-            return "artifact";
-        if (cardId.startsWith("statue"))
-            return "statue";
+        if (cardId == null) return "";
+        if (cardId.startsWith("structure")) return "structure";
+        if (cardId.startsWith("artifact")) return "artifact";
+        if (cardId.startsWith("statue")) return "statue";
         return ""; // Unknown type
     }
 
@@ -1480,9 +1380,7 @@ public class GameScreenController extends BaseController {
             content.getChildren().add(titleLabel);
 
             // Only add separator if the next section has content
-            if ((details.getDescription() != null && !details.getDescription().isEmpty()) ||
-                    (details.getLore() != null && !details.getLore().isEmpty()) ||
-                    details.getPrice() > 0) {
+            if ((details.getDescription() != null && !details.getDescription().isEmpty()) || (details.getLore() != null && !details.getLore().isEmpty()) || details.getPrice() > 0) {
                 content.getChildren().add(new Separator());
             }
         }
@@ -1494,8 +1392,7 @@ public class GameScreenController extends BaseController {
             content.getChildren().add(descLabel);
 
             // Only add separator if the next section has content
-            if ((details.getLore() != null && !details.getLore().isEmpty()) ||
-                    details.getPrice() > 0) {
+            if ((details.getLore() != null && !details.getLore().isEmpty()) || details.getPrice() > 0) {
                 content.getChildren().add(new Separator());
             }
         }
@@ -1613,8 +1510,7 @@ public class GameScreenController extends BaseController {
         GameEntity entity = EntityRegistry.getGameEntityOriginalById(entityID);
 
         if (entity == null) {
-            throw new IllegalArgumentException(
-                    "Entity not found in registry for ID: " + entityID + " (derived from card ID: " + id + ")");
+            throw new IllegalArgumentException("Entity not found in registry for ID: " + entityID + " (derived from card ID: " + id + ")");
         }
 
         // Use isCard=true for the small image shown in the hand
@@ -1660,8 +1556,7 @@ public class GameScreenController extends BaseController {
                 }
                 // Adjust index to be 0-based for list access
                 int listIndex = index - 1;
-                if (artifacts == null || listIndex < 0 || listIndex >= artifacts.size()
-                        || artifacts.get(listIndex) == null) {
+                if (artifacts == null || listIndex < 0 || listIndex >= artifacts.size() || artifacts.get(listIndex) == null) {
                     // If artifact slot is empty or invalid, return a placeholder ID (e.g., empty
                     // slot visual)
                     LOGGER.fine("Artifact slot " + index + " is empty or invalid.");
@@ -1731,8 +1626,7 @@ public class GameScreenController extends BaseController {
      */
     private void refreshCardAffordability() {
         for (Node card : structureHand.getChildren()) {
-            if (card.getId() != null && card.getId().startsWith("structure") ||
-                    card.getId().startsWith("statue")) {
+            if (card.getId() != null && card.getId().startsWith("structure") || card.getId().startsWith("statue")) {
                 updateCardAffordability(card);
             }
         }
@@ -1746,8 +1640,7 @@ public class GameScreenController extends BaseController {
      */
     private void updateCardAffordability(Node card) {
         String id = card.getId();
-        if (id == null)
-            return;
+        if (id == null) return;
 
         boolean canAfford = canAffordCard(id);
 
@@ -1811,8 +1704,7 @@ public class GameScreenController extends BaseController {
                     pane.getChildren().add(wrapper);
                 } else {
                     // Log ERROR for image loading failure
-                    LOGGER.severe(String.format("Failed to load card image: %s (Card ID: %s). Using placeholder.",
-                            imageUrl, id));
+                    LOGGER.severe(String.format("Failed to load card image: %s (Card ID: %s). Using placeholder.", imageUrl, id));
                     addPlaceholderToPane(pane); // Use red placeholder
                 }
             } else {
@@ -1820,20 +1712,17 @@ public class GameScreenController extends BaseController {
                 if (id.startsWith("artifact") && details.getID() == 22) { // ID 22 is the empty slot placeholder
                     LOGGER.fine(String.format("No image URL for empty artifact slot ID %s. Using placeholder.", id));
                 } else {
-                    LOGGER.severe(String.format("Missing image URL for card ID %s (Entity ID: %d). Using placeholder.",
-                            id, details.getID()));
+                    LOGGER.severe(String.format("Missing image URL for card ID %s (Entity ID: %d). Using placeholder.", id, details.getID()));
                 }
                 addPlaceholderToPane(pane); // Use red placeholder
             }
         } catch (IllegalArgumentException e) {
             // Log ERROR if getCardDetails fails (e.g., invalid ID format, entity not found)
-            LOGGER.severe(String.format("Error getting card details for ID '%s': %s. Cannot update card image.", id,
-                    e.getMessage()));
+            LOGGER.severe(String.format("Error getting card details for ID '%s': %s. Cannot update card image.", id, e.getMessage()));
             addPlaceholderToPane(pane); // Show error placeholder
         } catch (Exception e) {
             // Log ERROR for any other unexpected exception
-            LOGGER.log(Level.SEVERE,
-                    String.format("Unexpected error updating card image for ID '%s': %s", id, e.getMessage()), e);
+            LOGGER.log(Level.SEVERE, String.format("Unexpected error updating card image for ID '%s': %s", id, e.getMessage()), e);
             addPlaceholderToPane(pane); // Show error placeholder
         } finally {
             // Ensure the card is visible even if only placeholder is shown
