@@ -767,17 +767,27 @@ public class GameScreenController extends BaseController {
         if (localPlayer != null && getTile(row, col) != null) {
             Tile t = getTile(row, col);
             if (selectedCard != null) {
-                if (!t.hasEntity()) {
                     CardDetails s = getCardDetails(selectedCard.getId());
-                    if (s != null && s.getID() == selectedStatue.getID()) {
-                        eventBus.publish(new PlaceStatueUIEvent(col, row, s.getID()));
-                    } else if (s != null) {
-                        eventBus.publish(new PlaceStructureUIEvent(col, row, s.getID()));
+                    if (s != null && s.getEntity() != null) {
+                        if (!t.hasEntity() && s.getID() == selectedStatue.getID()) {
+                            eventBus.publish(new PlaceStatueUIEvent(col, row, s.getID()));
+                        } else if (!t.hasEntity() && s.getEntity().isStructure()) {
+                            eventBus.publish(new PlaceStructureUIEvent(col, row, s.getID()));
+                        } else if (s.getEntity() instanceof Artifact a) {
+                            if (a.isFieldTarget()) {
+                                eventBus.publish(new UseFieldArtifactUIEvent(col, row, s.getID()));
+                            } else if (a.isPlayerTarget()) {
+                                eventBus.publish(new UsePlayerArtifactUIEvent(s.getID(), t.getOwner()));
+                            } else {
+                                Logger.getGlobal().info("Artifact is neither field nor player target: " + s.getID());
+                            }
+                        }
+                    } else {
+                        Logger.getGlobal().info("Selected card does not exist or does not represent an entity: " + s.getID());
                     }
-                    selectedCard.getStyleClass().remove("selected-card");
-                    selectedCard = null;
-                    updateCardImages();
-                }
+                selectedCard.getStyleClass().remove("selected-card");
+                selectedCard = null;
+                updateCardImages();
             }
         }
 
