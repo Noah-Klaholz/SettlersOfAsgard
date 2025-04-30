@@ -1,9 +1,10 @@
 noahklaholz2: 1900
 noahklaholz: 1310
+odin: 725
 thor: 640
+l: 412
 loki: 402
 freya: 334
-odin: 284
 vincent2: 232
 vincent1: 220
 vincent3: 50
