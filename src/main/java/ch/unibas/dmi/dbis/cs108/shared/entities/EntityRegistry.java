@@ -312,6 +312,8 @@ public class EntityRegistry {
                 path = art.getCardImagePath();
             } else if (entity instanceof PurchasableEntity pe) {
                 path = pe.getMapImagePath();
+            } else if (entity instanceof Monument mon && !isCard) {
+                path = mon.getMapImagePath();
             }
         }
         if (path == null || path.isEmpty() && id != 22 && id != 38) { // 22 & 38 are special cases for the "No image" entity
