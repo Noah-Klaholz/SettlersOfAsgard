@@ -10,19 +10,16 @@ import java.util.Optional;
  */
 public class UsePlayerArtifactUIEvent implements UIEvent {
     private final int artifactId;
-    private final String useType;
     private final Optional<String> targetPlayer; // Optional for artifacts that don't target a specific player
 
     /**
      * Constructs a UsePlayerArtifactUIEvent.
      *
      * @param artifactId  the ID of the artifact
-     * @param useType     the type of use (e.g., "attack", "defend")
-     * @param targetPlayer the target player (optional)
+     * @param targetPlayer the targeted player for the artifact
      */
-    public UsePlayerArtifactUIEvent(int artifactId, String useType, String targetPlayer) {
+    public UsePlayerArtifactUIEvent(int artifactId, String targetPlayer) {
         this.artifactId = artifactId;
-        this.useType = useType;
         this.targetPlayer = Optional.ofNullable(targetPlayer);
     }
 
@@ -33,15 +30,6 @@ public class UsePlayerArtifactUIEvent implements UIEvent {
      */
     public int getArtifactId() {
         return artifactId;
-    }
-
-    /**
-     * gets the type of use.
-     *
-     * @return the use type
-     */
-    public String getUseType() {
-        return useType;
     }
 
     /**
