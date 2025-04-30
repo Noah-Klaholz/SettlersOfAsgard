@@ -24,6 +24,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.utils.CardDetails;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
 import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
@@ -1096,6 +1097,8 @@ public class GameScreenController extends BaseController {
             return;
         }
 
+        GameEntity gm = EntityRegistry.getGameEntityOriginalById(entityId);
+
         try {
             Image image = resourceLoader.getEntityImage(entityId);
             if (image == null || image.isError()) {
@@ -1105,22 +1108,36 @@ public class GameScreenController extends BaseController {
                 return;
             }
 
-            // Calculate maximum width based on hex size and squish factor
-            double maxWidth = 2.3 * hexSize * hSquish;
-
-            // Calculate scale to fit within both max width and max height
-            double scale = maxWidth / image.getWidth();
-
-            // Calculate scaled dimensions
-            double scaledWidth = image.getWidth() * scale;
-            double scaledHeight = image.getHeight() * scale;
-
             // Save current graphics state
             double oldAlpha = gc.getGlobalAlpha();
             gc.setGlobalAlpha(1.0); // Full opacity for the image
 
-            // Draw image centered in the hex
-            gc.drawImage(image, centerX - scaledWidth / 2, centerY - scaledHeight / 2, scaledWidth, scaledHeight);
+            if (gm instanceof Monument) {
+                // Calculate maximum width based on hex size and squish factor
+                double maxWidth = 3.3 * hexSize * hSquish;
+
+                // Calculate scale to fit within both max width and max height
+                double scale = maxWidth / image.getWidth();
+
+                // Calculate scaled dimensions
+                double scaledWidth = image.getWidth() * scale;
+                double scaledHeight = image.getHeight() * scale;
+
+                gc.drawImage(image, centerX - scaledWidth / 2, centerY - 3 * scaledHeight / 4, scaledWidth, scaledHeight);
+            } else {
+                // Calculate maximum width based on hex size and squish factor
+                double maxWidth = 2.3 * hexSize * hSquish;
+
+                // Calculate scale to fit within both max width and max height
+                double scale = maxWidth / image.getWidth();
+
+                // Calculate scaled dimensions
+                double scaledWidth = image.getWidth() * scale;
+                double scaledHeight = image.getHeight() * scale;
+
+                // Draw image centered in the hex
+                gc.drawImage(image, centerX - scaledWidth / 2, centerY - scaledHeight / 2, scaledWidth, scaledHeight);
+            }
 
             // Restore graphics state
             gc.setGlobalAlpha(oldAlpha);
