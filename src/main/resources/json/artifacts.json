@@ -12,8 +12,8 @@
   },
   {
     "name": "Freyja's Necklace",
-    "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
-    "description": "Erhöht Effizienz Runen-Farmen auf einem Feld",
+    "usage": "Increases efficiency of rune farming on a Tile",
+    "description": "Freyja posesses many different kind of necklaces. One of them is the Brisingamen, a necklace crafted by the four dwarves Alfrigg, Dvalin, Berling and Grerr. It stands for her beauty and her power. Another one is forged by the dwarves Sindri and Brokkr, the two dwarfes that also created Mjölnir, the hammer of Thor.",
     "useType": "Field",
     "cardImagePath": "resources/images/cards/a_freyjasnecklace_card.png",
     "id": 10,
@@ -22,8 +22,8 @@
   },
   {
     "name": "Freyr's Golden Apple",
-    "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
-    "description": "Energie (flat)",
+    "usage": "Gives a flat amount of energy",
+    "description": "The golden apple is a symbol of Freyr's fertility and prosperity. It is said to bring good fortune and abundance to those who possess it. Refusing to accept a golden apple is a sign of sterility and decay. The apple is also associated with the goddess Idun, who is known for her ability to rejuvenate the gods with her golden apples.",
     "useType": "Player",
     "cardImagePath": "resources/images/cards/a_freyrsgoldenapple_card.png",
     "id": 11,
@@ -32,8 +32,8 @@
   },
   {
     "name": "Tear of Yggdrasil",
-    "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
-    "description": "Anderer Spieler - Energie (flat)",
+    "usage": "Removes flat Energy from another player",
+    "description": "The well-being of Yggdrasil, the mighty tree at the center of the cosmos, is crucial for the stability of the universe. When Yggdrasil trembles, it signals the arrival of Ragnarök, the destruction of the universe. The tear of Yggdrasil is the sign of a looming catastrophe.",
     "useType": "Player",
     "cardImagePath": "resources/images/cards/a_yggdrasilstear_card.png",
     "id": 12,
@@ -41,9 +41,9 @@
     "effect": -4
   },
   {
-    "name": "Fragment of Mjölnir",
-    "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
-    "description": "Erhöht Chance auf Artefakte",
+    "name": "Mjölnir Charm",
+    "usage": "Increases the chance of artifacts.",
+    "description": "The hammer of Thor, Mjölnir, is a powerful weapon which, when it hits the ground, rumbles like thunder. It is said to be forged by the dwarves Sindri and Brokkr, known for their renowned skill in crafting. This little charm brings strength and power to the one who carries it.",
     "useType": "Player",
     "cardImagePath": "resources/images/cards/a_mjoelnircharm_card.png",
     "id": 13,
