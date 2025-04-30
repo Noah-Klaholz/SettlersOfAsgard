@@ -407,7 +407,6 @@ public class GameScreenController extends BaseController {
             markStatuePlaced(gamePlayer.hasStatue());
 
             updateRunesAndEnergyBar();
-            refreshCardAffordability();
             updateCardImages();
             updatePlayerList();
             updateMap();
@@ -1523,7 +1522,7 @@ public class GameScreenController extends BaseController {
                 }
                 // Adjust index to be 0-based for list access
                 int listIndex = index - 1;
-                if (artifacts == null || listIndex < 0 || listIndex >= artifacts.size() || artifacts.get(listIndex) == null) {
+                if (artifacts == null || listIndex >= artifacts.size() || artifacts.get(listIndex) == null) {
                     // If artifact slot is empty or invalid, return a placeholder ID (e.g., empty
                     // slot visual)
                     LOGGER.fine("Artifact slot " + index + " is empty or invalid.");
@@ -1593,7 +1592,7 @@ public class GameScreenController extends BaseController {
      */
     private void refreshCardAffordability() {
         for (Node card : structureHand.getChildren()) {
-            if (card.getId() != null && card.getId().startsWith("structure") || card.getId().startsWith("statue")) {
+            if (card.getId() != null) {
                 updateCardAffordability(card);
             }
         }
@@ -1952,7 +1951,12 @@ public class GameScreenController extends BaseController {
 
     private boolean canAffordCard(String cardId) {
         int cost = getCardCost(cardId);
-        return getPlayerRunes() >= cost;
+
+        double priceModifier = gamePlayer.getStatus().get(Status.BuffType.SHOP_PRICE);
+        double adjusted = cost / Math.max(priceModifier, 0.5); // Prevent divide-by-zero or negative scaling and ensure maximum price of 200% original
+        int adjustedPrice = Math.max(0, (int) Math.round(adjusted)); // Ensure price is never negative
+
+        return getPlayerRunes() >= adjustedPrice;
     }
 
     private int getCardCost(String cardId) {
