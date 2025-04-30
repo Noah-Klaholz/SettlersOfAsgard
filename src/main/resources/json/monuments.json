@@ -6,32 +6,46 @@
     "id": 40,
     "runes": 10,
     "world": "Alfheim",
+    "mapImagePath": "resources/images/fixedStructuresSMALL/fs_alfheimslight_small.png",
     "tiles": [
       {"x": 0, "y": 0}
     ]
   },
   {
-  "name": "Castle",
-    "usage": "",
+  "name": "Castle-Front",
+  "usage": "",
   "description": "",
   "id": 41,
   "runes": 10,
   "world": "Asgard",
+  "mapImagePath": "resources/images/fixedStructuresSMALL/fs_argardsbuildingfront_small.png",
   "tiles": [
-    {"x": 0, "y": 3},
-    {"x": 0, "y": 4},
-    {"x": 1, "y": 2}
+    {"x": 3, "y": 0},
+    {"x": 2, "y": 1}
   ]
   },
   {
-  "name": "Flaming Sword",
+    "name": "Castle-Back",
     "usage": "",
+    "description": "",
+    "id": 48,
+    "runes": 10,
+    "world": "Asgard",
+    "mapImagePath": "resources/images/fixedStructuresSMALL/fs_asgardsbuildingback_small.png",
+    "tiles": [
+      {"x": 4, "y": 0}
+    ]
+  },
+  {
+  "name": "Flaming Sword",
+  "usage": "",
   "description": "",
   "id": 42,
   "runes": 10,
   "world": "Muspelheim",
+  "mapImagePath": "resources/images/fixedStructuresSMALL/fs_muspelheimsfiresword_small.png",
   "tiles": [
-    {"x": 0, "y": 6}
+    {"x": 6, "y": 0}
   ]
   },
   {
@@ -41,8 +55,9 @@
     "id": 43,
     "runes": 10,
     "world": "Midgard",
+    "mapImagePath": "resources/images/fixedStructuresSMALL/fs_midgardscowskull_small.png",
     "tiles": [
-      {"x": 2, "y": 5}
+      {"x": 5, "y": 2}
     ]
   },
   {
@@ -52,8 +67,9 @@
   "id": 44,
   "runes": 10,
   "world": "Svartalfheim",
+  "mapImagePath": "resources/images/fixedStructuresSMALL/fs_svartalfheimssmithy_small.png",
   "tiles": [
-    {"x": 4, "y": 7}
+    {"x": 7, "y": 4}
   ]
   },
   {
@@ -63,8 +79,9 @@
     "id": 45,
     "runes": 10,
     "world": "Jotunheim",
+    "mapImagePath": "resources/images/fixedStructuresSMALL/fs_jotunheimsmountain_small.png",
     "tiles": [
-      {"x": 6, "y": 0}
+      {"x": 0, "y": 6}
     ]
   },
   {
@@ -74,8 +91,9 @@
     "id": 46,
     "runes": 10,
     "world": "Nilfheim",
+    "mapImagePath": "resources/images/fixedStructuresSMALL/fs_nilfheimsicesculpture_small.png",
     "tiles": [
-      {"x": 6, "y": 3}
+      {"x": 3, "y": 6}
     ]
   },
   {
@@ -85,8 +103,9 @@
     "id": 47,
     "runes": 10,
     "world": "Helheim",
+    "mapImagePath": "resources/images/fixedStructuresSMALL/fs_helheimstree_small.png",
     "tiles": [
-      {"x": 6, "y": 5}
+      {"x": 5, "y": 6}
     ]
   }
 ]
