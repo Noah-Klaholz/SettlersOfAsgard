@@ -101,7 +101,8 @@ public class GameScreenController extends BaseController {
     /*
      * The following fields are package‑private because the adjustment manager
      * accesses them directly.
-     */ double effectiveHexSize;
+     */
+    double effectiveHexSize;
     double gridOffsetX;
     double gridOffsetY;
     private Player localPlayer;
@@ -123,7 +124,6 @@ public class GameScreenController extends BaseController {
     private CardDetails selectedStatue;
     private boolean hasPlacedStatue = false;
     private Tile highlightedTile = null;
-    private int[] lastHighlightedTileCoords = null;
     private GridAdjustmentManager gridAdjustmentManager;
     /*
      * --------------------------------------------------
@@ -693,7 +693,6 @@ public class GameScreenController extends BaseController {
         gameCanvas.addEventHandler(MouseEvent.MOUSE_EXITED_TARGET, e -> {
             clearHighlight();                                        // <-- replaces redrawSingleTile()
             highlightedTile = null;
-            lastHighlightedTileCoords = null;
         });
 
     /* ---------------------------------------------------------------------
@@ -743,7 +742,6 @@ public class GameScreenController extends BaseController {
                 if (trulyExited) {
                     clearHighlight();                                // <-- replaces redrawSingleTile()
                     highlightedTile = null;
-                    lastHighlightedTileCoords = null;
                 }
             });
         }
@@ -876,10 +874,6 @@ public class GameScreenController extends BaseController {
         }
     }
 
-    private void handleCanvasExited() {   // call from your MOUSE_EXITED handler
-        clearHighlight();
-    }
-
     /**
      * Repaints only the backgroundCanvas (map + white grid).
      */
@@ -983,43 +977,6 @@ public class GameScreenController extends BaseController {
         gc.setLineWidth(3);
         gc.setGlobalAlpha(1);
         gc.strokePolygon(xs, ys, 6);
-    }
-
-    /**
-     * Draws the complete grid (including ownership highlighting and selection).
-     */
-    private void drawHexGrid(GraphicsContext gc, double size, double gridW, double gridH, double addHX, double addHY) {
-        gc.setStroke(Color.WHITE);
-        gc.setLineWidth(1.5);
-        gc.setGlobalAlpha(0.7);
-
-        hSpacing = size * gridAdjustmentManager.getHorizontalSpacingFactor();
-        vSpacing = size * gridAdjustmentManager.getVerticalSpacingFactor();
-
-        double totalW = hSpacing * (HEX_COLS - 0.5);
-        double totalH = vSpacing * HEX_ROWS;
-
-        double baseX = mapOffsetX + (scaledMapWidth - gridW) / 2;
-        double baseY = mapOffsetY + (scaledMapHeight - gridH) / 2;
-        gridOffsetX = baseX + (gridW - totalW) / 2 + addHX;
-        gridOffsetY = baseY + (gridH - totalH) / 2 + addHY;
-
-        for (int r = 0; r < HEX_ROWS; r++) {
-            for (int c = 0; c < HEX_COLS; c++) {
-                double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2);
-                double cy = gridOffsetY + r * vSpacing;
-                // Use coordinate comparison for selection
-                boolean selected = false;
-                if (highlightedTile != null) {
-                    Tile t = getTile(r, c);
-                    if (t != null && t.getX() == highlightedTile.getX() && t.getY() == highlightedTile.getY()) {
-                        selected = true;
-                    }
-                }
-                drawHex(gc, cx, cy, size, r, c, selected);
-            }
-        }
-        gc.setGlobalAlpha(1);
     }
 
     /**
@@ -1688,17 +1645,17 @@ public class GameScreenController extends BaseController {
             String imageUrl = details.getImageUrl();
 
             if (imageUrl != null && !imageUrl.isEmpty()) {
-                Image image = resourceLoader.loadImage(imageUrl);
+                Image image = resourceLoader.getCardImage(details.getID());
 
                 if (image != null && !image.isError()) {
                     ImageView imageView = new ImageView(image);
                     imageView.setPreserveRatio(true);
-                    imageView.setFitWidth(78); // Slightly smaller than pane for border
-                    imageView.setFitHeight(118);
+                    imageView.setFitWidth(75); // Slightly smaller than pane for border
+                    imageView.setFitHeight(115);
 
                     // Center image in pane using a StackPane wrapper
                     StackPane wrapper = new StackPane(imageView);
-                    wrapper.setPrefSize(78, 118); // Match ImageView size
+                    wrapper.setPrefSize(75, 115); // Match ImageView size
                     StackPane.setAlignment(imageView, Pos.CENTER);
 
                     pane.getChildren().add(wrapper);

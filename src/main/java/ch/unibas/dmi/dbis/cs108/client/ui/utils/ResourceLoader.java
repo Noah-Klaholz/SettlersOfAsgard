@@ -35,6 +35,7 @@ public class ResourceLoader {
     public static final String DESCRIPTION_DIALOG_CSS = "/css/description-dialog.css";
     private static final Logger LOGGER = Logger.getLogger(ResourceLoader.class.getName());
     private final Map<Integer, Image> entityImageCache = new ConcurrentHashMap<>();
+    private final Map<Integer, Image> cardImageCache = new ConcurrentHashMap<>();
 
     // Private constructor to prevent instantiation
     public ResourceLoader() {
@@ -105,6 +106,13 @@ public class ResourceLoader {
     public Image getEntityImage(int entityId) {
         return entityImageCache.computeIfAbsent(entityId, id -> {
             String url = EntityRegistry.getURL(id, false);
+            return loadImage(url);
+        });
+    }
+
+    public Image getCardImage(int entityId) {
+        return cardImageCache.computeIfAbsent(entityId, id -> {
+            String url = EntityRegistry.getURL(id, true);
             return loadImage(url);
         });
     }
