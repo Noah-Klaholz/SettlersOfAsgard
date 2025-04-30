@@ -4,7 +4,7 @@
     "usage": "Once you find one, you can use it to achieve incredible things.",
     "description": "Artifacts are mystical items that can be found in the world of the Norse Gods. They are powerful and can be used to enhance your abilities or to gain advantages over other players.",
     "useType": "Descriptor",
-    "cardImagePath": "",
+    "cardImagePath": "/resources/images/cards/cardback.png",
     "id": 22,
     "chance": 0.0,
     "effect": 0.0

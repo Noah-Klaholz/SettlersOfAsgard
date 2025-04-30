@@ -2193,17 +2193,6 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Handles using a rune table structure
-     *
-     * @param tile The tile containing the rune table
-     */
-    private void useRuneTable(Tile tile) {
-        // Send event to use rune table
-        eventBus.publish(new UseStructureUIEvent(tile.getX(), tile.getY(), 1));
-        showNotification("Using rune table at (" + tile.getX() + "," + tile.getY() + ")");
-    }
-
-    /**
      * Handles leveling up a statue
      *
      * @param tile The tile containing the statue

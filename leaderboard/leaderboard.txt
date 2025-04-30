@@ -1,5 +1,5 @@
-noahklaholz2: 1640
-noahklaholz: 966
+noahklaholz2: 1900
+noahklaholz: 1310
 thor: 640
 loki: 402
 freya: 334
