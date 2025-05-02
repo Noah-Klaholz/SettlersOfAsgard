@@ -134,7 +134,7 @@ public class CommandTest {
     void testIsAdministrative() {
         assertTrue(new Command("JOIN$l$p", mockPlayer).isAdministrative());
         assertTrue(new Command("CHTG$msg", mockPlayer).isAdministrative());
-        assertFalse(new Command("BYST$1", mockPlayer).isAdministrative());
+        assertFalse(new Command("BUYT$1$1", mockPlayer).isAdministrative());
         assertFalse(new Command("USSR$1$2$3$4", mockPlayer).isAdministrative());
     }
 

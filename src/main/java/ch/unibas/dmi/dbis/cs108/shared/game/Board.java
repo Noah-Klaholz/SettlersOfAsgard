@@ -50,11 +50,11 @@ public class Board {
      */
     public void initBoard(int x, int y) {
         tiles = new Tile[x][y];
-        Tile.TileBuilder tilebuilder = new Tile.TileBuilder();
-        tilebuilder.setPrice(10);
 
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
+                Tile.TileBuilder tilebuilder = new Tile.TileBuilder();
+                tilebuilder.setPrice(10);
                 // Set world based on coordinates
                 tilebuilder.setWorld(determineWorld(i, j));
                 // Set monument based on coordinates
@@ -103,7 +103,7 @@ public class Board {
      * @return name of the world
      */
     private String determineWorld(int x, int y) {
-        if (x >= 0 && x < 8 && y >= 0 && y < 7) {
+        if (y >= 0 && y < WORLD_MAP.length && x >= 0 && x < WORLD_MAP[y].length) {
             return WORLD_MAP[y][x];
         }
         return "Unknown";
@@ -242,7 +242,6 @@ public class Board {
                 if (value != null) {
                     // Reset tile properties
                     value.setPurchased(false);
-                    value.setHasEntity(false);
                     value.setEntity(null);
                     value.setOwner(null);
                     value.setArtifact(null); // Some tiles start with an artifact but upon reset they should be null
