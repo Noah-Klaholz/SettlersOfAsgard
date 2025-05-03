@@ -1,5 +1,5 @@
-noahklaholz2: 1900
-noahklaholz: 1310
+noahklaholz2: 3718
+noahklaholz: 3456
 odin: 725
 thor: 640
 l: 412

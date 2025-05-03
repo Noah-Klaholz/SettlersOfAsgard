@@ -141,7 +141,6 @@ public class ArtifactBehaviorRegistry {
             if (trapStructure == null) return false;
 
             tile.setEntity(trapStructure);
-            tile.setHasEntity(true);
             return true;
         });
     }

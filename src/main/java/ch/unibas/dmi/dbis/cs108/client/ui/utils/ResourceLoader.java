@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.utils;
 
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
+import javafx.application.Platform;
 import javafx.scene.image.Image;
 
 import java.net.URL;
@@ -34,7 +35,8 @@ public class ResourceLoader {
     public static final String ABOUT_DIALOG_CSS = "/css/about-dialog.css";
     public static final String DESCRIPTION_DIALOG_CSS = "/css/description-dialog.css";
     private static final Logger LOGGER = Logger.getLogger(ResourceLoader.class.getName());
-    private final Map<Integer, Image> entityImageCache = new ConcurrentHashMap<>();
+    private final Map<String, Image> entityImageCache = new ConcurrentHashMap<>();
+    private final Map<Integer, Image> cardImageCache = new ConcurrentHashMap<>();
 
     // Private constructor to prevent instantiation
     public ResourceLoader() {
@@ -102,10 +104,45 @@ public class ResourceLoader {
         }
     }
 
-    public Image getEntityImage(int entityId) {
-        return entityImageCache.computeIfAbsent(entityId, id -> {
-            String url = EntityRegistry.getURL(id, false);
+    public Image getCardImage(int entityId) {
+        return cardImageCache.computeIfAbsent(entityId, id -> {
+            String url = EntityRegistry.getURL(id, true);
             return loadImage(url);
         });
+    }
+
+
+    /**
+     * Low-level helper that never blocks the FX thread.
+     */
+    private Image createImage(String url, boolean background) {
+        return new Image(url, background);
+    }
+
+    /**
+     * Load an image *synchronously* (blocking) and cache it.
+     * Use this for the background map or other “must-have before paint” assets.
+     */
+    public Image loadImageSync(String url) {
+        return entityImageCache.computeIfAbsent(url, u -> createImage(u, /*background*/ false));
+    }
+
+    /**
+     * Load an image in the background (non-blocking) and cache it.
+     * If you pass an onReady-callback, it is invoked on the **FX thread**
+     * exactly once when the image is completely decoded.
+     */
+    public Image loadImageAsync(String url, Runnable onReady /* nullable */) {
+
+        Image img = entityImageCache.computeIfAbsent(url, u -> createImage(u, /*background*/ true));
+
+        if (onReady != null && img.getProgress() < 1.0) {
+            img.progressProperty().addListener((o, ov, nv) -> {
+                if (nv.doubleValue() >= 1.0) {
+                    Platform.runLater(onReady);
+                }
+            });
+        }
+        return img;
     }
 }

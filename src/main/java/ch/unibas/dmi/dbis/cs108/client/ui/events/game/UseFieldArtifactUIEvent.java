@@ -9,7 +9,6 @@ public class UseFieldArtifactUIEvent implements UIEvent {
     private final int x;
     private final int y;
     private final int artifactId;
-    private final String useType;
 
     /**
      * Constructs a new UseFieldArtifactUIEvent.
@@ -17,13 +16,11 @@ public class UseFieldArtifactUIEvent implements UIEvent {
      * @param x          the x-coordinate of the location where the artifact is to be used
      * @param y          the y-coordinate of the location where the artifact is to be used
      * @param artifactId  the ID of the artifact being used
-     * @param useType     the type of use (e.g., "use", "drop")
      */
-    public UseFieldArtifactUIEvent(int x, int y, int artifactId, String useType) {
+    public UseFieldArtifactUIEvent(int x, int y, int artifactId) {
         this.x = x;
         this.y = y;
         this.artifactId = artifactId;
-        this.useType = useType;
     }
 
     /**
@@ -51,15 +48,6 @@ public class UseFieldArtifactUIEvent implements UIEvent {
      */
     public int getArtifactId() {
         return artifactId;
-    }
-
-    /**
-     * Returns the type of use (e.g., "use", "drop").
-     *
-     * @return The use type.
-     */
-    public String getUseType() {
-        return useType;
     }
 
     /**

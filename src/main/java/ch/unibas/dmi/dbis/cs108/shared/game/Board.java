@@ -22,6 +22,24 @@ public class Board {
      * Two-dimensional array of Tiles. Represents the entire board. The first dimension is x.
      */
     private Tile[][] tiles;
+    /** A 2D array representation of the worlds on the map*/
+    private static final String[][] WORLD_MAP = {
+            // y = 0 (top row)
+            {"Alfheim",     "Alfheim",   "Alfheim",    "Asgard",    "Asgard",    "Asgard", "Muspelheim", "Muspelheim"},
+            // y = 1
+            {"Alfheim",     "Alfheim",   "Asgard",    "Asgard",    "Asgard",    "Asgard", "Muspelheim", "Muspelheim"},
+            // y = 2
+            {"Vanaheim",    "Vanaheim",  "Vanaheim",   "Asgard",   "Midgard",   "Midgard", "Muspelheim", "Muspelheim"},
+            // y = 3
+            {"Vanaheim",    "Vanaheim",  "Vanaheim",   "Midgard",   "Midgard",   "Midgard", "Muspelheim", "Muspelheim"},
+            // y = 4
+            {"Vanaheim",   "Jotunheim", "Vanaheim",  "Vanaheim",  "Nilfheim",  "Helheim",    "Svartalfheim",    "Svartalfheim"},
+            // y = 5
+            {"Jotunheim",   "Jotunheim", "Nilfheim",  "Nilfheim",  "Helheim",  "Helheim",    "Helheim",    "Svartalfheim"},
+            // y = 6 (bottom row)
+            {"Jotunheim",   "Jotunheim", "Nilfheim",  "Nilfheim",  "Nilfheim",  "Helheim",    "Helheim",    "Helheim"}
+    };
+
 
     /**
      * Initialize board with a specified number of tiles
@@ -32,11 +50,11 @@ public class Board {
      */
     public void initBoard(int x, int y) {
         tiles = new Tile[x][y];
-        Tile.TileBuilder tilebuilder = new Tile.TileBuilder();
-        tilebuilder.setPrice(10);
 
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
+                Tile.TileBuilder tilebuilder = new Tile.TileBuilder();
+                tilebuilder.setPrice(10);
                 // Set world based on coordinates
                 tilebuilder.setWorld(determineWorld(i, j));
                 // Set monument based on coordinates
@@ -85,18 +103,12 @@ public class Board {
      * @return name of the world
      */
     private String determineWorld(int x, int y) {
-        // Hardcoded mapping based on your visual map layout (hex grid)
-        if ((x <= 2 && y == 0) || (x <= 2 && y == 1)) return "Alfheim"; // Shining light
-        if ((2 < x && x < 6 && y == 0) || (1 < x && x < 6 && y == 1) || (x == 3 && y == 2)) return "Asgard"; // Big church thing
-        if ((x < 4 && (y  == 6 || y == 7))) return "Muspelheim"; // Flaming sword
-        if ((x >= 2  && x <= 4 && y <= 2)) return "Vanaheim"; // River green
-        if ((x == 2 && (y == 4 || y == 5)) || (x == 3 && (y >= 4 && y <= 6))) return "Midgard"; // lush green
-        if ((x == 5 && y <= 2) || (x == 6 && y < 2)) return "Jotunheim"; // Mountain
-        if ((x == 6 && y == 2) || (x >= 5 && y == 3) || (x >= 4 && y == 4)) return "Nilfheim"; // Ice
-        if ((x >= 4 && y == 5) || (x == 6 && y >= 6)) return "Helheim"; // Dead tree
-        if ((x == 4 || x == 5) && y >= 6) return "Svartalfheim"; // Smeltery
-        return "Unknown"; // fallback, in case something is missed
+        if (y >= 0 && y < WORLD_MAP.length && x >= 0 && x < WORLD_MAP[y].length) {
+            return WORLD_MAP[y][x];
+        }
+        return "Unknown";
     }
+
 
     /**
      * Determines wethere a tile has a river (true) or not (false)
@@ -230,7 +242,6 @@ public class Board {
                 if (value != null) {
                     // Reset tile properties
                     value.setPurchased(false);
-                    value.setHasEntity(false);
                     value.setEntity(null);
                     value.setOwner(null);
                     value.setArtifact(null); // Some tiles start with an artifact but upon reset they should be null

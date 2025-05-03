@@ -20,6 +20,8 @@ public class CardDetails {
     final String imageUrl;
     /**Price of the card in runes.*/
     final int price;
+    /**The entity that is represented by this Card*/
+    final GameEntity entity;
 
     /**
      * Constructor for CardDetails.
@@ -38,6 +40,7 @@ public class CardDetails {
         this.lore = lore;
         this.imageUrl = cardImagePath;
         this.price = price;
+        this.entity = EntityRegistry.getGameEntityOriginalById(id);
     }
 
     /**
@@ -53,6 +56,7 @@ public class CardDetails {
         this.lore = gameEntity.getUsage();
         this.imageUrl = EntityRegistry.getURL(id, isCard);
         this.price = gameEntity.getPrice();
+        this.entity = gameEntity;
     }
 
     /**
@@ -100,7 +104,21 @@ public class CardDetails {
         return price;
     }
 
+    /**
+     * Retrieves the id of the entity for the card
+     *
+     * @return the id
+     */
     public int getID() {
         return id;
+    }
+
+    /**
+     * Retrieves the GameEntity object represented by this CardDetails
+     *
+     * @return the entity
+     */
+    public GameEntity getEntity() {
+        return entity;
     }
 }

@@ -10,19 +10,35 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Monument entity which represents a fixed structure that is created upon initializing the board
  */
 public class Monument extends FindableEntity {
+
     public static class Coordinates {
-        public int x;
-        public int y;
+        public final int x;
+        public final int y;
+
         public Coordinates(int x, int y) {
             this.x = x;
             this.y = y;
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof Coordinates other)) return false;
+            return this.x == other.x && this.y == other.y;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(x, y);
+        }
     }
+
     /**
      * This represents how many runes this Entity generates for its owner
      */
@@ -49,6 +65,10 @@ public class Monument extends FindableEntity {
      * String representaing the name of the world
      */
     private String world;
+    /**
+     * String representing the URL for the map-image
+     */
+    String mapImagePath;
 
     /**
      * Default constructor for Monument.
@@ -63,13 +83,15 @@ public class Monument extends FindableEntity {
      * @param description The description of this artifact
      * @param runes how many runes this entity farms each round
      * @param setBonus states wether this entity is part of a set
+     * @param mapImagePath the URl for the image to be drawn on the map
      */
-    public Monument(int id, String name, String description, String usage, int runes, boolean setBonus, List<Coordinates> tiles, String world) {
+    public Monument(int id, String name, String description, String usage, int runes, boolean setBonus, List<Coordinates> tiles, String world, String mapImagePath) {
         super(id, name, description, usage);
         this.runes = runes;
         this.setBonus = setBonus;
         this.tiles = tiles;
         this.world = world;
+        this.mapImagePath = mapImagePath;
     }
 
     /**
@@ -145,6 +167,15 @@ public class Monument extends FindableEntity {
     }
 
     /**
+     * Sets the mapImagePath
+     *
+     * @param mapImagePath the value to set
+     */
+    public void setMapImagePath(String mapImagePath) {
+        this.mapImagePath = mapImagePath;
+    }
+
+    /**
      * Gets if this Monument is part of a set
      *
      * @return The set of this Monument
@@ -180,6 +211,15 @@ public class Monument extends FindableEntity {
     }
 
     /**
+     * Getter for the Map image path
+     *
+     * @return the image URL
+     */
+    public String getMapImagePath() {
+        return mapImagePath;
+    }
+
+    /**
      * Loads Monument data from a JSON object.
      * Extends the parent method to also load Monument-specific data.
      *
@@ -192,6 +232,7 @@ public class Monument extends FindableEntity {
         super.loadFromJson(json);
         this.runes = json.get("runes").getAsInt();
         this.world = json.get("world").getAsString();
+        this.mapImagePath = json.get("mapImagePath").getAsString();
         JsonArray jArr = json.get("tiles").getAsJsonArray();
         this.tiles = gson.fromJson(jArr, listType);
         this.setBonus = tiles.size() > 1;
@@ -222,6 +263,7 @@ public class Monument extends FindableEntity {
         clone.setRunes(this.runes);
         clone.setWorld(this.world);
         clone.setTiles(new ArrayList<>(this.tiles));
+        clone.setMapImagePath(this.mapImagePath);
 
         return (Monument) copyTo(clone);
     }

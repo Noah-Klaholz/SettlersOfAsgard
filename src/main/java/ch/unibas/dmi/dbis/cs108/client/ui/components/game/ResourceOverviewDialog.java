@@ -204,8 +204,7 @@ public class ResourceOverviewDialog extends UIComponent<StackPane> {
                 (value < 1.0) ? Math.round((1.0 - value) * 100) + "% reduction" :
                         "neutral";
 
-        String description = getBuffDescription(buffType);
-        return buffName + ": " + valueStr + "\n   " + description;
+        return buffName + ": " + valueStr;
     }
 
     private String formatBuffName(Status.BuffType buffType) {

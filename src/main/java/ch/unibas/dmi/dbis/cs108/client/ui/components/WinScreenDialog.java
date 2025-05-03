@@ -54,7 +54,6 @@ public class WinScreenDialog extends UIComponent<StackPane> {
         this.view.setViewOrder(-100);
         this.view.setOnMouseClicked(event -> {
             if (event.getTarget() == this.view) {
-                close();
                 event.consume();
             }
         });

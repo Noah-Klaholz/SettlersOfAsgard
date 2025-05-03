@@ -114,7 +114,6 @@ public class StructureActionHandler {
             for (Tile[] tiles : gameState.getBoardManager().getBoard().getTiles()){
                 for (Tile tile : tiles) {
                     if (tile.hasEntity() && !tile.getOwner().equals(playerName)) {
-                        tile.setHasEntity(false);
                         tile.setEntity(null);
                     }
                 }

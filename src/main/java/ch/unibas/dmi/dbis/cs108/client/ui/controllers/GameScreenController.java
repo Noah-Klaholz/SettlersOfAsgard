@@ -24,6 +24,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.utils.CardDetails;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
 import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
@@ -123,7 +124,6 @@ public class GameScreenController extends BaseController {
     private CardDetails selectedStatue;
     private boolean hasPlacedStatue = false;
     private Tile highlightedTile = null;
-    private int[] lastHighlightedTileCoords = null;
     private GridAdjustmentManager gridAdjustmentManager;
     /*
      * --------------------------------------------------
@@ -403,19 +403,19 @@ public class GameScreenController extends BaseController {
                 return;
             }
 
+            boolean firstSync = uiInitialized.compareAndSet(false, true);
+            if (firstSync) {
+                LOGGER.info("First GameSyncEvent processed. Proceeding to full UI initialization...");
+                initializeUI();
+            }
+
             artifacts = gamePlayer.getArtifacts();
             markStatuePlaced(gamePlayer.hasStatue());
 
             updateRunesAndEnergyBar();
-            refreshCardAffordability();
             updateCardImages();
             updatePlayerList();
             updateMap();
-
-            if (uiInitialized.compareAndSet(false, true)) {
-                LOGGER.info("First GameSyncEvent processed. Proceeding to full UI initialization...");
-                initializeUI();
-            }
         });
     }
 
@@ -649,7 +649,7 @@ public class GameScreenController extends BaseController {
      * Loads the background map image and triggers the initial draw.
      */
     private void loadMapImage() {
-        mapImage = resourceLoader.loadImage(ResourceLoader.MAP_IMAGE);
+        mapImage = resourceLoader.loadImageSync(ResourceLoader.MAP_IMAGE);
         isMapLoaded = mapImage != null;
         if (isMapLoaded) drawMapAndGrid();
         else LOGGER.severe("Map image missing");
@@ -666,7 +666,8 @@ public class GameScreenController extends BaseController {
     /* ---------------------------------------------------------------------
        Resize → redraw the static background (map + white grid)
      --------------------------------------------------------------------- */
-        ChangeListener<Number> resize = (obs, oldV, newV) -> drawMapAndGrid();
+        ChangeListener<Number> resize = (obs, o, n) -> drawMapAndGrid();
+
         gameCanvas.widthProperty().addListener(resize);
         gameCanvas.heightProperty().addListener(resize);
 
@@ -693,7 +694,6 @@ public class GameScreenController extends BaseController {
         gameCanvas.addEventHandler(MouseEvent.MOUSE_EXITED_TARGET, e -> {
             clearHighlight();                                        // <-- replaces redrawSingleTile()
             highlightedTile = null;
-            lastHighlightedTileCoords = null;
         });
 
     /* ---------------------------------------------------------------------
@@ -743,7 +743,6 @@ public class GameScreenController extends BaseController {
                 if (trulyExited) {
                     clearHighlight();                                // <-- replaces redrawSingleTile()
                     highlightedTile = null;
-                    lastHighlightedTileCoords = null;
                 }
             });
         }
@@ -769,17 +768,27 @@ public class GameScreenController extends BaseController {
         if (localPlayer != null && getTile(row, col) != null) {
             Tile t = getTile(row, col);
             if (selectedCard != null) {
-                if (!t.hasEntity()) {
-                    CardDetails s = getCardDetails(selectedCard.getId());
-                    if (s != null && s.getID() == selectedStatue.getID()) {
+                CardDetails s = getCardDetails(selectedCard.getId());
+                if (s != null && s.getEntity() != null) {
+                    if (!t.hasEntity() && s.getID() == selectedStatue.getID()) {
                         eventBus.publish(new PlaceStatueUIEvent(col, row, s.getID()));
-                    } else if (s != null) {
+                    } else if (!t.hasEntity() && s.getEntity().isStructure()) {
                         eventBus.publish(new PlaceStructureUIEvent(col, row, s.getID()));
+                    } else if (s.getEntity() instanceof Artifact a) {
+                        if (a.isFieldTarget()) {
+                            eventBus.publish(new UseFieldArtifactUIEvent(col, row, s.getID()));
+                        } else if (a.isPlayerTarget()) {
+                            eventBus.publish(new UsePlayerArtifactUIEvent(s.getID(), t.getOwner()));
+                        } else {
+                            Logger.getGlobal().info("Artifact is neither field nor player target: " + s.getID());
+                        }
                     }
-                    selectedCard.getStyleClass().remove("selected-card");
-                    selectedCard = null;
-                    updateCardImages();
+                } else {
+                    Logger.getGlobal().info("Selected card does not exist or does not represent an entity: " + s.getID());
                 }
+                selectedCard.getStyleClass().remove("selected-card");
+                selectedCard = null;
+                updateCardImages();
             }
         }
 
@@ -876,10 +885,6 @@ public class GameScreenController extends BaseController {
         }
     }
 
-    private void handleCanvasExited() {   // call from your MOUSE_EXITED handler
-        clearHighlight();
-    }
-
     /**
      * Repaints only the backgroundCanvas (map + white grid).
      */
@@ -939,10 +944,13 @@ public class GameScreenController extends BaseController {
             for (int c = 0; c < HEX_COLS; c++) {
                 double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2);
                 double cy = gridOffsetY + r * vSpacing;
-                drawHex(gc, cx, cy, effectiveHexSize, r, c, false);
+                drawHexBackground(gc, cx, cy, effectiveHexSize, r, c);
             }
         }
+
         gc.setGlobalAlpha(1);
+
+        redrawEntities();
     }
 
     /**
@@ -986,47 +994,10 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Draws the complete grid (including ownership highlighting and selection).
-     */
-    private void drawHexGrid(GraphicsContext gc, double size, double gridW, double gridH, double addHX, double addHY) {
-        gc.setStroke(Color.WHITE);
-        gc.setLineWidth(1.5);
-        gc.setGlobalAlpha(0.7);
-
-        hSpacing = size * gridAdjustmentManager.getHorizontalSpacingFactor();
-        vSpacing = size * gridAdjustmentManager.getVerticalSpacingFactor();
-
-        double totalW = hSpacing * (HEX_COLS - 0.5);
-        double totalH = vSpacing * HEX_ROWS;
-
-        double baseX = mapOffsetX + (scaledMapWidth - gridW) / 2;
-        double baseY = mapOffsetY + (scaledMapHeight - gridH) / 2;
-        gridOffsetX = baseX + (gridW - totalW) / 2 + addHX;
-        gridOffsetY = baseY + (gridH - totalH) / 2 + addHY;
-
-        for (int r = 0; r < HEX_ROWS; r++) {
-            for (int c = 0; c < HEX_COLS; c++) {
-                double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2);
-                double cy = gridOffsetY + r * vSpacing;
-                // Use coordinate comparison for selection
-                boolean selected = false;
-                if (highlightedTile != null) {
-                    Tile t = getTile(r, c);
-                    if (t != null && t.getX() == highlightedTile.getX() && t.getY() == highlightedTile.getY()) {
-                        selected = true;
-                    }
-                }
-                drawHex(gc, cx, cy, size, r, c, selected);
-            }
-        }
-        gc.setGlobalAlpha(1);
-    }
-
-    /**
      * Draws a single hexagon, optionally highlighting ownership and selection.
      * Also draws the entity image if present.
      */
-    private void drawHex(GraphicsContext gc, double cx, double cy, double size, int row, int col, boolean selected) {
+    private void drawHex(GraphicsContext gc, double cx, double cy, double size, int row, int col, boolean selected, boolean withEntity) {
         double[] xs = new double[6];
         double[] ys = new double[6];
 
@@ -1076,16 +1047,21 @@ public class GameScreenController extends BaseController {
         }
 
         // Draw the Entity if it exists -----------------------------------------
+        if (!withEntity) {
+            return;
+        }
+
         Tile tile = getTile(row, col);
-        if (tile != null) {
-            GameEntity entity = tile.getEntity();
-            if (entity != null) {
-                // Use isCard=false for entities placed on the board
-                String URL = EntityRegistry.getURL(entity.getId(), false);
-                drawEntityImage(gc, URL, cx, cy, size, hSquish, entity.getId()); // Pass entity ID for logging
-            }
-        } else {
+
+        if (tile == null) {
             LOGGER.warning("Tile is null for row " + row + ", col " + col);
+            return;
+        }
+
+        GameEntity entity = tile.getEntity();
+        if (entity != null) {
+            int id = tile.getEntity().getId();
+            drawEntityImage(gc, null, cx, cy, size, gridAdjustmentManager.getHorizontalSquishFactor(), id);
         }
     }
 
@@ -1123,15 +1099,22 @@ public class GameScreenController extends BaseController {
             gc.setGlobalAlpha(oldAlpha);
         };
 
+//        if (imageUrl == null || imageUrl.isEmpty()) {
+//            // Log ERROR for missing URL
+//            LOGGER.severe(String.format("Missing map image URL for entity ID %d. Drawing red placeholder.", entityId));
+//            drawPlaceholder.run();
+//            return;
+//        }
+
+        // obtain the URL if the caller passed null (drawHexSprite intentionally does this)
         if (imageUrl == null || imageUrl.isEmpty()) {
-            // Log ERROR for missing URL
-            LOGGER.severe(String.format("Missing map image URL for entity ID %d. Drawing red placeholder.", entityId));
-            drawPlaceholder.run();
-            return;
+            imageUrl = EntityRegistry.getURL(entityId, false);
         }
 
+        GameEntity gm = EntityRegistry.getGameEntityOriginalById(entityId);
+
         try {
-            Image image = resourceLoader.getEntityImage(entityId);
+            Image image = getEntityImage(entityId);
             if (image == null || image.isError()) {
                 // Log ERROR for image loading failure
                 LOGGER.severe(String.format("Failed to load map entity image: %s (Entity ID: %d). Drawing red placeholder.", imageUrl, entityId));
@@ -1139,22 +1122,36 @@ public class GameScreenController extends BaseController {
                 return;
             }
 
-            // Calculate maximum width based on hex size and squish factor
-            double maxWidth = 2.3 * hexSize * hSquish;
-
-            // Calculate scale to fit within both max width and max height
-            double scale = maxWidth / image.getWidth();
-
-            // Calculate scaled dimensions
-            double scaledWidth = image.getWidth() * scale;
-            double scaledHeight = image.getHeight() * scale;
-
             // Save current graphics state
             double oldAlpha = gc.getGlobalAlpha();
             gc.setGlobalAlpha(1.0); // Full opacity for the image
 
-            // Draw image centered in the hex
-            gc.drawImage(image, centerX - scaledWidth / 2, centerY - scaledHeight / 2, scaledWidth, scaledHeight);
+            if (gm instanceof Monument) {
+                // Calculate maximum width based on hex size and squish factor
+                double maxWidth = 3.3 * hexSize * hSquish;
+
+                // Calculate scale to fit within both max width and max height
+                double scale = maxWidth / image.getWidth();
+
+                // Calculate scaled dimensions
+                double scaledWidth = image.getWidth() * scale;
+                double scaledHeight = image.getHeight() * scale;
+
+                gc.drawImage(image, centerX - scaledWidth / 2, centerY - 3 * scaledHeight / 4, scaledWidth, scaledHeight);
+            } else {
+                // Calculate maximum width based on hex size and squish factor
+                double maxWidth = 2.3 * hexSize * hSquish;
+
+                // Calculate scale to fit within both max width and max height
+                double scale = maxWidth / image.getWidth();
+
+                // Calculate scaled dimensions
+                double scaledWidth = image.getWidth() * scale;
+                double scaledHeight = image.getHeight() * scale;
+
+                // Draw image centered in the hex
+                gc.drawImage(image, centerX - scaledWidth / 2, centerY - scaledHeight / 2, scaledWidth, scaledHeight);
+            }
 
             // Restore graphics state
             gc.setGlobalAlpha(oldAlpha);
@@ -1163,6 +1160,34 @@ public class GameScreenController extends BaseController {
             LOGGER.log(Level.SEVERE, String.format("Error drawing map entity image for ID %d: %s", entityId, e.getMessage()), e);
             drawPlaceholder.run();
         }
+    }
+
+    private void drawHexBackground(GraphicsContext gc, double cx, double cy, double size, int row, int col) {
+        drawHex(gc, cx, cy, size, row, col, false, false);
+    }
+
+    private void drawHexSprite(GraphicsContext gc, double cx, double cy, double size, int row, int col) {
+        drawHex(gc, cx, cy, size, row, col, false, true);
+    }
+
+    private void redrawEntities() {
+        GraphicsContext gc = gameCanvas.getGraphicsContext2D();
+        gc.clearRect(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
+
+        for (int r = 0; r < HEX_ROWS; r++) {
+            for (int c = 0; c < HEX_COLS; c++) {
+                if (getTile(r, c).hasEntity()) {
+                    double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2);
+                    double cy = gridOffsetY + r * vSpacing;
+                    drawHexSprite(gc, cx, cy, effectiveHexSize, r, c);
+                }
+            }
+        }
+    }
+
+    private Image getEntityImage(int entityId) {
+        String url = EntityRegistry.getURL(entityId, false);
+        return resourceLoader.loadImageAsync(url, this::redrawEntities);
     }
 
     /*
@@ -1556,7 +1581,7 @@ public class GameScreenController extends BaseController {
                 }
                 // Adjust index to be 0-based for list access
                 int listIndex = index - 1;
-                if (artifacts == null || listIndex < 0 || listIndex >= artifacts.size() || artifacts.get(listIndex) == null) {
+                if (artifacts == null || listIndex >= artifacts.size() || artifacts.get(listIndex) == null) {
                     // If artifact slot is empty or invalid, return a placeholder ID (e.g., empty
                     // slot visual)
                     LOGGER.fine("Artifact slot " + index + " is empty or invalid.");
@@ -1626,7 +1651,7 @@ public class GameScreenController extends BaseController {
      */
     private void refreshCardAffordability() {
         for (Node card : structureHand.getChildren()) {
-            if (card.getId() != null && card.getId().startsWith("structure") || card.getId().startsWith("statue")) {
+            if (card.getId() != null) {
                 updateCardAffordability(card);
             }
         }
@@ -1688,17 +1713,17 @@ public class GameScreenController extends BaseController {
             String imageUrl = details.getImageUrl();
 
             if (imageUrl != null && !imageUrl.isEmpty()) {
-                Image image = resourceLoader.loadImage(imageUrl);
+                Image image = resourceLoader.getCardImage(details.getID());
 
                 if (image != null && !image.isError()) {
                     ImageView imageView = new ImageView(image);
                     imageView.setPreserveRatio(true);
-                    imageView.setFitWidth(78); // Slightly smaller than pane for border
-                    imageView.setFitHeight(118);
+                    imageView.setFitWidth(75); // Slightly smaller than pane for border
+                    imageView.setFitHeight(115);
 
                     // Center image in pane using a StackPane wrapper
                     StackPane wrapper = new StackPane(imageView);
-                    wrapper.setPrefSize(78, 118); // Match ImageView size
+                    wrapper.setPrefSize(75, 115); // Match ImageView size
                     StackPane.setAlignment(imageView, Pos.CENTER);
 
                     pane.getChildren().add(wrapper);
@@ -1797,7 +1822,7 @@ public class GameScreenController extends BaseController {
                 // Load the statue image first (your existing code)
                 String imageUrl = details.getImageUrl();
                 if (imageUrl != null && !imageUrl.isEmpty()) {
-                    Image image = resourceLoader.loadImage(imageUrl);
+                    Image image = resourceLoader.getCardImage(details.getID());
                     if (image != null && !image.isError()) {
                         ImageView imageView = new ImageView(image);
                         imageView.setFitWidth(78);
@@ -1985,7 +2010,12 @@ public class GameScreenController extends BaseController {
 
     private boolean canAffordCard(String cardId) {
         int cost = getCardCost(cardId);
-        return getPlayerRunes() >= cost;
+
+        double priceModifier = gamePlayer.getStatus().get(Status.BuffType.SHOP_PRICE);
+        double adjusted = cost / Math.max(priceModifier, 0.5); // Prevent divide-by-zero or negative scaling and ensure maximum price of 200% original
+        int adjustedPrice = Math.max(0, (int) Math.round(adjusted)); // Ensure price is never negative
+
+        return getPlayerRunes() >= adjustedPrice;
     }
 
     private int getCardCost(String cardId) {
