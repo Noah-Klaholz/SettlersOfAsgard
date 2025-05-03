@@ -25,8 +25,6 @@ public class CommandHandler {
     private final GameServer server;
     /** The logger for this class. */
     Logger logger = Logger.getLogger(CommandHandler.class.getName());
-    /** The GameLogic instance that this CommandHandler is associated with. */
-    private GameLogic gameLogic;
     /** The current Lobby that this CommandHandler is associated with. */
     private Lobby currentLobby;
     /** The local player that this CommandHandler is associated with. */
@@ -366,10 +364,9 @@ public class CommandHandler {
     public boolean handleStartGame() {
         if (ch.getCurrentLobby() != null && ch.getCurrentLobby().startGame()) {
             this.currentLobby = ch.getCurrentLobby();
-            this.gameLogic = currentLobby.getGameLogic();
-            String startPlayerName = gameLogic.getGameState().getPlayerTurn();
+            String startPlayerName = currentLobby.getGameLogic().getGameState().getPlayerTurn();
             currentLobby.broadcastMessage("STRT$" + startPlayerName);
-            currentLobby.broadcastMessage(gameLogic.getGameState().createDetailedStatusMessage());
+            currentLobby.broadcastMessage(currentLobby.getGameLogic().getGameState().createDetailedStatusMessage());
             return true;
         } else {
             System.out.println("ERR$106$CANNOT_START_GAME");
@@ -395,10 +392,6 @@ public class CommandHandler {
      * @return the current game logic
      */
     public GameLogic getGameLogic() {
-        // Refresh gameLogic if it's null, but the lobby has one
-        if (gameLogic == null && currentLobby != null) {
-            gameLogic = currentLobby.getGameLogic();
-        }
-        return gameLogic;
+        return (currentLobby != null) ? currentLobby.getGameLogic() : null;
     }
 }
