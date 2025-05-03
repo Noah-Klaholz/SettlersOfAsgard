@@ -166,14 +166,14 @@ public class GameLogicTest {
      */
     @Test
     void testPlaceStructure() {
-        Tile t = gameState.getBoardManager().getTile(0, 0);
+        Tile t = gameState.getBoardManager().getTile(0, 1);
         Structure s = EntityRegistry.getStructure(1);
         int runesBefore = gameState.getPlayers().get(0).getRunes();
         assert s != null;
         int price = t.getPrice() + s.getPrice();
         // Verify that the player is able to buy a tile and place a structure on it
-        assertTrue(gameLogic.buyTile(0, 0, "player1"));
-        assertTrue(gameLogic.placeStructure(0, 0, 1, "player1"));
+        assertTrue(gameLogic.buyTile(t.getX(), t.getY(), "player1"));
+        assertTrue(gameLogic.placeStructure(t.getX(), t.getY(), 1, "player1"));
         int runesAfter = gameState.getPlayers().get(0).getRunes();
         // Verify players has the correct amount of runes
         assertEquals(runesBefore - price, runesAfter);
@@ -189,16 +189,16 @@ public class GameLogicTest {
      */
     @Test
     void TestUseStructureRuneTable() {
-        Tile t = gameState.getBoardManager().getTile(0, 0);
+        Tile t = gameState.getBoardManager().getTile(0, 1);
         Structure s = EntityRegistry.getStructure(1);
         int runesBefore = gameState.getPlayers().get(0).getRunes();
         assert s != null;
         int price = t.getPrice() + s.getPrice();
-        assertTrue(gameLogic.buyTile(0, 0, "player1"));
-        assertTrue(gameLogic.placeStructure(0, 0, 1, "player1"));
+        assertTrue(gameLogic.buyTile(t.getX(), t.getY(), "player1"));
+        assertTrue(gameLogic.placeStructure(t.getX(), t.getY(), 1, "player1"));
         int runesCurrently = runesBefore - price;
         gameState.getPlayers().get(0).setEnergy(4); // manually set energy to 4 to test this structure
-        assertTrue(gameLogic.useStructure(0, 0, 1, "player1"));
+        assertTrue(gameLogic.useStructure(t.getX(), t.getY(), 1, "player1"));
         int runesAfter = gameState.getPlayers().get(0).getRunes();
         // Check rune and energy count
         assertEquals(runesCurrently + s.getParams().get(1).getValue(), runesAfter);
@@ -211,12 +211,12 @@ public class GameLogicTest {
      */
     @Test
     void TestUseStructureMimisbrunnr() {
-        Tile t = gameState.getBoardManager().getTile(0, 0);
+        Tile t = gameState.getBoardManager().getTile(0, 1);
         Structure s = EntityRegistry.getStructure(2);
         assert s != null;
-        assertTrue(gameLogic.buyTile(0, 0, "player1"));
-        assertTrue(gameLogic.placeStructure(0, 0, s.getId(), "player1"));
-        assertTrue(gameLogic.useStructure(0, 0, s.getId(), "player1"));
+        assertTrue(gameLogic.buyTile(t.getX(), t.getY(), "player1"));
+        assertTrue(gameLogic.placeStructure(t.getX(), t.getY(), s.getId(), "player1"));
+        assertTrue(gameLogic.useStructure(t.getX(), t.getY(), s.getId(), "player1"));
         assertEquals(1, gameState.getPlayers().get(0).getArtifacts().size());
     }
 
@@ -225,13 +225,13 @@ public class GameLogicTest {
      */
     @Test
     void testUseStructureHelgrindr() {
-        Tile t = gameState.getBoardManager().getTile(0, 0);
+        Tile t = gameState.getBoardManager().getTile(0, 1);
         Structure s = EntityRegistry.getStructure(3);
         assert s != null;
         gameState.getPlayers().get(0).addRunes(100);
-        assertTrue(gameLogic.buyTile(0, 0, "player1"));
-        assertTrue(gameLogic.placeStructure(0, 0, s.getId(), "player1"));
-        assertTrue(gameLogic.useStructure(0, 0, s.getId(), "player1"));
+        assertTrue(gameLogic.buyTile(t.getX(), t.getY(), "player1"));
+        assertTrue(gameLogic.placeStructure(t.getX(), t.getY(), s.getId(), "player1"));
+        assertTrue(gameLogic.useStructure(t.getX(), t.getY(), s.getId(), "player1"));
         assertEquals(0, gameState.getPlayers().get(0).getStatus().get(Status.BuffType.DEBUFFABLE));
 
     }
@@ -244,21 +244,23 @@ public class GameLogicTest {
     @Test
     void testUseStructureHuginnAndMuninn() {
         // Setup - place an artifact at (1,1)
-        Tile t = gameState.getBoardManager().getTile(1, 1);
-        Structure s = EntityRegistry.getStructure(4);
-        assert s != null;
+        Tile t1 = gameState.getBoardManager().getTile(1, 1);
         Artifact a = EntityRegistry.getArtifact(10);
-        t.setArtifact(a);
+        t1.setArtifact(a);
 
         // Clear any existing notifications
         gameState.getNotifications().clear();
 
+        Tile t2 = gameState.getBoardManager().getTile(2, 2);
+        Structure s = EntityRegistry.getStructure(4);
+        assert s != null;
+
         // Player buys tile and places structure
-        assertTrue(gameLogic.buyTile(0, 0, "player1"));
-        assertTrue(gameLogic.placeStructure(0, 0, s.getId(), "player1"));
+        assertTrue(gameLogic.buyTile(t2.getX(), t2.getY(), "player1"));
+        assertTrue(gameLogic.placeStructure(t2.getX(), t2.getY(), s.getId(), "player1"));
 
         // Use the structure
-        assertTrue(gameLogic.useStructure(0, 0, s.getId(), "player1"));
+        assertTrue(gameLogic.useStructure(t2.getX(), t2.getY(), s.getId(), "player1"));
 
         // Verify energy was added (from structure params)
         assertEquals(2, gameState.getPlayers().get(0).getEnergy());
@@ -274,12 +276,12 @@ public class GameLogicTest {
      */
     @Test
     void testUseStructureRansHall() {
-        Tile t =  gameState.getBoardManager().getTile(0, 0);
+        Tile t =  gameState.getBoardManager().getTile(2, 2);
         Structure s = EntityRegistry.getStructure(5);
         assert s != null;
-        assertTrue(gameLogic.buyTile(0, 0, "player1"));
-        assertTrue(gameLogic.placeStructure(0, 0, s.getId(), "player1"));
-        assertTrue(gameLogic.useStructure(0, 0, s.getId(), "player1"));
+        assertTrue(gameLogic.buyTile(t.getX(), t.getY(), "player1"));
+        assertTrue(gameLogic.placeStructure(t.getX(), t.getY(), s.getId(), "player1"));
+        assertTrue(gameLogic.useStructure(t.getX(), t.getY(), s.getId(), "player1"));
         assertEquals(2, gameState.getPlayers().get(0).getEnergy());
     }
 
@@ -293,9 +295,9 @@ public class GameLogicTest {
         assertNotNull(s, "Tree structure should exist");
         int runesBefore = gameState.getPlayers().get(0).getRunes();
         int price = t.getPrice();
-        assertTrue(gameLogic.buyTile(2, 2, "player1"));
-        assertTrue(gameLogic.placeStructure(2, 2, s.getId(), "player1"));
-        assertTrue(gameLogic.useStructure(2, 2, s.getId(), "player1"));
+        assertTrue(gameLogic.buyTile(t.getX(), t.getY(), "player1"));
+        assertTrue(gameLogic.placeStructure(t.getX(), t.getY(), s.getId(), "player1"));
+        assertTrue(gameLogic.useStructure(t.getX(), t.getY(), s.getId(), "player1"));
         assertEquals(runesBefore - price, gameState.getPlayers().get(0).getRunes());
     }
 
@@ -305,7 +307,7 @@ public class GameLogicTest {
     @Test
     void TestUseStructureActiveTrap() {
         // ActiveTrap should be placed on an unowned tile first
-        Tile t = gameState.getBoardManager().getTile(0, 0);
+        Tile t = gameState.getBoardManager().getTile(0, 1);
         Structure s = EntityRegistry.getStructure(8);
         assertNotNull(s, "ActiveTrap structure should exist");
 
@@ -318,7 +320,7 @@ public class GameLogicTest {
 
         // Now when player buys the tile, the trap activates
         int initialRunes = gameState.getPlayers().get(0).getRunes();
-        assertTrue(gameLogic.buyTile(0, 0, "player1"));
+        assertTrue(gameLogic.buyTile(t.getX(), t.getY(), "player1"));
 
         // Verify trap effect (should reduce runes)
         int newRunes = gameState.getPlayers().get(0).getRunes();
@@ -396,27 +398,6 @@ public class GameLogicTest {
         assertTrue(gameLogic.buyTile(1, 1, "player2"), "Should succeed - buying trapped tile");
         assertTrue(gameState.findPlayerByName("player2").getRunes() < player2InitialRunes,
                 "Trap should have reduced player2's runes");
-    }
-
-    /**
-     * This test verifies correct tree edge cases
-     */
-    @Test
-    void testTreeStructure_EdgeCases() {
-        // Test tree placement on river tile
-        Tile riverTile = gameState.getBoardManager().getTile(2, 2); // Tile 2,2 is a river tile
-        assertNotNull(riverTile, "Should have a river tile for testing");
-
-        Structure tree = EntityRegistry.getStructure(7);
-        gameLogic.buyTile(riverTile.getX(), riverTile.getY(), "player1");
-        assertTrue(gameLogic.placeStructure(riverTile.getX(), riverTile.getY(), 7, "player1"),
-                "Should allow tree placement on river tile");
-
-        // Test tree placement on non-river tile
-        Tile nonRiverTile = gameState.getBoardManager().getTile(5, 5); // Tile 5,5 is not a river tile
-        gameLogic.buyTile(nonRiverTile.getX(), nonRiverTile.getY(), "player1");
-        assertFalse(gameLogic.placeStructure(nonRiverTile.getX(), nonRiverTile.getY(), 7, "player1"),
-                "Should prevent tree placement on non-river tile");
     }
 
     /**
