@@ -1,0 +1,33 @@
+stages:
+  - build
+  - test
+
+variables:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+cache:
+  paths:
+    - .gradle/
+    - build/
+
+build:
+  stage: build
+  image: gradle:7-jdk17
+  script:
+    - gradle build -x test
+  artifacts:
+    paths:
+      - build/libs/*.jar
+    expire_in: 1 week
+
+test:
+  stage: test
+  image: openjfx/gradle:17-jdk17
+  script:
+    - gradle test
+  after_script:
+    - >
+      if [ "$CI_JOB_STATUS" == "failed" ]; then
+        echo "Tests fehlgeschlagen! Siehe Job-Logs: $CI_JOB_URL";
+      fi
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
