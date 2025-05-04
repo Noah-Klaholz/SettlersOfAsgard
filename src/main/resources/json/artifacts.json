@@ -93,7 +93,7 @@
   {
     "name": "Blood of Jörmungandr",
     "usage": "Increases farming efficiency at the river",
-    "description": "Jörmungandr, also known as the Midgard Serpent, is a giant sea serpent in Norse mythology....",
+    "description": "Jörmungandr, also known as the Midgard Serpent, the son of Loki and the giantess Angerboda, is a giant sea serpent, destined to kill Thor during Ragnarök. He is said to wrap around the world, biting his own tail. His blood is a symbol of cyclicality and the boundaries of the known world.",
     "useType": "Field",
     "cardImagePath": "resources/images/cards/a_joermungandrsblood_card.png",
     "id": 18,
@@ -102,8 +102,8 @@
   },
   {
     "name": "Ashes of Surtr",
-    "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
-    "description": "Andere Spieler - Preissteigerung kaufbares für nächste Runde (wird multipliziert)",
+    "usage": "Other players: price increase of purchasables for the next round",
+    "description": "Surtr is a fire giant in Norse mythology, known for his role in Ragnarök, where he will set the world ablaze with his flaming sword. The ashes of Surtr symbolise the price of cosmic conflict and the fragility of creation.",
     "useType": "Player",
     "cardImagePath": "resources/images/cards/a_surtursashes_card.png",
     "id": 19,
@@ -112,8 +112,8 @@
   },
   {
     "name": "Odin's Eye",
-    "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
-    "description": "überprüft ein Tile und alle angrenzenden auf Fallen und deckt diese ggbf. auf",
+    "usage": "Checks a tile and all adjacent ones for traps and reveals them",
+    "description": "Odin is the chief god in Norse mythology, associated with wisdom, prophecy, death and knowledge. He sacrificed one of his eyes to gain wisdom and insight into the future. Odin's eye symbolises how true insight demands personal loss.",
     "useType": "Field",
     "cardImagePath": "resources/images/cards/a_odinseye_card.png",
     "id": 20,
@@ -122,8 +122,8 @@
   },
   {
     "name": "Fenrir's Chains",
-    "usage": "Erhöht Effizienz Runen-Farmen auf einem Feld",
-    "description": "Can be found and used to trap a field",
+    "usage": "Can be found and used to trap a field",
+    "description": "Fenrir is a monstrous wolf, prophesied to bring destruction to the gods and kill Odin during Ragnarök. Thus, the gods began to fear him and asked the dwarves to forge Gleipnir, a magical chain of impossible ingredients, like the sound of a cat's footsteps. These chains are unbreakable, even for Fenrir, and kept him bound until the time of Ragnarök.",
     "useType": "Trap",
     "cardImagePath": "resources/images/cards/a_fenrirschains_card.png",
     "id": 21,
