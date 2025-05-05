@@ -11,6 +11,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const burgerButton = document.getElementById('burger-menu');
     const navLinks = document.querySelectorAll('#nav-links li a'); // Select links inside the ul
 
+    // --- Debounce Function ---
+    function debounce(func, wait = 15, immediate = false) {
+        let timeout;
+        return function () {
+            const context = this, args = arguments;
+            const later = function () {
+                timeout = null;
+                if (!immediate) func.apply(context, args);
+            };
+            const callNow = immediate && !timeout;
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+            if (callNow) func.apply(context, args);
+        };
+    };
+
     // Toggle nav menu on burger button click
     if (burgerButton && navLinksContainer) {
         burgerButton.addEventListener('click', () => {
@@ -52,20 +68,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Change nav background on scroll (existing code)
-    const nav = document.querySelector('.sticky-nav');
-    window.addEventListener('scroll', () => {
+    // --- Debounced Scroll Handler ---
+    const handleScroll = debounce(() => {
+        const nav = document.querySelector('.sticky-nav');
+        if (!nav) return; // Guard clause
+
         let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         if (scrollTop > 50) {
-            nav.style.backgroundColor = 'rgba(26, 26, 26, 0.95)';
+            // Check if style needs changing to avoid unnecessary DOM manipulation
+            if (nav.style.backgroundColor !== 'rgba(26, 26, 26, 0.95)') {
+                nav.style.backgroundColor = 'rgba(26, 26, 26, 0.95)';
+            }
         } else {
-            nav.style.backgroundColor = 'rgba(26, 26, 26, 0.9)';
+            if (nav.style.backgroundColor !== 'rgba(26, 26, 26, 0.9)') {
+                nav.style.backgroundColor = 'rgba(26, 26, 26, 0.9)';
+            }
         }
+
         // Close mobile nav if open when scrolling starts
-        if (navLinksContainer.classList.contains('nav-active')) {
+        if (navLinksContainer && burgerButton && navLinksContainer.classList.contains('nav-active')) {
             navLinksContainer.classList.remove('nav-active');
             burgerButton.classList.remove('active');
         }
-    });
+    }, 15); // Debounce time in ms (adjust as needed)
+
+    // Attach debounced scroll listener
+    window.addEventListener('scroll', handleScroll);
 
 });

@@ -89,11 +89,14 @@ a:hover {
     top: 0;
     width: 100%;
     background-color: var(--nav-bg-color);
-    backdrop-filter: blur(10px);
+    /* backdrop-filter: blur(10px); */
+    /* Removed for performance */
     z-index: 1000;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     padding: 0.8rem 5%;
     transition: background-color 0.3s ease;
+    will-change: background-color;
+    /* Hint for optimization */
 }
 
 nav {
@@ -226,6 +229,8 @@ nav ul li a:hover::after {
     letter-spacing: 1px;
     transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    will-change: transform, background-color, box-shadow;
+    /* Hint for optimization */
 }
 
 .cta-button:hover {
@@ -276,6 +281,8 @@ nav ul li a:hover::after {
     display: flex;
     flex-direction: column;
     align-items: center;
+    will-change: transform, box-shadow;
+    /* Hint for optimization */
 }
 
 .feature-card:hover {
@@ -495,6 +502,8 @@ footer .artist-credit {
         width: 100%;
         background-color: var(--nav-bg-color);
         /* Use nav background */
+        /* backdrop-filter: blur(10px); */
+        /* Removed for performance */
         backdrop-filter: blur(10px);
         flex-direction: column;
         align-items: center;
@@ -505,6 +514,8 @@ footer .artist-credit {
         /* Use max-height for transition */
         overflow: hidden;
         transition: max-height 0.4s ease-out;
+        will-change: max-height;
+        /* Hint for optimization */
         /* Reset AOS fade-down for mobile toggle */
         transform: none !important;
         opacity: 1 !important;
@@ -620,4 +631,6 @@ footer .artist-credit {
 [data-aos] {
     opacity: 0;
     transition-property: transform, opacity;
+    will-change: transform, opacity;
+    /* Hint for optimization */
 }
