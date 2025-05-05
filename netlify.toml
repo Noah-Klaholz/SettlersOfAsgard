@@ -1,7 +1,7 @@
 # Main build settings
 [build]
 publish = "outreach/website"
-command = "mkdir -p outreach/website/documents outreach/website/download && cp outreach/Documents/*.pdf outreach/website/documents/ && cp build/libs/SettlersOfAsgard.jar outreach/website/download/"
+command = "mkdir -p outreach/website/documents outreach/website/download && cp docs/Spielbeschreibungen/*.pdf outreach/website/documents/ && cp build/libs/SettlersOfAsgard.jar outreach/website/download/"
 
 # Redirect all 404s to index.html to handle client-side routing if needed
 [[redirects]]
