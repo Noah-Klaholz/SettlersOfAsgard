@@ -27,6 +27,7 @@ import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
 import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
@@ -43,6 +44,7 @@ import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
@@ -162,8 +164,8 @@ public class GameScreenController extends BaseController {
     // Grid‑adjustment overlay controls (created programmatically)
     private Label adjustmentModeIndicator;
     private Label adjustmentValuesLabel;
-    private Canvas backgroundCanvas;   // map + white grid (static)
-    private Canvas overlayCanvas;      // yellow hover outline (dynamic)
+    private Canvas backgroundCanvas; // map + white grid (static)
+    private Canvas overlayCanvas; // yellow hover outline (dynamic)
 
     /*
      * --------------------------------------------------
@@ -185,7 +187,8 @@ public class GameScreenController extends BaseController {
         currentLobbyId = GameApplication.getCurrentLobbyId();
         localPlayer = playerManager.getLocalPlayer();
         // Use localPlayer's name for initial log, gamePlayer might not be set yet
-        Logger.getGlobal().info("Game state uses Local Player: " + (localPlayer != null ? localPlayer.getName() : "null"));
+        Logger.getGlobal()
+                .info("Game state uses Local Player: " + (localPlayer != null ? localPlayer.getName() : "null"));
         gameState = new GameState();
         subscribeEvents();
         // Initialize selectedStatue safely
@@ -231,9 +234,9 @@ public class GameScreenController extends BaseController {
             localPlayer = new Player("ErrorGuest"); // Fail‑safe stub
         }
 
-
         createAdjustmentUI();
-        gridAdjustmentManager = new GridAdjustmentManager(this, adjustmentModeIndicator, adjustmentValuesLabel, this::drawMapAndGrid);
+        gridAdjustmentManager = new GridAdjustmentManager(this, adjustmentModeIndicator, adjustmentValuesLabel,
+                this::drawMapAndGrid);
 
         initialisePlayerColours();
         resourceOverviewDialog = new ResourceOverviewDialog(resourceLoader, playerColors);
@@ -247,9 +250,9 @@ public class GameScreenController extends BaseController {
 
     /**
      * Builds the three-layer canvas stack:
-     * backgroundCanvas  – map & hex lines (repainted rarely)
-     * gameCanvas        – entities / structures   (already exists)
-     * overlayCanvas     – hover / selection glow  (repainted every mouse-move)
+     * backgroundCanvas – map & hex lines (repainted rarely)
+     * gameCanvas – entities / structures (already exists)
+     * overlayCanvas – hover / selection glow (repainted every mouse-move)
      */
     private void setupCanvasStack() {
         StackPane board = (StackPane) gameCanvas.getParent();
@@ -340,11 +343,13 @@ public class GameScreenController extends BaseController {
      */
     private void createAdjustmentUI() {
         adjustmentModeIndicator = new Label("GRID ADJUSTMENT MODE (Press G to exit)");
-        adjustmentModeIndicator.setStyle("-fx-background-color: rgba(255,165,0,0.7); -fx-text-fill:white; -fx-padding:5 10; -fx-background-radius:5; -fx-font-weight:bold;");
+        adjustmentModeIndicator.setStyle(
+                "-fx-background-color: rgba(255,165,0,0.7); -fx-text-fill:white; -fx-padding:5 10; -fx-background-radius:5; -fx-font-weight:bold;");
         adjustmentModeIndicator.setVisible(false);
 
         adjustmentValuesLabel = new Label();
-        adjustmentValuesLabel.setStyle("-fx-background-color: rgba(0,0,0,0.7); -fx-text-fill:white; -fx-padding:5; -fx-font-size:11; -fx-background-radius:3;");
+        adjustmentValuesLabel.setStyle(
+                "-fx-background-color: rgba(0,0,0,0.7); -fx-text-fill:white; -fx-padding:5; -fx-font-size:11; -fx-background-radius:3;");
         adjustmentValuesLabel.setVisible(false);
 
         VBox panel = new VBox(5, adjustmentModeIndicator, adjustmentValuesLabel);
@@ -361,14 +366,16 @@ public class GameScreenController extends BaseController {
      */
 
     private void onConnectionStatus(ConnectionStatusEvent e) {
-        if (e == null) return;
+        if (e == null)
+            return;
 
         Platform.runLater(() -> {
             connectionStatusLabel.setText(Optional.ofNullable(e.getState()).map(Object::toString).orElse("UNKNOWN"));
             if (e.getMessage() != null && !e.getMessage().isEmpty()) {
                 chatComponentController.addSystemMessage(e.getMessage());
             }
-            if (settingsDialog != null) updateSettingsConnectionStatus();
+            if (settingsDialog != null)
+                updateSettingsConnectionStatus();
         });
     }
 
@@ -402,7 +409,8 @@ public class GameScreenController extends BaseController {
         GameState updatedState = e.getGameState();
 
         // Log details about the received event
-        LOGGER.info(String.format("Received GameSyncEvent: Updating game state. Board size: %d tiles. Player turn: %s", updatedState.getBoardManager().getBoard().getTiles().length, updatedState.getPlayerTurn()));
+        LOGGER.info(String.format("Received GameSyncEvent: Updating game state. Board size: %d tiles. Player turn: %s",
+                updatedState.getBoardManager().getBoard().getTiles().length, updatedState.getPlayerTurn()));
 
         Platform.runLater(() -> {
             gameState = updatedState;
@@ -480,7 +488,8 @@ public class GameScreenController extends BaseController {
             boolean muted = settingsDialog.muteProperty().get();
             double volume = settingsDialog.volumeProperty().get();
             String requested = settingsDialog.playerNameProperty().get();
-            LOGGER.info("Settings dialog save requested – Volume: " + volume + ", Muted: " + muted + ", Requested Name: " + requested);
+            LOGGER.info("Settings dialog save requested – Volume: " + volume + ", Muted: " + muted
+                    + ", Requested Name: " + requested);
 
             if (requested != null && !requested.trim().isEmpty() && !requested.equals(localPlayer.getName())) {
                 requestNameChange(requested.trim());
@@ -489,7 +498,8 @@ public class GameScreenController extends BaseController {
                 settingsDialog.playerNameProperty().set(localPlayer.getName());
             }
 
-            chatComponentController.addSystemMessage("Audio settings saved. " + (muted ? "Muted." : "Volume: " + (int) volume + "%"));
+            chatComponentController
+                    .addSystemMessage("Audio settings saved. " + (muted ? "Muted." : "Volume: " + (int) volume + "%"));
         });
 
         showDialogAsOverlay(settingsDialog, root);
@@ -597,10 +607,13 @@ public class GameScreenController extends BaseController {
 
         playerManager.removePlayerUpdateListener(this::handlePlayerUpdate);
 
-        if (chatComponentController != null) chatComponentController.cleanup();
-        if (settingsDialog != null) settingsDialog.close();
+        if (chatComponentController != null)
+            chatComponentController.cleanup();
+        if (settingsDialog != null)
+            settingsDialog.close();
         if (gameCanvas != null) {
-            gameCanvas.getParent().removeEventHandler(MouseEvent.MOUSE_PRESSED, e -> handleCanvasClick(e.getX(), e.getY()));
+            gameCanvas.getParent().removeEventHandler(MouseEvent.MOUSE_PRESSED,
+                    e -> handleCanvasClick(e.getX(), e.getY()));
             gameCanvas.setOnKeyPressed(null);
         }
         if (cardTooltips != null) {
@@ -662,8 +675,10 @@ public class GameScreenController extends BaseController {
     private void loadMapImage() {
         mapImage = resourceLoader.loadImageSync(ResourceLoader.MAP_IMAGE);
         isMapLoaded = mapImage != null;
-        if (isMapLoaded) drawMapAndGrid();
-        else LOGGER.severe("Map image missing");
+        if (isMapLoaded)
+            drawMapAndGrid();
+        else
+            LOGGER.severe("Map image missing");
     }
 
     /**
@@ -674,9 +689,11 @@ public class GameScreenController extends BaseController {
      */
     private void setupCanvasListeners() {
 
-    /* ---------------------------------------------------------------------
-       Resize → redraw the static background (map + white grid)
-     --------------------------------------------------------------------- */
+        /*
+         * ---------------------------------------------------------------------
+         * Resize → redraw the static background (map + white grid)
+         * ---------------------------------------------------------------------
+         */
         ChangeListener<Number> resize = (obs, o, n) -> drawMapAndGrid();
 
         gameCanvas.widthProperty().addListener(resize);
@@ -684,9 +701,11 @@ public class GameScreenController extends BaseController {
 
         gameCanvas.setFocusTraversable(true);
 
-    /* ---------------------------------------------------------------------
-       Click & double-click are unchanged – they operate on game state
-     --------------------------------------------------------------------- */
+        /*
+         * ---------------------------------------------------------------------
+         * Click & double-click are unchanged – they operate on game state
+         * ---------------------------------------------------------------------
+         */
         gameCanvas.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> handleCanvasClick(e.getX(), e.getY()));
 
         gameCanvas.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
@@ -695,15 +714,16 @@ public class GameScreenController extends BaseController {
             }
         });
 
-    /* ---------------------------------------------------------------------
-       Hover-highlight (overlayCanvas) – uses new helper methods
-     --------------------------------------------------------------------- */
-        gameCanvas.addEventHandler(MouseEvent.MOUSE_ENTERED_TARGET, e -> handleCanvasEntered(e.getX(), e.getY()));
+        /*
+         * ---------------------------------------------------------------------
+         * Hover-highlight (overlayCanvas) – uses new helper methods
+         * ---------------------------------------------------------------------
+         */
+        gameCanvas.addEventHandler(MouseEvent.MOUSE_ENTERED_TARGET, e -> handleCanvasEntered(e.getX(), e.getY())); // →
+                                                                                                                   // showHighlight()
 
-        gameCanvas.addEventHandler(MouseEvent.MOUSE_MOVED, e -> {
-            handleCanvasMouseMove(e.getX(), e.getY());
-            handleTileTooltipHover(e.getX(), e.getY());
-        });
+        gameCanvas.addEventHandler(MouseEvent.MOUSE_MOVED, e -> handleCanvasMouseMove(e.getX(), e.getY())); // → show /
+                                                                                                            // clear
 
         gameCanvas.addEventHandler(MouseEvent.MOUSE_EXITED_TARGET, e -> {
             clearHighlight();
@@ -712,15 +732,18 @@ public class GameScreenController extends BaseController {
             hideTileTooltip();    // Hide any visible tooltip
         });
 
-    /* ---------------------------------------------------------------------
-       Duplicate listeners on the surrounding StackPane so that
-       events coming from the two overlay canvasses are also handled.
-     --------------------------------------------------------------------- */
+        /*
+         * ---------------------------------------------------------------------
+         * Duplicate listeners on the surrounding StackPane so that
+         * events coming from the two overlay canvasses are also handled.
+         * ---------------------------------------------------------------------
+         */
         if (gameCanvas.getParent() instanceof StackPane parent) {
 
             parent.addEventHandler(MouseEvent.MOUSE_PRESSED, ev -> {
                 Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
-                if (local.getX() >= 0 && local.getY() >= 0 && local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
+                if (local.getX() >= 0 && local.getY() >= 0 && local.getX() <= gameCanvas.getWidth()
+                        && local.getY() <= gameCanvas.getHeight()) {
                     handleCanvasClick(local.getX(), local.getY());
                     ev.consume();
                 }
@@ -729,7 +752,8 @@ public class GameScreenController extends BaseController {
             parent.addEventHandler(MouseEvent.MOUSE_CLICKED, ev -> {
                 if (ev.getClickCount() == 2) {
                     Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
-                    if (local.getX() >= 0 && local.getY() >= 0 && local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
+                    if (local.getX() >= 0 && local.getY() >= 0 && local.getX() <= gameCanvas.getWidth()
+                            && local.getY() <= gameCanvas.getHeight()) {
                         handleCanvasDoubleClick(local.getX(), local.getY());
                         ev.consume();
                     }
@@ -738,7 +762,8 @@ public class GameScreenController extends BaseController {
 
             parent.addEventHandler(MouseEvent.MOUSE_MOVED, ev -> {
                 Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
-                if (local.getX() >= 0 && local.getY() >= 0 && local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
+                if (local.getX() >= 0 && local.getY() >= 0 && local.getX() <= gameCanvas.getWidth()
+                        && local.getY() <= gameCanvas.getHeight()) {
                     handleCanvasMouseMove(local.getX(), local.getY());
                     handleTileTooltipHover(local.getX(), local.getY());
                     ev.consume();
@@ -747,7 +772,8 @@ public class GameScreenController extends BaseController {
 
             parent.addEventHandler(MouseEvent.MOUSE_ENTERED_TARGET, ev -> {
                 Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
-                if (local.getX() >= 0 && local.getY() >= 0 && local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
+                if (local.getX() >= 0 && local.getY() >= 0 && local.getX() <= gameCanvas.getWidth()
+                        && local.getY() <= gameCanvas.getHeight()) {
                     handleCanvasEntered(local.getX(), local.getY());
                     ev.consume();
                 }
@@ -755,19 +781,22 @@ public class GameScreenController extends BaseController {
 
             parent.addEventHandler(MouseEvent.MOUSE_EXITED_TARGET, ev -> {
                 Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
-                boolean trulyExited = local.getX() < 0 || local.getY() < 0 || local.getX() > gameCanvas.getWidth() || local.getY() > gameCanvas.getHeight();
+                boolean trulyExited = local.getX() < 0 || local.getY() < 0 || local.getX() > gameCanvas.getWidth()
+                        || local.getY() > gameCanvas.getHeight();
 
                 if (trulyExited) {
-                    clearHighlight();                                // <-- replaces redrawSingleTile()
+                    clearHighlight(); // <-- replaces redrawSingleTile()
                     highlightedTile = null;
                     hideTileTooltip();
                 }
             });
         }
 
-    /* ---------------------------------------------------------------------
-       Keyboard shortcuts for grid-adjustment
-     --------------------------------------------------------------------- */
+        /*
+         * ---------------------------------------------------------------------
+         * Keyboard shortcuts for grid-adjustment
+         * ---------------------------------------------------------------------
+         */
         gameCanvas.setOnKeyPressed(gridAdjustmentManager::handleGridAdjustmentKeys);
     }
 
@@ -865,76 +894,108 @@ public class GameScreenController extends BaseController {
 
     /**
      * Handles a physical mouse click on the canvas – selects the hex and triggers
-     * a tile click event.
+     * a tile click event. Also handles interactions with placed entities.
      */
     private void handleCanvasClick(double px, double py) {
-        int[] tile = getHexAt(px, py);
-        if (tile == null) return;
+        int[] tileCoords = getHexAt(px, py);
+        if (tileCoords == null)
+            return;
 
-        int row = tile[0];
-        int col = tile[1];
+        int row = tileCoords[0];
+        int col = tileCoords[1];
         eventBus.publish(new TileClickEvent(row, col));
 
-        if (localPlayer != null && getTile(row, col) != null) {
-            Tile t = getTile(row, col);
+        Tile clickedTile = getTile(row, col);
+        if (localPlayer != null && clickedTile != null) {
+            // --- Card Placement Logic ---
             if (selectedCard != null) {
-                CardDetails s = getCardDetails(selectedCard.getId());
-                if (s != null && s.getEntity() != null) {
-                    if (!t.hasEntity() && s.getID() == selectedStatue.getID()) {
-                        eventBus.publish(new PlaceStatueUIEvent(col, row, s.getID()));
-                    } else if (!t.hasEntity() && s.getEntity().isStructure()) {
-                        eventBus.publish(new PlaceStructureUIEvent(col, row, s.getID()));
-                    } else if (s.getEntity() instanceof Artifact a) {
+                CardDetails cardDetails = getCardDetails(selectedCard.getId());
+                if (cardDetails != null && cardDetails.getEntity() != null) {
+                    GameEntity entityToPlace = cardDetails.getEntity();
+                    if (!clickedTile.hasEntity()) {
+                        if (entityToPlace instanceof Statue && cardDetails.getID() == selectedStatue.getID()) {
+                            eventBus.publish(new PlaceStatueUIEvent(col, row, cardDetails.getID()));
+                        } else if (entityToPlace.isStructure()) {
+                            eventBus.publish(new PlaceStructureUIEvent(col, row, cardDetails.getID()));
+                        }
+                    } else if (entityToPlace instanceof Artifact a) {
                         if (a.isFieldTarget()) {
-                            eventBus.publish(new UseFieldArtifactUIEvent(col, row, s.getID()));
+                            eventBus.publish(new UseFieldArtifactUIEvent(col, row, cardDetails.getID()));
+                        } else if (a.isPlayerTarget() && clickedTile.getOwner() != null) {
+                            // Target the tile owner if the artifact is player-targeted
+                            eventBus.publish(new UsePlayerArtifactUIEvent(cardDetails.getID(), clickedTile.getOwner()));
                         } else if (a.isPlayerTarget()) {
-                            eventBus.publish(new UsePlayerArtifactUIEvent(s.getID(), t.getOwner()));
+                            // If tile has no owner, maybe prompt for player or disallow? For now, log.
+                            LOGGER.info("Cannot use player-target artifact on unowned tile.");
                         } else {
-                            Logger.getGlobal().info("Artifact is neither field nor player target: " + s.getID());
+                            LOGGER.info("Artifact is neither field nor player target: " + cardDetails.getID());
                         }
                     }
                 } else {
-                    Logger.getGlobal().info("Selected card does not exist or does not represent an entity: " + s.getID());
+                    LOGGER.info("Selected card does not exist or does not represent an entity: "
+                            + (cardDetails != null ? cardDetails.getID() : "null"));
                 }
+                // Deselect card after attempting placement/use
                 selectedCard.getStyleClass().remove("selected-card");
                 selectedCard = null;
-                updateCardImages();
+                updateCardImages(); // Refresh card visuals (e.g., affordability)
+                return; // Prevent further interaction processing after card placement attempt
+            }
+
+            // --- Entity Interaction Logic ---
+            if (clickedTile.hasEntity() && clickedTile.getOwner() != null
+                    && clickedTile.getOwner().equals(localPlayer.getName())) {
+                GameEntity entity = clickedTile.getEntity();
+                int entityId = entity.getId();
+
+                // Check if it's a structure (e.g., Rune Table ID 1)
+                if (entity.isStructure() && !entity.isStatue()) {
+                    // Example: Rune Table interaction (if needed)
+                    if (entityId == 1) {
+                        // Potentially open a specific popup or trigger default action
+                        // For now, let double-click handle Rune Table usage
+                        LOGGER.fine("Clicked owned Rune Table (ID 1). Double-click to use.");
+                    }
+                    // Add other structure interactions here if needed
+                }
+                // Check if it's a statue
+                else if (entity instanceof Statue statue) {
+                    ContextMenu contextMenu = new ContextMenu();
+
+                    // --- Jörmungandr (ID 30) Specific Interactions ---
+                    if (entityId == 30) {
+                        // Always allow Upgrade if not max level (assuming max level 3 for now)
+                        if (statue.getLevel() < 3) {
+                            MenuItem upgradeItem = new MenuItem(
+                                    "Upgrade Statue (Cost: " + statue.getUpgradePrice() + " Runes)");
+                            upgradeItem.setOnAction(e -> levelUpStatue(clickedTile));
+                            // Disable if player cannot afford
+                            upgradeItem.setDisable(getPlayerRunes() < statue.getUpgradePrice());
+                            contextMenu.getItems().add(upgradeItem);
+                        }
+
+                        // Allow "Make Deal" at Level 2
+                        if (statue.getLevel() == 2) {
+                            MenuItem dealItem = new MenuItem("Make Deal (Sacrifice)");
+                            dealItem.setOnAction(e -> initiateJormungandrDeal(clickedTile));
+                            // Add cost check if deal has a rune cost
+                            contextMenu.getItems().add(dealItem);
+                        }
+                        // Add Blessing action if Level 3 and blessing exists
+                        // if (statue.getLevel() == 3) { ... }
+                    }
+                    // --- Add other statue interactions here using else if (entityId == ...) ---
+                    // else if (entityId == 31) { /* Freyr interactions */ }
+
+                    // Show context menu if it has items
+                    if (!contextMenu.getItems().isEmpty()) {
+                        // Convert canvas coordinates to screen coordinates for the menu
+                        Point2D screenCoords = gameCanvas.localToScreen(px, py);
+                        contextMenu.show(gameCanvas.getScene().getWindow(), screenCoords.getX(), screenCoords.getY());
+                    }
+                }
             }
         }
-
-        /**
-         // Handle interaction with structures/statues
-         Tile clickedTile = getTile(row, col);
-         if (clickedTile != null && clickedTile.hasEntity()) {
-         // Only allow interaction if the tile is owned by the current player
-         if (localPlayer != null && clickedTile.getOwner() != null &&
-         clickedTile.getOwner().equals(localPlayer.getName())) {
-
-         int entityId = clickedTile.getEntity().getId();
-
-         // Check if it's a rune table (structure)
-         if (entityId == 1) { // Rune Table id
-         RuneTableInteractionPopup popup = new RuneTableInteractionPopup(
-         resourceLoader,
-         clickedTile,
-         localPlayer.getName(),
-         this::useRuneTable);
-         popup.showNear(gameCanvas);
-         }
-         // Check if it's a statue
-         else if (entityId >= 30 && entityId <= 37) { // Adjust ID range as needed for statues
-         StatueInteractionPopup popup = new StatueInteractionPopup(
-         resourceLoader,
-         clickedTile,
-         localPlayer.getName(),
-         this::levelUpStatue,
-         this::makeStatueDeal,
-         this::receiveStatueBlessing);
-         popup.showNear(gameCanvas);
-         }
-         }
-         }
-         */
     }
 
     /**
@@ -944,7 +1005,8 @@ public class GameScreenController extends BaseController {
      */
     private void handleCanvasDoubleClick(double px, double py) {
         int[] tile = getHexAt(px, py);
-        if (tile == null) return;
+        if (tile == null)
+            return;
 
         int row = tile[0];
         int col = tile[1];
@@ -983,7 +1045,8 @@ public class GameScreenController extends BaseController {
 
     private void handleCanvasEntered(double px, double py) {
         int[] t = getHexAt(px, py);
-        if (t != null) showHighlight(t[0], t[1]);
+        if (t != null)
+            showHighlight(t[0], t[1]);
     }
 
     private void handleCanvasMouseMove(double px, double py) {
@@ -999,11 +1062,13 @@ public class GameScreenController extends BaseController {
      * Repaints only the backgroundCanvas (map + white grid).
      */
     void drawMapAndGrid() {
-        if (!isMapLoaded || backgroundCanvas == null) return;
+        if (!isMapLoaded || backgroundCanvas == null)
+            return;
 
         double cW = backgroundCanvas.getWidth();
         double cH = backgroundCanvas.getHeight();
-        if (cW <= 0 || cH <= 0) return;
+        if (cW <= 0 || cH <= 0)
+            return;
 
         GraphicsContext gc = backgroundCanvas.getGraphicsContext2D();
         gc.clearRect(0, 0, cW, cH);
@@ -1077,7 +1142,8 @@ public class GameScreenController extends BaseController {
      * Draws the yellow outline for the given tile on the overlay canvas.
      */
     private void showHighlight(int row, int col) {
-        if (overlayCanvas == null || effectiveHexSize <= 0) return;
+        if (overlayCanvas == null || effectiveHexSize <= 0)
+            return;
 
         GraphicsContext gc = overlayCanvas.getGraphicsContext2D();
         gc.clearRect(0, 0, overlayCanvas.getWidth(), overlayCanvas.getHeight());
@@ -1107,7 +1173,8 @@ public class GameScreenController extends BaseController {
      * Draws a single hexagon, optionally highlighting ownership and selection.
      * Also draws the entity image if present.
      */
-    private void drawHex(GraphicsContext gc, double cx, double cy, double size, int row, int col, boolean selected, boolean withEntity) {
+    private void drawHex(GraphicsContext gc, double cx, double cy, double size, int row, int col, boolean selected,
+            boolean withEntity) {
         double[] xs = new double[6];
         double[] ys = new double[6];
 
@@ -1189,7 +1256,8 @@ public class GameScreenController extends BaseController {
      * @param hSquish  The horizontal squish factor
      * @param entityId The ID of the entity being drawn (for logging)
      */
-    private void drawEntityImage(GraphicsContext gc, String imageUrl, double centerX, double centerY, double hexSize, double hSquish, int entityId) {
+    private void drawEntityImage(GraphicsContext gc, String imageUrl, double centerX, double centerY, double hexSize,
+            double hSquish, int entityId) {
         // Calculate placeholder size relative to hex (adjust as needed for map
         // entities)
         double placeholderSizeRatio = 0.7; // Make placeholder 70% of hex width
@@ -1209,14 +1277,16 @@ public class GameScreenController extends BaseController {
             gc.setGlobalAlpha(oldAlpha);
         };
 
-//        if (imageUrl == null || imageUrl.isEmpty()) {
-//            // Log ERROR for missing URL
-//            LOGGER.severe(String.format("Missing map image URL for entity ID %d. Drawing red placeholder.", entityId));
-//            drawPlaceholder.run();
-//            return;
-//        }
+        // if (imageUrl == null || imageUrl.isEmpty()) {
+        // // Log ERROR for missing URL
+        // LOGGER.severe(String.format("Missing map image URL for entity ID %d. Drawing
+        // red placeholder.", entityId));
+        // drawPlaceholder.run();
+        // return;
+        // }
 
-        // obtain the URL if the caller passed null (drawHexSprite intentionally does this)
+        // obtain the URL if the caller passed null (drawHexSprite intentionally does
+        // this)
         if (imageUrl == null || imageUrl.isEmpty()) {
             imageUrl = EntityRegistry.getURL(entityId, false);
         }
@@ -1227,7 +1297,9 @@ public class GameScreenController extends BaseController {
             Image image = getEntityImage(entityId);
             if (image == null || image.isError()) {
                 // Log ERROR for image loading failure
-                LOGGER.severe(String.format("Failed to load map entity image: %s (Entity ID: %d). Drawing red placeholder.", imageUrl, entityId));
+                LOGGER.severe(
+                        String.format("Failed to load map entity image: %s (Entity ID: %d). Drawing red placeholder.",
+                                imageUrl, entityId));
                 drawPlaceholder.run();
                 return;
             }
@@ -1247,7 +1319,8 @@ public class GameScreenController extends BaseController {
                 double scaledWidth = image.getWidth() * scale;
                 double scaledHeight = image.getHeight() * scale;
 
-                gc.drawImage(image, centerX - scaledWidth / 2, centerY - 3 * scaledHeight / 4, scaledWidth, scaledHeight);
+                gc.drawImage(image, centerX - scaledWidth / 2, centerY - 3 * scaledHeight / 4, scaledWidth,
+                        scaledHeight);
             } else {
                 // Calculate maximum width based on hex size and squish factor
                 double maxWidth = (double) SETTINGS.Config.ENTITY_SIZE.getValue() / 10 * hexSize * hSquish;
@@ -1267,7 +1340,8 @@ public class GameScreenController extends BaseController {
             gc.setGlobalAlpha(oldAlpha);
         } catch (Exception e) {
             // Log ERROR for any other exception during drawing
-            LOGGER.log(Level.SEVERE, String.format("Error drawing map entity image for ID %d: %s", entityId, e.getMessage()), e);
+            LOGGER.log(Level.SEVERE,
+                    String.format("Error drawing map entity image for ID %d: %s", entityId, e.getMessage()), e);
             drawPlaceholder.run();
         }
     }
@@ -1310,10 +1384,11 @@ public class GameScreenController extends BaseController {
      * Transforms canvas coordinates to logical grid coordinates.
      *
      * @return {@code int[]{row,col}} or {@code null} if the point is not inside
-     * any tile.
+     *         any tile.
      */
     int[] getHexAt(double px, double py) {
-        if (!isMapLoaded || effectiveHexSize <= 0) return null;
+        if (!isMapLoaded || effectiveHexSize <= 0)
+            return null;
 
         double hSpacing = effectiveHexSize * gridAdjustmentManager.getHorizontalSpacingFactor();
         double vSpacing = effectiveHexSize * gridAdjustmentManager.getVerticalSpacingFactor();
@@ -1323,7 +1398,7 @@ public class GameScreenController extends BaseController {
                 double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2);
                 double cy = gridOffsetY + r * vSpacing;
                 if (pointInHex(px, py, cx, cy, effectiveHexSize)) {
-                    return new int[]{r, c};
+                    return new int[] { r, c };
                 }
             }
         }
@@ -1407,7 +1482,8 @@ public class GameScreenController extends BaseController {
             card.getStyleClass().remove("selected-card");
             selectedCard = null;
         } else {
-            if (selectedCard != null) selectedCard.getStyleClass().remove("selected-card");
+            if (selectedCard != null)
+                selectedCard.getStyleClass().remove("selected-card");
             card.getStyleClass().add("selected-card");
             selectedCard = card;
         }
@@ -1453,7 +1529,8 @@ public class GameScreenController extends BaseController {
     public void handleCardMouseExited(MouseEvent event) {
         Node card = (Node) event.getSource();
         Tooltip tip = cardTooltips.get(card);
-        if (tip != null) Tooltip.uninstall(card, tip);
+        if (tip != null)
+            Tooltip.uninstall(card, tip);
         event.consume();
     }
 
@@ -1464,10 +1541,14 @@ public class GameScreenController extends BaseController {
      * Returns "structure", "artifact", "statue", or an empty string.
      */
     private String getCardType(String cardId) {
-        if (cardId == null) return "";
-        if (cardId.startsWith("structure")) return "structure";
-        if (cardId.startsWith("artifact")) return "artifact";
-        if (cardId.startsWith("statue")) return "statue";
+        if (cardId == null)
+            return "";
+        if (cardId.startsWith("structure"))
+            return "structure";
+        if (cardId.startsWith("artifact"))
+            return "artifact";
+        if (cardId.startsWith("statue"))
+            return "statue";
         return ""; // Unknown type
     }
 
@@ -1515,7 +1596,8 @@ public class GameScreenController extends BaseController {
             content.getChildren().add(titleLabel);
 
             // Only add separator if the next section has content
-            if ((details.getDescription() != null && !details.getDescription().isEmpty()) || (details.getLore() != null && !details.getLore().isEmpty()) || details.getPrice() > 0) {
+            if ((details.getDescription() != null && !details.getDescription().isEmpty())
+                    || (details.getLore() != null && !details.getLore().isEmpty()) || details.getPrice() > 0) {
                 content.getChildren().add(new Separator());
             }
         }
@@ -1571,7 +1653,6 @@ public class GameScreenController extends BaseController {
 
         return tooltip;
     }
-
 
     /**
      * Create a custom tooltip for the selected statue.
@@ -1630,7 +1711,6 @@ public class GameScreenController extends BaseController {
         return tooltip;
     }
 
-
     /**
      * Retrieves the card details for a given card ID.
      * Uses EntityRegistry.getURL(isCard=true) for the card image URL.
@@ -1645,7 +1725,8 @@ public class GameScreenController extends BaseController {
         GameEntity entity = EntityRegistry.getGameEntityOriginalById(entityID);
 
         if (entity == null) {
-            throw new IllegalArgumentException("Entity not found in registry for ID: " + entityID + " (derived from card ID: " + id + ")");
+            throw new IllegalArgumentException(
+                    "Entity not found in registry for ID: " + entityID + " (derived from card ID: " + id + ")");
         }
 
         // Use isCard=true for the small image shown in the hand
@@ -1775,7 +1856,8 @@ public class GameScreenController extends BaseController {
      */
     private void updateCardAffordability(Node card) {
         String id = card.getId();
-        if (id == null) return;
+        if (id == null)
+            return;
 
         boolean canAfford = canAffordCard(id);
 
@@ -1839,7 +1921,8 @@ public class GameScreenController extends BaseController {
                     pane.getChildren().add(wrapper);
                 } else {
                     // Log ERROR for image loading failure
-                    LOGGER.severe(String.format("Failed to load card image: %s (Card ID: %s). Using placeholder.", imageUrl, id));
+                    LOGGER.severe(String.format("Failed to load card image: %s (Card ID: %s). Using placeholder.",
+                            imageUrl, id));
                     addPlaceholderToPane(pane); // Use red placeholder
                 }
             } else {
@@ -1847,17 +1930,20 @@ public class GameScreenController extends BaseController {
                 if (id.startsWith("artifact") && details.getID() == 22) { // ID 22 is the empty slot placeholder
                     LOGGER.fine(String.format("No image URL for empty artifact slot ID %s. Using placeholder.", id));
                 } else {
-                    LOGGER.severe(String.format("Missing image URL for card ID %s (Entity ID: %d). Using placeholder.", id, details.getID()));
+                    LOGGER.severe(String.format("Missing image URL for card ID %s (Entity ID: %d). Using placeholder.",
+                            id, details.getID()));
                 }
                 addPlaceholderToPane(pane); // Use red placeholder
             }
         } catch (IllegalArgumentException e) {
             // Log ERROR if getCardDetails fails (e.g., invalid ID format, entity not found)
-            LOGGER.severe(String.format("Error getting card details for ID '%s': %s. Cannot update card image.", id, e.getMessage()));
+            LOGGER.severe(String.format("Error getting card details for ID '%s': %s. Cannot update card image.", id,
+                    e.getMessage()));
             addPlaceholderToPane(pane); // Show error placeholder
         } catch (Exception e) {
             // Log ERROR for any other unexpected exception
-            LOGGER.log(Level.SEVERE, String.format("Unexpected error updating card image for ID '%s': %s", id, e.getMessage()), e);
+            LOGGER.log(Level.SEVERE,
+                    String.format("Unexpected error updating card image for ID '%s': %s", id, e.getMessage()), e);
             addPlaceholderToPane(pane); // Show error placeholder
         } finally {
             // Ensure the card is visible even if only placeholder is shown
@@ -2163,7 +2249,8 @@ public class GameScreenController extends BaseController {
         int cost = getCardCost(cardId);
 
         double priceModifier = gamePlayer.getStatus().get(Status.BuffType.SHOP_PRICE);
-        double adjusted = cost / Math.max(priceModifier, 0.5); // Prevent divide-by-zero or negative scaling and ensure maximum price of 200% original
+        double adjusted = cost / Math.max(priceModifier, 0.5); // Prevent divide-by-zero or negative scaling and ensure
+                                                               // maximum price of 200% original
         int adjustedPrice = Math.max(0, (int) Math.round(adjusted)); // Ensure price is never negative
 
         return getPlayerRunes() >= adjustedPrice;
@@ -2274,6 +2361,53 @@ public class GameScreenController extends BaseController {
     private void receiveStatueBlessing(Tile tile) {
         // This will need statue-specific UI for different blessing types
         showNotification("Receiving blessing from statue at (" + tile.getX() + "," + tile.getY() + ")");
+    }
+
+    /**
+     * Initiates the "Make Deal" interaction for the Jörmungandr statue.
+     * Prompts the user to select a target player and confirms the action.
+     *
+     * @param tile The tile containing the Jörmungandr statue.
+     */
+    private void initiateJormungandrDeal(Tile tile) {
+        if (gameState == null || localPlayer == null)
+            return;
+
+        List<String> otherPlayerNames = gameState.getPlayers().stream()
+                .map(Player::getName)
+                .filter(name -> !name.equals(localPlayer.getName()))
+                .toList();
+
+        if (otherPlayerNames.isEmpty()) {
+            showNotification("No other players to target.");
+            return;
+        }
+
+        // Player Selection Dialog
+        ChoiceDialog<String> dialog = new ChoiceDialog<>(otherPlayerNames.get(0), otherPlayerNames);
+        dialog.setTitle("Jörmungandr's Deal");
+        dialog.setHeaderText("Choose a player to target.");
+        dialog.setContentText("Target Player:");
+
+        Optional<String> result = dialog.showAndWait();
+
+        result.ifPresent(selectedPlayerName -> {
+            // Confirmation Dialog
+            Alert confirmation = new Alert(AlertType.CONFIRMATION);
+            confirmation.setTitle("Confirm Jörmungandr's Deal");
+            confirmation.setHeaderText("Confirm Sacrifice and Attack");
+            confirmation.setContentText("This will destroy 1 random structure of " + selectedPlayerName +
+                    " and sacrifice 1 random structure of your own.\n\nProceed?");
+
+            Optional<ButtonType> confirmationResult = confirmation.showAndWait();
+
+            if (confirmationResult.isPresent() && confirmationResult.get() == ButtonType.OK) {
+                LOGGER.info("Jörmungandr Deal initiated against " + selectedPlayerName);
+                showNotification("Jörmungandr's deal initiated against " + selectedPlayerName + "...");
+            } else {
+                LOGGER.info("Jörmungandr Deal cancelled.");
+            }
+        });
     }
 
 }
