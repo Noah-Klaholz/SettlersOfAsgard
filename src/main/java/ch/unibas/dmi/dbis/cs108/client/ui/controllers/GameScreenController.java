@@ -12,6 +12,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.components.game.GridAdjustmentManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.ResourceOverviewDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.StatueSelectionPopup;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.TileTooltip;
+import ch.unibas.dmi.dbis.cs108.client.ui.components.game.TimerComponent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
@@ -37,6 +38,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -138,6 +140,9 @@ public class GameScreenController extends BaseController {
     private PauseTransition tooltipShowDelay;
     private int pendingTooltipRow = -1;
     private int pendingTooltipCol = -1;
+
+    private String lastPlayerTurn = null;
+
     /*
      * --------------------------------------------------
      * FXML‑injected UI elements
@@ -159,6 +164,9 @@ public class GameScreenController extends BaseController {
     private Label connectionStatusLabel;
     @FXML
     private VBox chatContainer;
+    @FXML
+    private StackPane timerRoot;
+
     private ChatComponent chatComponentController;
     private ResourceOverviewDialog resourceOverviewDialog;
     // Grid‑adjustment overlay controls (created programmatically)
@@ -166,6 +174,8 @@ public class GameScreenController extends BaseController {
     private Label adjustmentValuesLabel;
     private Canvas backgroundCanvas; // map + white grid (static)
     private Canvas overlayCanvas; // yellow hover outline (dynamic)
+
+    private TimerComponent timerComponent;
 
     /*
      * --------------------------------------------------
@@ -435,6 +445,19 @@ public class GameScreenController extends BaseController {
             updateCardImages();
             updatePlayerList();
             updateMap();
+
+            // Initialize TimerComponent after FXML injection and only once
+            if (timerComponent == null && timerRoot != null) {
+                LOGGER.info("Initializing TimerComponent...");
+                timerComponent = new TimerComponent();
+                timerRoot.getChildren().setAll(timerComponent);
+            }
+
+            String currentPlayerTurn = gameState.getPlayerTurn();
+            if (timerComponent != null) {
+                LOGGER.info("Updating TimerComponent...");
+                timerComponent.resetIfPlayerChanged(currentPlayerTurn);
+            }
         });
     }
 
