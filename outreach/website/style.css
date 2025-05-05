@@ -39,7 +39,6 @@ body {
     color: var(--primary-color);
     line-height: 1.6;
     overflow-x: hidden;
-    /* Prevent horizontal scroll */
 }
 
 /* Typography */
@@ -136,7 +135,6 @@ nav ul li a::after {
     width: 0;
     height: 2px;
     bottom: -2px;
-    /* Position slightly below text */
     left: 0;
     background-color: var(--accent-color);
     transition: width 0.3s ease;
@@ -150,17 +148,14 @@ nav ul li a:hover::after {
 .hero-section {
     position: relative;
     min-height: 100vh;
-    /* Use min-height for flexibility */
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     color: white;
-    /* === Use the provided map image === */
     background: url('assets/images/map_pixel.png') no-repeat center center/cover;
     overflow: hidden;
     padding: var(--section-padding);
-    /* Add padding for content */
 }
 
 .hero-overlay {
@@ -181,7 +176,6 @@ nav ul li a:hover::after {
 
 .hero-content h1 {
     color: white;
-    /* Ensure title is white */
 }
 
 .hero-content .tagline {
@@ -196,7 +190,6 @@ nav ul li a:hover::after {
     color: var(--primary-color);
     margin-bottom: 2.5rem;
     max-width: 600px;
-    /* Limit description width */
     margin-left: auto;
     margin-right: auto;
 }
@@ -216,7 +209,7 @@ nav ul li a:hover::after {
 
 .cta-button:hover {
     background-color: var(--secondary-color);
-    color: var(--background-color);
+    color: var (--background-color);
     transform: translateY(-3px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
@@ -230,7 +223,7 @@ nav ul li a:hover::after {
     margin: 0 auto;
 }
 
-/* Story Section Specifics (if any needed beyond general) */
+/* Story Section */
 .content-section p {
     max-width: 800px;
     margin-left: auto;
@@ -243,7 +236,6 @@ nav ul li a:hover::after {
 /* Features Section */
 .features-section {
     background-color: var(--card-bg-color);
-    /* Slightly different background */
 }
 
 .features-grid {
@@ -255,7 +247,6 @@ nav ul li a:hover::after {
 
 .feature-card {
     background-color: var(--background-color);
-    /* Darker cards */
     padding: var(--card-padding);
     border-radius: 8px;
     text-align: center;
@@ -273,12 +264,8 @@ nav ul li a:hover::after {
 
 .feature-card .icon {
     width: 100px;
-    /* Increased width */
-    /* height: 50px; Removed fixed height to maintain aspect ratio */
     margin-bottom: 1.5rem;
-    /* filter: invert(75%) sepia(27%) saturate(689%) hue-rotate(350deg) brightness(95%) contrast(88%); Removed filter */
     object-fit: contain;
-    /* Ensure image scales correctly within the bounds */
 }
 
 .feature-card h3 {
@@ -298,6 +285,7 @@ nav ul li a:hover::after {
 .resources-section ul {
     list-style: none;
     padding: 0;
+    margin-top: 0;
 }
 
 .resources-section li {
@@ -319,6 +307,82 @@ nav ul li a:hover::after {
     color: var(--background-color);
 }
 
+/* Download Button */
+.download-section {
+    margin-bottom: 3rem;
+}
+
+.download-button {
+    display: inline-block;
+    background-color: var(--accent-color);
+    color: var(--background-color);
+    padding: 0.9rem 2.2rem;
+    border-radius: 5px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    font-size: 1.1rem;
+}
+
+.download-button:hover {
+    background-color: var(--secondary-color);
+    color: var(--background-color);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Run Instructions */
+.run-instructions {
+    background-color: var(--card-bg-color);
+    padding: var(--card-padding);
+    border-radius: 8px;
+    margin: 2rem auto 3rem;
+    max-width: 700px;
+    text-align: left;
+    border: 1px solid var(--secondary-color);
+}
+
+.run-instructions h3 {
+    color: var(--accent-color);
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.run-instructions pre {
+    background-color: var(--background-color);
+    padding: 1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    margin-bottom: 1rem;
+    border: 1px solid #444;
+}
+
+.run-instructions code {
+    font-family: 'Courier New', Courier, monospace;
+    color: var(--primary-color);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    white-space: pre;
+}
+
+.run-instructions p {
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+    text-align: center;
+    margin-bottom: 0;
+}
+
+/* Documentation Header */
+.docs-header {
+    margin-top: 3rem;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    color: var(--primary-color);
+    text-align: center;
+}
+
 /* Game World Section */
 .world-section {
     text-align: center;
@@ -326,7 +390,6 @@ nav ul li a:hover::after {
 
 .world-map-image {
     max-width: 80%;
-    /* Adjust size as needed */
     height: auto;
     margin-top: 2rem;
     border-radius: 8px;
@@ -340,7 +403,6 @@ footer {
     padding: 2rem 5%;
     margin-top: 3rem;
     background-color: #111;
-    /* Even darker footer */
     color: var(--secondary-color);
     font-size: 0.9rem;
     border-top: 1px solid #333;
@@ -353,28 +415,24 @@ footer .artist-credit {
     opacity: 0.8;
 }
 
-/* Decorative Divider (Example) */
+/* Decorative Divider */
 .content-section::after,
 .features-section::before,
 .world-section::before {
-    /* Add world-section here */
     content: '';
     display: block;
     width: 100px;
     height: 2px;
     background: linear-gradient(to right, transparent, var(--secondary-color), transparent);
     margin: 4rem auto;
-    /* Adjust spacing */
     opacity: 0.6;
 }
 
 .features-section::before,
 .world-section::before {
-    /* Add world-section here */
     margin-bottom: 4rem;
     margin-top: 0;
 }
-
 
 /* Responsive Design */
 @media (max-width: 992px) {
@@ -410,7 +468,7 @@ footer .artist-credit {
 
     nav ul {
         display: none;
-        /* Simple hide for mobile, consider a burger menu for full functionality */
+        /* Consider a burger menu for full functionality */
     }
 
     .logo {
@@ -419,14 +477,11 @@ footer .artist-credit {
 
     .hero-section {
         min-height: auto;
-        /* Adjust height */
         padding: 6rem 5% 4rem;
-        /* Adjust padding */
     }
 
     .features-grid {
         grid-template-columns: 1fr;
-        /* Stack features */
     }
 
     :root {
@@ -441,6 +496,20 @@ footer .artist-credit {
 
     .resources-section a {
         font-size: 1.1rem;
+    }
+
+    .run-instructions {
+        max-width: 90%;
+        padding: 1rem;
+    }
+
+    .download-button {
+        padding: 0.8rem 1.8rem;
+        font-size: 1rem;
+    }
+
+    .docs-header {
+        font-size: 1.6rem;
     }
 }
 
