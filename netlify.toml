@@ -7,22 +7,36 @@ command = """
     # Copy documentation
     cp -f docs/Spielbeschreibungen/*.pdf outreach/website/documents/ || echo "Warning: PDF files not copied"
     
-    # Skip the JAR build - it requires Java 17 and JavaFX
-    echo "Skipping JAR build for website deployment"
+    # Check Java version
+    java -version
     
-    # Create a placeholder JAR file if needed
-    touch outreach/website/download/SettlersOfAsgard.jar
+    # Build the JAR file using Gradle
+    ./gradlew jar --stacktrace --info
+
+    # Check if JAR was built successfully
+    if [ -f "build/libs/settlersOfAsgard.jar" ]; then
+        echo "JAR built successfully!"
+        cp -f build/libs/settlersOfAsgard.jar outreach/website/download/SettlersOfAsgard.jar
+    else
+        echo "JAR build failed, creating fallback placeholder"
+        # Create a placeholder with a message inside
+        echo "This is a placeholder JAR. Please visit our GitHub repository for the full game." > outreach/website/download/SettlersOfAsgard.jar
+    fi
     
     # Verify that the website files exist
     ls -la outreach/website/
+    ls -la outreach/website/download/
+    ls -la outreach/website/documents/
 """
 
 [build.environment]
   # Set Java version to 17
   JAVA_VERSION = "17"
   NODE_VERSION = "16"
+  # Set Gradle options
+  GRADLE_OPTS = "-Dorg.gradle.daemon=false -Dorg.gradle.parallel=true"
 
-# This redirect is critical - it ensures any path will serve index.html
+# This redirect ensures any path will serve index.html
 [[redirects]]
   from = "/*"
   to = "/index.html"
