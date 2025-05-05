@@ -1,26 +1,21 @@
 [build]
 publish = "outreach/website"
 command = """
-    # Create necessary directories
+    # Create necessary directories (in case they don't exist)
     mkdir -p outreach/website/documents outreach/website/download
     
-    # Copy documentation
-    cp -f docs/Spielbeschreibungen/*.pdf outreach/website/documents/ || echo "Warning: PDF files not copied"
+    # Run the build-cs108 task to build JAR and copy to website directory
+    ./gradlew build-cs108 --stacktrace --info || echo "Gradle build failed, proceeding with fallback"
     
-    # Check Java version
-    java -version
-    
-    # Build the JAR file using Gradle
-    ./gradlew jar --stacktrace --info
-
-    # Check if JAR was built successfully
-    if [ -f "build/libs/settlersOfAsgard.jar" ]; then
-        echo "JAR built successfully!"
-        cp -f build/libs/settlersOfAsgard.jar outreach/website/download/SettlersOfAsgard.jar
+    # Check if JAR was built and copied successfully
+    if [ -f "outreach/website/download/SettlersOfAsgard.jar" ]; then
+        echo "JAR file successfully copied to website download directory"
     else
-        echo "JAR build failed, creating fallback placeholder"
-        # Create a placeholder with a message inside
+        echo "JAR file not found in website directory, creating fallback placeholder"
         echo "This is a placeholder JAR. Please visit our GitHub repository for the full game." > outreach/website/download/SettlersOfAsgard.jar
+        
+        # Ensure we have docs even if build-cs108 failed
+        cp -f docs/Spielbeschreibungen/*.pdf outreach/website/documents/ || echo "Warning: PDF files not copied"
     fi
     
     # Verify that the website files exist
