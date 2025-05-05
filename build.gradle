@@ -2,6 +2,8 @@ plugins {
     id 'java-library'
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.1.0'
+    id 'jacoco'
+    id 'com.github.spotbugs' version '5.0.14'
 }
 
 group 'ch.unibas.dmi.dbis'
@@ -52,6 +54,10 @@ dependencies {
     implementation "org.openjfx:javafx-fxml:${javafx.version}"
 }
 
+jacoco {
+    toolVersion = "0.8.8"
+}
+
 test {
     useJUnitPlatform()
     testLogging {
@@ -67,6 +73,61 @@ test {
             '-Dmonocle.platform=Headless',
             '-Dprims,order=sw'
     ]
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+        csv.required = true
+    }
+}
+
+spotbugs {
+    toolVersion = '4.8.0'
+    ignoreFailures = true
+    effort = 'max'
+}
+
+tasks.named('spotbugsMain') {
+    reports {
+        html {
+            required = true
+            outputLocation = file("$buildDir/reports/spotbugs/main.html")
+        }
+    }
+}
+
+tasks.register('docMetrics') {
+    group = 'verification'
+    description = 'Checks documentation coverage'
+    dependsOn javadoc
+
+    doLast {
+        def totalClasses = 0
+        def documentedClasses = 0
+
+        fileTree(dir: 'src/main/java').each { file ->
+            if (file.name.endsWith('java')) {
+                totalClasses++
+                if (file.text.contains('/**') && file.text.contains('*/')) {
+                    documentedClasses++
+                }
+            }
+        }
+        def coverage = (totalClasses > 0) ? (documentedClasses / totalClasses * 100) : 0
+
+        println "\nDocumentation Coverage:"
+        println "Total Classes: $totalClasses"
+        println "Documented: $documentedClasses"
+        println "Coverage: ${String.format("%.2f", coverage)}%"
+    }
+}
+
+tasks.register('checkCode') {
+    group = 'verification'
+    description = 'Runs all code quality checks'
+    dependsOn test, spotbugsMain, docMetrics
 }
 
 tasks.withType(JavaCompile).configureEach {
