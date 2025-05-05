@@ -30,6 +30,7 @@ import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -131,6 +132,10 @@ public class GameScreenController extends BaseController {
     private Popup tileTooltipPopup = null;
     private TileTooltip currentTileTooltip = null;
     private int lastTooltipRow = -1, lastTooltipCol = -1;
+    // Add these fields to the class to track hover state and delay
+    private PauseTransition tooltipShowDelay;
+    private int pendingTooltipRow = -1;
+    private int pendingTooltipCol = -1;
     /*
      * --------------------------------------------------
      * FXML‑injected UI elements
@@ -701,8 +706,10 @@ public class GameScreenController extends BaseController {
         });
 
         gameCanvas.addEventHandler(MouseEvent.MOUSE_EXITED_TARGET, e -> {
+            clearHighlight();
             highlightedTile = null;
-            hideTileTooltip();
+            cancelTooltipDelay(); // Cancel any pending tooltip
+            hideTileTooltip();    // Hide any visible tooltip
         });
 
     /* ---------------------------------------------------------------------
@@ -776,47 +783,82 @@ public class GameScreenController extends BaseController {
     private void handleTileTooltipHover(double px, double py) {
         int[] tile = getHexAt(px, py);
         if (tile == null) {
+            cancelTooltipDelay();
             hideTileTooltip();
             lastTooltipRow = -1;
             lastTooltipCol = -1;
             return;
         }
+
         int row = tile[0], col = tile[1];
-        if (row == lastTooltipRow && col == lastTooltipCol) {
-            // Already showing correct tooltip
-            return;
-        }
         Tile t = getTile(row, col);
         if (t == null) {
+            cancelTooltipDelay();
             hideTileTooltip();
             lastTooltipRow = -1;
             lastTooltipCol = -1;
             return;
         }
-        showTileTooltip(t, px, py);
-        lastTooltipRow = row;
-        lastTooltipCol = col;
+
+        // Return early if we're already showing this tooltip
+        if (row == lastTooltipRow && col == lastTooltipCol && currentTileTooltip != null) {
+            return;
+        }
+
+        // Return early if we're already waiting to show this tooltip
+        if (row == pendingTooltipRow && col == pendingTooltipCol && tooltipShowDelay != null) {
+            return;
+        }
+
+        // Cancel any pending tooltip for a different tile
+        cancelTooltipDelay();
+
+        // Set up a new delay for this tile
+        pendingTooltipRow = row;
+        pendingTooltipCol = col;
+
+        // Create a new tooltip delay
+        tooltipShowDelay = new PauseTransition(Duration.millis(500));
+        tooltipShowDelay.setOnFinished(e -> {
+            // Only show if mouse is still over the same tile
+            if (row == pendingTooltipRow && col == pendingTooltipCol) {
+                showTileTooltip(t, px, py);
+                lastTooltipRow = row;
+                lastTooltipCol = col;
+            }
+        });
+        tooltipShowDelay.play();
+    }
+
+    /**
+     * Cancels any pending tooltip delay.
+     */
+    private void cancelTooltipDelay() {
+        if (tooltipShowDelay != null) {
+            tooltipShowDelay.stop();
+            tooltipShowDelay = null;
+        }
+        pendingTooltipRow = -1;
+        pendingTooltipCol = -1;
     }
 
     private void showTileTooltip(Tile tile, double px, double py) {
         hideTileTooltip();
         currentTileTooltip = new TileTooltip(tile);
-        tileTooltipPopup = new Popup();
-        tileTooltipPopup.setAutoHide(true);
-        tileTooltipPopup.setAutoFix(true);
 
-        // Use the content node instead of the tooltip itself
-        tileTooltipPopup.getContent().add(currentTileTooltip.getContentNode());
+        // Create a popup with proper styling
+        Tooltip tooltip = currentTileTooltip.getTooltip();
 
         // Convert canvas coordinates to screen coordinates
         Point2D screen = gameCanvas.localToScreen(px + 16, py + 16);
-        tileTooltipPopup.show(gameCanvas.getScene().getWindow(), screen.getX(), screen.getY());
+
+        // Show the tooltip at the calculated position - no delay here since we've already delayed
+        tooltip.show(gameCanvas.getScene().getWindow(), screen.getX(), screen.getY());
     }
 
     private void hideTileTooltip() {
-        if (tileTooltipPopup != null) {
-            tileTooltipPopup.hide();
-            tileTooltipPopup = null;
+        if (currentTileTooltip != null) {
+            currentTileTooltip.getTooltip().hide();
             currentTileTooltip = null;
         }
     }

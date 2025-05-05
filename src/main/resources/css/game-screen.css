@@ -399,3 +399,44 @@
 .statue-select-button:hover {
     -fx-background-color: rgba(255, 215, 0, 1.0);
 }
+
+/* Tile Tooltip Styles */
+.tile-tooltip {
+    -fx-background-color: -color-background-tertiary;
+    -fx-padding: 0;
+    -fx-background-radius: 4px;
+}
+
+.tooltip-title {
+    -fx-text-fill: -color-accent-gold;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.tooltip-world {
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text-primary;
+}
+
+.tooltip-resource, .tooltip-owner, .tooltip-usage, .tooltip-separator {
+    -fx-text-fill: -color-text-secondary;
+}
+
+.tooltip-price {
+    -fx-text-fill: -color-accent-gold;
+}
+
+.tooltip-entity {
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text-primary;
+}
+
+.tooltip-level {
+    -fx-text-fill: -color-accent-positive;
+}
+
+.tooltip-content {
+    -fx-background-color: -color-background-tertiary;
+    -fx-background-radius: 4px;
+}
+
