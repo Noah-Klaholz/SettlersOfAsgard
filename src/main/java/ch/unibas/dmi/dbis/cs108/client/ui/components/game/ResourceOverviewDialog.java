@@ -96,7 +96,10 @@ public class ResourceOverviewDialog extends UIComponent<StackPane> {
         return content;
     }
 
-    public void updatePlayers(List<Player> players, String currentTurnPlayer) {
+    public void updatePlayers(List<Player> players, String currentTurnPlayer, Map<String, Color> playerColors) {
+        // Update player colors
+        this.playerColors.clear();
+        this.playerColors.putAll(playerColors);
         // Clear existing player rows
         VBox playerList = (VBox) scrollPane.getContent();
         playerList.getChildren().clear();
