@@ -20,6 +20,8 @@ gradle-app.setting
 # Java
 *.class
 *.jar
+# Allow JARs in outreach/website/download
+!outreach/website/download/*.jar
 *.war
 *.ear
 *.nar
