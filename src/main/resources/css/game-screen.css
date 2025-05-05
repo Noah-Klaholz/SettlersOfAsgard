@@ -326,12 +326,40 @@
 
 .card-tooltip {
     -fx-background-color: -color-background-tertiary;
-    -fx-padding: 0;
+    -fx-padding: 8px;
     -fx-border-color: -color-accent-gold;
     -fx-border-width: 1px;
     -fx-border-radius: 4px;
     -fx-background-radius: 4px;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+}
+
+.card-tooltip > .label {
+    -fx-text-fill: -color-text-primary;
+    -fx-font-size: 12px;
+}
+
+.card-tooltip .tooltip-title {
+    -fx-text-fill: -color-accent-gold;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.card-tooltip .tooltip-description {
+    -fx-text-fill: -color-text-primary;
+    -fx-font-size: 12px;
+}
+
+.card-tooltip .tooltip-lore {
+    -fx-text-fill: -color-text-secondary;
+    -fx-font-style: italic;
+    -fx-font-size: 12px;
+}
+
+.card-tooltip .tooltip-price {
+    -fx-text-fill: -color-text-muted;
+    -fx-font-style: italic;
+    -fx-font-size: 12px;
 }
 
 .game-card {
@@ -370,4 +398,62 @@
 
 .statue-select-button:hover {
     -fx-background-color: rgba(255, 215, 0, 1.0);
+}
+
+/* Tile Tooltip Styles */
+.tile-tooltip {
+    -fx-background-color: -color-background-tertiary;
+    -fx-padding: 0;
+    -fx-background-radius: 4px;
+}
+
+.tooltip-title {
+    -fx-text-fill: -color-accent-gold;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.tooltip-world {
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text-primary;
+}
+
+.tooltip-resource, .tooltip-owner, .tooltip-usage, .tooltip-separator {
+    -fx-text-fill: -color-text-secondary;
+}
+
+.tooltip-price {
+    -fx-text-fill: -color-accent-gold;
+}
+
+.tooltip-entity {
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text-primary;
+}
+
+.tooltip-level {
+    -fx-text-fill: -color-accent-positive;
+}
+
+.tooltip-content {
+    -fx-background-color: -color-background-tertiary;
+    -fx-background-radius: 4px;
+}
+
+/* Timer styling */
+.turn-timer-container {
+    -fx-background-color: -color-background-tertiary-transparent-med;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px 0 8px 0;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0, 0, 1);
+    -fx-margin: 0 0 8px 0;
+}
+
+.turn-timer-label {
+    -fx-font-size: 22px;
+    -fx-font-family: "Cinzel", "Segoe UI", serif;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-accent-gold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 2, 0, 0, 1);
 }

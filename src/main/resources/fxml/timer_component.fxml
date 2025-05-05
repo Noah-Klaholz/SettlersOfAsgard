@@ -1,0 +1,6 @@
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.control.Label?>
+<StackPane alignment="CENTER" styleClass="turn-timer-container"
+           xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+    <Label fx:id="timerLabel" text="01:00" styleClass="turn-timer-label"/>
+</StackPane>

@@ -3,8 +3,8 @@ package ch.unibas.dmi.dbis.cs108.client.ui.events.game;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
 
 /**
- * Event representing the action of buying a statue in the game.
- * This event is triggered when a player attempts to purchase a statue.
+ * Event representing the action of upgrading a statue in the game.
+ * This event is triggered when a player attempts to upgrade a statue.
  */
 public class UpgradeStatueUIEvent implements UIEvent {
     /**
@@ -21,9 +21,11 @@ public class UpgradeStatueUIEvent implements UIEvent {
     private final int statueId;
 
     /**
-     * Constructor for BuyStatueUIEvent.
+     * Constructor for UpgradeStatueUIEvent.
      *
-     * @param statueId The ID of the statue being purchased.
+     * @param statueId The ID of the statue being upgraded.
+     * @param x        The x-coordinate of the statue's location.
+     * @param y        The y-coordinate of the statue's location.
      */
     public UpgradeStatueUIEvent(int statueId, int x, int y) {
         this.x = x;
@@ -65,6 +67,6 @@ public class UpgradeStatueUIEvent implements UIEvent {
      */
     @Override
     public String getType() {
-        return "BUY_STATUE";
+        return "UPGRADE_STATUE"; // Corrected type
     }
 }

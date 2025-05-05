@@ -7,6 +7,8 @@ in dem es darum geht, durch geschicktes Kaufen von Feldern, den Bau und das Upgr
 sowie die Nutzung von Artefakten und Göttersegen möglichst viele Runen zu sammeln. 
 Der Spieler mit den meisten Runen nach 5 Spielrunden gewinnt das Spiel.
 
+[Website](https://settlersofasgard.netlify.app)
+
 ## Dokumente
 
 Alle relevanten Dokumente sind im Ordner `docs` zu finden.

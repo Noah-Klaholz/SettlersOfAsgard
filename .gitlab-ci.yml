@@ -1,0 +1,31 @@
+stages:
+  - build
+  - test
+
+variables:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
+cache:
+  paths:
+    - .gradle/
+    - build/
+
+build:
+  stage: build
+  image: gradle:7-jdk17
+  script:
+    - gradle build -x test
+  artifacts:
+    paths:
+      - build/libs/*.jar
+    expire_in: 1 week
+
+test:
+  stage: test
+  image: gradle:7-jdk17
+  before_script:
+    - apt-get update && apt-get install -y libopenjfx-java
+  script:
+    - gradle test
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"

@@ -54,6 +54,9 @@
 
                     <Separator/>
 
+                    <!-- TIMER COMPONENT: -->
+                    <StackPane fx:id="timerRoot"/>
+
                     <Label text="Players" styleClass="section-title"/>
                 </VBox>
             </top>

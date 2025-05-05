@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.server.core.structures;
 
+import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameEventNotifier;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.core.model.Leaderboard;
@@ -215,7 +216,7 @@ public class Lobby implements GameEventNotifier {
         turnScheduler = Executors.newSingleThreadScheduledExecutor();
         turnScheduler.scheduleAtFixedRate(
                 this::processTurnChange,
-                1, 1, TimeUnit.MINUTES
+                1, SETTINGS.Config.TURN_TIME.getValue(), TimeUnit.SECONDS
         );
     }
 
@@ -379,5 +380,30 @@ public class Lobby implements GameEventNotifier {
     private void broadcastTurnUpdate() {
         broadcastMessage("TURN$" + gameLogic.getGameState().getPlayerTurn());
         broadcastMessage(gameLogic.getGameState().createDetailedStatusMessage());
+    }
+
+    /**
+     * Changes the name of a player in the game.
+     * @param oldName The old name of the player.
+     * @param newName The new name of the player.
+     */
+    public void changeName(String oldName, String newName) {
+        if (oldName == null || newName == null) {
+            logger.warning("Old name or new name is null, cannot change name.");
+            return;
+        }
+        if (oldName.equals(newName)) {
+            logger.warning("Old name and new name are the same, cannot change name.");
+            return;
+        }
+        if (gameLogic == null) {
+            logger.warning("GameLogic is null, cannot change name.");
+            return;
+        }
+        if (gameLogic.getGameState().findPlayerByName(oldName) == null) {
+            logger.warning("Player with name " + oldName + " not found in game.");
+            return;
+        }
+        gameLogic.getGameState().findPlayerByName(oldName).setName(newName);
     }
 }

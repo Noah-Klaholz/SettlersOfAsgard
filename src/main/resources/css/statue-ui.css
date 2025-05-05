@@ -1,0 +1,233 @@
+/* Statue Context Menu Styles */
+.contextual-menu {
+    -fx-background-color: #333333;
+    -fx-border-color: #555555;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 10, 0, 0, 0);
+}
+
+.menu-header {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-padding: 0 0 5px 0;
+}
+
+.menu-button {
+    -fx-background-color: #555555;
+    -fx-text-fill: white;
+    -fx-padding: 5px 10px;
+    -fx-cursor: hand;
+    -fx-background-radius: 3px;
+    -fx-min-width: 120px;
+}
+
+.menu-button:hover {
+    -fx-background-color: #777777;
+}
+
+.disabled-button {
+    -fx-background-color: #444444;
+    -fx-text-fill: #aaaaaa;
+    -fx-cursor: default;
+}
+
+/* Statue Side Panel Styles */
+.statue-side-panel {
+    -fx-background-color: #333333;
+    -fx-border-color: #555555;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 10, 0, 0, 0);
+}
+
+.statue-name {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-text-alignment: center;
+}
+
+.statue-description {
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+}
+
+.statue-world {
+    -fx-text-fill: #aaaaaa;
+    -fx-font-style: italic;
+    -fx-font-size: 12px;
+}
+
+.statue-level {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.level-progress {
+    -fx-accent: #4CAF50;
+}
+
+.effects-box {
+    -fx-spacing: 5px;
+    -fx-padding: 5px;
+    -fx-background-color: #444444;
+    -fx-background-radius: 3px;
+}
+
+.effects-title {
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+}
+
+.effect-detail {
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+}
+
+.statue-action-button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-padding: 5px 10px;
+    -fx-cursor: hand;
+    -fx-background-radius: 3px;
+    -fx-min-width: 100px;
+}
+
+.statue-action-button:hover {
+    -fx-background-color: #5DBF61;
+}
+
+.statue-separator {
+    -fx-background-color: #555555;
+}
+
+/* Confirmation Dialog Styles */
+.dialog-container {
+    -fx-background-color: #333333;
+    -fx-border-color: #555555;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 10, 0, 0, 0);
+}
+
+.dialog-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-text-alignment: center;
+}
+
+.dialog-description {
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+}
+
+.dialog-cost {
+    -fx-text-fill: #FFD700;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+.dialog-confirm-button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-padding: 5px 10px;
+    -fx-cursor: hand;
+    -fx-background-radius: 3px;
+}
+
+.dialog-confirm-button:hover {
+    -fx-background-color: #5DBF61;
+}
+
+.dialog-cancel-button {
+    -fx-background-color: #F44336;
+    -fx-text-fill: white;
+    -fx-padding: 5px 10px;
+    -fx-cursor: hand;
+    -fx-background-radius: 3px;
+}
+
+.dialog-cancel-button:hover {
+    -fx-background-color: #FF5252;
+}
+
+/* Notification Styles */
+.notification-label {
+    -fx-background-radius: 5px;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+}
+
+.success-notification {
+    -fx-background-color: rgba(76, 175, 80, 0.9);
+}
+
+.error-notification {
+    -fx-background-color: rgba(244, 67, 54, 0.9);
+}
+
+/* Entity Details Panel Styles */
+.entity-details-panel {
+    -fx-background-color: #333333;
+    -fx-border-color: #555555;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 10, 0, 0, 0);
+}
+
+.entity-name-label {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.entity-level-label {
+    -fx-text-fill: #FFD700;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+.entity-level-progress {
+    -fx-accent: #4CAF50;
+}
+
+.entity-description-label {
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+}
+
+.effects-container {
+    -fx-spacing: 5px;
+    -fx-padding: 5px;
+    -fx-background-color: #444444;
+    -fx-background-radius: 3px;
+}
+
+.effect-description {
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+}
+
+.locked-effect {
+    -fx-text-fill: #aaaaaa;
+    -fx-font-style: italic;
+}
+
+.curse-effect {
+    -fx-text-fill: #FF5252;
+}
+
+.upgrade-cost-label {
+    -fx-text-fill: #FFD700;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
