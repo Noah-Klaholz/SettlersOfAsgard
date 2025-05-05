@@ -1,8 +1,8 @@
 [
   {
-    "name": "Light",
-    "usage": "",
-    "description": "",
+    "name": "Light fo Alfheim",
+    "usage": "-",
+    "description": "Alfheim is the home of the Ljósálfar, the Light Elves, who are known for their beauty and grace. The light of Alfheim symbolizes purity and enlightenment.",
     "id": 40,
     "runes": 10,
     "world": "Alfheim",
@@ -12,9 +12,9 @@
     ]
   },
   {
-  "name": "Castle-Front",
-  "usage": "",
-  "description": "",
+  "name": "Asgard's Building Front",
+  "usage": "-",
+  "description": "Asgard is the home of the Aesir gods, including Odin and Thor. It is a celestial fortress, full of vast halls and feasts, a place of grandeur and beauty.",
   "id": 41,
   "runes": 10,
   "world": "Asgard",
@@ -25,9 +25,9 @@
   ]
   },
   {
-    "name": "Castle-Back",
-    "usage": "",
-    "description": "",
+    "name": "Asgard's Building Back",
+    "usage": "-",
+    "description": "Asgard is the home of the Aesir gods, including Odin and Thor. It is a celestial fortress, full of vast halls and feasts, a place of grandeur and beauty.",
     "id": 48,
     "runes": 10,
     "world": "Asgard",
@@ -38,8 +38,8 @@
   },
   {
   "name": "Flaming Sword",
-  "usage": "",
-  "description": "",
+  "usage": "Can be used by Surtr",
+  "description": "The Flaming Sword is the weapon of Surt, the fire giant. Described as a sword that shines brighter than the sun, it is the weapon that will ignite the world during Ragnarok.",
   "id": 42,
   "runes": 10,
   "world": "Muspelheim",
@@ -49,9 +49,9 @@
   ]
   },
   {
-    "name": "Skull",
-    "usage": "",
-    "description": "",
+    "name": "Cow Skull",
+    "usage": "-",
+    "description": "This skull is the remains of Audhumla, the primeval cow in Norse mythology. She is known for nourishing the first god, Ymir, the ancestor of all frost giants, with her milk. She also freed Búri, the ancestor of the Aesir gods, from the ice. Thus, she is a cosmic nurturer and catalyst for creation. How did her skull end up in Midgard, the world of humans?",
     "id": 43,
     "runes": 10,
     "world": "Midgard",
@@ -62,8 +62,8 @@
   },
   {
   "name": "Dwarfen Forge",
-    "usage": "",
-  "description": "",
+    "usage": "-",
+  "description": "Svartálfaheimr is an underground world full of caverns, forges, and darkness. It is the home of the dwarves and represents their hidden depths of skill, creativity, and power. The Dwarfen Forge symbolizes bringing form, beauty, and power out of shadow and chaos. It’s a place where hidden potential (raw materials) is transformed through fire and skill into something meaningful.",
   "id": 44,
   "runes": 10,
   "world": "Svartalfheim",
@@ -74,8 +74,8 @@
   },
   {
     "name": "Mountain",
-    "usage": "",
-    "description": "",
+    "usage": "-",
+    "description": "Jötunheimr is the land of the jötnar, the frost giants. It is a wild and harsh land with rocky mountains and vast forests. The giants are in conflict with the gods but also intertwined with them through anchestry and marriage. Just as the world, this mountain is raw and untamed, representing the primal forces of nature and chaos.",
     "id": 45,
     "runes": 10,
     "world": "Jotunheim",
@@ -85,9 +85,9 @@
     ]
   },
   {
-    "name": "Ice",
-    "usage": "",
-    "description": "",
+    "name": "Ice Shard",
+    "usage": "-",
+    "description": "Nilfheim is the land of ice and mist, a cold and desolate place. It is an underworld where the souls dwell that have not died a heroic death and could not enter Valhalla. Niflheim’s icy rivers, Élivágar, were part of the raw forces that gave birth to Ymir, the first giant, and thus all life in Norse cosmology. This Ice Shard is a symbol for the earliest matter, the very buildingblocks of creation.",
     "id": 46,
     "runes": 10,
     "world": "Nilfheim",
@@ -97,9 +97,9 @@
     ]
   },
   {
-    "name": "Death Tree",
-    "usage": "",
-    "description": "",
+    "name": "Dead Tree",
+    "usage": "-",
+    "description": "Helheim is the realm of the dead, ruled by Hel, the daughter of Loki. It is said to be a part of Nilfheim, the underworld, where the souls of those who did not die a heroic death go. This Tree is a symbol of the finality of mortality and the stillness and inevitability of death.",
     "id": 47,
     "runes": 10,
     "world": "Helheim",
