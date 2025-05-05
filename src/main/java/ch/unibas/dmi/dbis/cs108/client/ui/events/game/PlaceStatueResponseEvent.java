@@ -3,7 +3,7 @@ package ch.unibas.dmi.dbis.cs108.client.ui.events.game;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
 
 /**
- * Represents the response/result of a BuyStatue action.
+ * Represents the response/result of a PlaceStatue action.
  */
 public class PlaceStatueResponseEvent implements UIEvent {
     /**
@@ -19,11 +19,14 @@ public class PlaceStatueResponseEvent implements UIEvent {
     private final String statueId;
 
     /**
-     * Constructs a BuyStatueResponseEvent.
+     * Constructs a PlaceStatueResponseEvent.
      *
      * @param success  whether the action was successful
      * @param message  optional message for success/failure
-     * @param statueId the ID of the statue
+     * @param statueId the ID of the statue placed (as String, consistent with
+     *                 original)
+     * @param x        the x-coordinate where placement was attempted
+     * @param y        the y-coordinate where placement was attempted
      */
     public PlaceStatueResponseEvent(boolean success, String message, String statueId, int x, int y) {
         this.x = x;
@@ -77,6 +80,6 @@ public class PlaceStatueResponseEvent implements UIEvent {
      */
     @Override
     public String getType() {
-        return "BUY_STATUE_RESPONSE";
+        return "PLACE_STATUE_RESPONSE"; // Corrected type
     }
 }
