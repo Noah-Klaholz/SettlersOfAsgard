@@ -28,10 +28,35 @@ public class Leaderboard {
      * Instantiates a Leaderboard object. Creates the correct path.
      */
     public Leaderboard() {
-        this(Paths.get("").toAbsolutePath() // working directory (build/libs)
-                .getParent().getParent() // go up two directories (root)
-                .resolve("leaderboard") // folder "leaderboard"
-                .resolve("leaderboard.txt")); // file "leaderboard.txt"
+        // Try to use the Git-tracked leaderboard first, then fall back to user home
+        Path gitTrackedPath = tryGetGitTrackedLeaderboardPath();
+        if (gitTrackedPath != null && Files.exists(gitTrackedPath)) {
+            this.leaderboardPath = gitTrackedPath;
+        } else {
+            this.leaderboardPath = createUserHomeLeaderboardPath();
+        }
+        ensureDirectoryExists();
+        load();
+    }
+
+    private static Path tryGetGitTrackedLeaderboardPath() {
+        try {
+            // First try relative to current directory (where JAR is run)
+            Path projectRelative = Paths.get("../../leaderboard", "leaderboard.txt");
+            if (Files.exists(projectRelative)) {
+                return projectRelative;
+            }
+            return null;
+        } catch (Exception e) {
+            LOGGER.log(Level.INFO, "Could not locate Git-tracked leaderboard", e);
+            return null;
+        }
+    }
+
+    private static Path createUserHomeLeaderboardPath() {
+        String userHome = System.getProperty("user.home");
+        Path appDataPath = Paths.get(userHome, ".settlersOfAsgard");
+        return appDataPath.resolve("leaderboard.txt");
     }
 
     /**

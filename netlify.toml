@@ -1,0 +1,24 @@
+[build]
+publish = "outreach/website"
+# No build command needed; all assets (JAR, PDFs) must be present before deploy.
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+[[headers]]
+  for = "/download/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+[[headers]]
+  for = "/download/*.jar"
+  [headers.values]
+    Content-Type = "application/java-archive"
+    Content-Disposition = "attachment"

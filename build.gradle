@@ -158,6 +158,31 @@ tasks.register('build-cs108') {
     dependsOn jar, javadoc
     description = 'Builds the main JAR file and Javadocs'
     group = 'build'
+
+    doLast {
+        // Create website download directory
+        def websiteDir = file("${projectDir}/outreach/website/download")
+        websiteDir.mkdirs()
+
+        // Copy the JAR to the website directory
+        copy {
+            from "${buildDir}/libs/settlersOfAsgard.jar"
+            into websiteDir
+        }
+
+        println "JAR file copied to website download directory: ${websiteDir}/settlersOfAsgard.jar"
+
+        // Create documents directory and copy PDFs
+        def docsDir = file("${projectDir}/outreach/website/documents")
+        docsDir.mkdirs()
+
+        // Copy documentation files if they exist
+        copy {
+            from "${projectDir}/docs/Spielbeschreibungen"
+            include "*.pdf"
+            into docsDir
+        }
+    }
 }
 
 tasks.register('runClient', JavaExec) {

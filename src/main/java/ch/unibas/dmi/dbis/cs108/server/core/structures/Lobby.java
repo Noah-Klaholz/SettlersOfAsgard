@@ -216,7 +216,7 @@ public class Lobby implements GameEventNotifier {
         turnScheduler = Executors.newSingleThreadScheduledExecutor();
         turnScheduler.scheduleAtFixedRate(
                 this::processTurnChange,
-                1, SETTINGS.Config.TURN_TIME.getValue(), TimeUnit.SECONDS
+                SETTINGS.Config.TURN_TIME.getValue(), SETTINGS.Config.TURN_TIME.getValue(), TimeUnit.SECONDS
         );
     }
 
