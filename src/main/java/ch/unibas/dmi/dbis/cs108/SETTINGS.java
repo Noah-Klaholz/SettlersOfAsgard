@@ -20,7 +20,9 @@ public class SETTINGS {
         PURCHASABLE_TILES_PER_ROUND(3),
         SET_BONUS_MULTIPLIER(2),
         MAX_ENERGY(4),
-        MAX_STRUCTURES(6);
+        MAX_STRUCTURES(6),
+        MONUMENT_SIZE(33),
+        ENTITY_SIZE(33); // Size of the monument
 
         private final int value;
 

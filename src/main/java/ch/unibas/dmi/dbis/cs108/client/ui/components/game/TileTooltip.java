@@ -11,20 +11,29 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+
+import java.util.Objects;
 
 /**
  * Custom tooltip that displays information about a tile and any entity on it.
  */
 public class TileTooltip extends Tooltip {
+    private VBox content;
 
-    public TileTooltip(Tile tile, String ownerName) {
+    public TileTooltip(Tile tile) {
         this.setShowDelay(Duration.millis(300));
         this.setHideDelay(Duration.millis(200));
 
-        VBox content = new VBox(5);
+        content = new VBox(5);
+        content.getStyleClass().add("card-tooltip"); // Style class for root node
         content.setPadding(new Insets(8));
         content.setMaxWidth(250);
-        content.getStyleClass().add("tooltip-content");
+
+        Label titleLabel = new Label("Tile Information");
+        titleLabel.getStyleClass().add("tooltip-title");
 
         // Tile information
         Label worldLabel = new Label("World: " + tile.getWorld());
@@ -35,6 +44,7 @@ public class TileTooltip extends Tooltip {
         resourceLabel.setStyle("-fx-text-fill: -color-text-secondary;");
         content.getChildren().add(resourceLabel);
 
+        String ownerName = tile.getOwner();
         if (ownerName != null && !ownerName.isEmpty()) {
             Label ownerLabel = new Label("Owner: " + ownerName);
             ownerLabel.setStyle("-fx-text-fill: -color-text-secondary;");
@@ -79,8 +89,24 @@ public class TileTooltip extends Tooltip {
         content.setPrefHeight(Region.USE_COMPUTED_SIZE);
         content.setMaxHeight(Region.USE_PREF_SIZE);
 
-        this.setGraphic(content);
         this.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-        this.getStyleClass().add("tile-tooltip");
+        this.setGraphic(content);
+
+        // Ensure CSS is loaded after the tooltip is attached to a scene
+        this.sceneProperty().addListener(new ChangeListener<>() {
+            @Override
+            public void changed(ObservableValue<? extends javafx.scene.Scene> obs, javafx.scene.Scene oldScene, javafx.scene.Scene newScene) {
+                if (newScene != null) {
+                    String css = getClass().getResource("/css/game-screen.css").toExternalForm();
+                    if (!newScene.getStylesheets().contains(css)) {
+                        newScene.getStylesheets().add(css);
+                    }
+                }
+            }
+        });
+    }
+
+    public VBox getContentNode() {
+        return content;
     }
 }

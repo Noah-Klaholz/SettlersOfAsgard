@@ -326,12 +326,40 @@
 
 .card-tooltip {
     -fx-background-color: -color-background-tertiary;
-    -fx-padding: 0;
+    -fx-padding: 8px;
     -fx-border-color: -color-accent-gold;
     -fx-border-width: 1px;
     -fx-border-radius: 4px;
     -fx-background-radius: 4px;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+}
+
+.card-tooltip > .label {
+    -fx-text-fill: -color-text-primary;
+    -fx-font-size: 12px;
+}
+
+.card-tooltip .tooltip-title {
+    -fx-text-fill: -color-accent-gold;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.card-tooltip .tooltip-description {
+    -fx-text-fill: -color-text-primary;
+    -fx-font-size: 12px;
+}
+
+.card-tooltip .tooltip-lore {
+    -fx-text-fill: -color-text-secondary;
+    -fx-font-style: italic;
+    -fx-font-size: 12px;
+}
+
+.card-tooltip .tooltip-price {
+    -fx-text-fill: -color-text-muted;
+    -fx-font-style: italic;
+    -fx-font-size: 12px;
 }
 
 .game-card {

@@ -11,6 +11,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.components.WinScreenDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.GridAdjustmentManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.ResourceOverviewDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.StatueSelectionPopup;
+import ch.unibas.dmi.dbis.cs108.client.ui.components.game.TileTooltip;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
@@ -50,6 +51,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Popup;
 import javafx.stage.Window;
 import javafx.util.Duration;
 
@@ -125,6 +127,10 @@ public class GameScreenController extends BaseController {
     private boolean hasPlacedStatue = false;
     private Tile highlightedTile = null;
     private GridAdjustmentManager gridAdjustmentManager;
+    // --- Tile tooltip support ---
+    private Popup tileTooltipPopup = null;
+    private TileTooltip currentTileTooltip = null;
+    private int lastTooltipRow = -1, lastTooltipCol = -1;
     /*
      * --------------------------------------------------
      * FXML‑injected UI elements
@@ -687,13 +693,16 @@ public class GameScreenController extends BaseController {
     /* ---------------------------------------------------------------------
        Hover-highlight (overlayCanvas) – uses new helper methods
      --------------------------------------------------------------------- */
-        gameCanvas.addEventHandler(MouseEvent.MOUSE_ENTERED_TARGET, e -> handleCanvasEntered(e.getX(), e.getY()));       // → showHighlight()
+        gameCanvas.addEventHandler(MouseEvent.MOUSE_ENTERED_TARGET, e -> handleCanvasEntered(e.getX(), e.getY()));
 
-        gameCanvas.addEventHandler(MouseEvent.MOUSE_MOVED, e -> handleCanvasMouseMove(e.getX(), e.getY()));     // → show / clear
+        gameCanvas.addEventHandler(MouseEvent.MOUSE_MOVED, e -> {
+            handleCanvasMouseMove(e.getX(), e.getY());
+            handleTileTooltipHover(e.getX(), e.getY());
+        });
 
         gameCanvas.addEventHandler(MouseEvent.MOUSE_EXITED_TARGET, e -> {
-            clearHighlight();                                        // <-- replaces redrawSingleTile()
             highlightedTile = null;
+            hideTileTooltip();
         });
 
     /* ---------------------------------------------------------------------
@@ -724,6 +733,7 @@ public class GameScreenController extends BaseController {
                 Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
                 if (local.getX() >= 0 && local.getY() >= 0 && local.getX() <= gameCanvas.getWidth() && local.getY() <= gameCanvas.getHeight()) {
                     handleCanvasMouseMove(local.getX(), local.getY());
+                    handleTileTooltipHover(local.getX(), local.getY());
                     ev.consume();
                 }
             });
@@ -743,6 +753,7 @@ public class GameScreenController extends BaseController {
                 if (trulyExited) {
                     clearHighlight();                                // <-- replaces redrawSingleTile()
                     highlightedTile = null;
+                    hideTileTooltip();
                 }
             });
         }
@@ -751,6 +762,63 @@ public class GameScreenController extends BaseController {
        Keyboard shortcuts for grid-adjustment
      --------------------------------------------------------------------- */
         gameCanvas.setOnKeyPressed(gridAdjustmentManager::handleGridAdjustmentKeys);
+    }
+
+    // --- Tile Tooltip logic ---
+
+    /**
+     * Handles mouse movement over the canvas and updates the tile tooltip
+     * accordingly.
+     *
+     * @param px The x-coordinate of the mouse pointer.
+     * @param py The y-coordinate of the mouse pointer.
+     */
+    private void handleTileTooltipHover(double px, double py) {
+        int[] tile = getHexAt(px, py);
+        if (tile == null) {
+            hideTileTooltip();
+            lastTooltipRow = -1;
+            lastTooltipCol = -1;
+            return;
+        }
+        int row = tile[0], col = tile[1];
+        if (row == lastTooltipRow && col == lastTooltipCol) {
+            // Already showing correct tooltip
+            return;
+        }
+        Tile t = getTile(row, col);
+        if (t == null) {
+            hideTileTooltip();
+            lastTooltipRow = -1;
+            lastTooltipCol = -1;
+            return;
+        }
+        showTileTooltip(t, px, py);
+        lastTooltipRow = row;
+        lastTooltipCol = col;
+    }
+
+    private void showTileTooltip(Tile tile, double px, double py) {
+        hideTileTooltip();
+        currentTileTooltip = new TileTooltip(tile);
+        tileTooltipPopup = new Popup();
+        tileTooltipPopup.setAutoHide(true);
+        tileTooltipPopup.setAutoFix(true);
+
+        // Use the content node instead of the tooltip itself
+        tileTooltipPopup.getContent().add(currentTileTooltip.getContentNode());
+
+        // Convert canvas coordinates to screen coordinates
+        Point2D screen = gameCanvas.localToScreen(px + 16, py + 16);
+        tileTooltipPopup.show(gameCanvas.getScene().getWindow(), screen.getX(), screen.getY());
+    }
+
+    private void hideTileTooltip() {
+        if (tileTooltipPopup != null) {
+            tileTooltipPopup.hide();
+            tileTooltipPopup = null;
+            currentTileTooltip = null;
+        }
     }
 
     /**
@@ -1128,7 +1196,7 @@ public class GameScreenController extends BaseController {
 
             if (gm instanceof Monument) {
                 // Calculate maximum width based on hex size and squish factor
-                double maxWidth = 3.3 * hexSize * hSquish;
+                double maxWidth = (double) SETTINGS.Config.MONUMENT_SIZE.getValue() /100 * hexSize * hSquish;
 
                 // Calculate scale to fit within both max width and max height
                 double scale = maxWidth / image.getWidth();
@@ -1140,7 +1208,7 @@ public class GameScreenController extends BaseController {
                 gc.drawImage(image, centerX - scaledWidth / 2, centerY - 3 * scaledHeight / 4, scaledWidth, scaledHeight);
             } else {
                 // Calculate maximum width based on hex size and squish factor
-                double maxWidth = 2.3 * hexSize * hSquish;
+                double maxWidth = (double) SETTINGS.Config.ENTITY_SIZE.getValue() /100 * hexSize * hSquish;
 
                 // Calculate scale to fit within both max width and max height
                 double scale = maxWidth / image.getWidth();
@@ -1630,7 +1698,7 @@ public class GameScreenController extends BaseController {
         // Update artifact cards
         for (Node card : artifactHand.getChildren()) {
             if (card.getId() != null && card.getId().startsWith("artifact")) {
-                updateCardImage(card);
+                updateArtifactCard(card, getCardDetails(card.getId()));
             }
         }
 
@@ -1757,6 +1825,48 @@ public class GameScreenController extends BaseController {
     }
 
     /**
+     * Updates a single card in the artifact hand with the correct image using getCardDetails
+     * (isCard=true).
+     * Uses a cached red placeholder on failure.
+     *
+     * @param card The card node (Pane) to update.
+     */
+    private void updateArtifactCard(Node card, CardDetails details) {
+        if (card instanceof Pane pane) {
+            pane.getChildren().clear();
+
+            try {
+                // Load the statue image first
+                String imageUrl = details.getImageUrl();
+                if (imageUrl != null && !imageUrl.isEmpty()) {
+                    Image image = resourceLoader.getCardImage(details.getID());
+                    if (image != null && !image.isError()) {
+                        ImageView imageView = new ImageView(image);
+                        imageView.setFitWidth(78);
+                        imageView.setFitHeight(118);
+                        imageView.setPreserveRatio(true);
+                        imageView.setSmooth(true);
+                        pane.getChildren().add(imageView);
+                    } else {
+                        addPlaceholderToPane(pane);
+                    }
+                } else {
+                    addPlaceholderToPane(pane);
+                }
+
+                // Update tooltip
+                Tooltip tooltip = createTooltipForCard(card);
+                Tooltip.install(pane, tooltip);
+                cardTooltips.put(pane, tooltip);
+
+            } catch (Exception e) {
+                LOGGER.severe("Error updating statue card: " + e.getMessage());
+                addPlaceholderToPane(pane);
+            }
+        }
+    }
+
+    /**
      * Adds the cached red placeholder node to the given Pane.
      *
      * @param pane The target Pane.
@@ -1794,7 +1904,6 @@ public class GameScreenController extends BaseController {
         placeholder.setFill(Color.RED);
         placeholder.setOpacity(0.5); // Semi-transparent
         return placeholder;
-        // TODO add actual placeholder image
     }
 
     /**
@@ -1819,7 +1928,7 @@ public class GameScreenController extends BaseController {
             pane.getChildren().clear();
 
             try {
-                // Load the statue image first (your existing code)
+                // Load the statue image first
                 String imageUrl = details.getImageUrl();
                 if (imageUrl != null && !imageUrl.isEmpty()) {
                     Image image = resourceLoader.getCardImage(details.getID());
