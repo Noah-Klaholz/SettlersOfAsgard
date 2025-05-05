@@ -1,35 +1,56 @@
 [build]
 publish = "outreach/website"
 command = """
-    # Create necessary directories (in case they don't exist)
+    # Force Java 17 installation using sdk (Software Development Kit Manager) which is available on Netlify
+    echo "Installing Java 17..."
+    . /opt/buildhome/.sdkman/bin/sdkman-init.sh
+    sdk install java 17.0.7-tem
+    sdk use java 17.0.7-tem
+    java -version
+    
+    # Create necessary directories
     mkdir -p outreach/website/documents outreach/website/download
     
-    # Run the build-cs108 task to build JAR and copy to website directory
-    ./gradlew build-cs108 --stacktrace --info || echo "Gradle build failed, proceeding with fallback"
+    # Copy documentation files - do this first in case the build fails
+    cp -f docs/Spielbeschreibungen/*.pdf outreach/website/documents/ || echo "Warning: PDF files not copied"
     
-    # Check if JAR was built and copied successfully
-    if [ -f "outreach/website/download/SettlersOfAsgard.jar" ]; then
-        echo "JAR file successfully copied to website download directory"
+    # Use a custom init script to bypass JavaFX plugin issues
+    echo "Creating init script to bypass JavaFX plugin issues..."
+    cat > init.gradle << EOF
+    allprojects {
+        buildscript {
+            repositories {
+                mavenCentral()
+            }
+        }
+    }
+    EOF
+    
+    # Build the JAR with our custom init script
+    echo "Running Gradle build..."
+    ./gradlew jar -I init.gradle --no-daemon --stacktrace
+    
+    # Copy the JAR if it was built successfully
+    if [ -f "build/libs/settlersOfAsgard.jar" ]; then
+        echo "JAR built successfully, copying to website/download directory"
+        cp -f build/libs/settlersOfAsgard.jar outreach/website/download/SettlersOfAsgard.jar
     else
-        echo "JAR file not found in website directory, creating fallback placeholder"
-        echo "This is a placeholder JAR. Please visit our GitHub repository for the full game." > outreach/website/download/SettlersOfAsgard.jar
-        
-        # Ensure we have docs even if build-cs108 failed
-        cp -f docs/Spielbeschreibungen/*.pdf outreach/website/documents/ || echo "Warning: PDF files not copied"
+        echo "JAR build failed, creating fallback placeholder"
+        echo "This is a placeholder JAR. Please visit our GitHub repository for the full game: https://github.com/CS108-Group-3/SettlersOfAsgard/releases" > outreach/website/download/SettlersOfAsgard.jar
     fi
     
-    # Verify that the website files exist
+    # Verify website files
+    echo "Website directory contents:"
     ls -la outreach/website/
+    echo "Download directory contents:"
     ls -la outreach/website/download/
+    echo "Documents directory contents:"
     ls -la outreach/website/documents/
 """
 
 [build.environment]
-  # Set Java version to 17
-  JAVA_VERSION = "17"
-  NODE_VERSION = "16"
-  # Set Gradle options
-  GRADLE_OPTS = "-Dorg.gradle.daemon=false -Dorg.gradle.parallel=true"
+  JAVA_HOME = "~/.sdkman/candidates/java/17.0.7-tem"
+  PATH = "${PATH}:${HOME}/.sdkman/candidates/java/current/bin"
 
 # This redirect ensures any path will serve index.html
 [[redirects]]
