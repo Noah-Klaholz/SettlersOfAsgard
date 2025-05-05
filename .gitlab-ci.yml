@@ -22,9 +22,9 @@ build:
 
 test:
   stage: test
-  image: $CI_REGISTRY_IMAGE/test-runner
+  image: gradle:7-jdk17
   before_script:
-    - docker build -t $CI_REGISTRY_IMAGE/test-runner -f Dockerfile .
+    - apt-get update && apt-get install -y libopenjfx-java
   script:
     - gradle test
   after_script:
