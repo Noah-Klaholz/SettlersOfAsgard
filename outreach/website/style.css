@@ -144,6 +144,27 @@ nav ul li a:hover::after {
     width: 100%;
 }
 
+/* Burger Menu Button (Hidden on Desktop) */
+.burger-menu {
+    display: none;
+    /* Hidden by default */
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    z-index: 1100;
+    /* Ensure it's above nav background */
+}
+
+.burger-menu span {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background-color: var(--primary-color);
+    margin: 5px 0;
+    transition: all 0.3s ease;
+}
+
 /* Hero Section */
 .hero-section {
     position: relative;
@@ -467,8 +488,75 @@ footer .artist-credit {
     }
 
     nav ul {
+        position: absolute;
+        top: 100%;
+        /* Position below the nav bar */
+        left: 0;
+        width: 100%;
+        background-color: var(--nav-bg-color);
+        /* Use nav background */
+        backdrop-filter: blur(10px);
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem 0;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        /* Hide menu off-screen or using visibility/opacity */
+        max-height: 0;
+        /* Use max-height for transition */
+        overflow: hidden;
+        transition: max-height 0.4s ease-out;
+        /* Reset AOS fade-down for mobile toggle */
+        transform: none !important;
+        opacity: 1 !important;
+    }
+
+    /* Active state for mobile menu */
+    nav ul.nav-active {
+        max-height: 500px;
+        /* Adjust as needed, large enough for content */
+        padding: 1rem 0;
+    }
+
+    nav ul li {
+        margin-left: 0;
+        width: 100%;
+        text-align: center;
+    }
+
+    nav ul li a {
+        padding: 1rem 0;
+        display: block;
+        /* Make link fill the li */
+        width: 100%;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        /* Separator */
+    }
+
+    nav ul li:last-child a {
+        border-bottom: none;
+    }
+
+    nav ul li a::after {
         display: none;
-        /* Consider a burger menu for full functionality */
+        /* Hide underline effect on mobile */
+    }
+
+    /* Show Burger Menu */
+    .burger-menu {
+        display: block;
+    }
+
+    /* Burger menu active state animation (optional) */
+    .burger-menu.active span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .burger-menu.active span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .burger-menu.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(7px, -6px);
     }
 
     .logo {
