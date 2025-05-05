@@ -4,6 +4,7 @@ stages:
 
 variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
 cache:
   paths:
     - .gradle/
@@ -21,7 +22,9 @@ build:
 
 test:
   stage: test
-  image: openjfx/gradle:17-jdk17
+  image: $CI_REGISTRY_IMAGE/test-runner
+  before_script:
+    - docker build -t $CI_REGISTRY_IMAGE/test-runner -f Dockerfile .
   script:
     - gradle test
   after_script:
