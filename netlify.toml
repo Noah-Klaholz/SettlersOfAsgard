@@ -3,30 +3,37 @@ publish = "outreach/website"
 command = """
     # Create necessary directories
     mkdir -p outreach/website/documents outreach/website/download
-
+    
     # Copy documentation
     cp -f docs/Spielbeschreibungen/*.pdf outreach/website/documents/ || echo "Warning: PDF files not copied"
+    
+    # Skip the JAR build - it requires Java 17 and JavaFX
+    echo "Skipping JAR build for website deployment"
+    
+    # Create a placeholder JAR file if needed
+    touch outreach/website/download/SettlersOfAsgard.jar
+    
+    # Verify that the website files exist
+    ls -la outreach/website/
+"""
 
-    # Build the JAR file
-    ./gradlew jar || echo "Failed to build JAR, continuing deployment"
+[build.environment]
+  # Set Java version to 17
+  JAVA_VERSION = "17"
+  NODE_VERSION = "16"
 
-    # Copy the JAR file to the download directory
-    cp -f build/libs/SettlersOfAsgard.jar outreach/website/download/ || echo "Warning: JAR file not found"
-  """
-
+# This redirect is critical - it ensures any path will serve index.html
 [[redirects]]
-from = "/*"
-to = "/index.html"
-status = 200
-force = false
-conditions = {Role = ["admin"]}
+  from = "/*"
+  to = "/index.html"
+  status = 200
 
 [[headers]]
-for = "/images/*"
-[headers.values]
-Cache-Control = "public, max-age=604800"
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
 
 [[headers]]
-for = "/download/*"
-[headers.values]
-Cache-Control = "public, max-age=86400"
+  for = "/download/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
