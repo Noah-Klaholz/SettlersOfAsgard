@@ -133,15 +133,12 @@ public class GameScreenController extends BaseController {
     private Tile highlightedTile = null;
     private GridAdjustmentManager gridAdjustmentManager;
     // --- Tile tooltip support ---
-    private Popup tileTooltipPopup = null;
     private TileTooltip currentTileTooltip = null;
     private int lastTooltipRow = -1, lastTooltipCol = -1;
     // Add these fields to the class to track hover state and delay
     private PauseTransition tooltipShowDelay;
     private int pendingTooltipRow = -1;
     private int pendingTooltipCol = -1;
-
-    private String lastPlayerTurn = null;
 
     /*
      * --------------------------------------------------
@@ -338,7 +335,15 @@ public class GameScreenController extends BaseController {
         playerColours.add(Color.CYAN);
         playerColours.add(Color.MAGENTA);
 
-        for (String playerName : GameApplication.getPlayers()) {
+        updatePlayerColors();
+    }
+
+    /**
+     * Updates the player colors in the UI.
+     */
+    private void updatePlayerColors() {
+        for (Player player : gameState.getPlayers()) {
+            String playerName = player.getName();
             if (playerName.equals(localPlayer.getName())) {
                 playerColors.put(playerName, Color.GREEN); // Local Player should always be green
             } else {
@@ -547,6 +552,7 @@ public class GameScreenController extends BaseController {
         Platform.runLater(() -> {
             if (event.isSuccess()) {
                 playerManager.updatePlayerName(event.getNewName());
+                updatePlayerColors();
             } else {
                 String reason = Optional.ofNullable(event.getMessage()).orElse("Unknown reason.");
                 chatComponentController.addSystemMessage("Failed to change name: " + reason);

@@ -71,7 +71,7 @@ public class CommandHandler {
      */
     private void setLocalPlayerName(String playerName) {
         if (currentLobby != null && Objects.equals(currentLobby.getStatus(), Lobby.LobbyStatus.IN_GAME.getStatus())) {
-            Logger.getGlobal().info("Setting lobby to " + playerName);
+            Logger.getGlobal().info("Setting lobby playername to " + playerName);
             currentLobby.changeName(localPlayer.getName(), playerName);
         }
         this.localPlayer.setName(playerName);

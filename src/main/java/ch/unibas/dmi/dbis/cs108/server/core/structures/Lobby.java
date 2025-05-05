@@ -405,5 +405,9 @@ public class Lobby implements GameEventNotifier {
             return;
         }
         gameLogic.getGameState().findPlayerByName(oldName).setName(newName);
+        if (gameLogic.getGameState().getPlayerTurn().equals(oldName)) {
+            gameLogic.getGameState().setPlayerTurn(newName);
+        }
+        broadcastMessage(gameLogic.getGameState().createDetailedStatusMessage());
     }
 }
