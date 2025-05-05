@@ -1,0 +1,24 @@
+# Main build settings
+[build]
+publish = "outreach/website"
+command = "mkdir -p outreach/website/documents outreach/website/download && cp outreach/Documents/*.pdf outreach/website/documents/ && cp build/libs/SettlersOfAsgard.jar outreach/website/download/"
+
+# Redirect all 404s to index.html to handle client-side routing if needed
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
+force = false
+conditions = {Role = ["admin"]}
+
+# Cache control for static assets
+[[headers]]
+for = "/images/*"
+[headers.values]
+Cache-Control = "public, max-age=604800"
+
+# Cache control for downloadable files
+[[headers]]
+for = "/download/*"
+[headers.values]
+Cache-Control = "public, max-age=86400"
