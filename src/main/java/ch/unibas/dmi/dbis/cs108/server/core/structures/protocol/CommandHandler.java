@@ -26,12 +26,6 @@ public class CommandHandler {
     private final GameServer server;
     /** The logger for this class. */
     Logger logger = Logger.getLogger(CommandHandler.class.getName());
-    /** The current Lobby that this CommandHandler is associated with. */
-    private Lobby currentLobby;
-    /** The local player that this CommandHandler is associated with. */
-    private Player localPlayer;
-    /** The name of the player that this CommandHandler is associated with. */
-    private String playerName;
 
     /**
      * Constructor for the ClientHandler class.
@@ -40,8 +34,6 @@ public class CommandHandler {
      */
     public CommandHandler(ClientHandler clientHandler) {
         this.ch = clientHandler;
-        this.localPlayer = ch.getPlayer();
-        this.currentLobby = ch.getCurrentLobby();
         this.server = ch.getServer();
     }
 
@@ -61,7 +53,6 @@ public class CommandHandler {
      */
     private void setCurrentLobby(Lobby lobby) {
         ch.setCurrentLobby(lobby);
-        currentLobby = lobby;
     }
 
     /**
@@ -70,12 +61,13 @@ public class CommandHandler {
      * @param playerName the name to set
      */
     private void setLocalPlayerName(String playerName) {
+        Lobby currentLobby = ch.getCurrentLobby();
+        Player localPlayer = ch.getPlayer();
         if (currentLobby != null && Objects.equals(currentLobby.getStatus(), Lobby.LobbyStatus.IN_GAME.getStatus())) {
             Logger.getGlobal().info("Setting lobby playername to " + playerName);
             currentLobby.changeName(localPlayer.getName(), playerName);
         }
-        this.localPlayer.setName(playerName);
-        this.playerName = playerName;
+        localPlayer.setName(playerName);
         ch.getPlayer().setName(playerName);
     }
 
@@ -85,8 +77,6 @@ public class CommandHandler {
      * @param player the player to set
      */
     private void setLocalPlayer(Player player) {
-        this.localPlayer = player;
-        this.playerName = player.getName();
         ch.setPlayer(player);
     }
 
@@ -140,8 +130,7 @@ public class CommandHandler {
     public boolean handleDisconnect() {
         handleLeaveLobby();
         server.removeClient(ch);
-        sendMessage("OK$DISC$" + playerName);
-
+        sendMessage("OK$DISC$" + ch.getPlayerName());
         return true;
     }
 
@@ -153,6 +142,7 @@ public class CommandHandler {
      */
     public boolean handleChangeName(Command cmd) {
         String newPlayerName = cmd.getArgs()[0].toLowerCase();
+        Player localPlayer = ch.getPlayer();
 
         synchronized (server) {
             if (!server.containsPlayerName(newPlayerName)) {
@@ -237,13 +227,13 @@ public class CommandHandler {
      * @return true if the command was handled successfully, false otherwise
      */
     public boolean handleCreateLobby(Command cmd) {
-        if (currentLobby != null) {
+        if (ch.getCurrentLobby() != null) {
             handleLeaveLobby();
         }
         String lobbyId = cmd.getArgs()[1];
         int maxPlayers = Integer.parseInt(cmd.getArgs()[2]);
         Lobby lobby = server.createLobby(lobbyId, maxPlayers);
-        return handleJoinLobby(new Command(CommunicationAPI.NetworkProtocol.Commands.JOIN.getCommand() + "$" + playerName + "$" + lobbyId, localPlayer));
+        return handleJoinLobby(new Command(CommunicationAPI.NetworkProtocol.Commands.JOIN.getCommand() + "$" + ch.getPlayerName() + "$" + lobbyId, ch.getPlayer()));
     }
 
     /**
@@ -255,11 +245,13 @@ public class CommandHandler {
     public boolean handleJoinLobby(Command cmd) {
         String lobbyId = cmd.getArgs()[1];
         Lobby lobby = server.getLobby(lobbyId);
+        Lobby currentLobby = ch.getCurrentLobby();
+        Player localPlayer = ch.getPlayer();
         if (currentLobby != null && currentLobby.removePlayer(ch)) {
             String oldLobbyId = currentLobby.getId();
             Lobby oldLobby = server.getLobby(oldLobbyId);
-            oldLobby.broadcastMessage("OK$LEAV$" + playerName + "$" + oldLobbyId);
-            sendMessage("OK$LEAV$" + playerName + "$" + oldLobbyId);
+            oldLobby.broadcastMessage("OK$LEAV$" + localPlayer.getName() + "$" + oldLobbyId);
+            sendMessage("OK$LEAV$" + localPlayer.getName() + "$" + oldLobbyId);
             if (oldLobby.isEmpty()) {
                 server.removeLobby(oldLobby);
             }
@@ -267,12 +259,13 @@ public class CommandHandler {
         }
         if (lobby != null && lobby.addPlayer(ch)) {
             joinLobby(lobby);
-            currentLobby.broadcastMessage("OK$JOIN$" + lobbyId + "$" +
-                    lobby.getPlayers().stream()
+            Lobby joinedLobby = ch.getCurrentLobby();
+            joinedLobby.broadcastMessage("OK$JOIN$" + lobbyId + "$" +
+                    joinedLobby.getPlayers().stream()
                     .map(ClientHandler::getPlayerName)
                     .collect(Collectors.joining("%"))
                     + "$" +
-                    (lobby.getHostName().equals(playerName) ? "true" : "false"));
+                    (joinedLobby.getHostName().equals(localPlayer.getName()) ? "true" : "false"));
             return true;
         } else {
             sendMessage("ERR$106$JOIN_LOBBY_FAILED");
@@ -286,10 +279,12 @@ public class CommandHandler {
      * @return true if the command was handled successfully, false otherwise
      */
     public boolean handleLeaveLobby() {
+        Lobby currentLobby = ch.getCurrentLobby();
+        Player localPlayer = ch.getPlayer();
         if (currentLobby != null && currentLobby.removePlayer(ch)) {
             String lobbyId = currentLobby.getId();
-            currentLobby.broadcastMessage("OK$LEAV$" + playerName + "$" + lobbyId);
-            sendMessage("OK$LEAV$" + playerName + "$" + lobbyId);
+            currentLobby.broadcastMessage("OK$LEAV$" + localPlayer.getName() + "$" + lobbyId);
+            sendMessage("OK$LEAV$" + localPlayer.getName() + "$" + lobbyId);
             Lobby lobby = server.getLobby(lobbyId);
             if (lobby != null && lobby.isEmpty()) {
                 server.removeLobby(lobby);
@@ -339,6 +334,7 @@ public class CommandHandler {
     public boolean handleLobbyMessage(Command cmd) {
         String senderName = ch.getPlayerName();
         String message = cmd.getArgs()[1];
+        Lobby currentLobby = ch.getCurrentLobby();
         if (currentLobby != null) {
             currentLobby.broadcastMessage("CHTL$" + senderName + "$" + message);
             return true;
@@ -367,8 +363,8 @@ public class CommandHandler {
      * @return true if the game was started successfully, false otherwise
      */
     public boolean handleStartGame() {
-        if (ch.getCurrentLobby() != null && ch.getCurrentLobby().startGame()) {
-            this.currentLobby = ch.getCurrentLobby();
+        Lobby currentLobby = ch.getCurrentLobby();
+        if (currentLobby != null && currentLobby.startGame()) {
             String startPlayerName = currentLobby.getGameLogic().getGameState().getPlayerTurn();
             currentLobby.broadcastMessage("STRT$" + startPlayerName);
             currentLobby.broadcastMessage(currentLobby.getGameLogic().getGameState().createDetailedStatusMessage());
@@ -397,6 +393,7 @@ public class CommandHandler {
      * @return the current game logic
      */
     public GameLogic getGameLogic() {
+        Lobby currentLobby = ch.getCurrentLobby();
         return (currentLobby != null) ? currentLobby.getGameLogic() : null;
     }
 }
