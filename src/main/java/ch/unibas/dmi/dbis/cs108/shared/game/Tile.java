@@ -14,7 +14,6 @@ public class Tile {
 
     private final int x;
     private final int y;
-    private boolean hasEntity;
     private String owner; //ownerID
     private int price;
     private GameEntity entity; // Not an artifact
@@ -34,10 +33,9 @@ public class Tile {
     public Tile(TileBuilder builder) {
         this.x = builder.x;
         this.y = builder.y;
-        this.hasEntity = builder.hasEntity;
         this.owner = builder.owner;
         this.price = builder.price;
-        this.entity = builder.hasEntity ? builder.entity : null;
+        this.entity = builder.entity;
         this.artefact = builder.artefact;
         this.world = builder.world;
         this.purchased = builder.purchased;
@@ -71,22 +69,12 @@ public class Tile {
     }
 
     /**
-     * getter for hasEntity
-     *
-     * @return true if the tile has an entity, false otherwise
-     */
-    public boolean getHasEntity() {
-        return hasEntity;
-    }
-
-    /**
      * setter for hasEntity
      *
      * @param entity the entity to set
      */
     public void setEntity(GameEntity entity) {
         this.entity = entity;
-        this.hasEntity = true;
     }
 
     /**
@@ -125,14 +113,6 @@ public class Tile {
      */
     public GameEntity getEntity() {
         return entity;
-    }
-
-    /**
-     * setter for hasEntity
-     * @param hasEntity
-     */
-    public void setHasEntity(boolean hasEntity) {
-        this.hasEntity = hasEntity;
     }
 
     /**
@@ -266,7 +246,6 @@ public class Tile {
     public GameEntity removeEntity() {
         GameEntity entity = this.entity;
         this.entity = null;
-        this.hasEntity = false;
         return entity;
     }
 
@@ -297,12 +276,20 @@ public class Tile {
         public int tileID;
         private int x;
         private int y;
-        private boolean hasEntity;
         private String owner;
         private int price;
         private GameEntity entity;
         private Artifact artefact;
         private String world;
+
+        /**
+         * Creates a new TileBuilder.
+         */
+        public TileBuilder() {
+            this.purchased = false;
+            this.hasRiver = false;
+            this.owner = null;
+        }
 
         /**
          * Constructor for TileBuilder.
@@ -321,16 +308,6 @@ public class Tile {
          */
         public TileBuilder setY(int y) {
             this.y = y;
-            return this;
-        }
-
-        /**
-         * setter for hasEntity
-         *
-         * @param hasEntity true if the tile has an entity, false otherwise
-         */
-        public TileBuilder setHasEntity(boolean hasEntity) {
-            this.hasEntity = hasEntity;
             return this;
         }
 
@@ -360,7 +337,6 @@ public class Tile {
          * @param entity The entity on the tile
          */
         public TileBuilder setEntity(GameEntity entity) {
-            this.hasEntity = true;
             this.entity = entity;
             return this;
         }

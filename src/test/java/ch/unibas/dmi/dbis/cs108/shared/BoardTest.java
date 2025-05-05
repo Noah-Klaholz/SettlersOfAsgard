@@ -37,7 +37,6 @@ public class BoardTest {
                 Tile tile = board.getTileByCoordinates(x, y);
                 assertNotNull(tile);
                 assertNull(tile.getOwner());
-                assertFalse(tile.hasEntity());
             }
         }
     }

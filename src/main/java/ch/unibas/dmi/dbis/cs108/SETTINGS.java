@@ -12,7 +12,7 @@ public class SETTINGS {
         TIMEOUT(2 * 1000), // Milliseconds
         MAX_ARTIFACTS(3),
         START_RUNES(50),
-        START_ENERGY(4),
+        START_ENERGY(0),
         CHANCE_FOR_CURSE(1),
         MIN_RESSOURCE_VALUE(10),
         MAX_RESOURCE_VALUE(20),

@@ -229,7 +229,6 @@ public class GameStateManager {
                     try {
                         switch (key) {
                             case "HE":
-                                tile.setHasEntity("1".equals(value));
                                 break;
                             case "O":
                                 tile.setOwner("null".equals(value) ? null : value);
@@ -240,7 +239,6 @@ public class GameStateManager {
                             case "ENT":
                                 if ("NONE".equals(value)) {
                                     tile.setEntity(null);
-                                    tile.setHasEntity(false);
                                 } else {
                                     String[] entParts = value.split(",", 2);
                                     String entType = entParts[0];
@@ -269,7 +267,6 @@ public class GameStateManager {
                                             statue.setActivated(activated);
                                             statue.setLevel(level);
                                             tile.setEntity(statue);
-                                            tile.setHasEntity(true);
                                         }
                                     } else if ("MON".equals(entType)) {
                                         int id = Integer.parseInt(entProps[0]);
@@ -291,7 +288,6 @@ public class GameStateManager {
                                         if (monument != null) {
                                             monument.setDisabled(disabled);
                                             tile.setEntity(monument);
-                                            tile.setHasEntity(true);
                                         }
                                     } else if ("STR".equals(entType)) {
                                         int id = Integer.parseInt(entProps[0]);
@@ -315,7 +311,6 @@ public class GameStateManager {
                                             structure.setDisabled(disabled);
                                             structure.setActivated(activated);
                                             tile.setEntity(structure);
-                                            tile.setHasEntity(true);
                                         }
                                     }
                                 }
