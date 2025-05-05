@@ -10,6 +10,7 @@ import ch.unibas.dmi.dbis.cs108.server.networking.GameServer;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -69,6 +70,10 @@ public class CommandHandler {
      * @param playerName the name to set
      */
     private void setLocalPlayerName(String playerName) {
+        if (currentLobby != null && Objects.equals(currentLobby.getStatus(), Lobby.LobbyStatus.IN_GAME.getStatus())) {
+            Logger.getGlobal().info("Setting lobby to " + playerName);
+            currentLobby.changeName(localPlayer.getName(), playerName);
+        }
         this.localPlayer.setName(playerName);
         this.playerName = playerName;
         ch.getPlayer().setName(playerName);

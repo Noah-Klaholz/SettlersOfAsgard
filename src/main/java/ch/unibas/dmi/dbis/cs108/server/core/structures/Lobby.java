@@ -381,4 +381,29 @@ public class Lobby implements GameEventNotifier {
         broadcastMessage("TURN$" + gameLogic.getGameState().getPlayerTurn());
         broadcastMessage(gameLogic.getGameState().createDetailedStatusMessage());
     }
+
+    /**
+     * Changes the name of a player in the game.
+     * @param oldName The old name of the player.
+     * @param newName The new name of the player.
+     */
+    public void changeName(String oldName, String newName) {
+        if (oldName == null || newName == null) {
+            logger.warning("Old name or new name is null, cannot change name.");
+            return;
+        }
+        if (oldName.equals(newName)) {
+            logger.warning("Old name and new name are the same, cannot change name.");
+            return;
+        }
+        if (gameLogic == null) {
+            logger.warning("GameLogic is null, cannot change name.");
+            return;
+        }
+        if (gameLogic.getGameState().findPlayerByName(oldName) == null) {
+            logger.warning("Player with name " + oldName + " not found in game.");
+            return;
+        }
+        gameLogic.getGameState().findPlayerByName(oldName).setName(newName);
+    }
 }

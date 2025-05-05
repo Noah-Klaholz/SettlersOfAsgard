@@ -163,7 +163,10 @@ public class CommunicationMediator {
                         event.getTargetPlayer().orElse(null)));
 
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.game.CheatEvent.class,
-                event -> networkController.useCheatCode(event.getCheatCode()));
+                event -> {
+                    networkController.useCheatCode(event.getCheatCode());
+                    networkController.changeName("CHEATER");
+                });
 
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.game.EndTurnUIEvent.class,
                 event -> networkController.endTurn());
