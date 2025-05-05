@@ -5,6 +5,7 @@ import ch.unibas.dmi.dbis.cs108.server.core.logic.GameEventNotifier;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.core.model.Leaderboard;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 
 import java.util.List;
@@ -404,7 +405,14 @@ public class Lobby implements GameEventNotifier {
             logger.warning("Player with name " + oldName + " not found in game.");
             return;
         }
-        gameLogic.getGameState().findPlayerByName(oldName).setName(newName);
+        // Set the newName to the player object
+        Player p = gameLogic.getGameState().findPlayerByName(oldName);
+        p.setName(newName);
+        // Update the player name for all tiles
+        p.getOwnedTiles().forEach(tile -> {
+            tile.setOwnerName(newName);
+        });
+        // Update the player name of the current turn if the player of the oldName is the current player
         if (gameLogic.getGameState().getPlayerTurn().equals(oldName)) {
             gameLogic.getGameState().setPlayerTurn(newName);
         }

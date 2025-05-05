@@ -266,6 +266,10 @@ public class Tile {
         this.tileID = i;
     }
 
+    public void setOwnerName(String newName) {
+        this.owner = newName;
+    }
+
     /**
      * Builder class for creating Tile instances.
      */
