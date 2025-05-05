@@ -340,17 +340,43 @@ public class GameScreenController extends BaseController {
 
     /**
      * Updates the player colors in the UI.
+     * Ensures that each player keeps their color, even after a name change.
      */
     private void updatePlayerColors() {
+        // Build a new mapping, preserving existing colors
+        Map<String, Color> newColors = new HashMap<>();
+        Set<Color> usedColors = new HashSet<>();
+
+        // Always assign GREEN to the local player
+        if (localPlayer != null) {
+            newColors.put(localPlayer.getName(), Color.GREEN);
+            usedColors.add(Color.GREEN);
+        }
+
+        // Prepare a list of available colors (excluding GREEN and already used)
+        List<Color> availableColors = new ArrayList<>(playerColours);
+        availableColors.remove(Color.GREEN);
+        usedColors.addAll(playerColors.values());
+        availableColors.removeAll(usedColors);
+
+        // Assign colors to other players, preserving previous assignments
         for (Player player : gameState.getPlayers()) {
             String playerName = player.getName();
             if (playerName.equals(localPlayer.getName())) {
-                playerColors.put(playerName, Color.GREEN); // Local Player should always be green
+                continue; // Already assigned GREEN
+            }
+            Color prevColor = playerColors.get(playerName);
+            if (prevColor != null && !prevColor.equals(Color.GREEN)) {
+                newColors.put(playerName, prevColor);
             } else {
-                Color color = playerColours.remove(0);
-                playerColors.put(playerName, color);
+                // Assign a new color if available, otherwise fallback to gray
+                Color colorToAssign = !availableColors.isEmpty() ? availableColors.remove(0) : Color.GRAY;
+                newColors.put(playerName, colorToAssign);
             }
         }
+
+        playerColors.clear();
+        playerColors.putAll(newColors);
     }
 
     /**
@@ -442,6 +468,8 @@ public class GameScreenController extends BaseController {
                 LOGGER.info("First GameSyncEvent processed. Proceeding to full UI initialization...");
                 initializeUI();
             }
+
+            updatePlayerColors();
 
             artifacts = gamePlayer.getArtifacts();
             markStatuePlaced(gamePlayer.hasStatue());
@@ -2356,7 +2384,7 @@ public class GameScreenController extends BaseController {
         Pane root = (StackPane) gameCanvas.getParent();
 
         // Update the popup with current players
-        resourceOverviewDialog.updatePlayers(gameState.getPlayers(), gameState.getPlayerTurn());
+        resourceOverviewDialog.updatePlayers(gameState.getPlayers(), gameState.getPlayerTurn(), playerColors);
         showDialogAsOverlay(resourceOverviewDialog, root);
     }
 
