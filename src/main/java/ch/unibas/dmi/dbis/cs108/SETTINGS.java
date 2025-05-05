@@ -22,7 +22,8 @@ public class SETTINGS {
         MAX_ENERGY(4),
         MAX_STRUCTURES(6),
         MONUMENT_SIZE(33),
-        ENTITY_SIZE(33); // Size of the monument
+        ENTITY_SIZE(33), // Size of the monument
+        TURN_TIME(60); // Seconds
 
         private final int value;
 

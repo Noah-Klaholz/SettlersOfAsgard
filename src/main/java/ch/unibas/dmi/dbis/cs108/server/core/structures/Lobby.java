@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.server.core.structures;
 
+import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameEventNotifier;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.core.model.Leaderboard;
@@ -215,7 +216,7 @@ public class Lobby implements GameEventNotifier {
         turnScheduler = Executors.newSingleThreadScheduledExecutor();
         turnScheduler.scheduleAtFixedRate(
                 this::processTurnChange,
-                1, 1, TimeUnit.MINUTES
+                1, SETTINGS.Config.TURN_TIME.getValue(), TimeUnit.SECONDS
         );
     }
 

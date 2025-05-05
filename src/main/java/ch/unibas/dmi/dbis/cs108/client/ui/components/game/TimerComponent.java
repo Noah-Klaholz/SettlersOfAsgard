@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.components.game;
 
+import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -9,7 +10,7 @@ import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
 public class TimerComponent extends StackPane {
-    private static final int DEFAULT_SECONDS = 60;
+    private static final int DEFAULT_SECONDS = SETTINGS.Config.TURN_TIME.getValue();
     private int secondsLeft = DEFAULT_SECONDS;
     private final Label timerLabel = new Label();
     private Timeline timeline;
