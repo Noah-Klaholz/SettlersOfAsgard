@@ -897,6 +897,9 @@ public class GameScreenController extends BaseController {
      * a tile click event. Also handles interactions with placed entities.
      */
     private void handleCanvasClick(double px, double py) {
+        if (currentTileTooltip != null) {
+            hideTileTooltip();
+        }
         int[] tileCoords = getHexAt(px, py);
         if (tileCoords == null)
             return;

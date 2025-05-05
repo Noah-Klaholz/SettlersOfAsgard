@@ -226,7 +226,7 @@ public class StatueInteractionHandler {
     /**
      * Highlights eligible river tiles for tree growing (Freyr specific).
      * 
-     * @param tiles          The list of eligible tiles
+     * @param riverTiles          The list of eligible tiles
      * @param onTileSelected Callback when a tile is selected
      */
     public void highlightEligibleRiverTiles(List<Tile> riverTiles, BiConsumer<Integer, Integer> onTileSelected) {
