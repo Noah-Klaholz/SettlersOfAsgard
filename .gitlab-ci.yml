@@ -27,10 +27,5 @@ test:
     - apt-get update && apt-get install -y libopenjfx-java
   script:
     - gradle test
-  after_script:
-    - >
-      if [ "$CI_JOB_STATUS" == "failed" ]; then
-        echo "Tests fehlgeschlagen! Siehe Job-Logs: $CI_JOB_URL";
-      fi
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
