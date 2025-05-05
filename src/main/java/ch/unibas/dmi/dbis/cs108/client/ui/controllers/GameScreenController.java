@@ -1196,7 +1196,7 @@ public class GameScreenController extends BaseController {
 
             if (gm instanceof Monument) {
                 // Calculate maximum width based on hex size and squish factor
-                double maxWidth = (double) SETTINGS.Config.MONUMENT_SIZE.getValue() /100 * hexSize * hSquish;
+                double maxWidth = (double) SETTINGS.Config.MONUMENT_SIZE.getValue() / 10 * hexSize * hSquish;
 
                 // Calculate scale to fit within both max width and max height
                 double scale = maxWidth / image.getWidth();
@@ -1208,7 +1208,7 @@ public class GameScreenController extends BaseController {
                 gc.drawImage(image, centerX - scaledWidth / 2, centerY - 3 * scaledHeight / 4, scaledWidth, scaledHeight);
             } else {
                 // Calculate maximum width based on hex size and squish factor
-                double maxWidth = (double) SETTINGS.Config.ENTITY_SIZE.getValue() /100 * hexSize * hSquish;
+                double maxWidth = (double) SETTINGS.Config.ENTITY_SIZE.getValue() / 10 * hexSize * hSquish;
 
                 // Calculate scale to fit within both max width and max height
                 double scale = maxWidth / image.getWidth();
@@ -1218,7 +1218,7 @@ public class GameScreenController extends BaseController {
                 double scaledHeight = image.getHeight() * scale;
 
                 // Draw image centered in the hex
-                gc.drawImage(image, centerX - scaledWidth / 2, centerY - scaledHeight / 2, scaledWidth, scaledHeight);
+                gc.drawImage(image, centerX - scaledWidth / 2, centerY - 3 * scaledHeight / 4, scaledWidth, scaledHeight);
             }
 
             // Restore graphics state
