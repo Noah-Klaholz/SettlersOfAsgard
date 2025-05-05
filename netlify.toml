@@ -16,3 +16,9 @@ publish = "outreach/website"
   for = "/download/*"
   [headers.values]
     Cache-Control = "public, max-age=86400"
+
+[[headers]]
+  for = "/download/*.jar"
+  [headers.values]
+    Content-Type = "application/java-archive"
+    Content-Disposition = "attachment"
