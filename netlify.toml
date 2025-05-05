@@ -1,18 +1,37 @@
 [build]
 publish = "outreach/website"
 command = """
-    # Force Java 17 installation using sdk (Software Development Kit Manager) which is available on Netlify
-    echo "Installing Java 17..."
-    . /opt/buildhome/.sdkman/bin/sdkman-init.sh
-    sdk install java 17.0.7-tem
-    sdk use java 17.0.7-tem
-    java -version
+    # Ensure we can use standard commands by setting PATH
+    export PATH="/bin:/usr/bin:/usr/local/bin:$PATH"
     
-    # Create necessary directories
-    mkdir -p outreach/website/documents outreach/website/download
+    # Debug - check basic environment
+    which mkdir || echo "mkdir not found"
+    which java || echo "java not found"
+    which ls || echo "ls not found"
+    echo "Current PATH: $PATH"
+    
+    # Create necessary directories - use fallback method if mkdir fails
+    /bin/mkdir -p outreach/website/documents outreach/website/download 2>/dev/null || (
+      /usr/bin/mkdir -p outreach/website/documents outreach/website/download 2>/dev/null || 
+      echo "Failed to create directories, will try to continue anyway"
+    )
+    
+    # Force Java 17 installation - try with known paths to sdk
+    echo "Attempting to install Java 17..."
+    test -f /opt/buildhome/.sdkman/bin/sdkman-init.sh && . /opt/buildhome/.sdkman/bin/sdkman-init.sh
+    
+    if command -v sdk > /dev/null 2>&1; then
+      sdk install java 17.0.7-tem
+      sdk use java 17.0.7-tem
+      java -version
+    else
+      echo "SDKMAN not available. Will try to continue with system Java."
+      java -version
+    fi
     
     # Copy documentation files - do this first in case the build fails
-    cp -f docs/Spielbeschreibungen/*.pdf outreach/website/documents/ || echo "Warning: PDF files not copied"
+    cp -f docs/Spielbeschreibungen/*.pdf outreach/website/documents/ 2>/dev/null || 
+      echo "Warning: PDF files not copied"
     
     # Use a custom init script to bypass JavaFX plugin issues
     echo "Creating init script to bypass JavaFX plugin issues..."
@@ -28,7 +47,8 @@ command = """
     
     # Build the JAR with our custom init script
     echo "Running Gradle build..."
-    ./gradlew jar -I init.gradle --no-daemon --stacktrace
+    chmod +x ./gradlew
+    ./gradlew jar -I init.gradle --no-daemon --stacktrace || echo "Gradle build failed, will create fallback JAR"
     
     # Copy the JAR if it was built successfully
     if [ -f "build/libs/settlersOfAsgard.jar" ]; then
@@ -39,18 +59,12 @@ command = """
         echo "This is a placeholder JAR. Please visit our GitHub repository for the full game: https://github.com/CS108-Group-3/SettlersOfAsgard/releases" > outreach/website/download/SettlersOfAsgard.jar
     fi
     
-    # Verify website files
-    echo "Website directory contents:"
-    ls -la outreach/website/
-    echo "Download directory contents:"
-    ls -la outreach/website/download/
-    echo "Documents directory contents:"
-    ls -la outreach/website/documents/
+    # Verify website files (if ls is available)
+    echo "Verifying output files..."
+    ls -la outreach/website/ 2>/dev/null || echo "Cannot list website files"
+    ls -la outreach/website/download/ 2>/dev/null || echo "Cannot list download files"
+    ls -la outreach/website/documents/ 2>/dev/null || echo "Cannot list document files"
 """
-
-[build.environment]
-  JAVA_HOME = "~/.sdkman/candidates/java/17.0.7-tem"
-  PATH = "${PATH}:${HOME}/.sdkman/candidates/java/current/bin"
 
 # This redirect ensures any path will serve index.html
 [[redirects]]
