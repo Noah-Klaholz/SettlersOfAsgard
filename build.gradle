@@ -168,10 +168,9 @@ tasks.register('build-cs108') {
         copy {
             from "${buildDir}/libs/settlersOfAsgard.jar"
             into websiteDir
-            rename { String fileName -> "SettlersOfAsgard.jar" }
         }
 
-        println "JAR file copied to website download directory: ${websiteDir}/SettlersOfAsgard.jar"
+        println "JAR file copied to website download directory: ${websiteDir}/settlersOfAsgard.jar"
 
         // Create documents directory and copy PDFs
         def docsDir = file("${projectDir}/outreach/website/documents")
