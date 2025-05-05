@@ -603,12 +603,114 @@ public class GameScreenController extends BaseController {
     }
 
     /**
+     * Disables all game board interactions and hides tooltips/popups.
+     * Should be called when the WinScreenDialog is shown.
+     */
+    private void disableGameBoardInteractions() {
+        // Remove all event handlers from gameCanvas
+        gameCanvas.setOnMousePressed(null);
+        gameCanvas.setOnMouseClicked(null);
+        gameCanvas.setOnMouseMoved(null);
+        gameCanvas.setOnMouseEntered(null);
+        gameCanvas.setOnMouseExited(null);
+        gameCanvas.setOnKeyPressed(null);
+
+        // Remove event handlers added via addEventHandler (for all event types)
+        gameCanvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, e -> handleCanvasClick(e.getX(), e.getY()));
+        gameCanvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            if (e.getClickCount() == 2) handleCanvasDoubleClick(e.getX(), e.getY());
+        });
+        gameCanvas.removeEventHandler(MouseEvent.MOUSE_ENTERED_TARGET, e -> handleCanvasEntered(e.getX(), e.getY()));
+        gameCanvas.removeEventHandler(MouseEvent.MOUSE_MOVED, e -> handleCanvasMouseMove(e.getX(), e.getY()));
+        gameCanvas.removeEventHandler(MouseEvent.MOUSE_EXITED_TARGET, e -> {
+            clearHighlight();
+            highlightedTile = null;
+            cancelTooltipDelay();
+            hideTileTooltip();
+        });
+
+        // Remove event handlers from parent StackPane if present
+        if (gameCanvas.getParent() instanceof StackPane parent) {
+            parent.setOnMousePressed(null);
+            parent.setOnMouseClicked(null);
+            parent.setOnMouseMoved(null);
+            parent.setOnMouseEntered(null);
+            parent.setOnMouseExited(null);
+
+            parent.removeEventHandler(MouseEvent.MOUSE_PRESSED, ev -> {
+                Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
+                if (local.getX() >= 0 && local.getY() >= 0 && local.getX() <= gameCanvas.getWidth()
+                        && local.getY() <= gameCanvas.getHeight()) {
+                    handleCanvasClick(local.getX(), local.getY());
+                    ev.consume();
+                }
+            });
+            parent.removeEventHandler(MouseEvent.MOUSE_CLICKED, ev -> {
+                if (ev.getClickCount() == 2) {
+                    Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
+                    if (local.getX() >= 0 && local.getY() >= 0 && local.getX() <= gameCanvas.getWidth()
+                            && local.getY() <= gameCanvas.getHeight()) {
+                        handleCanvasDoubleClick(local.getX(), local.getY());
+                        ev.consume();
+                    }
+                }
+            });
+            parent.removeEventHandler(MouseEvent.MOUSE_MOVED, ev -> {
+                Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
+                if (local.getX() >= 0 && local.getY() >= 0 && local.getX() <= gameCanvas.getWidth()
+                        && local.getY() <= gameCanvas.getHeight()) {
+                    handleCanvasMouseMove(local.getX(), local.getY());
+                    handleTileTooltipHover(local.getX(), local.getY());
+                    ev.consume();
+                }
+            });
+            parent.removeEventHandler(MouseEvent.MOUSE_ENTERED_TARGET, ev -> {
+                Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
+                if (local.getX() >= 0 && local.getY() >= 0 && local.getX() <= gameCanvas.getWidth()
+                        && local.getY() <= gameCanvas.getHeight()) {
+                    handleCanvasEntered(local.getX(), local.getY());
+                    ev.consume();
+                }
+            });
+            parent.removeEventHandler(MouseEvent.MOUSE_EXITED_TARGET, ev -> {
+                Point2D local = gameCanvas.sceneToLocal(ev.getSceneX(), ev.getSceneY());
+                boolean trulyExited = local.getX() < 0 || local.getY() < 0 || local.getX() > gameCanvas.getWidth()
+                        || local.getY() > gameCanvas.getHeight();
+
+                if (trulyExited) {
+                    clearHighlight();
+                    highlightedTile = null;
+                    hideTileTooltip();
+                }
+            });
+        }
+
+        // Hide any visible tile tooltip and cancel tooltip delay
+        cancelTooltipDelay();
+        hideTileTooltip();
+
+        // Optionally, hide or disable the canvas and overlays
+        gameCanvas.setDisable(true);
+        if (backgroundCanvas != null) backgroundCanvas.setDisable(true);
+        if (overlayCanvas != null) overlayCanvas.setDisable(true);
+
+        // Optionally, hide the canvas visually (uncomment if you want it invisible)
+        // gameCanvas.setVisible(false);
+        // if (backgroundCanvas != null) backgroundCanvas.setVisible(false);
+        // if (overlayCanvas != null) overlayCanvas.setVisible(false);
+
+        // Close any other popups related to the board (if you have references)
+        // (Add code here if you have custom popups to close)
+    }
+
+    /**
      * Shows the WinScreenDialog when the game ends.
      *
      * @param event The event containing the leaderboard data.
      */
     private void handleEndGame(EndGameEvent event) {
         Platform.runLater(() -> {
+            disableGameBoardInteractions();
             WinScreenDialog dialog = new WinScreenDialog(event.getLeaderboard());
             dialog.setOnMenuAction(() -> {
                 eventBus.publish(new LeaveLobbyRequestEvent(currentLobbyId));
