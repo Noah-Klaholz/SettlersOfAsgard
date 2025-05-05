@@ -2,7 +2,7 @@
   {
     "name": "Rune Table",
     "usage": "Converts 4 Energy to 100 Runes",
-    "description": "The rune table was used to craft ancient runes. It is said that the runes were used to communicate with the gods.",
+    "description": "This Table is a place of creation. Carve your runes into wood or bone and shape the fate of the cosmos, just like the Norns do by carving runes into the trunk of Yggdrasil. One weaves the past, Urðr. One weaves the present, Verðandi. And one weaves the future, Skuld.",
     "cardImagePath": "resources/images/cards/s_runetable_card.png",
     "mapImagePath": "resources/images/buyableStructuresBIG/s_runetable_big.png",
     "id": 1,
@@ -22,7 +22,7 @@
   {
     "name": "Mimisbrunnr",
     "usage": "Gives 1 random Artifact and 1 energy per Round",
-    "description": "",
+    "description": "The Mimisbrunnr is a well of wisdom and knowledge, located beneath one of the roots of Yggdrasil, and it belongs to Mimir, a wise being, guarding the waters of insight and cosmic secrets. Those who seek wisdom may drink from these waters, but they must pay a price, like Odin once paid his eye here. The well symbolises how true understanding demands giving up something valuable, be it comfort, certainty or even a part of oneself.",
     "cardImagePath": "resources/images/cards/s_mimisbrunnr_card.png",
     "mapImagePath": "resources/images/buyableStructuresBIG/s_mimisbrunnr_big.png",
     "id": 2,
@@ -38,7 +38,7 @@
   {
     "name": "Helgrindr",
     "usage": "Prevents Player-Debuffs and gives 1 Energy per Round",
-    "description": "",
+    "description": "Helgrindr is the gate to Hel's domain, the world of the dead that did not die a heroic death, the border between the dead and the living. It is the gatekeeper of forgotten, uncelebrated deaths, and the final boundary between life and death, symbolising the inevitable consequence of life.",
     "cardImagePath": "resources/images/cards/s_helgrindr_card.png",
     "mapImagePath": "resources/images/buyableStructuresBIG/s_helgrindr_big.png",
     "id": 3,
@@ -54,7 +54,7 @@
   {
     "name": "Huginn and Muninn",
     "usage": "Shows where 1 Artifact is on a buyable Tile and gives 2 Energy per Round",
-    "description": "",
+    "description": "Huginn and Muninn are the two ravens of Odin, the Alfather. Each day, he sends them to fly across the nine worlds and return to whisper into his ears all they have seen and heard. They represent the extension of Odin's consciousness, symbolising Thought and Memory, as sources of wisdom. Through them, Odin becomes all-seeing and all-knowing, as long as they keep returning back to him.",
     "cardImagePath": "resources/images/cards/s_huginnandmuninn_card.png",
     "mapImagePath": "resources/images/buyableStructuresBIG/s_huginnandmuninn_big.png",
     "id": 4,
@@ -69,8 +69,8 @@
   },
   {
     "name": "Ran's Hall",
-    "usage": "Catches mythological fish when placed on a River Tile: Can be used to receive +2 Energy per Round",
-    "description": "",
+    "usage": "Welcomes the souls of the drowned when placed on a RiverTile: Can be used to receive +2 Energy per Round",
+    "description": "Rán is the sea goddess, wife of Aegir, the giant god of the sea and ocean. Unlike Aegir, she is more sinister and treacherous, showing the darker side of the sea. In her hall, she keeps those who drowned, sometimes those who's lives she herself stole, keeping them in her deep, silent domain underwater.",
     "cardImagePath": "resources/images/cards/s_ranshall_card.png",
     "mapImagePath": "resources/images/buyableStructuresBIG/s_ranshall_big.png",
     "id": 5,
@@ -86,7 +86,7 @@
   {
     "name": "Surtur's Smeltery",
     "usage": "Player receives a small random buff each round.",
-    "description": "",
+    "description": "Muspelheim is the realm of primal fire, the world guarded by Surtr, the fire giant destined to set the world ablaze during Ragnarök. These primal fires once shaped the cosmos when they met the icy waters of Nilfheim, birthing the first being, the giant Ymir, marking the beginning of the world. Use these fires now to forge your own destiny, and shape the world to your liking.",
     "cardImagePath": "resources/images/cards/s_sulturssmithy_card.png",
     "mapImagePath": "resources/images/buyableStructuresBIG/s_surtrssmithy_big.png",
     "id": 6,
@@ -126,7 +126,7 @@
   {
     "name": "Tree",
     "usage": "Only placeable on a River Tile. Automatically farms a lot of runes",
-    "description": "",
+    "description": "Grown by the hands of Freyr, the god of fertility and prosperity, this tree shall bring you prosperity and abundance.",
     "cardImagePath": "",
     "mapImagePath": "resources/images/tree/t_tree_big.png",
     "id": 7,
@@ -136,8 +136,8 @@
   {
     "name": "ActiveTrap",
     "usage": "Can be placed on empty Tiles which are not yet bought. Upon buying the Tile, the Trap is activated and the Player gets a Debuff.",
-    "description": "",
-    "cardImagePath": "",
+    "description": "Fenrir is a monstrous wolf, prophesied to bring destruction to the gods and kill Odin during Ragnarök. Thus, the gods began to fear him and asked the dwarves to forge Gleipnir, a magical chain of impossible ingredients, like the sound of a cat's footsteps. These chains are unbreakable, even for Fenrir, and kept him bound until the time of Ragnarök.",
+    "cardImagePath": "resources/images/cards/a_fenrirschains_card.png",
     "mapImagePath": "",
     "id": 8,
     "price": 0,
@@ -152,7 +152,7 @@
   {
     "name": "Overgrowth",
     "usage": "Is placed by the curse of Freyr, destroys the structure that is on the tile and makes the tile unusable",
-    "description": "",
+    "description": "You angered the gods. These leaves are lush and abundant, but for you they are now a hindrance.",
     "cardImagePath": "",
     "mapImagePath": "resources/images/overgrowth/x_overgrowth_big.png",
     "id": 9,

@@ -35,7 +35,7 @@
     "name": "Freyr",
     "deal": "Grows 1 Tree on a River Tile: costs all available Energy (min 1 Energy)",
     "blessing": "Grows Trees on all River Tiles",
-    "curse": "Overgrows 1 random Statue so it cannot be used anymore and blocks the tile",
+    "curse": "Overgrows 1 random Structure so it cannot be used anymore and blocks the tile",
     "usage": "Can be upgraded to make a deal with a God or upgraded again for a strong blessing. Beware of the curse!",
     "description": "Freyr is the god of fertility, belonging to the tribe of the Vanir, who was send to live among the Aesir as a part of a truce after the Aesir-Vanir war. He is the son of Njord, the god of the sea and wealth, and the brother of Freyja, the goddess of love and magic. Freyr is associated with prosperity and abundance, fair weather and fertility,bringing good harvest, peace and wealth. He is also said to rule Alfheim, the realm of the light elves. Though he gives away his magical sword in the pursuit of love, leaving him vulnerable during Ragnarök, where he dies to the blade of Surtr.",
     "useType": "deal: Tile",
