@@ -26,6 +26,23 @@ public class Statue extends PurchasableEntity {
     private String world;
 
     /**
+     * String representing the curse of this statue
+     */
+    String curse;
+
+
+    /**
+     * String representing the deal this statue can make
+     */
+    String deal;
+
+
+    /**
+     * String representing the blessing of this statue
+     */
+    String blessing;
+
+    /**
      * Default constructor for Statue.
      */
     public Statue() {}
@@ -37,10 +54,13 @@ public class Statue extends PurchasableEntity {
      * @param name The name of this statue
      * @param description The description of this statue
      */
-    public Statue(int id, String name, int price, int ressourceValue, int upgradePrice, String description, String usage, String world, String cardImagePath, String mapImagePath) {
+    public Statue(int id, String name, int price, int ressourceValue, int upgradePrice, String description, String usage, String world, String cardImagePath, String mapImagePath, String curse, String deal, String blessing) {
         super(id, name, description, usage, price, ressourceValue, cardImagePath, mapImagePath);
         this.world = world;
         this.upgradePrice = upgradePrice;
+        this.curse = curse;
+        this.deal = deal;
+        this.blessing = blessing;
     }
 
     /**
@@ -78,6 +98,50 @@ public class Statue extends PurchasableEntity {
      */
     public String getWorld() { return world; }
 
+
+    /**
+     * Returns the curse of this statue.
+     *
+     * @return String the curse
+     */
+    public String getCurse() { return curse; }
+
+    /**
+     * Returns the deal of this statue.
+     *
+     * @return String the deal
+     */
+    public String getDeal() { return deal; }
+
+    /**
+     * Returns the blessing of this statue.
+     *
+     * @return String the blessing
+     */
+    public String getBlessing() { return blessing; }
+
+
+    /**
+     * Sets the curse of this statue.
+     *
+     * @param curse The curse
+     */
+    public void setCurse(String curse) { this.curse = curse; }
+
+    /**
+     * Sets the deal of this statue.
+     *
+     * @param deal The deal
+     */
+    public void setDeal(String deal) { this.deal = deal; }
+
+    /**
+     * Sets the blessing of this statue.
+     *
+     * @param blessing The blessing
+     */
+    public void setBlessing(String blessing) { this.blessing = blessing; }
+
     /**
      * Upgrades this statue to the next level.
      */
@@ -111,6 +175,9 @@ public class Statue extends PurchasableEntity {
         super.loadFromJson(json);
         this.upgradePrice = json.get("upgradePrice").getAsInt();
         this.world = json.get("world").getAsString();
+        this.curse = json.get("curse").getAsString();
+        this.deal = json.get("deal").getAsString();
+        this.blessing = json.get("blessing").getAsString();
     }
 
     /**
@@ -136,6 +203,9 @@ public class Statue extends PurchasableEntity {
         Statue clone = new Statue();
         clone.setUpgradePrice(this.upgradePrice);
         clone.setWorld(this.world);
+        clone.setCurse(this.curse);
+        clone.setDeal(this.deal);
+        clone.setBlessing(this.blessing);
 
         return (Statue) copyTo(clone);
     }
