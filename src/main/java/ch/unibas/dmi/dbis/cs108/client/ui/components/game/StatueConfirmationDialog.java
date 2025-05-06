@@ -36,7 +36,7 @@ public class StatueConfirmationDialog extends Popup {
     private final Button cancelButton;
     private final ResourceLoader resourceLoader;
 
-    private Consumer<Boolean> resultCallback;
+    public Consumer<Boolean> resultCallback;
 
     /**
      * Creates a new statue confirmation dialog.
