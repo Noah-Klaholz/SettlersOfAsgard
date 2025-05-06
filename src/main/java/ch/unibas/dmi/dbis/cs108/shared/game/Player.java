@@ -113,6 +113,8 @@ public class Player {
 
     /**
      * Getter for owned purchasableEntity
+     *
+     * @return the purchasableEntities
      */
     public List<PurchasableEntity> getPurchasableEntities() {
         return purchasableEntities;
@@ -120,6 +122,8 @@ public class Player {
 
     /**
      * Setter for owned purchasableEntity
+     *
+     * @param purchasableEntities the purchasableEntities to set
      */
     public void setPurchasableEntities(List<PurchasableEntity> purchasableEntities) {
         this.purchasableEntities = purchasableEntities;
@@ -127,6 +131,8 @@ public class Player {
 
     /**
      * adds a purchasableEntity to the player
+     *
+     * @param entity the purchasable entity to add
      */
     public void addPurchasableEntity(PurchasableEntity entity) {
         purchasableEntities.add(entity);
@@ -144,6 +150,8 @@ public class Player {
 
     /**
      * Getter for owned monument
+     *
+     * @return the monuments
      */
     public List<Monument> getMonuments() {
         return monuments;
@@ -151,6 +159,8 @@ public class Player {
 
     /**
      * Setter for owned monument
+     *
+     * @param monuments the monuments to set
      */
     public void setMonuments(List<Monument> monuments) {
         this.monuments = monuments;
@@ -221,6 +231,8 @@ public class Player {
 
     /**
      * Getter for artifacts
+     *
+     * @return the artifacts
      */
     public List<Artifact> getArtifacts() {
         return artifacts;
@@ -228,6 +240,8 @@ public class Player {
 
     /**
      * Setter for artifacts
+     *
+     * @param artifacts the artifacts
      */
     public void setArtifacts(List<Artifact> artifacts) {
         this.artifacts = artifacts;
@@ -237,6 +251,7 @@ public class Player {
      * adds an artifact to the player
      *
      * @param artifact Artefact
+     * @return true if the action was successful
      */
     public boolean addArtifact(Artifact artifact) {
         if (artifacts.size() < SETTINGS.Config.MAX_ARTIFACTS.getValue()) {
