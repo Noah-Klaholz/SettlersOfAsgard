@@ -8,12 +8,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.WinScreenDialog;
-import ch.unibas.dmi.dbis.cs108.client.ui.components.game.GridAdjustmentManager;
-import ch.unibas.dmi.dbis.cs108.client.ui.components.game.ResourceOverviewDialog;
-import ch.unibas.dmi.dbis.cs108.client.ui.components.game.StatueConfirmationDialog;
-import ch.unibas.dmi.dbis.cs108.client.ui.components.game.StatueSelectionPopup;
-import ch.unibas.dmi.dbis.cs108.client.ui.components.game.TileTooltip;
-import ch.unibas.dmi.dbis.cs108.client.ui.components.game.TimerComponent;
+import ch.unibas.dmi.dbis.cs108.client.ui.components.game.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
@@ -39,7 +34,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -57,7 +51,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Popup;
 import javafx.stage.Window;
 import javafx.util.Duration;
 
@@ -906,10 +899,10 @@ public class GameScreenController extends BaseController {
          * ---------------------------------------------------------------------
          */
         gameCanvas.addEventHandler(MouseEvent.MOUSE_ENTERED_TARGET, e -> handleCanvasEntered(e.getX(), e.getY())); // →
-                                                                                                                   // showHighlight()
+        // showHighlight()
 
         gameCanvas.addEventHandler(MouseEvent.MOUSE_MOVED, e -> handleCanvasMouseMove(e.getX(), e.getY())); // → show /
-                                                                                                            // clear
+        // clear
 
         gameCanvas.addEventHandler(MouseEvent.MOUSE_EXITED_TARGET, e -> {
             clearHighlight();
@@ -1365,7 +1358,7 @@ public class GameScreenController extends BaseController {
      * Also draws the entity image if present.
      */
     private void drawHex(GraphicsContext gc, double cx, double cy, double size, int row, int col, boolean selected,
-            boolean withEntity) {
+                         boolean withEntity) {
         double[] xs = new double[6];
         double[] ys = new double[6];
 
@@ -1448,7 +1441,7 @@ public class GameScreenController extends BaseController {
      * @param entityId The ID of the entity being drawn (for logging)
      */
     private void drawEntityImage(GraphicsContext gc, String imageUrl, double centerX, double centerY, double hexSize,
-            double hSquish, int entityId) {
+                                 double hSquish, int entityId) {
         // Calculate placeholder size relative to hex (adjust as needed for map
         // entities)
         double placeholderSizeRatio = 0.7; // Make placeholder 70% of hex width
@@ -1576,7 +1569,7 @@ public class GameScreenController extends BaseController {
      * Transforms canvas coordinates to logical grid coordinates.
      *
      * @return {@code int[]{row,col}} or {@code null} if the point is not inside
-     *         any tile.
+     * any tile.
      */
     int[] getHexAt(double px, double py) {
         if (!isMapLoaded || effectiveHexSize <= 0)
@@ -1590,7 +1583,7 @@ public class GameScreenController extends BaseController {
                 double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2);
                 double cy = gridOffsetY + r * vSpacing;
                 if (pointInHex(px, py, cx, cy, effectiveHexSize)) {
-                    return new int[] { r, c };
+                    return new int[]{r, c};
                 }
             }
         }
@@ -2443,7 +2436,7 @@ public class GameScreenController extends BaseController {
 
         double priceModifier = gamePlayer.getStatus().get(Status.BuffType.SHOP_PRICE);
         double adjusted = cost / Math.max(priceModifier, 0.5); // Prevent divide-by-zero or negative scaling and ensure
-                                                               // maximum price of 200% original
+        // maximum price of 200% original
         int adjustedPrice = Math.max(0, (int) Math.round(adjusted)); // Ensure price is never negative
 
         return getPlayerRunes() >= adjustedPrice;
@@ -2619,14 +2612,14 @@ public class GameScreenController extends BaseController {
     /**
      * Shows a confirmation dialog for Jörmungandr's deal using the
      * StatueConfirmationDialog component.
-     * 
+     *
      * @param statue           The Jörmungandr statue
      * @param targetPlayerName The name of the target player
      * @param tile             The tile containing the statue
      * @param description      Description of the deal
      */
     private void showJormungandrDealConfirmation(Statue statue, String targetPlayerName, Tile tile,
-            String description) {
+                                                 String description) {
         // Initialize the dialog if not already done
         if (statueConfirmationDialog == null) {
             statueConfirmationDialog = new StatueConfirmationDialog(resourceLoader);
@@ -2672,7 +2665,7 @@ public class GameScreenController extends BaseController {
     /**
      * Validates that both the player and target still have structures available for
      * the deal.
-     * 
+     *
      * @param playerName       The name of the player making the deal
      * @param targetPlayerName The name of the target player
      * @return true if both players have structures, false otherwise
@@ -2697,7 +2690,7 @@ public class GameScreenController extends BaseController {
 
     /**
      * Executes the Jörmungandr deal after all validations have passed.
-     * 
+     *
      * @param tile             The tile containing the Jörmungandr statue
      * @param targetPlayerName The name of the target player
      */
@@ -2720,7 +2713,7 @@ public class GameScreenController extends BaseController {
 
     /**
      * Handles the placement of a statue on a tile.
-     * 
+     *
      * @param tile        The target tile
      * @param statue      The statue entity to place
      * @param cardDetails The card details of the statue

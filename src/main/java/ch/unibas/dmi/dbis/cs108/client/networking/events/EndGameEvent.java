@@ -1,13 +1,12 @@
 package ch.unibas.dmi.dbis.cs108.client.networking.events;
 
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.HashMap;
 
 /**
  * Represents an event sent from the server to the client when the game ends.
  */
-public class EndGameEvent implements Event{
+public class EndGameEvent implements Event {
     /**
      * The timestamp of the event.
      */

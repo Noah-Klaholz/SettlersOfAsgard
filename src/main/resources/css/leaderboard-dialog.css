@@ -2,7 +2,7 @@
     -fx-background-color: -fx-background;
     -fx-background-radius: 12px;
     -fx-padding: 24px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.18), 16, 0.2, 0, 4);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.18), 16, 0.2, 0, 4);
 }
 
 .dialog-title {
@@ -24,7 +24,7 @@
     -fx-border-width: 1px;
     -fx-border-color: -color-border-secondary;
     -fx-font-size: 16px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 2, 0.1, 0, 1);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.04), 2, 0.1, 0, 1);
 }
 
 .leaderboard-gold {

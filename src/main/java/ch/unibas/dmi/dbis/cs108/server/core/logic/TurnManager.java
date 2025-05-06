@@ -5,22 +5,23 @@ import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors.StructureBehaviorRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
 import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
-import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
-import java.util.*;
 
 /**
  * This class manages the turn and player related logic and updates the gameState.
  */
 public class TurnManager {
-    /** The gameState object managed by this turnManager */
+    /**
+     * The gameState object managed by this turnManager
+     */
     private final GameState gameState;
-    /** Registry for handling structure effects */
-    private StructureBehaviorRegistry structureBehaviorRegistry;
+    /**
+     * Registry for handling structure effects
+     */
+    private final StructureBehaviorRegistry structureBehaviorRegistry;
 
     /**
      * Initializes the turnManager. Sets the player- and gameRound to 0.
@@ -136,10 +137,10 @@ public class TurnManager {
                         calcAndAddRunes(player, tile, value);
                         // All structures except rune table have a passive effect which should be used
                         if (!entity.getName().equals("Rune Table")) {
-                            structureBehaviorRegistry.execute(entity,gameState,player); // Do passive effects -> each structure except Rune Table has one
+                            structureBehaviorRegistry.execute(entity, gameState, player); // Do passive effects -> each structure except Rune Table has one
                         }
                     }
-                // Handle for Monuments
+                    // Handle for Monuments
                 } else if (ent instanceof Monument mon) {
                     if (!mon.isDisabled()) {
                         int value = mon.getRunes();
@@ -157,8 +158,8 @@ public class TurnManager {
      * Helper method for calculating and adding the adjusted value of generated runes
      *
      * @param player the player
-     * @param tile the tile
-     * @param value the static value of runes
+     * @param tile   the tile
+     * @param value  the static value of runes
      */
     private void calcAndAddRunes(Player player, Tile tile, int value) {
         if (tile.hasRiver()) {

@@ -3,8 +3,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane xmlns="http://javafx.com/javafx/17"
-            xmlns:fx="http://javafx.com/fxml/1"
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            xmlns="http://javafx.com/javafx/17"
             fx:id="rootPane"
             fx:controller="ch.unibas.dmi.dbis.cs108.client.ui.controllers.LobbyScreenController"
             styleClass="lobby-background"
@@ -60,12 +60,14 @@
 
                 <VBox spacing="10.0">
                     <HBox spacing="10" alignment="CENTER_LEFT">
-                        <Label text="Lobby Name:" />
-                        <TextField fx:id="lobbyNameField" promptText="Enter lobby name" prefWidth="200" styleClass="lobby-name-field"/>
-                        <Label text="Max Players:" />
-                        <ComboBox fx:id="maxPlayersCombo" prefWidth="70" />
-                        <Button fx:id="createLobbyButton" text="Create Lobby" onAction="#handleCreateLobby" />
-                        <Button fx:id="leaveLobbyButton" text="Leave" onAction="#handleLeaveLobby" styleClass="leave-button" disable="true"/>
+                        <Label text="Lobby Name:"/>
+                        <TextField fx:id="lobbyNameField" promptText="Enter lobby name" prefWidth="200"
+                                   styleClass="lobby-name-field"/>
+                        <Label text="Max Players:"/>
+                        <ComboBox fx:id="maxPlayersCombo" prefWidth="70"/>
+                        <Button fx:id="createLobbyButton" text="Create Lobby" onAction="#handleCreateLobby"/>
+                        <Button fx:id="leaveLobbyButton" text="Leave" onAction="#handleLeaveLobby"
+                                styleClass="leave-button" disable="true"/>
                     </HBox>
                     <Button text="Join Selected Lobby" onAction="#handleJoinLobby"
                             maxWidth="Infinity" styleClass="join-button"/>
@@ -77,7 +79,8 @@
             <!-- Right Panel: Chat & Players -->
             <VBox styleClass="right-panel" VBox.vgrow="ALWAYS">
                 <!-- Chat Section - Takes most of the available space -->
-                <TitledPane text="Chat" expanded="true" collapsible="true" VBox.vgrow="ALWAYS" styleClass="chat-titled-pane">
+                <TitledPane text="Chat" expanded="true" collapsible="true" VBox.vgrow="ALWAYS"
+                            styleClass="chat-titled-pane">
                     <VBox fx:id="chatContainer" spacing="5.0" styleClass="chat-section"
                           VBox.vgrow="ALWAYS" minHeight="250.0" prefWidth="280.0">
                         <!-- ChatComponent will be added here programmatically -->

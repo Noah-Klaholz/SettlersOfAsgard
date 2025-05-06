@@ -1,16 +1,15 @@
 package ch.unibas.dmi.dbis.cs108.client.core.state;
 
+import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
-import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Board;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
-import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +21,14 @@ import java.util.logging.Logger;
  */
 public class GameStateManager {
 
-    /** The gameState object managed by this class */
-    private GameState gameState;
-    /** Logger to log logging*/
+    /**
+     * Logger to log logging
+     */
     private static final Logger LOGGER = Logger.getLogger(GameStateManager.class.getName());
+    /**
+     * The gameState object managed by this class
+     */
+    private GameState gameState;
 
     /**
      * Creates a new object of this class
@@ -38,6 +41,7 @@ public class GameStateManager {
 
     /**
      * Gets the current gameState
+     *
      * @return the gameState
      */
     public GameState getGameState() {
@@ -143,12 +147,16 @@ public class GameStateManager {
                 if (keyValue.length != 2) continue;
 
                 switch (keyValue[0]) {
-                    case "R": player.setRunes(Integer.parseInt(keyValue[1])); break;
-                    case "E": player.setEnergy(Integer.parseInt(keyValue[1])); break;
+                    case "R":
+                        player.setRunes(Integer.parseInt(keyValue[1]));
+                        break;
+                    case "E":
+                        player.setEnergy(Integer.parseInt(keyValue[1]));
+                        break;
                     case "T":
                         List<Tile> ownedTiles = new ArrayList<>();
                         if (!keyValue[1].equals("[]")) {
-                            for (String id : keyValue[1].substring(1, keyValue[1].length()-1).split(",")) {
+                            for (String id : keyValue[1].substring(1, keyValue[1].length() - 1).split(",")) {
                                 Tile t = gameState.getBoardManager().getBoard().getTile(Integer.parseInt(id));
                                 if (t != null) ownedTiles.add(t);
                             }
@@ -158,7 +166,7 @@ public class GameStateManager {
                     case "A":
                         List<Artifact> artifacts = new ArrayList<>();
                         if (!keyValue[1].equals("[]")) {
-                            for (String id : keyValue[1].substring(1, keyValue[1].length()-1).split(",")) {
+                            for (String id : keyValue[1].substring(1, keyValue[1].length() - 1).split(",")) {
                                 artifacts.add(EntityRegistry.getArtifact(Integer.parseInt(id)));
                             }
                         }
@@ -167,7 +175,7 @@ public class GameStateManager {
                     case "PE":
                         List<PurchasableEntity> entities = new ArrayList<>();
                         if (!keyValue[1].equals("[]")) {
-                            for (String id : keyValue[1].substring(1, keyValue[1].length()-1).split(",")) {
+                            for (String id : keyValue[1].substring(1, keyValue[1].length() - 1).split(",")) {
                                 entities.add(EntityRegistry.getPurchasableEntity(Integer.parseInt(id)));
                             }
                         }
@@ -175,17 +183,29 @@ public class GameStateManager {
                         break;
                     case "ST":
                         // Status buffs
-                        String[] buffs = keyValue[1].substring(1, keyValue[1].length()-1).split(",");
+                        String[] buffs = keyValue[1].substring(1, keyValue[1].length() - 1).split(",");
                         for (String buff : buffs) {
                             String[] buffParts = buff.split(":");
                             double value = Double.parseDouble(buffParts[1]);
                             switch (buffParts[0]) {
-                                case "RG": player.addBuff(Status.BuffType.RUNE_GENERATION, value - player.getStatus().get(Status.BuffType.RUNE_GENERATION)); break;
-                                case "EG": player.addBuff(Status.BuffType.ENERGY_GENERATION, value - player.getStatus().get(Status.BuffType.ENERGY_GENERATION)); break;
-                                case "RR": player.addBuff(Status.BuffType.RIVER_RUNE_GENERATION, value - player.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION)); break;
-                                case "SP": player.addBuff(Status.BuffType.SHOP_PRICE, value - player.getStatus().get(Status.BuffType.SHOP_PRICE)); break;
-                                case "AC": player.addBuff(Status.BuffType.ARTIFACT_CHANCE, value - player.getStatus().get(Status.BuffType.ARTIFACT_CHANCE)); break;
-                                case "DB": player.addBuff(Status.BuffType.DEBUFFABLE, value > 0 ? 1 : -1); break;
+                                case "RG":
+                                    player.addBuff(Status.BuffType.RUNE_GENERATION, value - player.getStatus().get(Status.BuffType.RUNE_GENERATION));
+                                    break;
+                                case "EG":
+                                    player.addBuff(Status.BuffType.ENERGY_GENERATION, value - player.getStatus().get(Status.BuffType.ENERGY_GENERATION));
+                                    break;
+                                case "RR":
+                                    player.addBuff(Status.BuffType.RIVER_RUNE_GENERATION, value - player.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION));
+                                    break;
+                                case "SP":
+                                    player.addBuff(Status.BuffType.SHOP_PRICE, value - player.getStatus().get(Status.BuffType.SHOP_PRICE));
+                                    break;
+                                case "AC":
+                                    player.addBuff(Status.BuffType.ARTIFACT_CHANCE, value - player.getStatus().get(Status.BuffType.ARTIFACT_CHANCE));
+                                    break;
+                                case "DB":
+                                    player.addBuff(Status.BuffType.DEBUFFABLE, value > 0 ? 1 : -1);
+                                    break;
                             }
                         }
                         break;
@@ -257,8 +277,8 @@ public class GameStateManager {
                                                     disabled = 0;
                                                 else
                                                     disabled = Integer.parseInt(disabledStr);
-                                            }
-                                            else if (p.startsWith("AC=")) activated = Boolean.parseBoolean(p.substring(3));
+                                            } else if (p.startsWith("AC="))
+                                                activated = Boolean.parseBoolean(p.substring(3));
                                             else if (p.startsWith("LV=")) level = Integer.parseInt(p.substring(3));
                                         }
                                         Statue statue = EntityRegistry.getStatue(id);
@@ -273,7 +293,7 @@ public class GameStateManager {
                                         int disabled = 0;
                                         for (String p : entProps) {
                                             if (
-                                                p.startsWith("DI=")) {
+                                                    p.startsWith("DI=")) {
                                                 String disabledStr = p.substring(3);
                                                 // Convert boolean strings to integers
                                                 if (disabledStr.equalsIgnoreCase("true"))
@@ -303,8 +323,8 @@ public class GameStateManager {
                                                     disabled = 0;
                                                 else
                                                     disabled = Integer.parseInt(disabledStr);
-                                            }
-                                            else if (p.startsWith("AC=")) activated = Boolean.parseBoolean(p.substring(3));
+                                            } else if (p.startsWith("AC="))
+                                                activated = Boolean.parseBoolean(p.substring(3));
                                         }
                                         Structure structure = EntityRegistry.getStructure(id);
                                         if (structure != null) {

@@ -1,7 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.server.core.actions;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
-import ch.unibas.dmi.dbis.cs108.server.core.model.BoardManager;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors.StructureBehaviorRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
@@ -16,9 +15,9 @@ import ch.unibas.dmi.dbis.cs108.shared.utils.RandomGenerator;
 import java.util.concurrent.locks.ReadWriteLock;
 
 public class TileActionHandler {
-    private StructureBehaviorRegistry structureBehaviorRegistry;
     private final GameState gameState;
     private final ReadWriteLock gameLock;
+    private final StructureBehaviorRegistry structureBehaviorRegistry;
 
     public TileActionHandler(GameState gameState, ReadWriteLock gameLock) {
         this.gameState = gameState;
@@ -49,7 +48,7 @@ public class TileActionHandler {
 
             // Execute ActiveTrap, upon buying the tile and remove it afterward
             if (tile.hasEntity() && tile.getEntity().getName().equals("ActiveTrap")) {
-                structureBehaviorRegistry.execute((Structure)tile.getEntity(), gameState, player);
+                structureBehaviorRegistry.execute((Structure) tile.getEntity(), gameState, player);
                 tile.setEntity(null);
             } else if (tile.hasEntity() && tile.getEntity().isMonument()) {
                 player.addOwnedMonument((Monument) tile.getEntity());
@@ -88,8 +87,8 @@ public class TileActionHandler {
         try {
             Player player = findPlayerByName(playerName);
             assert player != null;
-            for(Tile[] tiles : gameState.getBoardManager().getBoard().getTiles()) {
-                for(Tile tile : tiles) {
+            for (Tile[] tiles : gameState.getBoardManager().getBoard().getTiles()) {
+                for (Tile tile : tiles) {
                     if (!tile.isPurchased()) {
                         tile.setPurchased(true);
                         player.addOwnedTile(tile);
@@ -107,7 +106,6 @@ public class TileActionHandler {
      * finds a player by name
      *
      * @param playerName name of the player
-     *
      * @return the player if found, null otherwise
      */
     private Player findPlayerByName(String playerName) {

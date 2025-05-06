@@ -6,16 +6,6 @@ package ch.unibas.dmi.dbis.cs108.shared.game;
  */
 public class Status {
 
-    public enum BuffType {
-        RUNE_GENERATION,
-        ENERGY_GENERATION,
-        RIVER_RUNE_GENERATION,
-        SHOP_PRICE,
-        ARTIFACT_CHANCE,
-        DEBUFFABLE
-        // Add more buff types as needed
-    }
-
     /**
      * This value determines the efficiency of rune generation.
      */
@@ -40,7 +30,6 @@ public class Status {
      * This value determines wether the player is debuffable or not.
      */
     private boolean debuffable;
-
     /**
      * Constructor for Status class.
      * Initializes the efficiency values to default.
@@ -72,11 +61,10 @@ public class Status {
         };
     }
 
-
     /**
      * Buffs the player with a specific type and value.
      *
-     * @param type the type of buff to apply
+     * @param type  the type of buff to apply
      * @param value the value of the buff (positive for buff, negative for debuff)
      */
     public void buff(BuffType type, double value) {
@@ -112,5 +100,15 @@ public class Status {
         this.shopPriceEfficiency = 1.0;
         this.artifactChance = 1.0;
         this.debuffable = true; // Default to debuffable
+    }
+
+    public enum BuffType {
+        RUNE_GENERATION,
+        ENERGY_GENERATION,
+        RIVER_RUNE_GENERATION,
+        SHOP_PRICE,
+        ARTIFACT_CHANCE,
+        DEBUFFABLE
+        // Add more buff types as needed
     }
 }

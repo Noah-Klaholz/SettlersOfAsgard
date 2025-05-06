@@ -4,24 +4,22 @@ import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
+import javafx.animation.FadeTransition;
+import javafx.animation.PauseTransition;
+import javafx.animation.SequentialTransition;
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import javafx.util.Duration;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.effect.BlendMode;
-import javafx.animation.TranslateTransition;
-import javafx.scene.Group;
-import javafx.animation.SequentialTransition;
-import javafx.animation.PauseTransition;
-import javafx.animation.FadeTransition;
-import javafx.scene.shape.Circle;
+import javafx.util.Duration;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,9 +28,12 @@ public class SplashScreenController extends BaseController {
     private static final Logger LOGGER = Logger.getLogger(SplashScreenController.class.getName());
     private static final int duration = SETTINGS.Config.SPLASH_SCREEN_DURATION.getValue();
 
-    @FXML private StackPane splashRoot;
-    @FXML private ImageView gameLogo;
-    @FXML private Label titleLabel;
+    @FXML
+    private StackPane splashRoot;
+    @FXML
+    private ImageView gameLogo;
+    @FXML
+    private Label titleLabel;
 
     public SplashScreenController() {
         super(new ResourceLoader(), UIEventBus.getInstance(), SceneManager.getInstance());

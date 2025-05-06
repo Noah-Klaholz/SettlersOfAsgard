@@ -1,12 +1,10 @@
 package ch.unibas.dmi.dbis.cs108.server.core.actions;
 
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
-import ch.unibas.dmi.dbis.cs108.server.core.model.BoardManager;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors.ArtifactBehaviorRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
-import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 
 import java.util.concurrent.locks.ReadWriteLock;
 
@@ -31,7 +29,7 @@ public class ArtifactActionHandler {
      * Creates a new ArtifactActionHandler with the specified game state and lock.
      *
      * @param gameState The current game state
-     * @param gameLock The lock used for thread safety
+     * @param gameLock  The lock used for thread safety
      */
     public ArtifactActionHandler(GameState gameState, ReadWriteLock gameLock) {
         this.gameState = gameState;
@@ -41,8 +39,8 @@ public class ArtifactActionHandler {
     /**
      * Uses an artifact on a specific field/tile on the board.
      *
-     * @param x The x-coordinate on the board
-     * @param y The y-coordinate on the board
+     * @param x          The x-coordinate on the board
+     * @param y          The y-coordinate on the board
      * @param artifactId The ID of the artifact to use
      * @param playerName The name of the player using the artifact
      * @return true if the artifact was successfully used, false otherwise
@@ -87,9 +85,9 @@ public class ArtifactActionHandler {
     /**
      * Uses an artifact on a specific player.
      *
-     * @param artifactId The ID of the artifact to use
+     * @param artifactId       The ID of the artifact to use
      * @param targetPlayerName The name of the player being targeted
-     * @param playerName The name of the player using the artifact
+     * @param playerName       The name of the player using the artifact
      * @return true if the artifact was successfully used, false otherwise
      */
     public boolean usePlayerArtifact(int artifactId, String targetPlayerName, String playerName) {
@@ -132,7 +130,7 @@ public class ArtifactActionHandler {
     /**
      * Finds an artifact in a player's inventory by its ID.
      *
-     * @param player The player whose inventory to check
+     * @param player     The player whose inventory to check
      * @param artifactId The ID of the artifact to find
      * @return The artifact if found, null otherwise
      */

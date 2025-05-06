@@ -1,7 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
-import ch.unibas.dmi.dbis.cs108.server.core.model.BoardManager;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
@@ -9,9 +8,7 @@ import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
-import ch.unibas.dmi.dbis.cs108.shared.utils.RandomGenerator;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,24 +35,24 @@ public class StructureBehaviorRegistry {
             if (player.getEnergy() < 4) {
                 return false;
             }
-            player.addEnergy((int)structure.getParams().get(0).getValue());
-            player.addRunes((int)structure.getParams().get(1).getValue());
+            player.addEnergy((int) structure.getParams().get(0).getValue());
+            player.addRunes((int) structure.getParams().get(1).getValue());
             return true;
         });
 
         registerBehavior("Mimisbrunnr", (structure, gameState, player) -> {
-            if(player.getArtifacts().size() < SETTINGS.Config.MAX_ARTIFACTS.getValue()) {
+            if (player.getArtifacts().size() < SETTINGS.Config.MAX_ARTIFACTS.getValue()) {
                 Artifact artifact = EntityRegistry.getRandomArtifact();
                 player.addArtifact(artifact);
                 return true;
             }
-            player.addEnergy((int)structure.getParams().get(0).getValue());
+            player.addEnergy((int) structure.getParams().get(0).getValue());
             return false;
         });
 
         registerBehavior("Helgrindr", (structure, gameState, player) -> {
             player.addBuff(Status.BuffType.DEBUFFABLE, 0); // sets the player to non-debuffable
-            player.addEnergy((int)structure.getParams().get(0).getValue());
+            player.addEnergy((int) structure.getParams().get(0).getValue());
             return true;
         });
 
@@ -71,12 +68,12 @@ public class StructureBehaviorRegistry {
                 }
             }
             if (!b) gameState.sendNotification(player.getName(), "4$Null");
-            player.addEnergy((int)structure.getParams().get(0).getValue());
+            player.addEnergy((int) structure.getParams().get(0).getValue());
             return true;
         });
 
         registerBehavior("Ran's Hall", (structure, gameState, player) -> {
-            player.addEnergy((int)structure.getParams().get(0).getValue());
+            player.addEnergy((int) structure.getParams().get(0).getValue());
             return true;
         });
 
@@ -91,13 +88,13 @@ public class StructureBehaviorRegistry {
             int numberOfBuffs = (int) structure.getParams().get(0).getValue();
 
             for (int i = 0; i < numberOfBuffs; i++) {
-                int random = (int)Math.ceil(Math.random() * buffTypes.length) - 1; // -1 because the array is 0-indexed
-                double val = (int)structure.getParams().get(random+2).getValue();
-                player.addBuff(buffTypes[random],val); // +2 because 0 is the number of buffs and 1 is debuffOtherplayers
+                int random = (int) Math.ceil(Math.random() * buffTypes.length) - 1; // -1 because the array is 0-indexed
+                double val = (int) structure.getParams().get(random + 2).getValue();
+                player.addBuff(buffTypes[random], val); // +2 because 0 is the number of buffs and 1 is debuffOtherplayers
 
                 if (structure.getParams().get(1).getValue() == 1.0) { // If DebuffOtherPlayers is true (==1.0) then all other players should recieve the same buff(s) as the player using the statue, only negatively
                     gameState.getPlayers().forEach(otherPlayer -> {
-                        otherPlayer.addBuff(buffTypes[random], - val);
+                        otherPlayer.addBuff(buffTypes[random], -val);
                     });
                 }
             }
@@ -110,7 +107,7 @@ public class StructureBehaviorRegistry {
         registerBehavior("Tree", (structure, gameState, player) -> true);
 
         registerBehavior("ActiveTrap", (structure, gameState, player) -> {
-            player.addRunes((int)structure.getParams().get(0).getValue());
+            player.addRunes((int) structure.getParams().get(0).getValue());
             return true;
         });
 
@@ -120,7 +117,7 @@ public class StructureBehaviorRegistry {
     /**
      * Registers a structure behavior for the given use type.
      *
-     * @param name the identifier of the behavior
+     * @param name     the identifier of the behavior
      * @param behavior the behavior implementation
      */
     public void registerBehavior(String name, StructureBehavior behavior) {
@@ -132,7 +129,7 @@ public class StructureBehaviorRegistry {
      *
      * @param structure the structure to execute
      * @param gameState the current game state
-     * @param player the player performing the action
+     * @param player    the player performing the action
      * @return true if execution was successful, false otherwise
      */
     public boolean execute(Structure structure, GameState gameState, Player player) {

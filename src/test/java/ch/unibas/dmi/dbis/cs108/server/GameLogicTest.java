@@ -1,26 +1,24 @@
 package ch.unibas.dmi.dbis.cs108.server;
 
+import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
+import ch.unibas.dmi.dbis.cs108.server.core.logic.TurnManager;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.server.core.model.Leaderboard;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
-import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
-import ch.unibas.dmi.dbis.cs108.server.core.logic.TurnManager;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
-import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
-
-import java.lang.reflect.Field;
-import java.util.List;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -43,11 +41,11 @@ public class GameLogicTest {
      * Initializes a test environment before each test:
      * - Creates a Lobby with maximal 4 players.
      * - Creates the 4 player objects, sets the names and adds them to the lobby
-     *   and starts the game.
+     * and starts the game.
      * - Gets the gameLogic, gameState and turnManager objects from the lobby/gameLogic.
      */
     @BeforeEach
-    void setUp(){
+    void setUp() {
         lobby = new Lobby("testLobby", 4, mock(Leaderboard.class));
         ClientHandler player1 = mock(ClientHandler.class);
         ClientHandler player2 = mock(ClientHandler.class);
@@ -152,7 +150,7 @@ public class GameLogicTest {
         assertEquals(runesBefore - price, runesAfter);
         // Verify that the tile has the correct owner
         String owner = gameState.getBoardManager().getBoard().getTiles()[0][0].getOwner();
-        assertEquals("player1" ,owner);
+        assertEquals("player1", owner);
         // Verify that the player owns this tile (and only this one)
         assertEquals(1, gameState.getPlayers().get(0).getOwnedTiles().size());
         assertEquals(t, gameState.getPlayers().get(0).getOwnedTiles().get(0));
@@ -276,7 +274,7 @@ public class GameLogicTest {
      */
     @Test
     void testUseStructureRansHall() {
-        Tile t =  gameState.getBoardManager().getTile(2, 2);
+        Tile t = gameState.getBoardManager().getTile(2, 2);
         Structure s = EntityRegistry.getStructure(5);
         assert s != null;
         assertTrue(gameLogic.buyTile(t.getX(), t.getY(), "player1"));

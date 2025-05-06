@@ -26,7 +26,7 @@ public class StatueActionFeedback {
 
     /**
      * Creates a new statue action feedback handler.
-     * 
+     *
      * @param parentPane The pane that will contain the feedback elements
      */
     public StatueActionFeedback(Pane parentPane) {
@@ -35,7 +35,7 @@ public class StatueActionFeedback {
 
     /**
      * Shows a success notification for a statue action.
-     * 
+     *
      * @param message The success message to display
      */
     public void showSuccessNotification(String message) {
@@ -44,7 +44,7 @@ public class StatueActionFeedback {
 
     /**
      * Shows an error notification for a statue action.
-     * 
+     *
      * @param message The error message to display
      */
     public void showErrorNotification(String message) {
@@ -53,7 +53,7 @@ public class StatueActionFeedback {
 
     /**
      * Shows a notification with the specified style.
-     * 
+     *
      * @param message    The message to display
      * @param styleClass The CSS style class to apply
      */
@@ -99,7 +99,7 @@ public class StatueActionFeedback {
 
     /**
      * Shows a tree growing animation for Freyr's ability.
-     * 
+     *
      * @param x The x coordinate of the tile
      * @param y The y coordinate of the tile
      */
@@ -115,7 +115,7 @@ public class StatueActionFeedback {
 
     /**
      * Shows an upgrade animation for a statue.
-     * 
+     *
      * @param x        The x coordinate of the statue
      * @param y        The y coordinate of the statue
      * @param newLevel The new level of the statue

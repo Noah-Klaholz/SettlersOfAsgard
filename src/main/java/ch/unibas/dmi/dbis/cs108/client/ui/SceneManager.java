@@ -8,9 +8,9 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import javafx.scene.paint.Color; // Import Color
 
 import java.io.IOException;
 import java.net.URL;
@@ -27,16 +27,15 @@ import java.util.logging.Logger;
  */
 public class SceneManager {
     private static final Logger LOGGER = Logger.getLogger(SceneManager.class.getName());
+    private static final Color BACKGROUND_COLOR = Color.rgb(30, 30, 40); // Dark blue-grey background
     private static volatile SceneManager instance;
-
     private final Map<SceneType, NodeHolder> nodeCache = new ConcurrentHashMap<>();
     private final ResourceLoader resourceLoader;
     private Stage primaryStage;
-    private static final Color BACKGROUND_COLOR = Color.rgb(30, 30, 40); // Dark blue-grey background
 
     /**
      * Private constructor for singleton.
-     * 
+     *
      * @param resourceLoader Utility for loading resources.
      */
     private SceneManager(ResourceLoader resourceLoader) {
@@ -45,7 +44,7 @@ public class SceneManager {
 
     /**
      * Returns the singleton instance of SceneManager.
-     * 
+     *
      * @return SceneManager instance
      */
     public static SceneManager getInstance() {
@@ -63,7 +62,7 @@ public class SceneManager {
 
     /**
      * Sets the primary Stage for the application.
-     * 
+     *
      * @param stage Primary stage
      */
     public void setPrimaryStage(Stage stage) {
@@ -73,7 +72,7 @@ public class SceneManager {
     /**
      * Switches the application's view to the specified scene type.
      * Loads and caches FXML if needed. Applies fade transition.
-     * 
+     *
      * @param sceneType Target scene type
      */
     public void switchToScene(SceneType sceneType) {
@@ -96,7 +95,7 @@ public class SceneManager {
 
     /**
      * Internal implementation for switching scenes, called on FX thread.
-     * 
+     *
      * @param sceneType Target scene type
      */
     private void switchToSceneInternal(SceneType sceneType) {
@@ -149,7 +148,7 @@ public class SceneManager {
     /**
      * Loads the FXML file associated with the given scene type.
      * Caches the loaded root node and its controller.
-     * 
+     *
      * @param sceneType Scene type to load
      * @return NodeHolder with root node and controller, or null on failure
      */
@@ -174,7 +173,7 @@ public class SceneManager {
     /**
      * Retrieves the controller associated with a given scene type.
      * Loads and caches if not already loaded.
-     * 
+     *
      * @param sceneType Scene type
      * @param <T>       Expected controller type
      * @return Controller instance
@@ -195,7 +194,7 @@ public class SceneManager {
 
     /**
      * Creates a FadeTransition for animating the opacity of a node.
-     * 
+     *
      * @param node       Target node
      * @param fromValue  Starting opacity
      * @param toValue    Ending opacity

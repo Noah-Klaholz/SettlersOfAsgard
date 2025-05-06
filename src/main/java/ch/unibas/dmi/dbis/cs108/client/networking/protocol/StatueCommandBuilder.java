@@ -12,7 +12,7 @@ public class StatueCommandBuilder {
      * Creates a command to use a statue with complex parameters.
      */
     private static String useStatueComplex(int statueId, int x, int y, Map<String, String> params) {
-        StringBuilder cmd = new StringBuilder("USTA$" + x + "$" + y  + "$" + statueId + "$");
+        StringBuilder cmd = new StringBuilder("USTA$" + x + "$" + y + "$" + statueId + "$");
         for (Map.Entry<String, String> param : params.entrySet()) {
             cmd.append(";").append(param.getKey()).append(":").append(param.getValue());
         }
@@ -23,10 +23,10 @@ public class StatueCommandBuilder {
     /**
      * Creates a command to use a statue with parameters.
      *
-     * @param x The x-coordinate of the statue
-     * @param y The y-coordinate of the statue
+     * @param x        The x-coordinate of the statue
+     * @param y        The y-coordinate of the statue
      * @param statueID The ID of the statue
-     * @param params Parameter string in format "KEY1:VALUE1;KEY2:VALUE2"
+     * @param params   Parameter string in format "KEY1:VALUE1;KEY2:VALUE2"
      * @return The command string to use the statue
      */
     public static String useStatue(int x, int y, int statueID, String params) {
@@ -40,7 +40,7 @@ public class StatueCommandBuilder {
      * Parses the input parameters string into a parameter map.
      *
      * @param statueID The ID of the statue
-     * @param params Parameter string in format "KEY1:VALUE1;KEY2:VALUE2"
+     * @param params   Parameter string in format "KEY1:VALUE1;KEY2:VALUE2"
      * @return A map containing the parsed parameters for the statue
      */
     private static Map<String, String> getMapByStatueID(int statueID, String params) {

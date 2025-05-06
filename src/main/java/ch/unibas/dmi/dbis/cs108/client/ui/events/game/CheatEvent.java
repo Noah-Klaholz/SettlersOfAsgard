@@ -10,9 +10,9 @@ import java.util.regex.Pattern;
  * It contains the cheat code as a string.
  */
 public class CheatEvent implements UIEvent {
-    /** The cheat code entered by the user. */
-    private final Cheat cheatCode;
-    /** The regex pattern for valid cheat codes. */
+    /**
+     * The regex pattern for valid cheat codes.
+     */
     private static final Pattern CHEAT_PATTERN;
 
     /**
@@ -30,12 +30,26 @@ public class CheatEvent implements UIEvent {
     }
 
     /**
+     * The cheat code entered by the user.
+     */
+    private final Cheat cheatCode;
+
+    /**
      * Constructs a CheatEvent with the specified cheat code.
      *
      * @param cheatCode the cheat code entered by the user
      */
     public CheatEvent(Cheat cheatCode) {
         this.cheatCode = cheatCode;
+    }
+
+    /**
+     * Returns the regex pattern for valid cheat codes.
+     *
+     * @return the regex pattern
+     */
+    public static Pattern getCheatPattern() {
+        return CHEAT_PATTERN;
     }
 
     /**
@@ -57,15 +71,6 @@ public class CheatEvent implements UIEvent {
     }
 
     /**
-     * Returns the regex pattern for valid cheat codes.
-     *
-     * @return the regex pattern
-     */
-    public static Pattern getCheatPattern() {
-        return CHEAT_PATTERN;
-    }
-
-    /**
      * Returns the event type string.
      *
      * @return event type string
@@ -76,12 +81,18 @@ public class CheatEvent implements UIEvent {
     }
 
     public enum Cheat {
-        /**Cheat Code for destroying all structures*/
+        /**
+         * Cheat Code for destroying all structures
+         */
         RAGNAROK("RAGN"),
-        /**Cheat Code for claiming all tiles*/
+        /**
+         * Cheat Code for claiming all tiles
+         */
         CLAIMALL("CLAM");
 
-        /**The cheat code String*/
+        /**
+         * The cheat code String
+         */
         private final String code;
 
         /**
@@ -91,15 +102,6 @@ public class CheatEvent implements UIEvent {
          */
         Cheat(String code) {
             this.code = code;
-        }
-
-        /**
-         * Returns the cheat code.
-         *
-         * @return the cheat code
-         */
-        public String getCode() {
-            return code;
         }
 
         /**
@@ -114,6 +116,15 @@ public class CheatEvent implements UIEvent {
                 }
             }
             return null;
+        }
+
+        /**
+         * Returns the cheat code.
+         *
+         * @return the cheat code
+         */
+        public String getCode() {
+            return code;
         }
     }
 }

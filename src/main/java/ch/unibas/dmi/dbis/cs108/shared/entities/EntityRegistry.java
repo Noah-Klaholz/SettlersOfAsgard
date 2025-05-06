@@ -5,7 +5,6 @@ import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
-import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.utils.RandomGenerator;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -15,7 +14,10 @@ import com.google.gson.reflect.TypeToken;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Central registry for all game entities.
@@ -72,7 +74,8 @@ public class EntityRegistry {
             return;
         }
 
-        Type listType = new TypeToken<List<JsonElement>>(){}.getType();
+        Type listType = new TypeToken<List<JsonElement>>() {
+        }.getType();
         List<JsonElement> elements = gson.fromJson(new InputStreamReader(is), listType);
 
         for (JsonElement elem : elements) {
@@ -97,7 +100,8 @@ public class EntityRegistry {
             return;
         }
 
-        Type listType = new TypeToken<List<JsonElement>>(){}.getType();
+        Type listType = new TypeToken<List<JsonElement>>() {
+        }.getType();
         List<JsonElement> elements = gson.fromJson(new InputStreamReader(is), listType);
 
         for (JsonElement elem : elements) {
@@ -122,7 +126,8 @@ public class EntityRegistry {
             return;
         }
 
-        Type listType = new TypeToken<List<JsonElement>>(){}.getType();
+        Type listType = new TypeToken<List<JsonElement>>() {
+        }.getType();
         List<JsonElement> elements = gson.fromJson(new InputStreamReader(is), listType);
 
         for (JsonElement elem : elements) {
@@ -147,7 +152,8 @@ public class EntityRegistry {
             return;
         }
 
-        Type listType = new TypeToken<List<JsonElement>>(){}.getType();
+        Type listType = new TypeToken<List<JsonElement>>() {
+        }.getType();
         List<JsonElement> elements = gson.fromJson(new InputStreamReader(is), listType);
 
         for (JsonElement elem : elements) {
@@ -298,7 +304,7 @@ public class EntityRegistry {
      * Returns the URL of the image associated with a GameEntity.
      * The URL depends on whether the entity is a card or not.
      *
-     * @param id The ID of the entity
+     * @param id     The ID of the entity
      * @param isCard True if the URL should be for a card, false for a map image
      * @return The URL of the image, or null if the entity is not found
      */

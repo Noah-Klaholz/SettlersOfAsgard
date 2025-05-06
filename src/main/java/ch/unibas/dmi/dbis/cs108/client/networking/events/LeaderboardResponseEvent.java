@@ -9,7 +9,9 @@ import java.time.Instant;
  * leaderboard service.
  */
 public class LeaderboardResponseEvent implements Event {
-    /** The leaderboard object */
+    /**
+     * The leaderboard object
+     */
     private final Leaderboard leaderboard;
 
     /**
@@ -19,6 +21,7 @@ public class LeaderboardResponseEvent implements Event {
     public LeaderboardResponseEvent(String leaderboard) {
         this.leaderboard = Leaderboard.fromString(leaderboard);
     }
+
     /**
      * Getter for the timestamp of the event.
      *

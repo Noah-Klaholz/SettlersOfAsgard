@@ -11,8 +11,8 @@ import javafx.util.Duration;
 
 public class TimerComponent extends StackPane {
     private static final int DEFAULT_SECONDS = SETTINGS.Config.TURN_TIME.getValue();
-    private int secondsLeft = DEFAULT_SECONDS;
     private final Label timerLabel = new Label();
+    private int secondsLeft = DEFAULT_SECONDS;
     private Timeline timeline;
     private String lastPlayerTurn = null;
 

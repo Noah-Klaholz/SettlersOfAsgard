@@ -1,11 +1,11 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.components;
 
-import ch.unibas.dmi.dbis.cs108.client.ui.events.game.CheatEvent;
-import ch.unibas.dmi.dbis.cs108.shared.game.Player; // Use shared Player
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.LobbyChatEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.WhisperChatEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.game.CheatEvent;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,7 +13,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority; // Import Priority
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 import java.time.LocalDateTime;
@@ -109,6 +109,7 @@ public class ChatComponent extends UIComponent<BorderPane> {
         BorderPane.setMargin(chatMessages, new javafx.geometry.Insets(0)); // Remove margin if needed
         chatMessages.setCellFactory(list -> new ListCell<>() {
             private final Label label = new Label();
+
             {
                 label.setWrapText(true);
                 label.setMaxWidth(Double.MAX_VALUE);
@@ -274,7 +275,7 @@ public class ChatComponent extends UIComponent<BorderPane> {
         if (event.getSender() == null) {
             return;
         }
-    // Only display if the lobby tab is selected and it matches the current lobby
+        // Only display if the lobby tab is selected and it matches the current lobby
         Platform.runLater(() -> {
             String sender = event.getSender();
             // Sender null check remains for safety
@@ -354,7 +355,7 @@ public class ChatComponent extends UIComponent<BorderPane> {
      * Adds a whisper message directly to the display with special formatting.
      */
     private void addWhisperMessage(LocalDateTime timestamp, String sender, String recipient, String message,
-            boolean sentBySelf) {
+                                   boolean sentBySelf) {
         Platform.runLater(() -> {
             String formatted;
             if (sentBySelf) {

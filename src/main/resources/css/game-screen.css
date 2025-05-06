@@ -16,7 +16,7 @@
 }
 
 /* Style for the TitledPane containing the chat (Moved from common.css) */
-.chat-titled-pane>.title {
+.chat-titled-pane > .title {
     -fx-background-color: -color-background-tertiary;
     -fx-text-fill: -color-accent-gold;
     -fx-font-family: "Cinzel", "Segoe UI", serif;
@@ -25,11 +25,11 @@
     -fx-border-width: 0 0 1 0;
 }
 
-.chat-titled-pane>.title>.arrow-button .arrow {
+.chat-titled-pane > .title > .arrow-button .arrow {
     -fx-background-color: -color-accent-gold;
 }
 
-.chat-titled-pane>*.content {
+.chat-titled-pane > *.content {
     -fx-background-color: -color-background-secondary;
     -fx-padding: 0;
     /* Chat component itself has padding */
@@ -47,7 +47,7 @@
 
 /* Titles and headers */
 .section-title,
-/* Inherited from common.css */
+    /* Inherited from common.css */
 .panel-title,
 .card-category {
     -fx-font-family: "Cinzel", "Segoe UI", serif;
@@ -249,7 +249,8 @@
     /* Use variable */
 }
 
-.shop-card {}
+.shop-card {
+}
 
 /* Scrollbars - Inherited from common.css */
 
@@ -267,18 +268,18 @@
     -fx-font-weight: bold;
 }
 
-.titled-pane>.title {
+.titled-pane > .title {
     -fx-background-color: -fx-control-inner-background;
     -fx-border-color: -color-border-primary;
     -fx-border-width: 0 0 1px 0;
     /* Bottom border only */
 }
 
-.titled-pane>.title>.arrow-button .arrow {
+.titled-pane > .title > .arrow-button .arrow {
     -fx-background-color: -color-accent-gold;
 }
 
-.titled-pane>*.content {
+.titled-pane > *.content {
     -fx-background-color: -color-background-secondary;
     -fx-padding: 10px;
     /* Add padding to content */
@@ -331,7 +332,7 @@
     -fx-border-width: 1px;
     -fx-border-radius: 4px;
     -fx-background-radius: 4px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.8), 10, 0, 0, 0);
 }
 
 .card-tooltip > .label {
@@ -365,11 +366,11 @@
 .game-card {
     -fx-border-color: rgba(255, 255, 255, 0.3);
     -fx-border-radius: 5px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 5, 0, 0, 0);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.5), 5, 0, 0, 0);
 }
 
 .unaffordable-card {
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 5, 0, 0, 0);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 5, 0, 0, 0);
     -fx-opacity: 0.6;
 }
 
@@ -392,7 +393,7 @@
     -fx-text-fill: #333;
     -fx-font-size: 10px;
     -fx-font-weight: bold;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 2, 0.2, 0, 1);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 2, 0.2, 0, 1);
     -fx-cursor: hand;
 }
 
@@ -446,7 +447,7 @@
     -fx-background-radius: 8px;
     -fx-padding: 8px 0 8px 0;
     -fx-alignment: center;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0, 0, 1);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 4, 0, 0, 1);
     -fx-margin: 0 0 8px 0;
 }
 
@@ -455,5 +456,5 @@
     -fx-font-family: "Cinzel", "Segoe UI", serif;
     -fx-font-weight: bold;
     -fx-text-fill: -color-accent-gold;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 2, 0, 0, 1);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 2, 0, 0, 1);
 }

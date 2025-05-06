@@ -13,8 +13,8 @@ public class CreateLobbyRequestEvent implements UIEvent {
     /**
      * Constructs a CreateLobbyRequestEvent.
      *
-     * @param lobbyName the name of the lobby to create
-     * @param hostName  the name of the host (creator)
+     * @param lobbyName  the name of the lobby to create
+     * @param hostName   the name of the host (creator)
      * @param maxPlayers the maximum number of players allowed in the lobby
      */
     public CreateLobbyRequestEvent(String lobbyName, String hostName, int maxPlayers) {

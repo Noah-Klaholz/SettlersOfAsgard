@@ -3,12 +3,9 @@ package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.StatueActionFeedback;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.StatueConfirmationDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.StatueInteractionHandler;
-import ch.unibas.dmi.dbis.cs108.client.ui.components.game.StatueTileHighlighter;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.PlaceStatueResponseEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.PlaceStatueUIEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.game.UpgradeStatueUIEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.game.UseStatueUIEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.StatueDetailsWrapper;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
@@ -40,7 +37,7 @@ public class StatueUIController {
 
     /**
      * Creates a new statue UI controller.
-     * 
+     *
      * @param eventBus       The UI event bus
      * @param resourceLoader The resource loader
      * @param rootPane       The root pane for the UI
@@ -72,7 +69,7 @@ public class StatueUIController {
 
     /**
      * Updates the player information.
-     * 
+     *
      * @param player The current player
      */
     public void updatePlayerInfo(Player player) {
@@ -85,7 +82,7 @@ public class StatueUIController {
 
     /**
      * Shows the context menu for a statue.
-     * 
+     *
      * @param statue The statue
      * @param x      The x screen coordinate for the menu
      * @param y      The y screen coordinate for the menu
@@ -101,7 +98,7 @@ public class StatueUIController {
 
     /**
      * Shows the side panel for a statue.
-     * 
+     *
      * @param statue The statue
      */
     public void showStatueSidePanel(Statue statue) {
@@ -114,7 +111,7 @@ public class StatueUIController {
 
     /**
      * Shows the confirmation dialog for placing a statue.
-     * 
+     *
      * @param statue The statue to place
      * @param x      The x coordinate
      * @param y      The y coordinate
@@ -137,7 +134,7 @@ public class StatueUIController {
 
     /**
      * Shows the confirmation dialog for upgrading a statue.
-     * 
+     *
      * @param statue The statue to upgrade
      * @param x      The x coordinate
      * @param y      The y coordinate
@@ -152,13 +149,13 @@ public class StatueUIController {
 
     /**
      * Shows eligible river tiles for growing trees (Freyr specific).
-     * 
+     *
      * @param statue         The Freyr statue
      * @param riverTiles     The list of river tiles
      * @param onTileSelected Callback when a tile is selected
      */
     public void showEligibleRiverTilesForTreeGrowing(Statue statue, List<Tile> riverTiles,
-            BiConsumer<Integer, Integer> onTileSelected) {
+                                                     BiConsumer<Integer, Integer> onTileSelected) {
         if (statue == null || statue.getId() != 31)
             return; // 31 is Freyr's ID
 
@@ -175,7 +172,7 @@ public class StatueUIController {
 
     /**
      * Handles the response to placing a statue.
-     * 
+     *
      * @param event The place statue response event
      */
     private void handlePlaceStatueResponse(PlaceStatueResponseEvent event) {
@@ -201,7 +198,7 @@ public class StatueUIController {
 
     /**
      * Helper method to show a dialog centered in the window.
-     * 
+     *
      * @param dialog The dialog to show
      */
     private void showDialogCentered(StatueConfirmationDialog dialog) {

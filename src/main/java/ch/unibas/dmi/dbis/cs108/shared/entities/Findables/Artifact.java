@@ -9,81 +9,20 @@ import com.google.gson.JsonObject;
  */
 public class Artifact extends FindableEntity {
     /**
-     * The type of functionality this Entity provides when used.
-     */
-    public enum UseType {
-        /**
-         * A player-targeted entity. Can be used on oneself or another player.
-         */
-        PLAYER("Player"),
-        /**
-         * A field-targeted entity. Can be used on a single field.
-         */
-        FIELD("Field"),
-        /**
-         * A trap entity. Can be used to set a trap on a non-owned empty field.
-         */
-        TRAP("Trap"),
-        /**
-         * A descriptor entity. Can be used to describe artifacts in general.
-         */
-        DESCRIPTOR("Descriptor");
-
-        /**
-         *  The type of this entity.
-         */
-        private final String type;
-
-        /**
-         * Constructor for UseType.
-         *
-         * @param type The type of this entity
-         */
-        UseType(String type) {this.type = type;}
-
-        /**
-         * Returns the type of this entity.
-         *
-         * @return The type of this entity
-         */
-        public String getType() {return type;}
-
-        /**
-         * Returns the UseType corresponding to the given string.
-         *
-         * @param type The string representation of the use type
-         * @return The corresponding UseType
-         * @throws IllegalArgumentException if the type is unknown
-         */
-        public static UseType fromString(String type) {
-            for (UseType u : UseType.values()) {
-                if (u.type.equalsIgnoreCase(type)) {
-                    return u;
-                }
-            }
-            throw new IllegalArgumentException("Unknown use type: " + type);
-        }
-    }
-
-    /**
      * The type of target this entity affects.
      */
     private UseType useType;
-
-
     /**
      * The chance of finding this artifact.
      * This value is between 0 and 1, where 1 means 100% chance to find.
      */
     private double chanceToFind;
-
     /**
      * The effect of this artifact.
      * This value represents the magnitude of the artifact's effect.
      * In the case of Traps, it represents the id of the structure to place as an ActiveTrap.
      */
     private double effect;
-
     /**
      * The path to the image representing this entity as a card.
      */
@@ -92,17 +31,18 @@ public class Artifact extends FindableEntity {
     /**
      * Default constructor for Artifact.
      */
-    public Artifact() {}
+    public Artifact() {
+    }
 
     /**
      * Constructs a new Artifact with specified values.
      *
-     * @param id The unique identifier for this artifact
-     * @param name The name of this artifact
-     * @param description The description of this artifact
-     * @param useType The type of functionality this artifact provides
+     * @param id           The unique identifier for this artifact
+     * @param name         The name of this artifact
+     * @param description  The description of this artifact
+     * @param useType      The type of functionality this artifact provides
      * @param chanceToFind The chance to find this artifact
-     * @param effect The effect of this artifact
+     * @param effect       The effect of this artifact
      */
     public Artifact(int id, String name, String description, String usage, String useType, double chanceToFind, double effect, String cardImagePath) {
         super(id, name, description, usage);
@@ -113,39 +53,15 @@ public class Artifact extends FindableEntity {
     }
 
     /**
-     * Sets the type of this artifact.
+     * Factory method to create an artifact from JSON data.
      *
-     * @param useType The type of this artifact
+     * @param json The JSON object containing artifact data
+     * @return A new Artifact instance populated with data from the JSON
      */
-    public void setUseType(UseType useType) {
-        this.useType = useType;
-    }
-
-    /**
-     * Sets the chance to find this artifact.
-     *
-     * @param chanceToFind The chance to find this artifact
-     */
-    public void setChanceToFind(double chanceToFind) {
-        this.chanceToFind = chanceToFind;
-    }
-
-    /**
-     * Sets the effect of this artifact.
-     *
-     * @param effect The effect of this artifact
-     */
-    public void setEffect(double effect) {
-        this.effect = effect;
-    }
-
-    /**
-     * Sets the path to the image representing this artifact as a card.
-     *
-     * @param cardImagePath The path to the card image
-     */
-    public void setCardImagePath(String cardImagePath) {
-        this.cardImagePath = cardImagePath;
+    public static Artifact fromJson(JsonObject json) {
+        Artifact artifact = new Artifact();
+        artifact.loadFromJson(json);
+        return artifact;
     }
 
     /**
@@ -158,12 +74,30 @@ public class Artifact extends FindableEntity {
     }
 
     /**
+     * Sets the type of this artifact.
+     *
+     * @param useType The type of this artifact
+     */
+    public void setUseType(UseType useType) {
+        this.useType = useType;
+    }
+
+    /**
      * Returns the path to the image representing this entity as a card.
      *
      * @return The path to the card image
      */
     public String getCardImagePath() {
         return cardImagePath;
+    }
+
+    /**
+     * Sets the path to the image representing this artifact as a card.
+     *
+     * @param cardImagePath The path to the card image
+     */
+    public void setCardImagePath(String cardImagePath) {
+        this.cardImagePath = cardImagePath;
     }
 
     /**
@@ -184,7 +118,6 @@ public class Artifact extends FindableEntity {
         return useType == UseType.PLAYER;
     }
 
-
     /**
      * Gets the effect of this artifact.
      *
@@ -195,12 +128,30 @@ public class Artifact extends FindableEntity {
     }
 
     /**
+     * Sets the chance to find this artifact.
+     *
+     * @param chanceToFind The chance to find this artifact
+     */
+    public void setChanceToFind(double chanceToFind) {
+        this.chanceToFind = chanceToFind;
+    }
+
+    /**
      * Gets the effect of this artifact.
      *
      * @return The effect of this artifact
      */
     public double getEffect() {
         return effect;
+    }
+
+    /**
+     * Sets the effect of this artifact.
+     *
+     * @param effect The effect of this artifact
+     */
+    public void setEffect(double effect) {
+        this.effect = effect;
     }
 
     /**
@@ -223,18 +174,6 @@ public class Artifact extends FindableEntity {
     }
 
     /**
-     * Factory method to create an artifact from JSON data.
-     *
-     * @param json The JSON object containing artifact data
-     * @return A new Artifact instance populated with data from the JSON
-     */
-    public static Artifact fromJson(JsonObject json) {
-        Artifact artifact = new Artifact();
-        artifact.loadFromJson(json);
-        return artifact;
-    }
-
-    /**
      * Returns a clone of this Artifact.
      * This method creates a new instance of the Artifact with the same properties as the original.
      *
@@ -250,5 +189,66 @@ public class Artifact extends FindableEntity {
         clone.setCardImagePath(this.cardImagePath);
 
         return (Artifact) copyTo(clone);
+    }
+
+    /**
+     * The type of functionality this Entity provides when used.
+     */
+    public enum UseType {
+        /**
+         * A player-targeted entity. Can be used on oneself or another player.
+         */
+        PLAYER("Player"),
+        /**
+         * A field-targeted entity. Can be used on a single field.
+         */
+        FIELD("Field"),
+        /**
+         * A trap entity. Can be used to set a trap on a non-owned empty field.
+         */
+        TRAP("Trap"),
+        /**
+         * A descriptor entity. Can be used to describe artifacts in general.
+         */
+        DESCRIPTOR("Descriptor");
+
+        /**
+         * The type of this entity.
+         */
+        private final String type;
+
+        /**
+         * Constructor for UseType.
+         *
+         * @param type The type of this entity
+         */
+        UseType(String type) {
+            this.type = type;
+        }
+
+        /**
+         * Returns the UseType corresponding to the given string.
+         *
+         * @param type The string representation of the use type
+         * @return The corresponding UseType
+         * @throws IllegalArgumentException if the type is unknown
+         */
+        public static UseType fromString(String type) {
+            for (UseType u : UseType.values()) {
+                if (u.type.equalsIgnoreCase(type)) {
+                    return u;
+                }
+            }
+            throw new IllegalArgumentException("Unknown use type: " + type);
+        }
+
+        /**
+         * Returns the type of this entity.
+         *
+         * @return The type of this entity
+         */
+        public String getType() {
+            return type;
+        }
     }
 }

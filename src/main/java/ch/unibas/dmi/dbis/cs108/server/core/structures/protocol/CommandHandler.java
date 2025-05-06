@@ -1,12 +1,12 @@
 package ch.unibas.dmi.dbis.cs108.server.core.structures.protocol;
 
-import ch.unibas.dmi.dbis.cs108.server.core.model.Leaderboard;
-import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
+import ch.unibas.dmi.dbis.cs108.server.core.model.Leaderboard;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 import ch.unibas.dmi.dbis.cs108.server.networking.GameServer;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 
 import java.util.List;
@@ -20,11 +20,17 @@ import java.util.stream.Collectors;
  */
 public class CommandHandler {
 
-    /** The ClientHandler instance that this CommandHandler is associated with. */
+    /**
+     * The ClientHandler instance that this CommandHandler is associated with.
+     */
     private final ClientHandler ch;
-    /** The GameServer instance that this CommandHandler is associated with. */
+    /**
+     * The GameServer instance that this CommandHandler is associated with.
+     */
     private final GameServer server;
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     Logger logger = Logger.getLogger(CommandHandler.class.getName());
 
     /**
@@ -262,8 +268,8 @@ public class CommandHandler {
             Lobby joinedLobby = ch.getCurrentLobby();
             joinedLobby.broadcastMessage("OK$JOIN$" + lobbyId + "$" +
                     joinedLobby.getPlayers().stream()
-                    .map(ClientHandler::getPlayerName)
-                    .collect(Collectors.joining("%"))
+                            .map(ClientHandler::getPlayerName)
+                            .collect(Collectors.joining("%"))
                     + "$" +
                     (joinedLobby.getHostName().equals(localPlayer.getName()) ? "true" : "false"));
             return true;

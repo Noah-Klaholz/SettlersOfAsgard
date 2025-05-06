@@ -2,8 +2,6 @@ package ch.unibas.dmi.dbis.cs108.client.ui.events.game;
 
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
 
-import java.time.Instant;
-import java.util.Arrays;
 import java.util.HashMap;
 
 /**

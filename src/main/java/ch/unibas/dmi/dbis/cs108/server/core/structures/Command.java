@@ -6,8 +6,8 @@ import ch.unibas.dmi.dbis.cs108.shared.protocol.ErrorsAPI;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
-import static ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.PingFilter;
 import static ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol.Commands;
+import static ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.PingFilter;
 
 /**
  * Represents a command that is sent between a client to the server
@@ -79,12 +79,15 @@ public class Command {
      */
     public boolean checkArgumentsSize() {
         return switch (commandType) {
-            case LISTLOBBIES, START, SHUTDOWN, SYNCHRONIZE, STARTTURN, ENDTURN, GETGAMESTATUS, GETPRICES, LEADERBOARD -> args.length == 0;
+            case LISTLOBBIES, START, SHUTDOWN, SYNCHRONIZE, STARTTURN, ENDTURN, GETGAMESTATUS, GETPRICES, LEADERBOARD ->
+                    args.length == 0;
             case REGISTER, LEAVE, CHANGENAME, PING, EXIT, DISCONNECT, CHEAT -> args.length == 1;
             case JOIN, CHATGLOBAL, CHATLOBBY, BUYTILE, USEPLAYERARTIFACT -> args.length == 2;
-            case CHATPRIVATE, PLACESTRUCTURE, PLACESTATUE, UPGRADESTATUE, CREATELOBBY, USESTRUCTURE, USEFIELDARTIFACT -> args.length == 3;
+            case CHATPRIVATE, PLACESTRUCTURE, PLACESTATUE, UPGRADESTATUE, CREATELOBBY, USESTRUCTURE, USEFIELDARTIFACT ->
+                    args.length == 3;
             case USESTATUE -> args.length == 4;
-            case LISTPLAYERS -> (args.length == 1 && args[0].equals("SERVER"))|| (args.length == 2 && args[0].equals("LOBBY"));
+            case LISTPLAYERS ->
+                    (args.length == 1 && args[0].equals("SERVER")) || (args.length == 2 && args[0].equals("LOBBY"));
             default -> {
                 logger.warning("Invalid Command arguments size: " + command + " " + args.length);
                 yield false;
@@ -146,8 +149,10 @@ public class Command {
      */
     public boolean isAdministrative() {
         return switch (commandType) {
-            case LEADERBOARD, LISTLOBBIES, START, SHUTDOWN, SYNCHRONIZE, REGISTER, LEAVE, CHANGENAME, PING, EXIT, JOIN, CHATGLOBAL, CHATLOBBY, CHATPRIVATE, CREATELOBBY, LISTPLAYERS, OK, DISCONNECT -> true;
-            case CHEAT, GETGAMESTATUS, GETPRICES, STARTTURN, ENDTURN, BUYTILE, PLACESTRUCTURE, USEPLAYERARTIFACT, PLACESTATUE, UPGRADESTATUE, USESTATUE, USESTRUCTURE, USEFIELDARTIFACT  -> false;
+            case LEADERBOARD, LISTLOBBIES, START, SHUTDOWN, SYNCHRONIZE, REGISTER, LEAVE, CHANGENAME, PING, EXIT, JOIN,
+                 CHATGLOBAL, CHATLOBBY, CHATPRIVATE, CREATELOBBY, LISTPLAYERS, OK, DISCONNECT -> true;
+            case CHEAT, GETGAMESTATUS, GETPRICES, STARTTURN, ENDTURN, BUYTILE, PLACESTRUCTURE, USEPLAYERARTIFACT,
+                 PLACESTATUE, UPGRADESTATUE, USESTATUE, USESTRUCTURE, USEFIELDARTIFACT -> false;
             default -> {
                 logger.warning("Invalid Command " + command + " " + Arrays.toString(args));
                 yield false;

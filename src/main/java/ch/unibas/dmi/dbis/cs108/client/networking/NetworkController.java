@@ -1,12 +1,12 @@
 package ch.unibas.dmi.dbis.cs108.client.networking;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
-import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.client.networking.core.NetworkClient;
 import ch.unibas.dmi.dbis.cs108.client.networking.core.SocketNetworkClient;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher;
 import ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 
 import java.time.Instant;
 import java.util.concurrent.Executors;
@@ -132,16 +132,16 @@ public class NetworkController {
         stopPingScheduler();
         pingScheduler = Executors.newSingleThreadScheduledExecutor();
         pingScheduler.scheduleAtFixedRate(() -> {
-            if (lastPingTime.get() > 0) {
-                long elapsed = Instant.now().toEpochMilli() - lastPingTime.get();
-                if (elapsed > SETTINGS.Config.TIMEOUT.getValue()) {
-                    LOGGER.severe("Ping timeout detected. Disconnecting...");
-                    disconnect();
-                    return;
-                }
-            }
-            sendPing();
-        }, SETTINGS.Config.PING_INTERVAL.getValue(),
+                    if (lastPingTime.get() > 0) {
+                        long elapsed = Instant.now().toEpochMilli() - lastPingTime.get();
+                        if (elapsed > SETTINGS.Config.TIMEOUT.getValue()) {
+                            LOGGER.severe("Ping timeout detected. Disconnecting...");
+                            disconnect();
+                            return;
+                        }
+                    }
+                    sendPing();
+                }, SETTINGS.Config.PING_INTERVAL.getValue(),
                 SETTINGS.Config.PING_INTERVAL.getValue(), TimeUnit.MILLISECONDS);
     }
 
@@ -367,8 +367,8 @@ public class NetworkController {
     /**
      * Sends a message to the server to place a structure with the specified ID.
      *
-     * @param x          The x-coordinate to place the structure.
-     * @param y          The y-coordinate to place the structure.
+     * @param x           The x-coordinate to place the structure.
+     * @param y           The y-coordinate to place the structure.
      * @param structureID The ID of the structure to place.
      */
     public void placeStructure(int x, int y, int structureID) {
@@ -379,8 +379,8 @@ public class NetworkController {
     /**
      * Sends a message to the server to use a structure with the specified ID.
      *
-     * @param x          The x-coordinate of the structure.
-     * @param y          The y-coordinate of the structure.
+     * @param x           The x-coordinate of the structure.
+     * @param y           The y-coordinate of the structure.
      * @param structureID The ID of the structure to use.
      */
     public void useStructure(int x, int y, int structureID) {
@@ -391,7 +391,7 @@ public class NetworkController {
     /**
      * Sends a message to the server to use an artifact with the specified ID.
      *
-     * @param artifactID The ID of the artifact to use.
+     * @param artifactID    The ID of the artifact to use.
      * @param playerAimedAt The name of the player to aim at.
      */
     public void usePlayerArtifact(int artifactID, String playerAimedAt) {
@@ -413,7 +413,6 @@ public class NetworkController {
 
     /**
      * Sends a message to the server to use a cheat code.
-     *
      *
      * @param cheatCode The cheat code to use.
      */

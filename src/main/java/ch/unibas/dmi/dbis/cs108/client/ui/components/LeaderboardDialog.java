@@ -1,31 +1,41 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.components;
 
-import ch.unibas.dmi.dbis.cs108.server.core.model.Leaderboard;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.StylesheetLoader;
+import ch.unibas.dmi.dbis.cs108.server.core.model.Leaderboard;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
 
 /**
  * LeaderboardDialog is a UI component that represents a dialog for displaying
  */
 public class LeaderboardDialog extends UIComponent<StackPane> {
-    /** The title of the leaderboard dialog */
+    /**
+     * The title of the leaderboard dialog
+     */
     private static final String LEADERBOARD_TITLE = "Global Leaderboard";
-    /** The leaderboard  */
+    /**
+     * The leaderboard
+     */
     private Leaderboard leaderboard;
-    /** The VBox for all entries in the dialog */
+    /**
+     * The VBox for all entries in the dialog
+     */
     private VBox leaderboardBox;
-    /** The search field for the highScore List */
+    /**
+     * The search field for the highScore List
+     */
     private TextField searchField;
 
     /**
@@ -128,8 +138,8 @@ public class LeaderboardDialog extends UIComponent<StackPane> {
     /**
      * Creates a cell for the leaderboard entry.
      *
-     * @param rank The rank of the player
-     * @param name The name of the player
+     * @param rank  The rank of the player
+     * @param name  The name of the player
      * @param score The score of the player
      * @return HBox representing the leaderboard cell
      */

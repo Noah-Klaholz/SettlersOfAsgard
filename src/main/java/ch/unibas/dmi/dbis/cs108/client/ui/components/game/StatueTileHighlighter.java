@@ -7,7 +7,6 @@ import javafx.scene.effect.Glow;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +35,7 @@ public class StatueTileHighlighter {
 
     /**
      * Gets the layer containing all highlight elements.
-     * 
+     *
      * @return The highlight layer Group
      */
     public Group getHighlightLayer() {
@@ -45,7 +44,7 @@ public class StatueTileHighlighter {
 
     /**
      * Highlights a list of tiles with a specific color.
-     * 
+     *
      * @param tiles          The tiles to highlight
      * @param onTileSelected Callback when a tile is selected
      */
@@ -61,7 +60,7 @@ public class StatueTileHighlighter {
 
     /**
      * Highlights eligible river tiles for Freyr's tree growing.
-     * 
+     *
      * @param riverTiles     The list of river tiles
      * @param onTileSelected Callback when a river tile is selected
      */
@@ -80,7 +79,7 @@ public class StatueTileHighlighter {
 
     /**
      * Highlights a single tile with a specified color.
-     * 
+     *
      * @param x          The x coordinate
      * @param y          The y coordinate
      * @param color      The highlight color

@@ -6,26 +6,25 @@ import ch.unibas.dmi.dbis.cs108.client.ui.utils.StylesheetLoader;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import javafx.animation.FadeTransition;
-import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.stage.Popup;
 import javafx.util.Duration;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.logging.Logger;
 
 public class ResourceOverviewDialog extends UIComponent<StackPane> {
     private static final Logger LOGGER = Logger.getLogger(ResourceOverviewDialog.class.getName());
     private final ResourceLoader resourceLoader;
-    private VBox content;
     ScrollPane scrollPane;
+    private VBox content;
     private Map<String, Color> playerColors;
 
     public ResourceOverviewDialog(ResourceLoader resourceLoader, Map<String, Color> playerColors) {

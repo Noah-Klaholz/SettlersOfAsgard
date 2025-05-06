@@ -3,26 +3,31 @@
     -fx-background-radius: 8;
     -fx-padding: 6 12;
 }
+
 .leaderboard-silver {
     -fx-background-color: #C0C0C0;
     -fx-background-radius: 8;
     -fx-padding: 6 12;
 }
+
 .leaderboard-bronze {
     -fx-background-color: #CD7F32;
     -fx-background-radius: 8;
     -fx-padding: 6 12;
 }
+
 .leaderboard-darkblue {
     -fx-background-color: #1A237E;
     -fx-background-radius: 8;
     -fx-padding: 6 12;
 }
+
 .leaderboard-gold > .label,
 .leaderboard-silver > .label,
 .leaderboard-bronze > .label {
     -fx-text-fill: #222;
 }
+
 .leaderboard-darkblue > .label {
     -fx-text-fill: #fff;
 }
@@ -38,16 +43,19 @@
     -fx-max-width: 500px;
     -fx-max-height: 600px;
 }
+
 .dialog-title {
     -fx-font-family: "Cinzel", serif;
     -fx-font-weight: bold;
     -fx-font-size: 24px;
     -fx-text-fill: -color-accent-gold;
 }
+
 .button-box {
     -fx-spacing: 10;
     -fx-alignment: center;
 }
+
 .menu-button, .lobby-button {
     -fx-font-size: 14px;
     -fx-padding: 8px 16px;

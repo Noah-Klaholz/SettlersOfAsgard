@@ -1,9 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.shared.game;
 
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
 import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 
 /**
  * Represents a tile on the game board.
@@ -23,7 +21,7 @@ public class Tile {
     private int resourceValue; //Runes: bei spezifischen sind es energy: dort vermerkt
     private boolean hasRiver; //has a river = true
     private int tileID;
-    private Status status;
+    private final Status status;
 
     /**
      * Constructor for Tile.
@@ -69,19 +67,10 @@ public class Tile {
     }
 
     /**
-     * setter for hasEntity
-     *
-     * @param entity the entity to set
-     */
-    public void setEntity(GameEntity entity) {
-        this.entity = entity;
-    }
-
-    /**
      * setter for buff
      *
      * @param buffType the type of buff to set
-     * @param effect the effect of the buff
+     * @param effect   the effect of the buff
      */
     public void setBuff(Status.BuffType buffType, int effect) {
         status.buff(buffType, effect);
@@ -99,16 +88,16 @@ public class Tile {
     /**
      * Add a new buff or debuff to the player
      *
-     * @param buff the buff to add
+     * @param buff  the buff to add
      * @param value the value of the buff (positive for buff, negative for debuff)
      */
     public void addBuff(Status.BuffType buff, double value) {
         status.buff(buff, value);
     }
 
-
     /**
      * getter for the entity
+     *
      * @return
      */
     public GameEntity getEntity() {
@@ -116,7 +105,17 @@ public class Tile {
     }
 
     /**
+     * setter for hasEntity
+     *
+     * @param entity the entity to set
+     */
+    public void setEntity(GameEntity entity) {
+        this.entity = entity;
+    }
+
+    /**
      * getter for the owner
+     *
      * @return
      */
     public String getOwner() {
@@ -125,6 +124,7 @@ public class Tile {
 
     /**
      * setter for the owner
+     *
      * @param owner
      */
     public void setOwner(String owner) {
@@ -133,6 +133,7 @@ public class Tile {
 
     /**
      * getter for the price
+     *
      * @return
      */
     public int getPrice() {
@@ -145,6 +146,7 @@ public class Tile {
 
     /**
      * getter for the artefact
+     *
      * @return
      */
     public Artifact getArtifact() {
@@ -153,6 +155,7 @@ public class Tile {
 
     /**
      * setter for the artefact
+     *
      * @param artefact
      */
     public void setArtifact(Artifact artefact) {
@@ -161,14 +164,20 @@ public class Tile {
 
     /**
      * getter for the world
+     *
      * @return
      */
     public String getWorld() {
         return world;
     }
 
+    public void setWorld(String s) {
+        this.world = s;
+    }
+
     /**
      * getter for the purchased status
+     *
      * @return
      */
     public boolean isPurchased() {
@@ -177,6 +186,7 @@ public class Tile {
 
     /**
      * setter for the purchased status
+     *
      * @param purchased
      */
     public void setPurchased(boolean purchased) {
@@ -185,6 +195,7 @@ public class Tile {
 
     /**
      * getter for the resource value
+     *
      * @return
      */
     public int getResourceValue() {
@@ -193,6 +204,7 @@ public class Tile {
 
     /**
      * setter for the resource value
+     *
      * @param resourceValue
      */
     public void setResourceValue(int resourceValue) {
@@ -201,6 +213,7 @@ public class Tile {
 
     /**
      * getter for the hasRiver status
+     *
      * @return
      */
     public boolean hasRiver() {
@@ -209,6 +222,7 @@ public class Tile {
 
     /**
      * setter for the hasRiver status
+     *
      * @param hasRiver
      */
     public void setHasRiver(boolean hasRiver) {
@@ -217,10 +231,15 @@ public class Tile {
 
     /**
      * getter for the tileID
+     *
      * @return
      */
     public int getTileID() {
         return tileID;
+    }
+
+    public void setTileID(int i) {
+        this.tileID = i;
     }
 
     /**
@@ -256,14 +275,6 @@ public class Tile {
      */
     public boolean hasOwner() {
         return owner != null;
-    }
-
-    public void setWorld(String s) {
-        this.world = s;
-    }
-
-    public void setTileID(int i) {
-        this.tileID = i;
     }
 
     public void setOwnerName(String newName) {

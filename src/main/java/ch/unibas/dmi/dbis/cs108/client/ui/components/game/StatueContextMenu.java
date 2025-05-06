@@ -40,7 +40,7 @@ public class StatueContextMenu extends Popup {
     /**
      * Updates the menu with actions appropriate for the given statue and its
      * current state.
-     * 
+     *
      * @param statue        The statue details wrapper
      * @param canUpgrade    True if the player has enough resources to upgrade
      * @param canUseAbility True if the statue ability can be used
@@ -147,7 +147,7 @@ public class StatueContextMenu extends Popup {
 
     /**
      * Updates the menu with Freyr-specific options for tree growing.
-     * 
+     *
      * @param statue        The Freyr statue wrapper
      * @param canUseAbility True if the player has enough energy
      */
@@ -213,7 +213,7 @@ public class StatueContextMenu extends Popup {
 
     /**
      * Sets a handler for menu item clicks.
-     * 
+     *
      * @param handler Consumer that accepts the action name
      */
     public void setActionHandler(Consumer<String> handler) {

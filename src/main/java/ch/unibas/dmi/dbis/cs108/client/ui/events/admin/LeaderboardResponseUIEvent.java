@@ -3,9 +3,6 @@ package ch.unibas.dmi.dbis.cs108.client.ui.events.admin;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
 import ch.unibas.dmi.dbis.cs108.server.core.model.Leaderboard;
 
-import java.util.List;
-import java.util.Map;
-
 /**
  * UIEvent triggered when leaderboard data is received from the server.
  */

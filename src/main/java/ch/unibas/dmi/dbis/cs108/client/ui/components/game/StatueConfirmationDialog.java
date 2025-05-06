@@ -40,7 +40,7 @@ public class StatueConfirmationDialog extends Popup {
 
     /**
      * Creates a new statue confirmation dialog.
-     * 
+     *
      * @param resourceLoader The resource loader for loading images
      */
     public StatueConfirmationDialog(ResourceLoader resourceLoader) {
@@ -120,7 +120,7 @@ public class StatueConfirmationDialog extends Popup {
 
     /**
      * Configures the dialog for statue placement.
-     * 
+     *
      * @param statue   The statue to be placed
      * @param x        The x coordinate for placement
      * @param y        The y coordinate for placement
@@ -128,7 +128,7 @@ public class StatueConfirmationDialog extends Popup {
      * @return This dialog for method chaining
      */
     public StatueConfirmationDialog forStatuePlacement(StatueDetailsWrapper statue, int x, int y,
-            Consumer<Boolean> callback) {
+                                                       Consumer<Boolean> callback) {
         this.resultCallback = callback;
 
         titleLabel.setText("Place " + statue.getName() + "?");
@@ -153,7 +153,7 @@ public class StatueConfirmationDialog extends Popup {
 
     /**
      * Configures the dialog for growing a tree (specific to Freyr).
-     * 
+     *
      * @param statue     The Freyr statue
      * @param x          The x coordinate for tree placement
      * @param y          The y coordinate for tree placement
@@ -162,7 +162,7 @@ public class StatueConfirmationDialog extends Popup {
      * @return This dialog for method chaining
      */
     public StatueConfirmationDialog forGrowTree(StatueDetailsWrapper statue, int x, int y, int energyCost,
-            Consumer<Boolean> callback) {
+                                                Consumer<Boolean> callback) {
         this.resultCallback = callback;
 
         titleLabel.setText("Grow Tree with " + statue.getName());
@@ -188,7 +188,7 @@ public class StatueConfirmationDialog extends Popup {
 
     /**
      * Configures the dialog for upgrading a statue.
-     * 
+     *
      * @param statue   The statue to upgrade
      * @param callback Called with true if confirmed, false otherwise
      * @return This dialog for method chaining
@@ -230,14 +230,14 @@ public class StatueConfirmationDialog extends Popup {
 
     /**
      * Configures the dialog for using a statue's blessing.
-     * 
+     *
      * @param statue      The statue to use
      * @param description Description of the blessing effect
      * @param callback    Called with true if confirmed, false otherwise
      * @return This dialog for method chaining
      */
     public StatueConfirmationDialog forStatueBlessing(StatueDetailsWrapper statue, String description,
-            Consumer<Boolean> callback) {
+                                                      Consumer<Boolean> callback) {
         this.resultCallback = callback;
 
         titleLabel.setText("Use " + statue.getName() + " Blessing?");
@@ -261,7 +261,7 @@ public class StatueConfirmationDialog extends Popup {
 
     /**
      * Sets custom button text for the confirmation button.
-     * 
+     *
      * @param text The text to display on the confirmation button
      * @return This dialog for method chaining
      */
@@ -272,7 +272,7 @@ public class StatueConfirmationDialog extends Popup {
 
     /**
      * Sets custom button text for the cancel button.
-     * 
+     *
      * @param text The text to display on the cancel button
      * @return This dialog for method chaining
      */
@@ -283,7 +283,7 @@ public class StatueConfirmationDialog extends Popup {
 
     /**
      * Sets a custom description for the dialog.
-     * 
+     *
      * @param description The description text
      * @return This dialog for method chaining
      */
@@ -294,7 +294,7 @@ public class StatueConfirmationDialog extends Popup {
 
     /**
      * Sets a custom title for the dialog.
-     * 
+     *
      * @param title The title text
      * @return This dialog for method chaining
      */
@@ -305,7 +305,7 @@ public class StatueConfirmationDialog extends Popup {
 
     /**
      * Sets a custom cost label for the dialog.
-     * 
+     *
      * @param costText The cost text
      * @return This dialog for method chaining
      */
@@ -317,7 +317,7 @@ public class StatueConfirmationDialog extends Popup {
 
     /**
      * Hides the cost label.
-     * 
+     *
      * @return This dialog for method chaining
      */
     public StatueConfirmationDialog withoutCost() {

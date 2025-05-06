@@ -1,8 +1,8 @@
 package ch.unibas.dmi.dbis.cs108.client.core.events;
 
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 
 /**
  * UIEvent representing the purchase of a structure by a player.

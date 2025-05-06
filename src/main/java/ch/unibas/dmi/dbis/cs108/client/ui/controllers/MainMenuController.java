@@ -1,18 +1,17 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
-import ch.unibas.dmi.dbis.cs108.client.app.GameApplication; // Import GameApplication
 import ch.unibas.dmi.dbis.cs108.client.core.PlayerIdentityManager;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.components.LeaderboardDialog;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.*;
-import ch.unibas.dmi.dbis.cs108.shared.game.Player; // Use shared Player
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.AboutDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
+import ch.unibas.dmi.dbis.cs108.client.ui.components.LeaderboardDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -20,8 +19,8 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.Priority; // Import Priority
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;

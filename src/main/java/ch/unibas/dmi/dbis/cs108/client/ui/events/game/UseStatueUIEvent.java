@@ -17,7 +17,7 @@ public class UseStatueUIEvent implements UIEvent {
      * @param x        the x-coordinate
      * @param y        the y-coordinate
      * @param statueId the ID of the statue
-     * @param params  the type of use
+     * @param params   the type of use
      */
     public UseStatueUIEvent(int x, int y, int statueId, String params) {
         this.x = x;

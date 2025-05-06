@@ -1,10 +1,9 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.events.game;
 
-import ch.unibas.dmi.dbis.cs108.client.core.state.GameStateManager;
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
+import ch.unibas.dmi.dbis.cs108.client.core.state.GameStateManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
 
-import java.time.Instant;
 import java.util.logging.Logger;
 
 public class GameSyncEvent implements UIEvent {

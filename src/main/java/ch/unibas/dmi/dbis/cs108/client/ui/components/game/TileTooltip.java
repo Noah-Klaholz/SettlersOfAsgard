@@ -24,29 +24,29 @@ public class TileTooltip {
         tooltip = new Tooltip();
         tooltip.setShowDelay(Duration.ZERO);
         tooltip.setHideDelay(Duration.ZERO); // Ensure it disappears immediately when mouse leaves
-        
+
         // Create a layout with styled sections
         VBox content = new VBox(5);
         content.setPadding(new Insets(8));
         content.setMaxWidth(250);
         content.getStyleClass().add("tooltip-content");
-        
+
         // Title
         Label titleLabel = new Label("Tile Information");
         titleLabel.getStyleClass().add("tooltip-title");
         content.getChildren().add(titleLabel);
         content.getChildren().add(new Separator());
-        
+
         // World info
         Label worldLabel = new Label("World: " + tile.getWorld());
         worldLabel.getStyleClass().add("tooltip-world");
         content.getChildren().add(worldLabel);
-        
+
         // Resource value
         Label resourceLabel = new Label("Resource Value: " + tile.getResourceValue());
         resourceLabel.getStyleClass().add("tooltip-resource");
         content.getChildren().add(resourceLabel);
-        
+
         // Ownership/Price info
         String ownerName = tile.getOwner();
         if (ownerName != null && !ownerName.isEmpty()) {
@@ -58,24 +58,24 @@ public class TileTooltip {
             priceLabel.getStyleClass().add("tooltip-price");
             content.getChildren().add(priceLabel);
         }
-        
+
         // Entity information if present
         if (tile.hasEntity()) {
             GameEntity entity = EntityRegistry.getGameEntityOriginalById(tile.getEntity().getId());
-            
+
             content.getChildren().add(new Separator());
-            
+
             Label entityLabel = new Label(entity.getName());
             entityLabel.getStyleClass().add("tooltip-entity");
             content.getChildren().add(entityLabel);
-            
+
             if (entity.getUsage() != null && !entity.getUsage().isEmpty()) {
                 Label usageLabel = new Label(entity.getUsage());
                 usageLabel.getStyleClass().add("tooltip-usage");
                 usageLabel.setWrapText(true);
                 content.getChildren().add(usageLabel);
             }
-            
+
             // Add level information for statues
             if (entity instanceof Statue s) {
                 Label levelLabel = new Label("Level: " + s.getLevel());
@@ -83,14 +83,14 @@ public class TileTooltip {
                 content.getChildren().add(levelLabel);
             }
         }
-        
+
         // Set the tooltip properties
         tooltip.setMaxWidth(250);
         tooltip.setMaxHeight(300);
         content.setMinHeight(Region.USE_PREF_SIZE);
         content.setPrefHeight(Region.USE_COMPUTED_SIZE);
         content.setMaxHeight(Region.USE_PREF_SIZE);
-        
+
         tooltip.setGraphic(content);
         tooltip.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         tooltip.getStyleClass().add("tile-tooltip");
@@ -107,6 +107,7 @@ public class TileTooltip {
 
     /**
      * Gets the tooltip object.
+     *
      * @return The JavaFX tooltip
      */
     public Tooltip getTooltip() {

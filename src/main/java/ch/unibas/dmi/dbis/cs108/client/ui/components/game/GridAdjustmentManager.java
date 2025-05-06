@@ -30,7 +30,11 @@ public class GridAdjustmentManager {
     private static final double DEF_V_SPACING = 1.33;
     private static final double DEF_H_SQUISH = 1.00;
     private static final double DEF_V_SQUISH = 0.80;
-
+    // References to UI elements and controller
+    private final GameScreenController gameScreenController;
+    private final Label adjustmentModeIndicator;
+    private final Label adjustmentValuesLabel;
+    private final Runnable redrawCallback;
     // Grid parameter fields moved here
     private double gridScaleFactor = DEF_GRID_SCALE;
     private double gridHorizontalOffset = DEF_GRID_H_OFFSET;
@@ -42,14 +46,7 @@ public class GridAdjustmentManager {
     private double verticalSpacingFactor = DEF_V_SPACING;
     private double horizontalSquishFactor = DEF_H_SQUISH;
     private double verticalSquishFactor = DEF_V_SQUISH;
-
     private boolean gridAdjustmentModeActive = false;
-
-    // References to UI elements and controller
-    private final GameScreenController gameScreenController;
-    private final Label adjustmentModeIndicator;
-    private final Label adjustmentValuesLabel;
-    private final Runnable redrawCallback;
 
     /**
      * Constructs a GridAdjustmentManager.
@@ -63,9 +60,9 @@ public class GridAdjustmentManager {
      *                                screen.
      */
     public GridAdjustmentManager(GameScreenController gameScreenController,
-            Label adjustmentModeIndicator,
-            Label adjustmentValuesLabel,
-            Runnable redrawCallback) {
+                                 Label adjustmentModeIndicator,
+                                 Label adjustmentValuesLabel,
+                                 Runnable redrawCallback) {
         this.gameScreenController = Objects.requireNonNull(gameScreenController, "GameScreenController cannot be null");
         this.adjustmentModeIndicator = Objects.requireNonNull(adjustmentModeIndicator,
                 "AdjustmentModeIndicator label cannot be null");

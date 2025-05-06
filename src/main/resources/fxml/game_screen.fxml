@@ -4,7 +4,7 @@
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/16"
             fx:controller="ch.unibas.dmi.dbis.cs108.client.ui.controllers.GameScreenController"
             stylesheets="/css/variables.css,/css/common.css,/css/game-screen.css"
             minWidth="900" minHeight="600" prefWidth="1200" prefHeight="768" maxWidth="1920" maxHeight="1080"
@@ -67,7 +67,8 @@
 
             <bottom>
                 <VBox spacing="8"> <!-- Put buttons in bottom -->
-                    <Button fx:id="resourceOverviewButton" text="Resource Overview" onAction="#handleResourceOverview" styleClass="action-button"
+                    <Button fx:id="resourceOverviewButton" text="Resource Overview" onAction="#handleResourceOverview"
+                            styleClass="action-button"
                             maxWidth="Infinity"/>
                     <Button text="End Turn" onAction="#handleEndTurn" styleClass="action-button" maxWidth="Infinity"/>
                 </VBox>
@@ -133,9 +134,9 @@
                                   onMouseEntered="#handleCardMouseEntered"
                                   onMouseExited="#handleCardMouseExited"/>
                             <StackPane id="statue" styleClass="game-card"
-                                   onMouseClicked="#handleCardClick"
-                                   onMouseEntered="#handleCardMouseEntered"
-                                   onMouseExited="#handleCardMouseExited"/>
+                                       onMouseClicked="#handleCardClick"
+                                       onMouseEntered="#handleCardMouseEntered"
+                                       onMouseExited="#handleCardMouseExited"/>
                         </FlowPane>
                     </VBox>
                 </HBox>

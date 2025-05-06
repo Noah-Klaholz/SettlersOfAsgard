@@ -18,24 +18,42 @@ import java.util.stream.Collectors;
  * It listens for incoming connections and creates a new ClientHandler for each client.
  */
 public class GameServer {
-    /** Logger instance for server logging */
+    /**
+     * Logger instance for server logging
+     */
     private static final Logger logger = Logger.getLogger(GameServer.class.getName());
-    /** Scheduler for periodic ping tasks to check client connection */
+    /**
+     * Scheduler for periodic ping tasks to check client connection
+     */
     private final ScheduledExecutorService pingScheduler = Executors.newScheduledThreadPool(1);
-    /** The port number on which the server listens for connections. */
+    /**
+     * The port number on which the server listens for connections.
+     */
     private final int port;
-    /** Thread pool executor for handling client connections */
+    /**
+     * Thread pool executor for handling client connections
+     */
     private final ExecutorService executor;
-    /** Thread-safe list of currently connected clients */
+    /**
+     * Thread-safe list of currently connected clients
+     */
     private final List<ClientHandler> clients;
-    /** Thread-safe list of active game lobbies */
+    /**
+     * Thread-safe list of active game lobbies
+     */
     private final List<Lobby> lobbies;
-    /** Flag indicating whether the server is currently running */
-    private boolean running;
-    /** The server socket used to accept client connections */
-    private ServerSocket serverSocket;
-    /** Leaderboard (global) */
+    /**
+     * Leaderboard (global)
+     */
     private final Leaderboard leaderboard;
+    /**
+     * Flag indicating whether the server is currently running
+     */
+    private boolean running;
+    /**
+     * The server socket used to accept client connections
+     */
+    private ServerSocket serverSocket;
 
     /**
      * Constructs a new GameServer instance that will listen on the specified port.
@@ -231,7 +249,9 @@ public class GameServer {
      * @return true if a player with this name exists, false otherwise
      */
     public boolean containsPlayerName(String playerName) {
-        if (playerName == null) { return false; }
+        if (playerName == null) {
+            return false;
+        }
         for (ClientHandler client : clients) {
             if (client.getPlayer() != null) {
                 if (client.getPlayerName().equals(playerName)) {
@@ -246,7 +266,6 @@ public class GameServer {
      * Removes the given lobby from the list of lobbies.
      *
      * @param lobby The lobby to remove
-     *
      * @see Lobby
      */
     public void removeLobby(Lobby lobby) {

@@ -6,8 +6,8 @@ package ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors;
  * It is used to define various parameters in the game.
  */
 public class Parameter {
-    private String name;
-    private double value;
+    private final String name;
+    private final double value;
 
     /**
      * Constructor to create a Parameter object.

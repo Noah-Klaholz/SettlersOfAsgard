@@ -1,4 +1,3 @@
-
 /* Overlay background */
 #resourceOverview-overlay {
     -fx-background-color: rgba(26, 33, 51, 0.7);
@@ -116,13 +115,16 @@
     -fx-text-fill: -color-accent-green;
     -fx-font-weight: bold;
 }
+
 .buff-negative {
     -fx-text-fill: -color-accent-red;
     -fx-font-weight: bold;
 }
+
 .buff-neutral {
     -fx-text-fill: -color-text-muted;
 }
+
 .no-effects-label {
     -fx-text-fill: -color-text-muted;
     -fx-font-style: italic;
@@ -143,14 +145,17 @@
     -fx-font-size: 14px;
     -fx-margin: 10 0 0 0;
 }
+
 .dialog-button-cancel {
     -fx-background-color: -color-button-cancel-bg;
     -fx-text-fill: -color-button-cancel-text;
     -fx-border-color: -color-button-cancel-border;
 }
+
 .dialog-button:hover {
     -fx-background-color: -color-button-secondary-hover;
 }
+
 .dialog-button-cancel:hover {
     -fx-background-color: -color-button-cancel-hover;
 }

@@ -18,11 +18,17 @@ import java.util.logging.Logger;
 public abstract class BaseController {
     private static final Logger LOGGER = Logger.getLogger(BaseController.class.getName());
 
-    /** Resource loader for loading resources. */
+    /**
+     * Resource loader for loading resources.
+     */
     protected final ResourceLoader resourceLoader;
-    /** UIEvent bus for handling events. */
+    /**
+     * UIEvent bus for handling events.
+     */
     protected final UIEventBus eventBus;
-    /** Scene manager for managing scenes. */
+    /**
+     * Scene manager for managing scenes.
+     */
     protected final SceneManager sceneManager;
 
     /**

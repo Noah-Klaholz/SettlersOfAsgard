@@ -5,7 +5,6 @@ import javafx.scene.Node;
 import javafx.scene.effect.Bloom;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -24,7 +23,7 @@ public class StatueEffectAnimator {
 
     /**
      * Creates and plays a tree growing animation at the specified location.
-     * 
+     *
      * @param parent   The parent pane for the animation
      * @param x        The x coordinate on screen
      * @param y        The y coordinate on screen
@@ -67,7 +66,7 @@ public class StatueEffectAnimator {
 
     /**
      * Creates and plays a statue upgrade animation.
-     * 
+     *
      * @param statue   The statue node to animate
      * @param onFinish Runnable to execute after animation completes
      */
@@ -116,7 +115,7 @@ public class StatueEffectAnimator {
 
     /**
      * Creates and plays a blessing animation for a statue.
-     * 
+     *
      * @param parent   The parent pane for the animation
      * @param statue   The statue node
      * @param color    The color of the blessing effect
@@ -177,7 +176,7 @@ public class StatueEffectAnimator {
 
     /**
      * Creates and plays a curse animation for a statue.
-     * 
+     *
      * @param parent   The parent pane for the animation
      * @param statue   The statue node
      * @param onFinish Runnable to execute after animation completes

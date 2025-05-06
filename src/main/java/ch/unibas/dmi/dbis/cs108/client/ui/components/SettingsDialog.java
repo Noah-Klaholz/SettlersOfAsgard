@@ -23,11 +23,10 @@ public class SettingsDialog extends UIComponent<StackPane> {
     private static final String SETTINGS_TITLE = "Game Settings";
 
     private final VBox dialogContent;
-    private Runnable onSaveAction;
-
     private final SimpleDoubleProperty volumeProperty = new SimpleDoubleProperty(50);
     private final BooleanProperty muteProperty = new SimpleBooleanProperty(false);
     private final StringProperty playerNameProperty = new SimpleStringProperty("Guest");
+    private Runnable onSaveAction;
     private boolean isConnected = false;
     private String connectionStatusText = "Disconnected";
     private Label statusValueLabel; // Keep reference to update style class

@@ -157,7 +157,7 @@
 }
 
 .chat-list .scroll-bar .increment-button,
-/* Target buttons inside chat-list */
+    /* Target buttons inside chat-list */
 .chat-list .scroll-bar .decrement-button {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
@@ -166,7 +166,7 @@
 }
 
 .chat-list .scroll-bar .increment-arrow,
-/* Target arrows inside chat-list */
+    /* Target arrows inside chat-list */
 .chat-list .scroll-bar .decrement-arrow {
     -fx-shape: " ";
     /* Hide default arrows */

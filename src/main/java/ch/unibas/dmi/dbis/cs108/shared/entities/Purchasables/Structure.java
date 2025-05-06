@@ -11,28 +11,19 @@ public class Structure extends PurchasableEntity {
     /**
      * Default constructor for Structure.
      */
-    public Structure() {}
+    public Structure() {
+    }
 
     /**
      * Constructs a new Structure with specified values.
      *
-     * @param id The unique identifier for this structure
-     * @param name The name of this structure
+     * @param id          The unique identifier for this structure
+     * @param name        The name of this structure
      * @param description The description of this structure
-     * @param price The purchase price of this structure
+     * @param price       The purchase price of this structure
      */
     public Structure(int id, String name, String description, String usage, int price, int resourceValue, String cardImagePath, String mapImagePath) {
         super(id, name, description, usage, price, resourceValue, cardImagePath, mapImagePath);
-    }
-    /**
-     * Loads structure data from a JSON object.
-     * Extends the parent method to also load use type data.
-     *
-     * @param json The JSON object containing structure data
-     */
-    @Override
-    protected void loadFromJson(JsonObject json) {
-        super.loadFromJson(json);
     }
 
     /**
@@ -45,6 +36,17 @@ public class Structure extends PurchasableEntity {
         Structure structure = new Structure();
         structure.loadFromJson(json);
         return structure;
+    }
+
+    /**
+     * Loads structure data from a JSON object.
+     * Extends the parent method to also load use type data.
+     *
+     * @param json The JSON object containing structure data
+     */
+    @Override
+    protected void loadFromJson(JsonObject json) {
+        super.loadFromJson(json);
     }
 
     /**

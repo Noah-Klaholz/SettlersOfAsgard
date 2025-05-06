@@ -1,9 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.core.logic;
 
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.CheatEvent;
-import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
-import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol.Commands;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.ErrorsAPI;
 
@@ -165,7 +163,7 @@ public class CommandProcessor {
 
             boolean success = gameLogic.placeStructure(x, y, structureId, playerName);
             return success ?
-                    formatSuccess(Commands.PLACESTRUCTURE.getCommand() + "$" + x + "$" + y + "$"  + structureId + "$" + playerName) :
+                    formatSuccess(Commands.PLACESTRUCTURE.getCommand() + "$" + x + "$" + y + "$" + structureId + "$" + playerName) :
                     formatError(ErrorsAPI.Errors.GAME_COMMAND_FAILED.getError() + "$PLACESTRUCTURE");
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error placing structure", e);

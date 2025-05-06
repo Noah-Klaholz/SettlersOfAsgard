@@ -3,18 +3,17 @@ package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 import ch.unibas.dmi.dbis.cs108.client.app.GameApplication;
 import ch.unibas.dmi.dbis.cs108.client.core.PlayerIdentityManager;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
-import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeRequestEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -26,8 +25,8 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
 import java.util.List;
 import java.util.Objects;
@@ -46,8 +45,8 @@ public class LobbyScreenController extends BaseController {
 
     private final ObservableList<GameLobby> allLobbies = FXCollections.observableArrayList();
     private final ObservableList<String> playersInCurrentLobby = FXCollections.observableArrayList();
+    private final AtomicBoolean isConnected = new AtomicBoolean(false);
     private FilteredList<GameLobby> filteredLobbies;
-
     @FXML
     private BorderPane rootPane; // Add reference to the root pane
     @FXML
@@ -82,7 +81,6 @@ public class LobbyScreenController extends BaseController {
     private Button createLobbyButton;
     @FXML
     private Button startGameButton;
-
     private String currentLobbyId;
     private int maxLobbyPlayers;
     private boolean isHost = false;
@@ -90,7 +88,6 @@ public class LobbyScreenController extends BaseController {
     private PlayerIdentityManager playerManager;
     private ChatComponent chatComponentController;
     private SettingsDialog settingsDialog; // Declare SettingsDialog
-    private final AtomicBoolean isConnected = new AtomicBoolean(false);
 
     /**
      * Constructs the controller, injecting dependencies via the BaseController.
@@ -912,12 +909,34 @@ public class LobbyScreenController extends BaseController {
         }
 
         /**
+         * Sets the status of the lobby.
+         *
+         * @param newStatus The new status to set.
+         */
+        public void setStatus(String newStatus) {
+            if (newStatus != null) {
+                this.status.set(newStatus);
+            }
+        }
+
+        /**
          * Gets the host of the lobby.
          *
          * @return The host name.
          */
         public String getHost() {
             return host.get();
+        }
+
+        /**
+         * Sets the host of the lobby.
+         *
+         * @param newHost The new host to set.
+         */
+        public void setHost(String newHost) {
+            if (newHost != null) {
+                this.host.set(newHost);
+            }
         }
 
         /**
@@ -952,28 +971,6 @@ public class LobbyScreenController extends BaseController {
 
         public StringProperty hostProperty() {
             return host;
-        }
-
-        /**
-         * Sets the status of the lobby.
-         *
-         * @param newStatus The new status to set.
-         */
-        public void setStatus(String newStatus) {
-            if (newStatus != null) {
-                this.status.set(newStatus);
-            }
-        }
-
-        /**
-         * Sets the host of the lobby.
-         *
-         * @param newHost The new host to set.
-         */
-        public void setHost(String newHost) {
-            if (newHost != null) {
-                this.host.set(newHost);
-            }
         }
 
         /**

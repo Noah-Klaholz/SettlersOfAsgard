@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.components.game.tooltips;
 
-import javafx.scene.control.Tooltip;
 import javafx.scene.Node;
+import javafx.scene.control.Tooltip;
 
 /**
  * A reusable tooltip for displaying dynamic information about actions.
@@ -17,15 +17,6 @@ public class ActionTooltip extends Tooltip {
     public ActionTooltip(String text) {
         super(text);
         getStyleClass().add("action-tooltip");
-    }
-
-    /**
-     * Updates the tooltip text dynamically.
-     *
-     * @param text The new text to display.
-     */
-    public void updateText(String text) {
-        setText(text);
     }
 
     /**
@@ -45,5 +36,14 @@ public class ActionTooltip extends Tooltip {
      */
     public static void install(Node node, String text) {
         Tooltip.install(node, new ActionTooltip(text));
+    }
+
+    /**
+     * Updates the tooltip text dynamically.
+     *
+     * @param text The new text to display.
+     */
+    public void updateText(String text) {
+        setText(text);
     }
 }

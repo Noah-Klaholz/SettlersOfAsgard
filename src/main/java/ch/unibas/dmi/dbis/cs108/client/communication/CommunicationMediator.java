@@ -3,13 +3,14 @@ package ch.unibas.dmi.dbis.cs108.client.communication;
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameStateManager;
 import ch.unibas.dmi.dbis.cs108.client.networking.NetworkController;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.*;
-import ch.unibas.dmi.dbis.cs108.client.networking.events.LobbyJoinedEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ServerCommandEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.EndTurnRequestEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.game.PlaceStatueUIEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.*;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.GameStartedEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyListResponseEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.PlayerJoinedLobbyEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.PlayerLeftLobbyEvent;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 
@@ -33,15 +34,15 @@ public class CommunicationMediator {
      */
     private final NetworkController networkController;
     /**
-     * The name of the player.
-     */
-    private Player player;
-    /**
      * The GameStateManager instance used to manage the game state.
      * This manager handles the current state of the game and updates it based on
      * network events.
      */
     private final GameStateManager gameStateManager;
+    /**
+     * The name of the player.
+     */
+    private final Player player;
 
     /**
      * Constructor for CommunicationMediator.
@@ -249,7 +250,7 @@ public class CommunicationMediator {
                     @Override
                     public void onEvent(ReceiveCommandEvent event) {
                         LOGGER.log(Level.INFO, "Received command: {0} with message: {1}",
-                                new Object[] { event.getType(), event.getMessage() });
+                                new Object[]{event.getType(), event.getMessage()});
                         // Parse command and publish specific UI events
                         // Example: Handle a KICK command
                         if (event.getType() == CommunicationAPI.NetworkProtocol.Commands.EXIT) {
@@ -333,7 +334,7 @@ public class CommunicationMediator {
                             case LEFT:
                                 // Lobby left event. This should be handled by the UI.
                                 LOGGER.log(Level.INFO, "Lobby Left Event (Network): Player={0}",
-                                        new Object[] { event.getPlayerName() });
+                                        new Object[]{event.getPlayerName()});
                                 if (event.getPlayerName().equals(player.getName())) {
                                     // Local player left the lobby
                                     UIEventBus.getInstance().publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyLeftEvent(
@@ -346,7 +347,7 @@ public class CommunicationMediator {
                             case CREATED:
                                 // Lobby creation confirmed. A LobbyJoinedEvent should follow for the creator.
                                 LOGGER.log(Level.INFO, "Lobby Created Event (Network): Player={0}",
-                                        new Object[] { event.getPlayerName() });
+                                        new Object[]{event.getPlayerName()});
                                 // No direct UI event needed here, LobbyJoinedEvent handles the state change.
                                 break;
                             default:
@@ -402,7 +403,7 @@ public class CommunicationMediator {
                         // UI does not need lobbyId for game start event. -> I (noah) changed it so that it can handle null-lobbies
                         // Server checks every error angle, does not need to be done here!!
                         UIEventBus.getInstance().publish(new GameStartedEvent(null)); // Pass null instead of
-                                                                                      // event.getLobbyId()
+                        // event.getLobbyId()
                         LOGGER.info(
                                 "Game Started event received, publishing to UI."); // Removed lobbyId from log
                     }
@@ -475,6 +476,7 @@ public class CommunicationMediator {
                         UIEventBus.getInstance()
                                 .publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.game.GameSyncEvent("SYNC$" + event.getMessage(), gameStateManager)); // SYNC$ Necessary for proper parsing
                     }
+
                     @Override
                     public Class<GameSyncEvent> getEventType() {
                         return GameSyncEvent.class;

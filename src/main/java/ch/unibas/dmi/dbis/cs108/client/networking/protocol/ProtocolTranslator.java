@@ -1,11 +1,8 @@
 package ch.unibas.dmi.dbis.cs108.client.networking.protocol;
 
 import ch.unibas.dmi.dbis.cs108.client.networking.events.*;
-import ch.unibas.dmi.dbis.cs108.client.networking.events.GameSyncEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.LeaderboardResponseUIEvent;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol.Commands;
-import ch.unibas.dmi.dbis.cs108.shared.protocol.ErrorsAPI.Errors;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -187,7 +184,6 @@ public class ProtocolTranslator implements CommunicationAPI {
     private void processSuccessMessage(String args) {
         if (args.startsWith(Commands.PING.getCommand() + DELIMITER)) {
             // Ping response is handled in the NetworkController
-            return;
         } else if (args.startsWith(Commands.CHANGENAME.getCommand() + DELIMITER)) {
             Logger.getGlobal().info("Successfully processed changeName message: " + args);
             String chanArgs = args.substring((Commands.CHANGENAME.getCommand() + DELIMITER).length());
@@ -315,7 +311,7 @@ public class ProtocolTranslator implements CommunicationAPI {
     }
 
     public String formatUseStatue(int x, int y, int statueID, String params) {
-        return StatueCommandBuilder.useStatue(x,y,statueID, params);
+        return StatueCommandBuilder.useStatue(x, y, statueID, params);
     }
 
     public String formatPlaceStructure(int x, int y, int structureID) {

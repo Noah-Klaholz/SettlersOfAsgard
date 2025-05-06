@@ -9,7 +9,9 @@ import java.util.logging.Logger;
  */
 public class ServerMain {
 
-    /** Logger to log logging */
+    /**
+     * Logger to log logging
+     */
     private static final Logger logger = Logger.getLogger(ServerMain.class.getName());
 
     /**

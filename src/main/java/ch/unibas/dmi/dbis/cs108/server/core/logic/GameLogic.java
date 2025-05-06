@@ -1,11 +1,11 @@
 package ch.unibas.dmi.dbis.cs108.server.core.logic;
 
-import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.ArtifactActionHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.StatueActionHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.StructureActionHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.actions.TileActionHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
+import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 
@@ -53,6 +53,7 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Gets the GameState with thread-safe access.
+     *
      * @return the current object of the GameState.
      */
     public GameState getGameState() {
@@ -66,6 +67,7 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Gets the GameEventNotifier related to this GameLogic object.
+     *
      * @return The current object implementing the GameEventNotifier interface (Lobby).
      */
     public GameEventNotifier getNotifier() {
@@ -74,6 +76,7 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Starts the game.
+     *
      * @param players the names of the players as an array of Strings.
      */
     @Override
@@ -137,10 +140,10 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Buy a tile on the board.
-     * @param x the x-coordinate of the tile.
-     * @param y the y-coordinate of the tile.
-     * @param playerName the name of the player buying the tile.
      *
+     * @param x          the x-coordinate of the tile.
+     * @param y          the y-coordinate of the tile.
+     * @param playerName the name of the player buying the tile.
      * @return if the action was successful.
      */
     public boolean buyTile(int x, int y, String playerName) {
@@ -149,9 +152,9 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Place a structure on the board.
+     *
      * @param x the x-coordinate of the tile.
      * @param y the y-coordinate of the tile.
-     *
      * @return if the action was successful.
      */
     public boolean placeStructure(int x, int y, int structureId, String playerName) {
@@ -160,11 +163,11 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Use a structure on the board.
-     * @param x the x-coordinate of the tile.
-     * @param y the y-coordinate of the tile.
-     * @param structureId the ID of the structure.
-     * @param playerName the name of the player using the structure.
      *
+     * @param x           the x-coordinate of the tile.
+     * @param y           the y-coordinate of the tile.
+     * @param structureId the ID of the structure.
+     * @param playerName  the name of the player using the structure.
      * @return if the action was successful.
      */
     public boolean useStructure(int x, int y, int structureId, String playerName) {
@@ -173,11 +176,11 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Buy a statue.
-     * @param statueId the ID of the statue.
-     * @param playerName the name of the player buying the statue.
-     * @param x the x-coordinate of the tile.
-     * @param y the y-coordinate of the tile.
      *
+     * @param statueId   the ID of the statue.
+     * @param playerName the name of the player buying the statue.
+     * @param x          the x-coordinate of the tile.
+     * @param y          the y-coordinate of the tile.
      * @return if the action was successful.
      */
     public boolean placeStatue(int x, int y, int statueId, String playerName) {
@@ -186,11 +189,11 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Upgrade a statue.
-     * @param statueId the ID of the statue.
-     * @param playerName the name of the player buying the statue.
-     * @param x the x-coordinate of the tile.
-     * @param y the y-coordinate of the tile.
      *
+     * @param statueId   the ID of the statue.
+     * @param playerName the name of the player buying the statue.
+     * @param x          the x-coordinate of the tile.
+     * @param y          the y-coordinate of the tile.
      * @return if the action was successful.
      */
     public boolean upgradeStatue(int x, int y, int statueId, String playerName) {
@@ -199,12 +202,12 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Use a statue.
-     * @param statueId the ID of the statue.
-     * @param playerName the name of the player buying the statue.
-     * @param x the x-coordinate of the tile.
-     * @param y the y-coordinate of the tile.
-     * @param params the parameters for the statue action.
      *
+     * @param statueId   the ID of the statue.
+     * @param playerName the name of the player buying the statue.
+     * @param x          the x-coordinate of the tile.
+     * @param y          the y-coordinate of the tile.
+     * @param params     the parameters for the statue action.
      * @return if the action was successful.
      */
     public boolean useStatue(int x, int y, int statueId, String playerName, String params) {
@@ -216,9 +219,8 @@ public class GameLogic implements GameLogicInterface {
      *
      * @param artifactId the ID of the artifact.
      * @param playerName the name of the player buying the statue.
-     * @param x the x-coordinate of the tile.
-     * @param y the y-coordinate of the tile.
-     *
+     * @param x          the x-coordinate of the tile.
+     * @param y          the y-coordinate of the tile.
      * @return if the action was successful.
      */
     public boolean useFieldArtifact(int x, int y, int artifactId, String playerName) {
@@ -227,10 +229,10 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Use a player artifact.
-     * @param artifactId the ID of the artifact.
-     * @param playerName the name of the player buying the statue.
-     * @param targetPlayer the name of the target player.
      *
+     * @param artifactId   the ID of the artifact.
+     * @param playerName   the name of the player buying the statue.
+     * @param targetPlayer the name of the target player.
      * @return if the action was successful.
      */
     public boolean usePlayerArtifact(int artifactId, String targetPlayer, String playerName) {
@@ -259,6 +261,7 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Gets the current state of the TurnManager.
+     *
      * @return The current TurnManager object.
      */
     public TurnManager getTurnManager() {
@@ -267,6 +270,7 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Gets the current state of the CommandProcessor.
+     *
      * @return The current object of the CommandProcessor.
      */
     public CommandProcessor getCommandProcessor() {
@@ -275,6 +279,7 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Gets the current state of the TileActionHandler.
+     *
      * @return The current object of the TileActionHandler.
      */
     public TileActionHandler getTileActionHandler() {
@@ -283,6 +288,7 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Gets the current state of the StructureActionHandler.
+     *
      * @return The current object of the StructureActionHandler.
      */
     public StructureActionHandler getStructureActionHandlerActionHandler() {
@@ -291,6 +297,7 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Gets the current state of the ArtifactActionHandler.
+     *
      * @return The current object of the ArtifactActionHandler.
      */
     public ArtifactActionHandler getArtifactActionHandler() {
@@ -299,6 +306,7 @@ public class GameLogic implements GameLogicInterface {
 
     /**
      * Gets the current state of the StatueActionHandler.
+     *
      * @return The current object of the StatueActionHandler.
      */
     public StatueActionHandler getStatueActionHandler() {

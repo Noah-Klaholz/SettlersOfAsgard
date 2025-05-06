@@ -1,28 +1,29 @@
 package ch.unibas.dmi.dbis.cs108.server.core.model;
 
+import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
 import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 
-import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * Responsible for serializing game state for network transmission
  */
 public class GameStateSerializer {
-    /** Logger to log logging */
+    /**
+     * Logger to log logging
+     */
     private static final Logger LOGGER = Logger.getLogger(GameStateSerializer.class.getName());
-    /** The gameState object related to this */
+    /**
+     * The gameState object related to this
+     */
     private final GameState gameState;
 
     /**
@@ -63,7 +64,7 @@ public class GameStateSerializer {
                 for (Tile t : p.getOwnedTiles()) {
                     sb.append(t.getTileID()).append(",");
                 }
-                if (!p.getOwnedTiles().isEmpty()) sb.deleteCharAt(sb.length()-1);
+                if (!p.getOwnedTiles().isEmpty()) sb.deleteCharAt(sb.length() - 1);
                 sb.append("],");
 
                 // Artifacts
@@ -71,7 +72,7 @@ public class GameStateSerializer {
                 for (Artifact a : p.getArtifacts()) {
                     sb.append(a.getId()).append(",");
                 }
-                if (!p.getArtifacts().isEmpty()) sb.deleteCharAt(sb.length()-1);
+                if (!p.getArtifacts().isEmpty()) sb.deleteCharAt(sb.length() - 1);
                 sb.append("],");
 
                 // Purchasable entities
@@ -79,7 +80,7 @@ public class GameStateSerializer {
                 for (PurchasableEntity pe : p.getPurchasableEntities()) {
                     sb.append(pe.getId()).append(",");
                 }
-                if (!p.getPurchasableEntities().isEmpty()) sb.deleteCharAt(sb.length()-1);
+                if (!p.getPurchasableEntities().isEmpty()) sb.deleteCharAt(sb.length() - 1);
                 sb.append("],");
 
                 // Status
@@ -112,19 +113,19 @@ public class GameStateSerializer {
                         sb.append("ENT=NONE|");
                     } else if (e instanceof Statue statue) {
                         sb.append("ENT=STA,")
-                          .append(statue.getId()).append(",")
-                          .append("DI=").append(statue.getDisabled()).append(",")
-                          .append("AC=").append(statue.isActivated()).append(",")
-                          .append("LV=").append(statue.getLevel()).append("|");
+                                .append(statue.getId()).append(",")
+                                .append("DI=").append(statue.getDisabled()).append(",")
+                                .append("AC=").append(statue.isActivated()).append(",")
+                                .append("LV=").append(statue.getLevel()).append("|");
                     } else if (e instanceof Monument monument) {
                         sb.append("ENT=MON,")
-                          .append(monument.getId()).append(",")
-                          .append("DI=").append(monument.isDisabled()).append("|");
+                                .append(monument.getId()).append(",")
+                                .append("DI=").append(monument.isDisabled()).append("|");
                     } else if (e instanceof Structure structure) {
                         sb.append("ENT=STR,")
-                          .append(structure.getId()).append(",")
-                          .append("DI=").append(structure.isDisabled()).append(",")
-                          .append("AC=").append(structure.isActivated()).append("|");
+                                .append(structure.getId()).append(",")
+                                .append("DI=").append(structure.isDisabled()).append(",")
+                                .append("AC=").append(structure.isActivated()).append("|");
                     }
 
                     sb.append("AR=").append(t.getArtifact() != null ? t.getArtifact().getId() : "null").append("|");
