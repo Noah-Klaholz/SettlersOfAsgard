@@ -1,7 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables;
 
 import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import com.google.gson.JsonObject;
 
 /**
@@ -45,15 +44,16 @@ public abstract class PurchasableEntity extends GameEntity {
     /**
      * Default constructor for PurchasableEntity.
      */
-    public PurchasableEntity() {}
+    public PurchasableEntity() {
+    }
 
     /**
      * Constructs a new PurchasableEntity with specified values.
      *
-     * @param id The unique identifier for this entity
-     * @param name The name of this entity
+     * @param id          The unique identifier for this entity
+     * @param name        The name of this entity
      * @param description The description of this entity
-     * @param price The purchase price of this entity
+     * @param price       The purchase price of this entity
      */
     public PurchasableEntity(int id, String name, String description, String usage, int price, int resourceValue, String cardImagePath, String mapImagePath) {
         super(id, name, description, usage);
@@ -68,7 +68,9 @@ public abstract class PurchasableEntity extends GameEntity {
      *
      * @return The price of this entity
      */
-    public int getPrice() { return price; }
+    public int getPrice() {
+        return price;
+    }
 
     /**
      * Returns the resource value of this entity.
@@ -77,21 +79,27 @@ public abstract class PurchasableEntity extends GameEntity {
      *
      * @return The resource value of this entity
      */
-    public int getResourceValue() { return resourceValue; }
+    public int getResourceValue() {
+        return resourceValue;
+    }
 
     /**
      * Returns the path to the image representing this entity as a card.
      *
      * @return The card image path
      */
-    public String getCardImagePath() { return cardImagePath; }
+    public String getCardImagePath() {
+        return cardImagePath;
+    }
 
     /**
      * Returns the path to the image representing this entity as a game piece.
      *
      * @return The map image path
      */
-    public String getMapImagePath() { return mapImagePath; }
+    public String getMapImagePath() {
+        return mapImagePath;
+    }
 
     /**
      * Loads entity data from a JSON object.
@@ -118,6 +126,15 @@ public abstract class PurchasableEntity extends GameEntity {
     }
 
     /**
+     * Sets the activation of this structures to the given boolean
+     *
+     * @param b boolean that gives the activation of the statue
+     */
+    public void setActivated(boolean b) {
+        this.activated = b;
+    }
+
+    /**
      * Returns if this statue is currently disabled,
      * Any value above 0 means yes
      *
@@ -125,15 +142,6 @@ public abstract class PurchasableEntity extends GameEntity {
      */
     public boolean isDisabled() {
         return disabled > 0;
-    }
-
-    /**
-     * Sets the activation of this structures to the given boolean
-     *
-     * @param b boolean that gives the activation of the statue
-     */
-    public void setActivated(boolean b) {
-        this.activated = b;
     }
 
     /**
@@ -162,21 +170,21 @@ public abstract class PurchasableEntity extends GameEntity {
     }
 
     /**
-     * Sets disabled
-     *
-     * @param disabled the value to set.
-     */
-    public void setDisabled(int disabled) {
-        this.disabled = disabled;
-    }
-
-    /**
      * Gets the value of disabled
      *
      * @return the value of disabled
      */
     public int getDisabled() {
         return disabled;
+    }
+
+    /**
+     * Sets disabled
+     *
+     * @param disabled the value to set.
+     */
+    public void setDisabled(int disabled) {
+        this.disabled = disabled;
     }
 
     @Override

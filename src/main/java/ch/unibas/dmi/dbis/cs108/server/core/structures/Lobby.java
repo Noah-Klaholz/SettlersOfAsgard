@@ -26,26 +26,43 @@ import java.util.stream.Collectors;
  */
 public class Lobby implements GameEventNotifier {
 
-    /** Logger to log logging */
+    /**
+     * Logger to log logging
+     */
     private static final Logger logger = Logger.getLogger(Lobby.class.getName());
-    /** Name of the Lobby (unique), serves as an ID. */
+    /**
+     * Name of the Lobby (unique), serves as an ID.
+     */
     private final String id;
-    /** The players, stored in a List of ClientHandlers. */
+    /**
+     * The players, stored in a List of ClientHandlers.
+     */
     private final List<ClientHandler> players;
-    /** The number of maximal Players allowed (currently always 4). */
+    /**
+     * The number of maximal Players allowed (currently always 4).
+     */
     private final int maxPlayers;
-    /** The status of the Lobby (In lobby, in game or game ended). */
-    private LobbyStatus status;
-    /** The GameLogic corresponding to the game ongoing in the Lobby (only initialized when game starts). */
-    private GameLogic gameLogic;
-    /** * The turnScheduler responsible for automatically calling TurnManager.nextTurn() after a fixed time. */
-    private ScheduledExecutorService turnScheduler; // For automatic turns
-    /** Global leaderboard (gets it from the server) */
+    /**
+     * Global leaderboard (gets it from the server)
+     */
     private final Leaderboard leaderboard;
+    /**
+     * The status of the Lobby (In lobby, in game or game ended).
+     */
+    private LobbyStatus status;
+    /**
+     * The GameLogic corresponding to the game ongoing in the Lobby (only initialized when game starts).
+     */
+    private GameLogic gameLogic;
+    /**
+     * The turnScheduler responsible for automatically calling TurnManager.nextTurn() after a fixed time.
+     */
+    private ScheduledExecutorService turnScheduler; // For automatic turns
 
     /**
      * Creates the Lobby object and instantiates fields.
-     * @param id The name of the Lobby as a String.
+     *
+     * @param id         The name of the Lobby as a String.
      * @param maxPlayers The number of maximum players as an Integer.
      */
     public Lobby(String id, int maxPlayers, Leaderboard leaderboard) {
@@ -59,6 +76,7 @@ public class Lobby implements GameEventNotifier {
 
     /**
      * Gets the ID of the Lobby.
+     *
      * @return the current ID of the Lobby.
      */
     public String getId() {
@@ -67,6 +85,7 @@ public class Lobby implements GameEventNotifier {
 
     /**
      * Gets the number of maximum players.
+     *
      * @return the number of maximum players.
      */
     public int getMaxPlayers() {
@@ -75,6 +94,7 @@ public class Lobby implements GameEventNotifier {
 
     /**
      * Gets the players as a List of ClientHandlers.
+     *
      * @return the current players in the Lobby.
      */
     public List<ClientHandler> getPlayers() {
@@ -83,13 +103,16 @@ public class Lobby implements GameEventNotifier {
 
     /**
      * Gets the turnScheduler.
+     *
      * @return the TurnScheduler.
      */
     public ScheduledExecutorService getTurnScheduler() {
         return turnScheduler;
     }
+
     /**
      * Gets the GameLogic object in this Lobby. Only valid if the Game has started already.
+     *
      * @return The GameLogic object in this Lobby.
      */
     public GameLogic getGameLogic() {
@@ -101,12 +124,22 @@ public class Lobby implements GameEventNotifier {
     }
 
     /**
+     * Sets the gameLogic field.
+     *
+     * @param gameLogic the object to set.
+     */
+    public void setGameLogic(GameLogic gameLogic) {
+        this.gameLogic = gameLogic;
+    }
+
+    /**
      * Adds a player to the Lobby (if the Lobby is not full).
+     *
      * @param player The player object to add.
      * @return if the action was successful.
      */
     public boolean addPlayer(ClientHandler player) {
-        if(player == null) {
+        if (player == null) {
             logger.warning("Player is null, cannot add player to lobby.");
             return false;
         }
@@ -121,25 +154,27 @@ public class Lobby implements GameEventNotifier {
 
     /**
      * Removes a player from the Lobby (if the Lobby is not empty).
+     *
      * @param player The player object to remove.
      * @return if the action was successful.
      */
     public boolean removePlayer(ClientHandler player) {
-        if(player == null) {
+        if (player == null) {
             logger.warning("Player is null, cannot remove player from lobby.");
             return false;
         }
         if (!players.isEmpty() && players.contains(player)) {
             players.remove(player);
-            logger.info(player.toString() + " has been removed from Lobby: " + id);
+            logger.info(player + " has been removed from Lobby: " + id);
             return true;
         }
-        logger.warning(player.toString() + " was not removed from Lobby: " + id);
+        logger.warning(player + " was not removed from Lobby: " + id);
         return false;
     }
 
     /**
      * Gets the status of the Lobby.
+     *
      * @return The status of the Lobby.
      */
     public String getStatus() {
@@ -148,6 +183,7 @@ public class Lobby implements GameEventNotifier {
 
     /**
      * Checks if the Lobby is full.
+     *
      * @return if the Lobby is full.
      */
     public boolean isFull() {
@@ -156,6 +192,7 @@ public class Lobby implements GameEventNotifier {
 
     /**
      * Checks if the Lobby is empty.
+     *
      * @return if the Lobby is empty.
      */
     public boolean isEmpty() {
@@ -164,6 +201,7 @@ public class Lobby implements GameEventNotifier {
 
     /**
      * Returns the state of the Lobby (id, players, maxplayers, status) as a String.
+     *
      * @return the state of the Lobby as a String.
      */
     @Override
@@ -178,6 +216,7 @@ public class Lobby implements GameEventNotifier {
 
     /**
      * Checks for starting conditions and starts a game.
+     *
      * @return if the game was started correctly.
      */
     public boolean startGame() {
@@ -300,7 +339,7 @@ public class Lobby implements GameEventNotifier {
     public void endGame() {
         if (status == LobbyStatus.IN_GAME) {
             status = LobbyStatus.GAME_ENDED;
-            broadcastMessage(CommunicationAPI.NetworkProtocol.Commands.ENDGAME.getCommand() + "$" +  gameLogic.createFinalScoreMessage());
+            broadcastMessage(CommunicationAPI.NetworkProtocol.Commands.ENDGAME.getCommand() + "$" + gameLogic.createFinalScoreMessage());
             gameLogic.getGameState().getPlayers().forEach(player -> {
                 leaderboard.update(player.getName(), player.getRunes());
             });
@@ -312,6 +351,7 @@ public class Lobby implements GameEventNotifier {
 
     /**
      * Sends a message to every player in the Lobby.
+     *
      * @param message The message to send.
      */
     @Override
@@ -323,6 +363,7 @@ public class Lobby implements GameEventNotifier {
 
     /**
      * Lists the players as a String.
+     *
      * @return The String of all players.
      */
     public String listPlayers() {
@@ -337,40 +378,11 @@ public class Lobby implements GameEventNotifier {
 
     /**
      * Returns the name of the host player.
+     *
      * @return the name of the host player
      */
     public String getHostName() {
         return players.get(0).getPlayerName();
-    }
-
-    /**
-     * Defines the states the lobby can be in.
-     * "IN_LOBBY" means the game has not started yet.
-     * "IN_GAME" means the game is currently being played.
-     * "GAME_ENDED" means the game has ended.
-     */
-    public enum LobbyStatus {
-        IN_LOBBY("In lobby"),
-        IN_GAME("In-Game"),
-        GAME_ENDED("Game has ended");
-
-        private final String status;
-
-        LobbyStatus(String status) {
-            this.status = status;
-        }
-
-        public String getStatus() {
-            return status;
-        }
-    }
-
-    /**
-     * Sets the gameLogic field.
-     * @param gameLogic the object to set.
-     */
-    public void setGameLogic(GameLogic gameLogic) {
-        this.gameLogic = gameLogic;
     }
 
     /**
@@ -385,6 +397,7 @@ public class Lobby implements GameEventNotifier {
 
     /**
      * Changes the name of a player in the game.
+     *
      * @param oldName The old name of the player.
      * @param newName The new name of the player.
      */
@@ -417,5 +430,27 @@ public class Lobby implements GameEventNotifier {
             gameLogic.getGameState().setPlayerTurn(newName);
         }
         broadcastMessage(gameLogic.getGameState().createDetailedStatusMessage());
+    }
+
+    /**
+     * Defines the states the lobby can be in.
+     * "IN_LOBBY" means the game has not started yet.
+     * "IN_GAME" means the game is currently being played.
+     * "GAME_ENDED" means the game has ended.
+     */
+    public enum LobbyStatus {
+        IN_LOBBY("In lobby"),
+        IN_GAME("In-Game"),
+        GAME_ENDED("Game has ended");
+
+        private final String status;
+
+        LobbyStatus(String status) {
+            this.status = status;
+        }
+
+        public String getStatus() {
+            return status;
+        }
     }
 }

@@ -83,7 +83,7 @@ public class Player {
     /**
      * Add a new buff or debuff to the player
      *
-     * @param buff the buff to add
+     * @param buff  the buff to add
      * @param value the value of the buff (positive for buff, negative for debuff)
      */
     public void addBuff(Status.BuffType buff, double value) {
@@ -99,7 +99,6 @@ public class Player {
 
     /**
      * Getter for owned purchasableEntity
-     *
      */
     public List<PurchasableEntity> getPurchasableEntities() {
         return purchasableEntities;
@@ -107,7 +106,6 @@ public class Player {
 
     /**
      * Setter for owned purchasableEntity
-     *
      */
     public void setPurchasableEntities(List<PurchasableEntity> purchasableEntities) {
         this.purchasableEntities = purchasableEntities;
@@ -132,7 +130,6 @@ public class Player {
 
     /**
      * Getter for owned monument
-     *
      */
     public List<Monument> getMonuments() {
         return monuments;
@@ -183,6 +180,14 @@ public class Player {
         return new HashSet<>(playerSet).containsAll(requiredSet);
     }
 
+    /**
+     * Getter for runeBoughtTiles
+     *
+     * @return roundBoughtTiles the number of tiles already bought
+     */
+    public int getRoundBoughtTiles() {
+        return roundBoughtTiles;
+    }
 
     /**
      * Setter for runeBoughtTiles
@@ -194,15 +199,6 @@ public class Player {
     }
 
     /**
-     * Getter for runeBoughtTiles
-     *
-     * @return roundBoughtTiles the number of tiles already bought
-     */
-    public int getRoundBoughtTiles() {
-        return roundBoughtTiles;
-    }
-
-    /**
      * adds a bought tile for this turn
      */
     public void addBoughtTile() {
@@ -210,19 +206,17 @@ public class Player {
     }
 
     /**
-     * Setter for artifacts
-     *
-     */
-    public void setArtifacts(List<Artifact> artifacts) {
-        this.artifacts = artifacts;
-    }
-
-    /**
      * Getter for artifacts
-     *
      */
     public List<Artifact> getArtifacts() {
         return artifacts;
+    }
+
+    /**
+     * Setter for artifacts
+     */
+    public void setArtifacts(List<Artifact> artifacts) {
+        this.artifacts = artifacts;
     }
 
     /**
@@ -248,7 +242,6 @@ public class Player {
     }
 
     /**
-     *
      * Getter for id
      *
      * @return String
@@ -331,7 +324,6 @@ public class Player {
 
     /**
      * Getter for owned tiles
-     *
      */
     public List<Tile> getOwnedTiles() {
         return ownedTiles;
@@ -339,7 +331,6 @@ public class Player {
 
     /**
      * Setter for owned tiles
-     *
      */
     public void setOwnedTiles(List<Tile> ownedTiles) {
         this.ownedTiles = ownedTiles;
@@ -368,7 +359,7 @@ public class Player {
      * @param amount int
      */
     public void addEnergy(int amount) {
-        if(energy + amount > SETTINGS.Config.MAX_ENERGY.getValue()){
+        if (energy + amount > SETTINGS.Config.MAX_ENERGY.getValue()) {
             energy = 4;
             return;
         } else if (energy + amount < 0) {

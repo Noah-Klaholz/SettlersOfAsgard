@@ -3,13 +3,12 @@ package ch.unibas.dmi.dbis.cs108.client.app;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.client.communication.CommunicationMediator;
-// import ch.unibas.dmi.dbis.cs108.client.core.Game; // Unused import
 import ch.unibas.dmi.dbis.cs108.client.core.PlayerIdentityManager;
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameStateManager;
-import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.client.networking.NetworkController;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -30,11 +29,6 @@ import java.util.logging.Logger;
  */
 public class GameApplication extends Application {
     private static final Logger LOGGER = Logger.getLogger(GameApplication.class.getName());
-
-    /**
-     * The NetworkController instance for managing network communication.
-     */
-    private NetworkController networkController;
     /**
      * The Player instance representing the local player. Made static for global
      * access.
@@ -45,6 +39,10 @@ public class GameApplication extends Application {
      * The lobby ID for the current game session. Initialized to null.
      */
     private static String currentLobbyId = null;
+    /**
+     * The NetworkController instance for managing network communication.
+     */
+    private NetworkController networkController;
     /**
      * The Player instance representing the local player.
      */

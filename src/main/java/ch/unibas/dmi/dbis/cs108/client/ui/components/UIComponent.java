@@ -12,7 +12,9 @@ import java.util.logging.Logger;
 
 public abstract class UIComponent<T extends Node> {
     private static final Logger logger = Logger.getLogger(UIComponent.class.getName());
-    /** The root JavaFX Node of this component. */
+    /**
+     * The root JavaFX Node of this component.
+     */
     protected T view;
 
     // Add onCloseAction support for dialog overlays
@@ -70,18 +72,18 @@ public abstract class UIComponent<T extends Node> {
     public abstract void show();
 
     /**
+     * Gets the current onCloseAction (may be null).
+     */
+    public Runnable getOnCloseAction() {
+        return onCloseAction;
+    }
+
+    /**
      * Sets an action to be executed when the dialog/component is closed.
      * Used by BaseController to restore overlays/layouts.
      * Subclasses should call this action when closing.
      */
     public void setOnCloseAction(Runnable action) {
         this.onCloseAction = action;
-    }
-
-    /**
-     * Gets the current onCloseAction (may be null).
-     */
-    public Runnable getOnCloseAction() {
-        return onCloseAction;
     }
 }

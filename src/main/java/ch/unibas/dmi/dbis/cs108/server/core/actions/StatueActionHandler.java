@@ -1,17 +1,16 @@
 package ch.unibas.dmi.dbis.cs108.server.core.actions;
 
+import ch.unibas.dmi.dbis.cs108.server.core.model.BoardManager;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors.StatueBehaviorRegistry;
+import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.StatueParameters;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
-import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
-import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
-import ch.unibas.dmi.dbis.cs108.server.core.model.BoardManager;
+import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 
 import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -37,7 +36,7 @@ public class StatueActionHandler {
      * Creates a new StatueActionHandler with the specified game state and lock.
      *
      * @param gameState The current game state
-     * @param gameLock The lock used for thread safety
+     * @param gameLock  The lock used for thread safety
      */
     public StatueActionHandler(GameState gameState, ReadWriteLock gameLock) {
         this.gameState = gameState;
@@ -51,9 +50,9 @@ public class StatueActionHandler {
      * and the player must have enough runes to purchase the statue.
      * </p>
      *
-     * @param x The x-coordinate on the board
-     * @param y The y-coordinate on the board
-     * @param statueId The ID of the statue to place
+     * @param x          The x-coordinate on the board
+     * @param y          The y-coordinate on the board
+     * @param statueId   The ID of the statue to place
      * @param playerName The name of the player placing the statue
      * @return true if the statue was successfully placed, false otherwise
      */
@@ -95,9 +94,9 @@ public class StatueActionHandler {
      * the statue must not be at max level, and the player must have enough runes to upgrade.
      * </p>
      *
-     * @param x The x-coordinate on the board
-     * @param y The y-coordinate on the board
-     * @param statueId The ID of the statue to upgrade
+     * @param x          The x-coordinate on the board
+     * @param y          The y-coordinate on the board
+     * @param statueId   The ID of the statue to upgrade
      * @param playerName The name of the player upgrading the statue
      * @return true if the statue was successfully upgraded, false otherwise
      */
@@ -129,11 +128,11 @@ public class StatueActionHandler {
      * and the statue's effect will be executed with the provided parameters.
      * </p>
      *
-     * @param x The x-coordinate on the board
-     * @param y The y-coordinate on the board
-     * @param statueId The ID of the statue to use
+     * @param x          The x-coordinate on the board
+     * @param y          The y-coordinate on the board
+     * @param statueId   The ID of the statue to use
      * @param playerName The name of the player using the statue
-     * @param params Parameter string in format "KEY1:VALUE1;KEY2:VALUE2;..."
+     * @param params     Parameter string in format "KEY1:VALUE1;KEY2:VALUE2;..."
      * @return true if the statue effect was successfully executed, false otherwise
      */
     public boolean useStatue(int x, int y, int statueId, String playerName, String params) {
@@ -243,31 +242,12 @@ public class StatueActionHandler {
     }
 
     /**
-     * Helper class to store validation results.
-     */
-    private static class ValidationResult {
-        private final boolean valid;
-        private final Player player;
-        private final Tile tile;
-
-        public ValidationResult(boolean valid, Player player, Tile tile) {
-            this.valid = valid;
-            this.player = player;
-            this.tile = tile;
-        }
-
-        public boolean isValid() { return valid; }
-        public Player getPlayer() { return player; }
-        public Tile getTile() { return tile; }
-    }
-
-    /**
      * Validates player and tile for an action.
      *
-     * @param x The x-coordinate
-     * @param y The y-coordinate
-     * @param playerName The player's name
-     * @param requireEmptyTile Whether the tile should be empty
+     * @param x                   The x-coordinate
+     * @param y                   The y-coordinate
+     * @param playerName          The player's name
+     * @param requireEmptyTile    Whether the tile should be empty
      * @param requireEntityOnTile Whether the tile should have an entity
      * @return A ValidationResult with the player and tile if valid
      */
@@ -298,7 +278,7 @@ public class StatueActionHandler {
     /**
      * Gets a statue from a tile if it matches the specified ID.
      *
-     * @param tile The tile containing the entity
+     * @param tile     The tile containing the entity
      * @param statueId The expected statue ID
      * @return The statue if found and ID matches, null otherwise
      */
@@ -331,5 +311,32 @@ public class StatueActionHandler {
     @FunctionalInterface
     private interface ActionWithResult {
         boolean execute();
+    }
+
+    /**
+     * Helper class to store validation results.
+     */
+    private static class ValidationResult {
+        private final boolean valid;
+        private final Player player;
+        private final Tile tile;
+
+        public ValidationResult(boolean valid, Player player, Tile tile) {
+            this.valid = valid;
+            this.player = player;
+            this.tile = tile;
+        }
+
+        public boolean isValid() {
+            return valid;
+        }
+
+        public Player getPlayer() {
+            return player;
+        }
+
+        public Tile getTile() {
+            return tile;
+        }
     }
 }

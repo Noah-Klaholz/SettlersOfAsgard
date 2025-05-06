@@ -10,17 +10,17 @@ import com.google.gson.JsonObject;
 public abstract class FindableEntity extends GameEntity {
 
 
-
     /**
      * Default constructor for FindableEntity.
      */
-    public FindableEntity() {}
+    public FindableEntity() {
+    }
 
     /**
      * Constructs a new FindableEntity with specified values.
      *
-     * @param id The unique identifier for this entity
-     * @param name The name of this entity
+     * @param id          The unique identifier for this entity
+     * @param name        The name of this entity
      * @param description The description of this entity
      */
     public FindableEntity(int id, String name, String description, String usage) {

@@ -3,11 +3,17 @@ package ch.unibas.dmi.dbis.cs108.server.core.model;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.nio.file.*;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.locks.*;
-import java.util.logging.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -15,13 +21,21 @@ import java.util.stream.Collectors;
  * of the leaderboard.txt file (@see leaderboard/leaderboard.txt)
  */
 public class Leaderboard {
-    /** Logger to log logging */
+    /**
+     * Logger to log logging
+     */
     private static final Logger LOGGER = Logger.getLogger(Leaderboard.class.getName());
-    /** Map for the leaderboard (name -> points (runes) */
+    /**
+     * Map for the leaderboard (name -> points (runes)
+     */
     private final Map<String, Integer> leaderboard = new ConcurrentHashMap<>();
-    /** The path to the leaderboard */
+    /**
+     * The path to the leaderboard
+     */
     private final Path leaderboardPath;
-    /** ReadWriteLock to ensure thread-safe handling */
+    /**
+     * ReadWriteLock to ensure thread-safe handling
+     */
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     /**
@@ -35,6 +49,18 @@ public class Leaderboard {
         } else {
             this.leaderboardPath = createUserHomeLeaderboardPath();
         }
+        ensureDirectoryExists();
+        load();
+    }
+
+    /**
+     * Instantiates a Leaderboard object. Initializes the Path field from the parameter.
+     * Ensures the directory exists and loads the file.
+     *
+     * @param customPath the path to the file
+     */
+    public Leaderboard(Path customPath) {
+        this.leaderboardPath = customPath;
         ensureDirectoryExists();
         load();
     }
@@ -60,15 +86,39 @@ public class Leaderboard {
     }
 
     /**
-     * Instantiates a Leaderboard object. Initializes the Path field from the parameter.
-     * Ensures the directory exists and loads the file.
+     * Creates a Leaderboard object from its string representation.
      *
-     * @param customPath the path to the file
+     * @param leaderboardString the string representation of a leaderboard
+     * @return a new Leaderboard object populated with the parsed data
      */
-    public Leaderboard(Path customPath) {
-        this.leaderboardPath = customPath;
-        ensureDirectoryExists();
-        load();
+    public static Leaderboard fromString(String leaderboardString) {
+        Leaderboard leaderboard = new Leaderboard();
+
+        // Remove the curly braces
+        String content = leaderboardString.substring(1, leaderboardString.length() - 1);
+
+        // Skip if empty
+        if (content.trim().isEmpty()) {
+            return leaderboard;
+        }
+
+        // Split by comma and space
+        String[] entries = content.split(", ");
+
+        for (String entry : entries) {
+            String[] parts = entry.split("=");
+            if (parts.length == 2) {
+                String playerName = parts[0];
+                try {
+                    int points = Integer.parseInt(parts[1]);
+                    leaderboard.update(playerName, points);
+                } catch (NumberFormatException e) {
+                    LOGGER.log(Level.WARNING, "Failed to parse points for player: " + playerName, e);
+                }
+            }
+        }
+
+        return leaderboard;
     }
 
     /**
@@ -86,7 +136,7 @@ public class Leaderboard {
      * Updates the leaderboard by adding a key and value to the map.
      *
      * @param playerName the name of the player
-     * @param points the points of the player
+     * @param points     the points of the player
      */
     public void update(String playerName, int points) {
         lock.writeLock().lock();
@@ -120,7 +170,7 @@ public class Leaderboard {
      * Writes an entry of the map to the BufferedWriter. Helper Method for save().
      *
      * @param writer the BufferedWriter to write to
-     * @param entry the entry of the Map to write
+     * @param entry  the entry of the Map to write
      */
     private void writeEntry(BufferedWriter writer, Map.Entry<String, Integer> entry) {
         try {
@@ -129,7 +179,6 @@ public class Leaderboard {
             LOGGER.log(Level.SEVERE, "Failed to write leaderboard entry", e);
         }
     }
-
 
     /**
      * Loads the leaderboard map from the file.
@@ -179,48 +228,12 @@ public class Leaderboard {
      * @return the leaderboard as a String.
      */
     @Override
-    public String toString(){
+    public String toString() {
         lock.readLock().lock();
         try {
             return getLeaderboard().toString();
         } finally {
             lock.readLock().unlock();
         }
-    }
-
-    /**
-     * Creates a Leaderboard object from its string representation.
-     *
-     * @param leaderboardString the string representation of a leaderboard
-     * @return a new Leaderboard object populated with the parsed data
-     */
-    public static Leaderboard fromString(String leaderboardString) {
-        Leaderboard leaderboard = new Leaderboard();
-
-        // Remove the curly braces
-        String content = leaderboardString.substring(1, leaderboardString.length() - 1);
-
-        // Skip if empty
-        if (content.trim().isEmpty()) {
-            return leaderboard;
-        }
-
-        // Split by comma and space
-        String[] entries = content.split(", ");
-
-        for (String entry : entries) {
-            String[] parts = entry.split("=");
-            if (parts.length == 2) {
-                String playerName = parts[0];
-                try {
-                    int points = Integer.parseInt(parts[1]);
-                    leaderboard.update(playerName, points);
-                } catch (NumberFormatException e) {
-                    LOGGER.log(Level.WARNING, "Failed to parse points for player: " + playerName, e);
-                }
-            }
-        }
-
-        return leaderboard;
     }
 }

@@ -1,6 +1,5 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.components.game;
 
-import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.UpgradeStatueUIEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.UseStatueUIEvent;
@@ -8,16 +7,13 @@ import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.StatueDetailsWrapper;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Popup;
 import javafx.stage.Window;
 
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 /**
@@ -42,7 +38,7 @@ public class StatueInteractionHandler {
 
     /**
      * Creates a new statue interaction handler.
-     * 
+     *
      * @param eventBus       The UI event bus for dispatching events
      * @param resourceLoader The resource loader for loading resources
      * @param rootNode       The root node of the scene
@@ -77,7 +73,7 @@ public class StatueInteractionHandler {
 
     /**
      * Updates the player information used for interaction decisions.
-     * 
+     *
      * @param player The current player
      * @param runes  The player's current runes
      * @param energy The player's current energy
@@ -90,7 +86,7 @@ public class StatueInteractionHandler {
 
     /**
      * Shows the context menu for a statue.
-     * 
+     *
      * @param statue The statue details
      * @param x      The x coordinate in screen coordinates
      * @param y      The y coordinate in screen coordinates
@@ -111,7 +107,7 @@ public class StatueInteractionHandler {
 
     /**
      * Shows the side panel for a statue.
-     * 
+     *
      * @param statue The statue details
      */
     public void showSidePanel(StatueDetailsWrapper statue) {
@@ -134,7 +130,7 @@ public class StatueInteractionHandler {
 
     /**
      * Handles actions from the context menu.
-     * 
+     *
      * @param action The action selected
      */
     private void handleContextMenuAction(String action) {
@@ -146,7 +142,7 @@ public class StatueInteractionHandler {
 
     /**
      * Handles actions from the side panel.
-     * 
+     *
      * @param action The action selected
      */
     private void handleSidePanelAction(String action) {
@@ -162,7 +158,7 @@ public class StatueInteractionHandler {
 
     /**
      * Shows confirmation for upgrading a statue.
-     * 
+     *
      * @param statue The statue to upgrade
      * @param x      The x coordinate of the statue
      * @param y      The y coordinate of the statue
@@ -180,7 +176,7 @@ public class StatueInteractionHandler {
 
     /**
      * Shows confirmation for growing a tree (Freyr specific).
-     * 
+     *
      * @param statue The Freyr statue
      * @param x      The x coordinate for the tree
      * @param y      The y coordinate for the tree
@@ -204,7 +200,7 @@ public class StatueInteractionHandler {
 
     /**
      * Shows confirmation for using a statue's blessing.
-     * 
+     *
      * @param statue The statue
      * @param x      The x coordinate of the statue
      * @param y      The y coordinate of the statue
@@ -225,8 +221,8 @@ public class StatueInteractionHandler {
 
     /**
      * Highlights eligible river tiles for tree growing (Freyr specific).
-     * 
-     * @param riverTiles          The list of eligible tiles
+     *
+     * @param riverTiles     The list of eligible tiles
      * @param onTileSelected Callback when a tile is selected
      */
     public void highlightEligibleRiverTiles(List<Tile> riverTiles, BiConsumer<Integer, Integer> onTileSelected) {
@@ -242,7 +238,7 @@ public class StatueInteractionHandler {
 
     /**
      * Helper method to show a dialog centered in the window.
-     * 
+     *
      * @param dialog The dialog to show
      */
     private void showDialogCentered(Popup dialog) {

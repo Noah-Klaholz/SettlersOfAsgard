@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.utils;
 
 import javafx.scene.Parent;
+
 import java.net.URL;
 import java.util.logging.Logger;
 
@@ -9,17 +10,16 @@ import java.util.logging.Logger;
  * components.
  */
 public class StylesheetLoader {
-    private static final Logger LOGGER = Logger.getLogger(StylesheetLoader.class.getName());
-
     // Stylesheet paths
     public static final String VARIABLES_CSS = "/css/variables.css";
     public static final String COMMON_CSS = "/css/common.css";
     public static final String DIALOG_COMMON_CSS = "/css/dialog-common.css";
+    private static final Logger LOGGER = Logger.getLogger(StylesheetLoader.class.getName());
 
     /**
      * Loads core stylesheets (variables + common) for all components.
      * Renamed from loadCommonStylesheets for clarity.
-     * 
+     *
      * @param parent The parent node to apply stylesheets to
      */
     public static void loadCoreStylesheets(Parent parent) {
@@ -29,7 +29,7 @@ public class StylesheetLoader {
 
     /**
      * Loads stylesheets for dialog components (variables + common + dialog-common)
-     * 
+     *
      * @param parent The parent node to apply stylesheets to
      */
     public static void loadDialogStylesheets(Parent parent) {
@@ -40,7 +40,7 @@ public class StylesheetLoader {
 
     /**
      * Loads all specified stylesheets in order
-     * 
+     *
      * @param parent          The parent node to apply stylesheets to
      * @param stylesheetPaths Array of stylesheet paths to load
      */
@@ -52,7 +52,7 @@ public class StylesheetLoader {
 
     /**
      * Helper to load a single stylesheet safely
-     * 
+     *
      * @param parent The parent node to apply the stylesheet to
      * @param path   The path to the stylesheet
      */

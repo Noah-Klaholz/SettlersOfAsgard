@@ -15,7 +15,7 @@ public class UseFieldArtifactUIEvent implements UIEvent {
      *
      * @param x          the x-coordinate of the location where the artifact is to be used
      * @param y          the y-coordinate of the location where the artifact is to be used
-     * @param artifactId  the ID of the artifact being used
+     * @param artifactId the ID of the artifact being used
      */
     public UseFieldArtifactUIEvent(int x, int y, int artifactId) {
         this.x = x;

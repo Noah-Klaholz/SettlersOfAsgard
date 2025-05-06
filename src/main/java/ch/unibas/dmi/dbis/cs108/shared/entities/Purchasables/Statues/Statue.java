@@ -10,48 +10,42 @@ import com.google.gson.JsonObject;
  */
 public class Statue extends PurchasableEntity {
     /**
+     * String representing the curse of this statue
+     */
+    String curse;
+    /**
+     * String representing the deal this statue can make
+     */
+    String deal;
+    /**
+     * String representing the blessing of this statue
+     */
+    String blessing;
+    /**
      * The cost to upgrade this statue to the next level.
      */
     private int upgradePrice;
-
     /**
      * The current level of this statue.
      * Level 1 is the default level.
      */
     private int level = 1;
-
     /**
      * String representing the world in which this statue can be placed
      */
     private String world;
 
     /**
-     * String representing the curse of this statue
-     */
-    String curse;
-
-
-    /**
-     * String representing the deal this statue can make
-     */
-    String deal;
-
-
-    /**
-     * String representing the blessing of this statue
-     */
-    String blessing;
-
-    /**
      * Default constructor for Statue.
      */
-    public Statue() {}
+    public Statue() {
+    }
 
     /**
      * Constructs a new Statue with specified values.
      *
-     * @param id The unique identifier for this statue
-     * @param name The name of this statue
+     * @param id          The unique identifier for this statue
+     * @param name        The name of this statue
      * @param description The description of this statue
      */
     public Statue(int id, String name, int price, int ressourceValue, int upgradePrice, String description, String usage, String world, String cardImagePath, String mapImagePath, String curse, String deal, String blessing) {
@@ -64,104 +58,130 @@ public class Statue extends PurchasableEntity {
     }
 
     /**
-     * Sets the cost to upgrade this statue.
+     * Factory method to create a statue from JSON data.
      *
-     * @param upgradePrice The upgrade price
+     * @param json The JSON object containing statue data
+     * @return A new Statue instance populated with data from the JSON
      */
-    public void setUpgradePrice(int upgradePrice) { this.upgradePrice = upgradePrice; }
-
-    /**
-     * Sets the world in which this statue can be placed.
-     *
-     * @param world The world
-     */
-    public void setWorld(String world) { this.world = world; }
+    public static Statue fromJson(JsonObject json) {
+        Statue statue = new Statue();
+        statue.loadFromJson(json);
+        return statue;
+    }
 
     /**
      * Returns the cost to upgrade this statue.
      *
      * @return The upgrade price
      */
-    public int getUpgradePrice() { return upgradePrice; }
+    public int getUpgradePrice() {
+        return upgradePrice;
+    }
+
+    /**
+     * Sets the cost to upgrade this statue.
+     *
+     * @param upgradePrice The upgrade price
+     */
+    public void setUpgradePrice(int upgradePrice) {
+        this.upgradePrice = upgradePrice;
+    }
 
     /**
      * Returns the current level of this statue.
      *
      * @return The statue's level
      */
-    public int getLevel() { return level; }
-
-    /**
-     * Returns the World in which the statue can be placed
-     *
-     * @return String the world
-     */
-    public String getWorld() { return world; }
-
-
-    /**
-     * Returns the curse of this statue.
-     *
-     * @return String the curse
-     */
-    public String getCurse() { return curse; }
-
-    /**
-     * Returns the deal of this statue.
-     *
-     * @return String the deal
-     */
-    public String getDeal() { return deal; }
-
-    /**
-     * Returns the blessing of this statue.
-     *
-     * @return String the blessing
-     */
-    public String getBlessing() { return blessing; }
-
-
-    /**
-     * Sets the curse of this statue.
-     *
-     * @param curse The curse
-     */
-    public void setCurse(String curse) { this.curse = curse; }
-
-    /**
-     * Sets the deal of this statue.
-     *
-     * @param deal The deal
-     */
-    public void setDeal(String deal) { this.deal = deal; }
-
-    /**
-     * Sets the blessing of this statue.
-     *
-     * @param blessing The blessing
-     */
-    public void setBlessing(String blessing) { this.blessing = blessing; }
-
-    /**
-     * Upgrades this statue to the next level.
-     */
-    public void upgrade() { level++; }
+    public int getLevel() {
+        return level;
+    }
 
     /**
      * Sets the level of the statue.
      *
      * @param level the level to set.
      */
-    public void setLevel(int level) { this.level = level; }
+    public void setLevel(int level) {
+        this.level = level;
+    }
 
     /**
-     * Defines the types of effects a statue can have based on its level.
+     * Returns the World in which the statue can be placed
+     *
+     * @return String the world
      */
-    public enum StatueEffectType {
-        NONE,      // Level 1: no effect
-        DEAL,      // Level 2: deal effect
-        BLESSING,  // Level 3: positive effect (high probability)
-        CURSE      // Level 3: negative effect (low probability)
+    public String getWorld() {
+        return world;
+    }
+
+    /**
+     * Sets the world in which this statue can be placed.
+     *
+     * @param world The world
+     */
+    public void setWorld(String world) {
+        this.world = world;
+    }
+
+    /**
+     * Returns the curse of this statue.
+     *
+     * @return String the curse
+     */
+    public String getCurse() {
+        return curse;
+    }
+
+    /**
+     * Sets the curse of this statue.
+     *
+     * @param curse The curse
+     */
+    public void setCurse(String curse) {
+        this.curse = curse;
+    }
+
+    /**
+     * Returns the deal of this statue.
+     *
+     * @return String the deal
+     */
+    public String getDeal() {
+        return deal;
+    }
+
+    /**
+     * Sets the deal of this statue.
+     *
+     * @param deal The deal
+     */
+    public void setDeal(String deal) {
+        this.deal = deal;
+    }
+
+    /**
+     * Returns the blessing of this statue.
+     *
+     * @return String the blessing
+     */
+    public String getBlessing() {
+        return blessing;
+    }
+
+    /**
+     * Sets the blessing of this statue.
+     *
+     * @param blessing The blessing
+     */
+    public void setBlessing(String blessing) {
+        this.blessing = blessing;
+    }
+
+    /**
+     * Upgrades this statue to the next level.
+     */
+    public void upgrade() {
+        level++;
     }
 
     /**
@@ -181,18 +201,6 @@ public class Statue extends PurchasableEntity {
     }
 
     /**
-     * Factory method to create a statue from JSON data.
-     *
-     * @param json The JSON object containing statue data
-     * @return A new Statue instance populated with data from the JSON
-     */
-    public static Statue fromJson(JsonObject json) {
-        Statue statue = new Statue();
-        statue.loadFromJson(json);
-        return statue;
-    }
-
-    /**
      * Returns a clone of this Statue.
      * This method creates a new instance of the Statue with the same properties as the original.
      *
@@ -208,5 +216,15 @@ public class Statue extends PurchasableEntity {
         clone.setBlessing(this.blessing);
 
         return (Statue) copyTo(clone);
+    }
+
+    /**
+     * Defines the types of effects a statue can have based on its level.
+     */
+    public enum StatueEffectType {
+        NONE,      // Level 1: no effect
+        DEAL,      // Level 2: deal effect
+        BLESSING,  // Level 3: positive effect (high probability)
+        CURSE      // Level 3: negative effect (low probability)
     }
 }

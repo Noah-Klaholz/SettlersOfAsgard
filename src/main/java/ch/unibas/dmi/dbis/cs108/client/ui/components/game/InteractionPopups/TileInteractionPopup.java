@@ -1,9 +1,9 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.components.game.InteractionPopups;
 
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
-import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
-import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
+import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
+import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;

@@ -8,30 +8,44 @@ import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
  * Contains the title, description, and lore of the card.
  */
 public class CardDetails {
-    /** The ID of the card. */
+    /**
+     * The ID of the card.
+     */
     final int id;
-    /**Map of card IDs to CardDetails objects.*/
+    /**
+     * Map of card IDs to CardDetails objects.
+     */
     final String title;
-    /**Map of card IDs to CardDetails objects.*/
+    /**
+     * Map of card IDs to CardDetails objects.
+     */
     final String description;
-    /**Map of card IDs to CardDetails objects.*/
+    /**
+     * Map of card IDs to CardDetails objects.
+     */
     final String lore;
-    /**URL for the image associated with the card.*/
+    /**
+     * URL for the image associated with the card.
+     */
     final String imageUrl;
-    /**Price of the card in runes.*/
+    /**
+     * Price of the card in runes.
+     */
     final int price;
-    /**The entity that is represented by this Card*/
+    /**
+     * The entity that is represented by this Card
+     */
     final GameEntity entity;
 
     /**
      * Constructor for CardDetails.
      *
-     * @param id          The ID of the card.
-     * @param title       The title of the card.
-     * @param description The description of the card.
-     * @param lore        The lore of the card.
+     * @param id            The ID of the card.
+     * @param title         The title of the card.
+     * @param description   The description of the card.
+     * @param lore          The lore of the card.
      * @param cardImagePath The path to the card image.
-     * @param price       The price of the card in runes.
+     * @param price         The price of the card in runes.
      */
     public CardDetails(int id, String title, String description, String lore, String cardImagePath, int price) {
         this.id = id;

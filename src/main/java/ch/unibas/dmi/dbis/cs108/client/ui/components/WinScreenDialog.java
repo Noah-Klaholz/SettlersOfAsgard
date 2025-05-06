@@ -8,31 +8,29 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.util.Duration;
-import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 /**
  * WinScreenDialog is a UI component that displays a dialog with the game
  */
 public class WinScreenDialog extends UIComponent<StackPane> {
 
-    /** The runnable onMenuAction that takes you back to the main Menu */
-    private Runnable onMenuAction;
-    /** The runnable onLobbyAction that takes you back to the lobby */
-    private Runnable onLobbyAction;
-    /** The dialog content */
+    /**
+     * The dialog content
+     */
     private final VBox dialogContent;
+    /**
+     * The runnable onMenuAction that takes you back to the main Menu
+     */
+    private Runnable onMenuAction;
+    /**
+     * The runnable onLobbyAction that takes you back to the lobby
+     */
+    private Runnable onLobbyAction;
 
     /**
      * Constructor for WinScreenDialog.
@@ -187,7 +185,7 @@ public class WinScreenDialog extends UIComponent<StackPane> {
 
             // Sort players by score descending
             List<Map.Entry<String, Integer>> sorted = leaderboard.entrySet().stream()
-                    .sorted(Map.Entry.<String, Integer>comparingByValue(Comparator.reverseOrder()))
+                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                     .toList();
 
             int rank = 1;

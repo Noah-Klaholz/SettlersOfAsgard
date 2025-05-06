@@ -58,7 +58,7 @@
 }
 
 /* Style for the TitledPane containing the chat */
-.chat-titled-pane>.title {
+.chat-titled-pane > .title {
     -fx-background-color: -color-background-tertiary;
     -fx-text-fill: -color-accent-gold;
     -fx-font-family: "Cinzel", "Segoe UI", serif;
@@ -67,11 +67,11 @@
     -fx-border-width: 0 0 1 0;
 }
 
-.chat-titled-pane>.title>.arrow-button .arrow {
+.chat-titled-pane > .title > .arrow-button .arrow {
     -fx-background-color: -color-accent-gold;
 }
 
-.chat-titled-pane>*.content {
+.chat-titled-pane > *.content {
     -fx-background-color: -color-background-secondary;
     -fx-padding: 0;
     -fx-border-color: -color-border-primary;

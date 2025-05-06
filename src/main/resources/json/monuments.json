@@ -8,21 +8,30 @@
     "world": "Alfheim",
     "mapImagePath": "resources/images/fixedStructuresSMALL/fs_alfheimslight_small.png",
     "tiles": [
-      {"x": 0, "y": 0}
+      {
+        "x": 0,
+        "y": 0
+      }
     ]
   },
   {
-  "name": "Asgard's Building Front",
-  "usage": "-",
-  "description": "Asgard is the home of the Aesir gods, including Odin and Thor. It is a celestial fortress, full of vast halls and feasts, a place of grandeur and beauty.",
-  "id": 41,
-  "runes": 10,
-  "world": "Asgard",
-  "mapImagePath": "resources/images/fixedStructuresSMALL/fs_argardsbuildingfront_small.png",
-  "tiles": [
-    {"x": 3, "y": 0},
-    {"x": 2, "y": 1}
-  ]
+    "name": "Asgard's Building Front",
+    "usage": "-",
+    "description": "Asgard is the home of the Aesir gods, including Odin and Thor. It is a celestial fortress, full of vast halls and feasts, a place of grandeur and beauty.",
+    "id": 41,
+    "runes": 10,
+    "world": "Asgard",
+    "mapImagePath": "resources/images/fixedStructuresSMALL/fs_argardsbuildingfront_small.png",
+    "tiles": [
+      {
+        "x": 3,
+        "y": 0
+      },
+      {
+        "x": 2,
+        "y": 1
+      }
+    ]
   },
   {
     "name": "Asgard's Building Back",
@@ -33,20 +42,26 @@
     "world": "Asgard",
     "mapImagePath": "resources/images/fixedStructuresSMALL/fs_asgardsbuildingback_small.png",
     "tiles": [
-      {"x": 4, "y": 0}
+      {
+        "x": 4,
+        "y": 0
+      }
     ]
   },
   {
-  "name": "Flaming Sword",
-  "usage": "Can be used by Surtr",
-  "description": "The Flaming Sword is the weapon of Surt, the fire giant. Described as a sword that shines brighter than the sun, it is the weapon that will ignite the world during Ragnarok.",
-  "id": 42,
-  "runes": 10,
-  "world": "Muspelheim",
-  "mapImagePath": "resources/images/fixedStructuresSMALL/fs_muspelheimsfiresword_small.png",
-  "tiles": [
-    {"x": 6, "y": 0}
-  ]
+    "name": "Flaming Sword",
+    "usage": "Can be used by Surtr",
+    "description": "The Flaming Sword is the weapon of Surt, the fire giant. Described as a sword that shines brighter than the sun, it is the weapon that will ignite the world during Ragnarok.",
+    "id": 42,
+    "runes": 10,
+    "world": "Muspelheim",
+    "mapImagePath": "resources/images/fixedStructuresSMALL/fs_muspelheimsfiresword_small.png",
+    "tiles": [
+      {
+        "x": 6,
+        "y": 0
+      }
+    ]
   },
   {
     "name": "Cow Skull",
@@ -57,20 +72,26 @@
     "world": "Midgard",
     "mapImagePath": "resources/images/fixedStructuresSMALL/fs_midgardscowskull_small.png",
     "tiles": [
-      {"x": 5, "y": 2}
+      {
+        "x": 5,
+        "y": 2
+      }
     ]
   },
   {
-  "name": "Dwarfen Forge",
+    "name": "Dwarfen Forge",
     "usage": "-",
-  "description": "Svartálfaheimr is an underground world full of caverns, forges, and darkness. It is the home of the dwarves and represents their hidden depths of skill, creativity, and power. The Dwarfen Forge symbolizes bringing form, beauty, and power out of shadow and chaos. It’s a place where hidden potential (raw materials) is transformed through fire and skill into something meaningful.",
-  "id": 44,
-  "runes": 10,
-  "world": "Svartalfheim",
-  "mapImagePath": "resources/images/fixedStructuresSMALL/fs_svartalfheimssmithy_small.png",
-  "tiles": [
-    {"x": 7, "y": 4}
-  ]
+    "description": "Svartálfaheimr is an underground world full of caverns, forges, and darkness. It is the home of the dwarves and represents their hidden depths of skill, creativity, and power. The Dwarfen Forge symbolizes bringing form, beauty, and power out of shadow and chaos. It’s a place where hidden potential (raw materials) is transformed through fire and skill into something meaningful.",
+    "id": 44,
+    "runes": 10,
+    "world": "Svartalfheim",
+    "mapImagePath": "resources/images/fixedStructuresSMALL/fs_svartalfheimssmithy_small.png",
+    "tiles": [
+      {
+        "x": 7,
+        "y": 4
+      }
+    ]
   },
   {
     "name": "Mountain",
@@ -81,7 +102,10 @@
     "world": "Jotunheim",
     "mapImagePath": "resources/images/fixedStructuresSMALL/fs_jotunheimsmountain_small.png",
     "tiles": [
-      {"x": 0, "y": 6}
+      {
+        "x": 0,
+        "y": 6
+      }
     ]
   },
   {
@@ -93,7 +117,10 @@
     "world": "Nilfheim",
     "mapImagePath": "resources/images/fixedStructuresSMALL/fs_nilfheimsicesculpture_small.png",
     "tiles": [
-      {"x": 3, "y": 6}
+      {
+        "x": 3,
+        "y": 6
+      }
     ]
   },
   {
@@ -105,7 +132,10 @@
     "world": "Helheim",
     "mapImagePath": "resources/images/fixedStructuresSMALL/fs_helheimstree_small.png",
     "tiles": [
-      {"x": 5, "y": 6}
+      {
+        "x": 5,
+        "y": 6
+      }
     ]
   }
 ]

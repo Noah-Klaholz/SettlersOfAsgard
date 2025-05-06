@@ -1,10 +1,10 @@
 package ch.unibas.dmi.dbis.cs108.server;
 
+import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
+import ch.unibas.dmi.dbis.cs108.server.core.logic.TurnManager;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.server.core.model.Leaderboard;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
-import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
-import ch.unibas.dmi.dbis.cs108.server.core.logic.TurnManager;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

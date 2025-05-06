@@ -1,14 +1,13 @@
 package ch.unibas.dmi.dbis.cs108.server.core.actions;
 
-import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.server.core.model.BoardManager;
+import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors.StructureBehaviorRegistry;
+import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
-import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -30,7 +29,7 @@ public class StructureActionHandler {
      * Creates a new StructureActionHandler with the specified game state and lock.
      *
      * @param gameState The current game state
-     * @param gameLock The lock used for thread safety
+     * @param gameLock  The lock used for thread safety
      */
     public StructureActionHandler(GameState gameState, ReadWriteLock gameLock) {
         this.gameState = gameState;
@@ -40,10 +39,10 @@ public class StructureActionHandler {
     /**
      * Places a structure on the board at the specified coordinates.
      *
-     * @param x The x-coordinate on the board
-     * @param y The y-coordinate on the board
+     * @param x           The x-coordinate on the board
+     * @param y           The y-coordinate on the board
      * @param structureID The ID of the structure to place
-     * @param playerName The name of the player placing the structure
+     * @param playerName  The name of the player placing the structure
      * @return true if the structure was successfully placed, false otherwise
      */
     public boolean placeStructure(int x, int y, int structureID, String playerName) {
@@ -61,7 +60,7 @@ public class StructureActionHandler {
             if (structure.getId() == 5 && !tile.hasRiver()) return false;
 
             // Check if player can afford the structure
-            if(!player.buy(structure.getPrice())) return false;
+            if (!player.buy(structure.getPrice())) return false;
 
             player.addPurchasableEntity(structure);
             tile.setEntity(structure);
@@ -73,10 +72,10 @@ public class StructureActionHandler {
     /**
      * Uses a structure at the specified coordinates.
      *
-     * @param x The x-coordinate on the board
-     * @param y The y-coordinate on the board
+     * @param x           The x-coordinate on the board
+     * @param y           The y-coordinate on the board
      * @param structureID The ID of the structure to use
-     * @param playerName The name of the player using the structure
+     * @param playerName  The name of the player using the structure
      * @return true if the structure effect was successfully executed, false otherwise
      */
     public boolean useStructure(int x, int y, int structureID, String playerName) {
@@ -94,7 +93,7 @@ public class StructureActionHandler {
             }
 
             // Execute structure effect and mark as activated
-            boolean success = registry.execute(structure, gameState,result.getPlayer());
+            boolean success = registry.execute(structure, gameState, result.getPlayer());
             if (success) {
                 structure.setActivated(true);
             }
@@ -111,7 +110,7 @@ public class StructureActionHandler {
      */
     public boolean ragnarok(String playerName) {
         return executeWithLock(() -> {
-            for (Tile[] tiles : gameState.getBoardManager().getBoard().getTiles()){
+            for (Tile[] tiles : gameState.getBoardManager().getBoard().getTiles()) {
                 for (Tile tile : tiles) {
                     if (tile.hasOwner() && tile.getOwner().equals(playerName)) continue;
                     if (tile.hasEntity()) tile.setEntity(null);
@@ -126,31 +125,12 @@ public class StructureActionHandler {
     }
 
     /**
-     * Helper class to store validation results.
-     */
-    private static class ValidationResult {
-        private final boolean valid;
-        private final Player player;
-        private final Tile tile;
-
-        public ValidationResult(boolean valid, Player player, Tile tile) {
-            this.valid = valid;
-            this.player = player;
-            this.tile = tile;
-        }
-
-        public boolean isValid() { return valid; }
-        public Player getPlayer() { return player; }
-        public Tile getTile() { return tile; }
-    }
-
-    /**
      * Validates player and tile for an action.
      *
-     * @param x The x-coordinate
-     * @param y The y-coordinate
-     * @param playerName The player's name
-     * @param requireEmptyTile Whether the tile should be empty
+     * @param x                   The x-coordinate
+     * @param y                   The y-coordinate
+     * @param playerName          The player's name
+     * @param requireEmptyTile    Whether the tile should be empty
      * @param requireEntityOnTile Whether the tile should have an entity
      * @return A ValidationResult with the player and tile if valid
      */
@@ -184,7 +164,7 @@ public class StructureActionHandler {
     /**
      * Gets a structure from a tile if it matches the specified ID.
      *
-     * @param tile The tile containing the entity
+     * @param tile        The tile containing the entity
      * @param structureID The expected structure ID
      * @return The structure if found and ID matches, null otherwise
      */
@@ -217,5 +197,32 @@ public class StructureActionHandler {
     @FunctionalInterface
     private interface ActionWithResult {
         boolean execute();
+    }
+
+    /**
+     * Helper class to store validation results.
+     */
+    private static class ValidationResult {
+        private final boolean valid;
+        private final Player player;
+        private final Tile tile;
+
+        public ValidationResult(boolean valid, Player player, Tile tile) {
+            this.valid = valid;
+            this.player = player;
+            this.tile = tile;
+        }
+
+        public boolean isValid() {
+            return valid;
+        }
+
+        public Player getPlayer() {
+            return player;
+        }
+
+        public Tile getTile() {
+            return tile;
+        }
     }
 }

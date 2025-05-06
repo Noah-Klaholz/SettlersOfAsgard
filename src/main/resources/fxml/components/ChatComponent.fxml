@@ -3,7 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/1"
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/"
             styleClass="chat-panel"
             stylesheets="/css/variables.css,/css/common.css,/css/chat-component.css">
     <top>
@@ -11,13 +11,14 @@
             <padding>
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
             </padding>
-            <ToggleButton fx:id="globalChatButton" mnemonicParsing="false" text="Global" styleClass="chat-toggle-button">
+            <ToggleButton fx:id="globalChatButton" mnemonicParsing="false" text="Global"
+                          styleClass="chat-toggle-button">
                 <toggleGroup>
                     <ToggleGroup fx:id="chatToggleGroup"/>
                 </toggleGroup>
             </ToggleButton>
-            <ToggleButton fx:id="lobbyChatButton" mnemonicParsing="false" text="Lobby" styleClass="chat-toggle-button" 
-                         toggleGroup="$chatToggleGroup"/>
+            <ToggleButton fx:id="lobbyChatButton" mnemonicParsing="false" text="Lobby" styleClass="chat-toggle-button"
+                          toggleGroup="$chatToggleGroup"/>
         </HBox>
     </top>
     <center>
@@ -29,7 +30,8 @@
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
             </padding>
             <TextField fx:id="chatInput" HBox.hgrow="ALWAYS" promptText="Type your message..." styleClass="chat-input"/>
-            <Button fx:id="sendButton" mnemonicParsing="false" onAction="#handleSendMessage" text="Send" styleClass="send-button"/>
+            <Button fx:id="sendButton" mnemonicParsing="false" onAction="#handleSendMessage" text="Send"
+                    styleClass="send-button"/>
         </HBox>
     </bottom>
 </BorderPane>

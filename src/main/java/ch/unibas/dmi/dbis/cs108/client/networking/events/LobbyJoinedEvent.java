@@ -1,10 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.networking.events;
 
-import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
-
 import java.time.Instant;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Event representing a player joining a lobby.
@@ -21,8 +18,8 @@ public class LobbyJoinedEvent implements Event {
      * Constructor for LobbyJoinedEvent.
      *
      * @param lobbyId The ID of the lobby that was joined.
-     * @param players  The players in the lobby, separated by '%'.
-     * @param isHost   Indicates if the player is the host of the lobby.
+     * @param players The players in the lobby, separated by '%'.
+     * @param isHost  Indicates if the player is the host of the lobby.
      */
     public LobbyJoinedEvent(String lobbyId, String players, boolean isHost) {
         this.lobbyId = lobbyId;

@@ -18,7 +18,45 @@ public class StatueParameters {
     /**
      * Default constructor.
      */
-    public StatueParameters() {}
+    public StatueParameters() {
+    }
+
+    /**
+     * Creates parameters for targeting a player.
+     *
+     * @param targetPlayer The player to target
+     * @return The parameter container
+     */
+    public static StatueParameters forPlayer(Player targetPlayer) {
+        StatueParameters params = new StatueParameters();
+        params.setTargetPlayer(targetPlayer);
+        return params;
+    }
+
+    /**
+     * Creates parameters for targeting a tile.
+     *
+     * @param x The X coordinate
+     * @param y The Y coordinate
+     * @return The parameter container
+     */
+    public static StatueParameters forTile(int x, int y) {
+        StatueParameters params = new StatueParameters();
+        params.setTileCoordinates(x, y);
+        return params;
+    }
+
+    /**
+     * Creates parameters for targeting a structure.
+     *
+     * @param structure The structure
+     * @return The parameter container
+     */
+    public static StatueParameters forStructure(Structure structure) {
+        StatueParameters params = new StatueParameters();
+        params.setStructure(structure);
+        return params;
+    }
 
     /**
      * Gets the target player.
@@ -128,10 +166,7 @@ public class StatueParameters {
         if (requirement.requires(StatueParameterRequirement.StatueParameterType.STRUCTURE) && structure == null) {
             return false;
         }
-        if (requirement.requires(StatueParameterRequirement.StatueParameterType.ARTIFACT) && artifact == null) {
-            return false;
-        }
-        return true;
+        return !requirement.requires(StatueParameterRequirement.StatueParameterType.ARTIFACT) || artifact != null;
     }
 
     /**
@@ -193,42 +228,5 @@ public class StatueParameters {
         public StatueParameters build() {
             return params;
         }
-    }
-
-    /**
-     * Creates parameters for targeting a player.
-     *
-     * @param targetPlayer The player to target
-     * @return The parameter container
-     */
-    public static StatueParameters forPlayer(Player targetPlayer) {
-        StatueParameters params = new StatueParameters();
-        params.setTargetPlayer(targetPlayer);
-        return params;
-    }
-
-    /**
-     * Creates parameters for targeting a tile.
-     *
-     * @param x The X coordinate
-     * @param y The Y coordinate
-     * @return The parameter container
-     */
-    public static StatueParameters forTile(int x, int y) {
-        StatueParameters params = new StatueParameters();
-        params.setTileCoordinates(x, y);
-        return params;
-    }
-
-    /**
-     * Creates parameters for targeting a structure.
-     *
-     * @param structure The structure
-     * @return The parameter container
-     */
-    public static StatueParameters forStructure(Structure structure) {
-        StatueParameters params = new StatueParameters();
-        params.setStructure(structure);
-        return params;
     }
 }

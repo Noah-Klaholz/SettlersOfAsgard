@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.core.events;
 
-import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 
 /**
  * UIEvent representing the upgrade of a structure by a player.

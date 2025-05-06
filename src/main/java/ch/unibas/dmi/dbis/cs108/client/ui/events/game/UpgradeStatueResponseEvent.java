@@ -67,7 +67,7 @@ public class UpgradeStatueResponseEvent implements UIEvent {
 
     /**
      * Returns whether the upgrade was successful.
-     * 
+     *
      * @return true if successful, false otherwise.
      */
     public boolean isSuccess() {
@@ -76,7 +76,7 @@ public class UpgradeStatueResponseEvent implements UIEvent {
 
     /**
      * Returns the message associated with the response.
-     * 
+     *
      * @return The message.
      */
     public String getMessage() {

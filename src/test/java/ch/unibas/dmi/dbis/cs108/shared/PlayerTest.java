@@ -2,20 +2,21 @@ package ch.unibas.dmi.dbis.cs108.shared;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
-import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class PlayerTest {
 
-    private Player player;
     private final String TEST_NAME = "TestPlayer";
+    private Player player;
 
     @BeforeEach
     void setUp() {

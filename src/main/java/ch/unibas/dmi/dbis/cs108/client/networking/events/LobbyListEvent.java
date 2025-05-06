@@ -25,7 +25,7 @@ public class LobbyListEvent implements Event {
     public LobbyListEvent(String message) {
         String[] lobbies = message.split("%");
         Arrays.stream(lobbies).toList().forEach(lobby -> {
-            String [] params = lobby.split(":");
+            String[] params = lobby.split(":");
             if (params.length >= 5) {
                 LobbyScreenController.GameLobby lobbyObject = new LobbyScreenController.GameLobby(
                         params[0], // lobbyId

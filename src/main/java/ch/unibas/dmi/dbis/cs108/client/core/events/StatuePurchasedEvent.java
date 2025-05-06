@@ -1,8 +1,8 @@
 package ch.unibas.dmi.dbis.cs108.client.core.events;
 
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 
 /**
  * UIEvent representing the purchase of a statue by a player.

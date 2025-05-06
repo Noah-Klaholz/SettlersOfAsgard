@@ -51,7 +51,6 @@ public class BoardManager {
      *
      * @param x The x-coordinate of the tile
      * @param y The y-coordinate of the tile
-     *
      * @return The tile at the specified coordinates
      */
     public Tile getTile(int x, int y) {
@@ -66,9 +65,8 @@ public class BoardManager {
     /**
      * Set a specific tile on the board
      *
-     * @param x The x-coordinate of the tile
-     * @param y The y-coordinate of the tile
-     *
+     * @param x    The x-coordinate of the tile
+     * @param y    The y-coordinate of the tile
      * @param tile The tile to set
      */
     public boolean setTile(int x, int y, Tile tile) {
@@ -103,7 +101,6 @@ public class BoardManager {
      *
      * @param x The x-coordinate of the tile
      * @param y The y-coordinate of the tile
-     *
      * @return An array of adjacent tiles
      */
     public Tile[] getAdjacentTiles(int x, int y) {

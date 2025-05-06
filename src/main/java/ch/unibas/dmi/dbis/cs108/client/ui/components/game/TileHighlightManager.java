@@ -2,20 +2,15 @@ package ch.unibas.dmi.dbis.cs108.client.ui.components.game;
 
 import ch.unibas.dmi.dbis.cs108.client.core.PlayerIdentityManager;
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.game.UseStatueUIEvent;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.StatueParameterRequirement;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.StatueParameterRequirement.StatueParameterType;
-import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
@@ -27,25 +22,15 @@ import java.util.logging.Logger;
  */
 public class TileHighlightManager {
     private static final Logger LOGGER = Logger.getLogger(TileHighlightManager.class.getName());
-
-    // Mode of operation
-    private enum Mode {
-        INACTIVE, // Not highlighting any tiles
-        STATUE_PLACEMENT, // Highlighting tiles for statue placement
-        PARAMETER_SELECTION // Highlighting tiles for parameter selection (e.g., target for Freyr's "Grow
-                            // Tree")
-    }
-
-    // Fields for state and callbacks
-    private Mode currentMode = Mode.INACTIVE;
     private final Canvas overlayCanvas;
     private final GameState gameState;
     private final BiConsumer<Integer, Integer> tileClickHandler; // Row, Column
+    // Fields for state and callbacks
+    private Mode currentMode = Mode.INACTIVE;
     private Statue activeStatue; // Used when in PARAMETER_SELECTION mode
     private StatueParameterRequirement activeRequirement; // Used when in PARAMETER_SELECTION mode
     private Color highlightColor = Color.YELLOW; // Default highlight color
     private Predicate<Tile> eligibilityCheck; // Custom logic for tile eligibility
-
     // For drawing
     private double effectiveHexSize;
     private double gridOffsetX;
@@ -55,7 +40,6 @@ public class TileHighlightManager {
     private double hSquish; // Horizontal squish factor for hexes
     private double vSquish; // Vertical squish factor for hexes
     private double rotationDegrees; // Rotation of hexes
-
     /**
      * Creates a TileHighlightManager.
      *
@@ -64,7 +48,7 @@ public class TileHighlightManager {
      * @param tileClickHandler Callback for when a highlighted tile is clicked
      */
     public TileHighlightManager(Canvas overlayCanvas, GameState gameState,
-            BiConsumer<Integer, Integer> tileClickHandler) {
+                                BiConsumer<Integer, Integer> tileClickHandler) {
         this.overlayCanvas = overlayCanvas;
         this.gameState = gameState;
         this.tileClickHandler = tileClickHandler;
@@ -84,8 +68,8 @@ public class TileHighlightManager {
      * @param rotationDegrees  Rotation of hexes in degrees
      */
     public void updateGeometry(double effectiveHexSize, double gridOffsetX, double gridOffsetY,
-            double hSpacing, double vSpacing, double hSquish, double vSquish,
-            double rotationDegrees) {
+                               double hSpacing, double vSpacing, double hSquish, double vSquish,
+                               double rotationDegrees) {
         this.effectiveHexSize = effectiveHexSize;
         this.gridOffsetX = gridOffsetX;
         this.gridOffsetY = gridOffsetY;
@@ -98,7 +82,7 @@ public class TileHighlightManager {
 
     /**
      * Activates statue placement mode, highlighting eligible tiles.
-     * 
+     *
      * @param statueId ID of the statue being placed
      */
     public void activateStatuePlacementMode(int statueId) {
@@ -165,7 +149,7 @@ public class TileHighlightManager {
      * @param row Row of clicked tile
      * @param col Column of clicked tile
      * @return true if the click was handled, false if it should be passed to other
-     *         handlers
+     * handlers
      */
     public boolean handleTileClick(int row, int col) {
         if (currentMode == Mode.INACTIVE) {
@@ -309,5 +293,13 @@ public class TileHighlightManager {
      */
     public boolean isInParameterSelectionMode() {
         return currentMode == Mode.PARAMETER_SELECTION;
+    }
+
+    // Mode of operation
+    private enum Mode {
+        INACTIVE, // Not highlighting any tiles
+        STATUE_PLACEMENT, // Highlighting tiles for statue placement
+        PARAMETER_SELECTION // Highlighting tiles for parameter selection (e.g., target for Freyr's "Grow
+        // Tree")
     }
 }

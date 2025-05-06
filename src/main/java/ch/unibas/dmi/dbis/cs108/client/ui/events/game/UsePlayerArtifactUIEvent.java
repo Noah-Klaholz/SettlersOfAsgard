@@ -15,7 +15,7 @@ public class UsePlayerArtifactUIEvent implements UIEvent {
     /**
      * Constructs a UsePlayerArtifactUIEvent.
      *
-     * @param artifactId  the ID of the artifact
+     * @param artifactId   the ID of the artifact
      * @param targetPlayer the targeted player for the artifact
      */
     public UsePlayerArtifactUIEvent(int artifactId, String targetPlayer) {

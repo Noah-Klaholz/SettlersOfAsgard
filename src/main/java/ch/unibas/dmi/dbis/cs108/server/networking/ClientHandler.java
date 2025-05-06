@@ -1,10 +1,10 @@
 package ch.unibas.dmi.dbis.cs108.server.networking;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
-import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.ErrorsAPI;
 
@@ -23,34 +23,54 @@ import java.util.logging.Logger;
  * It also implements the CommunicationAPI interface to allow for communication with the server.
  */
 public class ClientHandler implements Runnable, CommunicationAPI {
-    /** Logger to log logging */
+    /**
+     * Logger to log logging
+     */
     private static final Logger logger = Logger.getLogger(ClientHandler.class.getName());
 
-    /** Reference to a CommandHandler */
+    /**
+     * Reference to a CommandHandler
+     */
     private final CommandHandler ch;
 
-    /** Reference to the GameServer */
+    /**
+     * Reference to the GameServer
+     */
     protected GameServer server;
 
-    /** Reference to the current lobby of the client */
+    /**
+     * Reference to the current lobby of the client
+     */
     protected Lobby currentLobby = null;
 
-    /** Reference to the local player of the client */
+    /**
+     * Reference to the local player of the client
+     */
     protected Player localPlayer = null;
 
-    /** The socket for the client connection */
+    /**
+     * The socket for the client connection
+     */
     private Socket socket;
 
-    /** PrintWriter for sending messages to the client */
+    /**
+     * PrintWriter for sending messages to the client
+     */
     private PrintWriter out;
 
-    /** BufferedReader for receiving messages from the client */
+    /**
+     * BufferedReader for receiving messages from the client
+     */
     private BufferedReader in;
 
-    /** Last time a ping was sent */
+    /**
+     * Last time a ping was sent
+     */
     private long lastPingTime = System.currentTimeMillis();
 
-    /** Flag to indicate if the client handler is running */
+    /**
+     * Flag to indicate if the client handler is running
+     */
     private boolean running;
 
     /**
@@ -101,7 +121,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      * Sends a START command to the client to initiate game start
      */
     public void startGame() {
-        sendMessage(NetworkProtocol.Commands.START+"$");
+        sendMessage(NetworkProtocol.Commands.START + "$");
     }
 
     /**
@@ -270,16 +290,14 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         if (cmd.isValid()) {
             if (cmd.isAdministrative()) {
                 processAdminCommand(cmd);
-            }
-            else{
+            } else {
                 if (currentLobby != null) {
                     if (Objects.equals(currentLobby.getStatus(), Lobby.LobbyStatus.IN_GAME.getStatus())) {
                         ch.getGameLogic().processCommand(cmd);
                     } else {
                         sendMessage("ERR$" + ErrorsAPI.Errors.NOT_IN_GAME.getError());
                     }
-                }
-                else {
+                } else {
                     sendMessage("ERR$" + ErrorsAPI.Errors.NOT_IN_LOBBY.getError());
                 }
             }
@@ -306,77 +324,77 @@ public class ClientHandler implements Runnable, CommunicationAPI {
 
         boolean answer = true; // Assume command has to be answered
         boolean worked = true; // Assume command was processed successfully
-            switch (command) {
-                case CHATLOBBY:
-                    answer = false;
-                    worked = ch.handleLobbyMessage(cmd);
-                    break;
-                case CHATPRIVATE:
-                    answer = false;
-                    worked = ch.handlePrivateMessage(cmd);
-                    break;
-                case CHATGLOBAL:
-                    answer = false;
-                    worked = ch.handleGlobalChatMessage(cmd);
-                    break;
-                case PING:
-                    break;
-                case LEADERBOARD:
-                    answer = false;
-                    worked = ch.handleGetLeaderboard();
-                    break;
-                case TEST:
-                    answer = false;
-                    logger.info("TEST");
-                    break;
-                case OK:
-                    answer = false;
-                    break;
-                case ERROR:
-                    answer = false;
-                    logger.info("Client sent an error command.");
-                    break;
-                case CREATELOBBY:
-                    worked = ch.handleCreateLobby(cmd);
-                    break;
-                case JOIN:
-                    answer = false;
-                    worked = ch.handleJoinLobby(cmd);
-                    break;
-                case LEAVE:
-                    answer = false;
-                    worked = ch.handleLeaveLobby();
-                    break;
-                case START:
-                    answer = false;
-                    worked = ch.handleStartGame();
-                    break;
-                case DISCONNECT:
-                    answer = false;
-                    worked = ch.handleDisconnect();
-                    break;
-                case CHANGENAME:
-                    answer = false;
-                    worked = ch.handleChangeName(cmd);
-                    break;
-                case REGISTER:
-                    answer = false;
-                    worked = ch.handleRegister(cmd);
-                    break;
-                case LISTLOBBIES:
-                    answer = false;
-                    worked = ch.handleListLobbies();
-                    break;
-                case LISTPLAYERS:
-                    answer = false;
-                    worked = ch.handleListPlayers(cmd);
-                    break;
-                case EXIT:
-                    logger.info("Client sent an exit command.");
-                    worked = ch.handleLeaveLobby();
-                    server.removeClient(this);
-                    break;
-            }
+        switch (command) {
+            case CHATLOBBY:
+                answer = false;
+                worked = ch.handleLobbyMessage(cmd);
+                break;
+            case CHATPRIVATE:
+                answer = false;
+                worked = ch.handlePrivateMessage(cmd);
+                break;
+            case CHATGLOBAL:
+                answer = false;
+                worked = ch.handleGlobalChatMessage(cmd);
+                break;
+            case PING:
+                break;
+            case LEADERBOARD:
+                answer = false;
+                worked = ch.handleGetLeaderboard();
+                break;
+            case TEST:
+                answer = false;
+                logger.info("TEST");
+                break;
+            case OK:
+                answer = false;
+                break;
+            case ERROR:
+                answer = false;
+                logger.info("Client sent an error command.");
+                break;
+            case CREATELOBBY:
+                worked = ch.handleCreateLobby(cmd);
+                break;
+            case JOIN:
+                answer = false;
+                worked = ch.handleJoinLobby(cmd);
+                break;
+            case LEAVE:
+                answer = false;
+                worked = ch.handleLeaveLobby();
+                break;
+            case START:
+                answer = false;
+                worked = ch.handleStartGame();
+                break;
+            case DISCONNECT:
+                answer = false;
+                worked = ch.handleDisconnect();
+                break;
+            case CHANGENAME:
+                answer = false;
+                worked = ch.handleChangeName(cmd);
+                break;
+            case REGISTER:
+                answer = false;
+                worked = ch.handleRegister(cmd);
+                break;
+            case LISTLOBBIES:
+                answer = false;
+                worked = ch.handleListLobbies();
+                break;
+            case LISTPLAYERS:
+                answer = false;
+                worked = ch.handleListPlayers(cmd);
+                break;
+            case EXIT:
+                logger.info("Client sent an exit command.");
+                worked = ch.handleLeaveLobby();
+                server.removeClient(this);
+                break;
+        }
         if (answer && worked) {
             sendMessage("OK$" + cmd); // Echo the command back to the client with an OK response
         }

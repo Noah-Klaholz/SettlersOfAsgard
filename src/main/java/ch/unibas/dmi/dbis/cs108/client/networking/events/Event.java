@@ -9,6 +9,7 @@ import java.time.Instant;
 public interface Event {
     /**
      * Getter for the timestamp of the event.
+     *
      * @return The timestamp of the event.
      */
     Instant getTimestamp();

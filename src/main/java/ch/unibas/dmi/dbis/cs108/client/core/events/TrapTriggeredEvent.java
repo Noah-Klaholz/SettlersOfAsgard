@@ -17,7 +17,7 @@ public class TrapTriggeredEvent implements GameEvent {
      * Constructor for TrapTriggeredEvent.
      *
      * @param triggeredPlayer The player who triggered the trap.
-     * @param tile           The tile where the trap was triggered.
+     * @param tile            The tile where the trap was triggered.
      */
     public TrapTriggeredEvent(Player triggeredPlayer, Tile tile) {
         this.triggeredPlayer = triggeredPlayer;

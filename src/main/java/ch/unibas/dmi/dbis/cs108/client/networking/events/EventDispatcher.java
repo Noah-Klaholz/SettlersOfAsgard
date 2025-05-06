@@ -41,7 +41,7 @@ public class EventDispatcher {
      *
      * @param eventType The class of the event type.
      * @param listener  The listener to register.
-     * @param <T>      The type of the event.
+     * @param <T>       The type of the event.
      */
     public <T extends Event> void registerListener(Class<T> eventType, EventListener<T> listener) {
         listeners.add(listener);
@@ -67,7 +67,7 @@ public class EventDispatcher {
     @SuppressWarnings("unchecked")
     public <T extends Event> void dispatchEvent(T event) {
         if (event == null) {
-            LOGGER.warning("Event " + event.getClass().getSimpleName()+ " is null, cannot dispatch.");
+            LOGGER.warning("Event " + event.getClass().getSimpleName() + " is null, cannot dispatch.");
             return;
         }
         for (EventListener<?> listener : listeners) {

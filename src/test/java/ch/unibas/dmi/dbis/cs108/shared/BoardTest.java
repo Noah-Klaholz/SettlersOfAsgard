@@ -2,22 +2,21 @@ package ch.unibas.dmi.dbis.cs108.shared;
 
 import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Board;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 public class BoardTest {
 
-    private Board board;
     private final int WIDTH = 10;
     private final int HEIGHT = 10;
+    private Board board;
 
     @BeforeEach
     void setUp() {
@@ -44,7 +43,7 @@ public class BoardTest {
     @Test
     void testSetTileOwner() {
         String playerName = "TestPlayer";
-        board.getTileByCoordinates(1,1).setOwner(playerName);
+        board.getTileByCoordinates(1, 1).setOwner(playerName);
 
         Tile tile = board.getTileByCoordinates(1, 1);
         assertEquals(playerName, tile.getOwner());
@@ -53,7 +52,7 @@ public class BoardTest {
     @Test
     void testSetTileEntity() {
         PurchasableEntity mockEntity = mock(Structure.class);
-        board.getTileByCoordinates(2,3).setEntity(mockEntity);
+        board.getTileByCoordinates(2, 3).setEntity(mockEntity);
 
         Tile tile = board.getTileByCoordinates(2, 3);
         assertTrue(tile.hasEntity());
@@ -64,10 +63,10 @@ public class BoardTest {
     void testRemoveTileEntity() {
         // First add an entity
         GameEntity mockEntity = mock(Structure.class);
-        board.getTileByCoordinates(4,5).setEntity(mockEntity);
+        board.getTileByCoordinates(4, 5).setEntity(mockEntity);
 
         // Then remove it
-        GameEntity removedEntity = board.getTileByCoordinates(4,5).removeEntity();
+        GameEntity removedEntity = board.getTileByCoordinates(4, 5).removeEntity();
 
         // Verify the entity was removed
         assertEquals(mockEntity, removedEntity);
@@ -79,8 +78,8 @@ public class BoardTest {
         // Test getting a tile outside the board boundaries
         assertNull(board.getTileByCoordinates(-1, 0));
         assertNull(board.getTileByCoordinates(0, -1));
-        assertNull(board.getTileByCoordinates(WIDTH+1, 0));
-        assertNull(board.getTileByCoordinates(0, HEIGHT+1));
+        assertNull(board.getTileByCoordinates(WIDTH + 1, 0));
+        assertNull(board.getTileByCoordinates(0, HEIGHT + 1));
     }
 
     @Test

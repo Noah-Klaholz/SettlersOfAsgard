@@ -15,9 +15,9 @@ public class ChatMessageEvent implements Event {
     /**
      * Constructor for GlobalChatEvent.
      *
-     * @param sender The sender of the chat message.
+     * @param sender  The sender of the chat message.
      * @param content The content of the chat message.
-     * @param type The type of chat (e.g., GLOBAL, LOBBY, PRIVATE, INFO).
+     * @param type    The type of chat (e.g., GLOBAL, LOBBY, PRIVATE, INFO).
      */
     public ChatMessageEvent(String sender, String content, ChatType type) {
         this.sender = sender;
@@ -27,6 +27,7 @@ public class ChatMessageEvent implements Event {
 
     /**
      * Getter for the timestamp of the event.
+     *
      * @return The timestamp of the event.
      */
     @Override
@@ -36,6 +37,7 @@ public class ChatMessageEvent implements Event {
 
     /**
      * Getter for the sender of the chat message.
+     *
      * @return The sender of the chat message.
      */
     public String getSender() {
@@ -44,6 +46,7 @@ public class ChatMessageEvent implements Event {
 
     /**
      * Getter for the content of the chat message.
+     *
      * @return The content of the chat message.
      */
     public String getContent() {
@@ -52,6 +55,7 @@ public class ChatMessageEvent implements Event {
 
     /**
      * Getter for the type of chat.
+     *
      * @return The type of chat (e.g., GLOBAL, LOBBY, PRIVATE, INFO).
      */
     public ChatType getType() {

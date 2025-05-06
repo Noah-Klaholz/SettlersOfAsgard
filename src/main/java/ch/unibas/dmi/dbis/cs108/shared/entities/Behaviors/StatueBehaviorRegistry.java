@@ -7,7 +7,9 @@ import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
 import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.*;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.StatueParameterRequirement;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.StatueParameters;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
@@ -31,39 +33,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class StatueBehaviorRegistry {
 
-    /**
-     * Effect types for statues based on their level.
-     */
-    public enum StatueEffectType {
-        NONE,      // Level 1: no effect
-        DEAL,      // Level 2: deal effect
-        BLESSING,  // Level 3: positive effect (high probability)
-        CURSE      // Level 3: negative effect (low probability)
-    }
-
-    /**
-     * Functional interface for statue behaviors.
-     */
-    @FunctionalInterface
-    public interface StatueBehavior {
-        /**
-         * Executes the statue effect.
-         *
-         * @param statue The statue being used
-         * @param gameState The current game state
-         * @param player The player using the statue
-         * @param params Parameters for the effect
-         * @return true if execution was successful, false otherwise
-         */
-        boolean execute(Statue statue, GameState gameState, Player player, StatueParameters params);
-    }
-
     // Map: Statue Name -> (Map: Effect Type -> Behavior)
     private final Map<String, Map<StatueEffectType, StatueBehavior>> behaviors = new HashMap<>();
-
     // Map: Statue Name -> (Map: Effect Type -> Parameter Requirements)
     private final Map<String, Map<StatueEffectType, StatueParameterRequirement>> requirements = new HashMap<>();
-
     private final Random random = new Random();
 
     /**
@@ -99,9 +72,9 @@ public class StatueBehaviorRegistry {
     /**
      * Registers a behavior for a statue with a specific effect type.
      *
-     * @param statueName The name of the statue
-     * @param effectType The effect type (DEAL, BLESSING, CURSE)
-     * @param behavior The behavior implementation
+     * @param statueName  The name of the statue
+     * @param effectType  The effect type (DEAL, BLESSING, CURSE)
+     * @param behavior    The behavior implementation
      * @param requirement The parameter requirements for this behavior
      */
     public void registerBehavior(String statueName, StatueEffectType effectType,
@@ -117,10 +90,10 @@ public class StatueBehaviorRegistry {
     /**
      * Executes a statue's effect with the provided parameters.
      *
-     * @param statue The statue being used
+     * @param statue    The statue being used
      * @param gameState The current game state
-     * @param player The player using the statue
-     * @param params The parameters for the effect
+     * @param player    The player using the statue
+     * @param params    The parameters for the effect
      * @return true if execution was successful, false otherwise
      */
     public boolean executeStatue(Statue statue, GameState gameState, Player player, StatueParameters params) {
@@ -157,7 +130,7 @@ public class StatueBehaviorRegistry {
 
         // If the behavior is a curse, then the client should get a notification about it
         if (success && effectType == StatueEffectType.CURSE) {
-            gameState.sendNotification(player.getName(),"CURSE$" + statueName);
+            gameState.sendNotification(player.getName(), "CURSE$" + statueName);
         }
 
         return success;
@@ -200,7 +173,7 @@ public class StatueBehaviorRegistry {
                     targetTile.setEntity(null);
                     return true;
                 },
-                new StatueParameterRequirement(StatueParameterRequirement.StatueParameterType.PLAYER,StatueParameterRequirement.StatueParameterType.TILE)
+                new StatueParameterRequirement(StatueParameterRequirement.StatueParameterType.PLAYER, StatueParameterRequirement.StatueParameterType.TILE)
         );
 
         // Freyr
@@ -312,7 +285,7 @@ public class StatueBehaviorRegistry {
         registerBehavior("Freyja", StatueEffectType.DEAL,
                 (statue, gameState, player, params) -> {
                     // Gives 1 random Artifact: costs (a lot of) Runes
-                    if (!player.buy((int)statue.getParams().get(0).getValue())) return false;
+                    if (!player.buy((int) statue.getParams().get(0).getValue())) return false;
 
                     player.addArtifact(EntityRegistry.getRandomArtifact());
                     return true;
@@ -453,10 +426,10 @@ public class StatueBehaviorRegistry {
                     Tile[] tiles = player.getOwnedTiles().stream().filter(t -> t.hasEntity() && t.getEntity().isStructure()).toArray(Tile[]::new);
                     Tile tile1 = RandomGenerator.pickRandomElement(tiles);
                     if (tile1 == null) return false;
-                    player.removePurchasableEntity((Structure)tile1.getEntity());
+                    player.removePurchasableEntity((Structure) tile1.getEntity());
                     Tile tile2 = RandomGenerator.pickRandomElement(tiles);
                     if (tile2 == null) return false;
-                    player.removePurchasableEntity((Structure)tile2.getEntity());
+                    player.removePurchasableEntity((Structure) tile2.getEntity());
                     return true;
                 },
                 new StatueParameterRequirement()
@@ -567,5 +540,32 @@ public class StatueBehaviorRegistry {
                 },
                 new StatueParameterRequirement()
         );
+    }
+
+    /**
+     * Effect types for statues based on their level.
+     */
+    public enum StatueEffectType {
+        NONE,      // Level 1: no effect
+        DEAL,      // Level 2: deal effect
+        BLESSING,  // Level 3: positive effect (high probability)
+        CURSE      // Level 3: negative effect (low probability)
+    }
+
+    /**
+     * Functional interface for statue behaviors.
+     */
+    @FunctionalInterface
+    public interface StatueBehavior {
+        /**
+         * Executes the statue effect.
+         *
+         * @param statue    The statue being used
+         * @param gameState The current game state
+         * @param player    The player using the statue
+         * @param params    Parameters for the effect
+         * @return true if execution was successful, false otherwise
+         */
+        boolean execute(Statue statue, GameState gameState, Player player, StatueParameters params);
     }
 }

@@ -2,7 +2,6 @@ package ch.unibas.dmi.dbis.cs108.client.ui.components.game;
 
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.StatueDetailsWrapper;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.StylesheetLoader;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import javafx.animation.FadeTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

@@ -5,8 +5,8 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<BorderPane xmlns="http://javafx.com/javafx/17"
-            xmlns:fx="http://javafx.com/fxml/1"
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            xmlns="http://javafx.com/javafx/17"
             fx:controller="ch.unibas.dmi.dbis.cs108.client.ui.controllers.MainMenuController"
             fx:id="mainMenuRoot"
             styleClass="main-menu-background"
@@ -60,10 +60,10 @@
         <TitledPane text="Chat" collapsible="true" expanded="true" VBox.vgrow="ALWAYS" styleClass="chat-titled-pane">
             <!-- Container for the ChatComponent -->
             <VBox fx:id="chatContainer" spacing="5.0" VBox.vgrow="ALWAYS" prefWidth="280.0" minWidth="250.0">
-                 <!-- Removed padding -->
-                 <Label fx:id="onlineUsersLabel" text="Online: 0" styleClass="online-users"/>
-                 <!-- ChatComponent will be added here programmatically -->
-                 <!-- Ensure VBox.setVgrow is called on the added ChatComponent view in the controller -->
+                <!-- Removed padding -->
+                <Label fx:id="onlineUsersLabel" text="Online: 0" styleClass="online-users"/>
+                <!-- ChatComponent will be added here programmatically -->
+                <!-- Ensure VBox.setVgrow is called on the added ChatComponent view in the controller -->
             </VBox>
         </TitledPane>
     </right>

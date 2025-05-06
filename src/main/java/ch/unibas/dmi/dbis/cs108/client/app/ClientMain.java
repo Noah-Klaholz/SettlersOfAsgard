@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.app;
 
-import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.client.networking.NetworkController;
+import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.PingFilter;
 
 import java.util.logging.Logger;
@@ -50,7 +50,8 @@ public class ClientMain {
             networkController = new NetworkController(localPlayer);
             networkController.connect(serverAddress[0], serverport);
 
-            if (!checkConnection(networkController)) return;
+            if (!checkConnection(networkController)) {
+            }
 
         } catch (Exception e) {
             logger.warning("Client start-up error: " + e.getMessage());

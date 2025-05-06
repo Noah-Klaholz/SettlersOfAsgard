@@ -10,16 +10,6 @@ import java.util.Set;
  */
 public class StatueParameterRequirement {
 
-    /**
-     * Defines the types of parameters that can be used in statue effects.
-     */
-    public enum StatueParameterType {
-        PLAYER,    // Target player
-        TILE,      // x,y coordinates
-        STRUCTURE, // Structure ID
-        ARTIFACT   // Artifact ID
-    }
-
     private final Set<StatueParameterType> required;
 
     /**
@@ -51,6 +41,16 @@ public class StatueParameterRequirement {
      */
     public Set<StatueParameterType> getRequiredTypes() {
         return Collections.unmodifiableSet(required);
+    }
+
+    /**
+     * Defines the types of parameters that can be used in statue effects.
+     */
+    public enum StatueParameterType {
+        PLAYER,    // Target player
+        TILE,      // x,y coordinates
+        STRUCTURE, // Structure ID
+        ARTIFACT   // Artifact ID
     }
 
 }

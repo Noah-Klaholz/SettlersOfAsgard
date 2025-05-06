@@ -42,7 +42,7 @@ public class ThemeManager {
 
     /**
      * Register a scene for theme management.
-     * 
+     *
      * @param scene Scene to register
      */
     public void registerScene(Scene scene) {
@@ -55,7 +55,7 @@ public class ThemeManager {
 
     /**
      * Set the current theme and apply to all registered scenes.
-     * 
+     *
      * @param themePath CSS resource path
      */
     public void setTheme(String themePath) {
@@ -75,7 +75,7 @@ public class ThemeManager {
 
     /**
      * Apply the current theme to a specific scene.
-     * 
+     *
      * @param scene Scene to apply theme to
      */
     public void applyThemeToScene(Scene scene) {
@@ -93,7 +93,7 @@ public class ThemeManager {
 
     /**
      * Loads a font from the given resource path.
-     * 
+     *
      * @param fontPath Font resource path
      */
     private void loadFont(String fontPath) {

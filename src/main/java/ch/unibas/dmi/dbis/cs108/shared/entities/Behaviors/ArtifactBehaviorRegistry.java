@@ -1,11 +1,9 @@
 package ch.unibas.dmi.dbis.cs108.shared.entities.Behaviors;
 
-import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.core.model.GameState;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
-import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Structure;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
@@ -29,13 +27,19 @@ import java.util.Map;
  */
 public class ArtifactBehaviorRegistry {
 
-    /** Map of player-targeting artifact behaviors, keyed by artifact name */
+    /**
+     * Map of player-targeting artifact behaviors, keyed by artifact name
+     */
     private final Map<String, PlayerArtifactBehavior> playerBehaviors = new HashMap<>();
 
-    /** Map of field-targeting artifact behaviors, keyed by artifact name */
+    /**
+     * Map of field-targeting artifact behaviors, keyed by artifact name
+     */
     private final Map<String, FieldArtifactBehavior> fieldBehaviors = new HashMap<>();
 
-    /** Map of trap artifact behaviors, keyed by artifact name */
+    /**
+     * Map of trap artifact behaviors, keyed by artifact name
+     */
     private final Map<String, TrapArtifactBehavior> trapBehaviors = new HashMap<>();
 
     /**
@@ -53,43 +57,43 @@ public class ArtifactBehaviorRegistry {
         // Player-targeting artifacts
         registerPlayerBehavior("Tear of Yggdrasil", (artifact, gameState, player, targetPlayer) -> {
             // Remove energy from other player
-            targetPlayer.addEnergy((int)artifact.getEffect());
+            targetPlayer.addEnergy((int) artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Hel's Shadow", (artifact, gameState, player, targetPlayer) -> {
             // Remove rune efficiency from other player
-            targetPlayer.addBuff(Status.BuffType.RUNE_GENERATION, (int)artifact.getEffect());
+            targetPlayer.addBuff(Status.BuffType.RUNE_GENERATION, (int) artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Flame of Muspelheim", (artifact, gameState, player, targetPlayer) -> {
             // Give shop discount to player
-            targetPlayer.addBuff(Status.BuffType.SHOP_PRICE, (int)artifact.getEffect());
+            targetPlayer.addBuff(Status.BuffType.SHOP_PRICE, (int) artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Ice Splinter of Niflheim", (artifact, gameState, player, targetPlayer) -> {
             // Remove energy generation efficiency from other player
-            targetPlayer.addBuff(Status.BuffType.ENERGY_GENERATION, (int)artifact.getEffect());
+            targetPlayer.addBuff(Status.BuffType.ENERGY_GENERATION, (int) artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Ashes of Surtr", (artifact, gameState, player, targetPlayer) -> {
             // Give higher prices in shop to other player
-            targetPlayer.addBuff(Status.BuffType.SHOP_PRICE, (int)artifact.getEffect());
+            targetPlayer.addBuff(Status.BuffType.SHOP_PRICE, (int) artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Fragment of Mjölnir", (artifact, gameState, player, targetPlayer) -> {
             // Give higher chance of artifacts to player
-            targetPlayer.addBuff(Status.BuffType.ARTIFACT_CHANCE, (int)artifact.getEffect());
+            targetPlayer.addBuff(Status.BuffType.ARTIFACT_CHANCE, (int) artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Freyr's Golden Apple", (artifact, gameState, player, targetPlayer) -> {
             // Gives energy to player
-            targetPlayer.addEnergy((int)artifact.getEffect());
+            targetPlayer.addEnergy((int) artifact.getEffect());
             return true;
         });
 
@@ -98,7 +102,7 @@ public class ArtifactBehaviorRegistry {
             // Give a major rune generation buff to the tile
             Tile tile = gameState.getBoardManager().getTile(x, y);
             if (tile == null || !tile.hasEntity()) return false;
-            tile.setBuff(Status.BuffType.RUNE_GENERATION, (int)artifact.getEffect());
+            tile.setBuff(Status.BuffType.RUNE_GENERATION, (int) artifact.getEffect());
             return true;
         });
 
@@ -106,7 +110,7 @@ public class ArtifactBehaviorRegistry {
             // Give a major energy generation buff to the tile
             Tile tile = gameState.getBoardManager().getTile(x, y);
             if (tile == null || !tile.hasEntity()) return false;
-            tile.setBuff(Status.BuffType.ENERGY_GENERATION, (int)artifact.getEffect());
+            tile.setBuff(Status.BuffType.ENERGY_GENERATION, (int) artifact.getEffect());
             return true;
         });
 
@@ -114,7 +118,7 @@ public class ArtifactBehaviorRegistry {
             // Give a huge rune generation buff to the river-tile
             Tile tile = gameState.getBoardManager().getTile(x, y);
             if (tile == null || !tile.hasEntity()) return false;
-            tile.setBuff(Status.BuffType.RIVER_RUNE_GENERATION, (int)artifact.getEffect());
+            tile.setBuff(Status.BuffType.RIVER_RUNE_GENERATION, (int) artifact.getEffect());
             return true;
         });
 
@@ -124,7 +128,7 @@ public class ArtifactBehaviorRegistry {
                 if (tile == null || !tile.hasEntity()) continue;
                 GameEntity entity = tile.getEntity();
                 if (entity != null && entity.getName().equals("ActiveTrap")) {
-                    gameState.sendNotification(player.getName(),"20$" + tile.getX() + "$" + tile.getY());
+                    gameState.sendNotification(player.getName(), "20$" + tile.getX() + "$" + tile.getY());
                 }
             }
             return true;
@@ -137,7 +141,7 @@ public class ArtifactBehaviorRegistry {
             if (tile == null || tile.hasEntity()) return false;
 
             // Create a new ActiveTrap structure on the tile
-            Structure trapStructure = EntityRegistry.getStructure((int)artifact.getEffect());
+            Structure trapStructure = EntityRegistry.getStructure((int) artifact.getEffect());
             if (trapStructure == null) return false;
 
             tile.setEntity(trapStructure);
@@ -149,7 +153,7 @@ public class ArtifactBehaviorRegistry {
      * Registers a player-targeting artifact behavior.
      *
      * @param artifactName the name of the artifact
-     * @param behavior the behavior implementation
+     * @param behavior     the behavior implementation
      */
     public void registerPlayerBehavior(String artifactName, PlayerArtifactBehavior behavior) {
         playerBehaviors.put(artifactName, behavior);
@@ -159,7 +163,7 @@ public class ArtifactBehaviorRegistry {
      * Registers a field-targeting artifact behavior.
      *
      * @param artifactName the name of the artifact
-     * @param behavior the behavior implementation
+     * @param behavior     the behavior implementation
      */
     public void registerFieldBehavior(String artifactName, FieldArtifactBehavior behavior) {
         fieldBehaviors.put(artifactName, behavior);
@@ -169,7 +173,7 @@ public class ArtifactBehaviorRegistry {
      * Registers a trap artifact behavior.
      *
      * @param artifactName the name of the artifact
-     * @param behavior the behavior implementation
+     * @param behavior     the behavior implementation
      */
     public void registerTrapBehavior(String artifactName, TrapArtifactBehavior behavior) {
         trapBehaviors.put(artifactName, behavior);
@@ -178,9 +182,9 @@ public class ArtifactBehaviorRegistry {
     /**
      * Executes a player-targeting artifact behavior.
      *
-     * @param artifact the artifact being used
-     * @param gameState the current game state
-     * @param player the player using the artifact
+     * @param artifact     the artifact being used
+     * @param gameState    the current game state
+     * @param player       the player using the artifact
      * @param targetPlayer the player being targeted
      * @return true if execution was successful, false otherwise
      */
@@ -195,11 +199,11 @@ public class ArtifactBehaviorRegistry {
     /**
      * Executes a field-targeting artifact behavior.
      *
-     * @param artifact the artifact being used
+     * @param artifact  the artifact being used
      * @param gameState the current game state
-     * @param player the player using the artifact
-     * @param x the x-coordinate of the targeted tile
-     * @param y the y-coordinate of the targeted tile
+     * @param player    the player using the artifact
+     * @param x         the x-coordinate of the targeted tile
+     * @param y         the y-coordinate of the targeted tile
      * @return true if execution was successful, false otherwise
      */
     public boolean executeFieldArtifact(Artifact artifact, GameState gameState, Player player, int x, int y) {
@@ -213,11 +217,11 @@ public class ArtifactBehaviorRegistry {
     /**
      * Executes a trap artifact behavior.
      *
-     * @param artifact the artifact being used
+     * @param artifact  the artifact being used
      * @param gameState the current game state
-     * @param player the player using the artifact
-     * @param x the x-coordinate of the targeted tile
-     * @param y the y-coordinate of the targeted tile
+     * @param player    the player using the artifact
+     * @param x         the x-coordinate of the targeted tile
+     * @param y         the y-coordinate of the targeted tile
      * @return true if execution was successful, false otherwise
      */
     public boolean executeTrapArtifact(Artifact artifact, GameState gameState, Player player, int x, int y) {
@@ -237,9 +241,9 @@ public class ArtifactBehaviorRegistry {
         /**
          * Executes the player-targeting artifact behavior.
          *
-         * @param artifact the artifact being used
-         * @param gameState the current game state
-         * @param player the player using the artifact
+         * @param artifact     the artifact being used
+         * @param gameState    the current game state
+         * @param player       the player using the artifact
          * @param targetPlayer the player being targeted
          * @return true if execution was successful, false otherwise
          */
@@ -255,11 +259,11 @@ public class ArtifactBehaviorRegistry {
         /**
          * Executes the field-targeting artifact behavior.
          *
-         * @param artifact the artifact being used
+         * @param artifact  the artifact being used
          * @param gameState the current game state
-         * @param player the player using the artifact
-         * @param x the x-coordinate of the targeted tile
-         * @param y the y-coordinate of the targeted tile
+         * @param player    the player using the artifact
+         * @param x         the x-coordinate of the targeted tile
+         * @param y         the y-coordinate of the targeted tile
          * @return true if execution was successful, false otherwise
          */
         boolean execute(Artifact artifact, GameState gameState, Player player, int x, int y);
@@ -274,11 +278,11 @@ public class ArtifactBehaviorRegistry {
         /**
          * Executes the trap artifact behavior.
          *
-         * @param artifact the artifact being used
+         * @param artifact  the artifact being used
          * @param gameState the current game state
-         * @param player the player using the artifact
-         * @param x the x-coordinate of the targeted tile
-         * @param y the y-coordinate of the targeted tile
+         * @param player    the player using the artifact
+         * @param x         the x-coordinate of the targeted tile
+         * @param y         the y-coordinate of the targeted tile
          * @return true if execution was successful, false otherwise
          */
         boolean execute(Artifact artifact, GameState gameState, Player player, int x, int y);

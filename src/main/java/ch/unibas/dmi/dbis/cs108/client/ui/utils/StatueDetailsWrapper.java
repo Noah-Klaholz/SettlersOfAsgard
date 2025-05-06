@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.utils;
 
-import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import javafx.scene.image.Image;
 
 import java.util.HashMap;
@@ -15,12 +15,11 @@ import java.util.logging.Logger;
  */
 public class StatueDetailsWrapper {
     private static final Logger LOGGER = Logger.getLogger(StatueDetailsWrapper.class.getName());
+    private static final Map<Integer, StatueDetailsWrapper> CACHE = new HashMap<>();
     private final Statue statue;
     private final ResourceLoader resourceLoader;
     private Image cardImage;
     private Image mapImage;
-
-    private static final Map<Integer, StatueDetailsWrapper> CACHE = new HashMap<>();
 
     /**
      * Creates a new wrapper for the given statue entity.

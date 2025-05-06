@@ -11,6 +11,7 @@ public interface GameLogicInterface {
 
     /**
      * Processes a command from a player.
+     *
      * @param command The command to process.
      */
     void processCommand(Command command);

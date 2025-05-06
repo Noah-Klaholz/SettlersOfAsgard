@@ -15,31 +15,33 @@ import java.util.logging.Logger;
  */
 public class Board {
 
-    /** Logger to log logging */
+    /**
+     * A 2D array representation of the worlds on the map
+     */
+    private static final String[][] WORLD_MAP = {
+            // y = 0 (top row)
+            {"Alfheim", "Alfheim", "Alfheim", "Asgard", "Asgard", "Asgard", "Muspelheim", "Muspelheim"},
+            // y = 1
+            {"Alfheim", "Alfheim", "Asgard", "Asgard", "Asgard", "Asgard", "Muspelheim", "Muspelheim"},
+            // y = 2
+            {"Vanaheim", "Vanaheim", "Vanaheim", "Asgard", "Midgard", "Midgard", "Muspelheim", "Muspelheim"},
+            // y = 3
+            {"Vanaheim", "Vanaheim", "Vanaheim", "Midgard", "Midgard", "Midgard", "Muspelheim", "Muspelheim"},
+            // y = 4
+            {"Vanaheim", "Jotunheim", "Vanaheim", "Vanaheim", "Nilfheim", "Helheim", "Svartalfheim", "Svartalfheim"},
+            // y = 5
+            {"Jotunheim", "Jotunheim", "Nilfheim", "Nilfheim", "Helheim", "Helheim", "Helheim", "Svartalfheim"},
+            // y = 6 (bottom row)
+            {"Jotunheim", "Jotunheim", "Nilfheim", "Nilfheim", "Nilfheim", "Helheim", "Helheim", "Helheim"}
+    };
+    /**
+     * Logger to log logging
+     */
     Logger logger = Logger.getLogger(Board.class.getName());
-
     /**
      * Two-dimensional array of Tiles. Represents the entire board. The first dimension is x.
      */
     private Tile[][] tiles;
-    /** A 2D array representation of the worlds on the map*/
-    private static final String[][] WORLD_MAP = {
-            // y = 0 (top row)
-            {"Alfheim",     "Alfheim",   "Alfheim",    "Asgard",    "Asgard",    "Asgard", "Muspelheim", "Muspelheim"},
-            // y = 1
-            {"Alfheim",     "Alfheim",   "Asgard",    "Asgard",    "Asgard",    "Asgard", "Muspelheim", "Muspelheim"},
-            // y = 2
-            {"Vanaheim",    "Vanaheim",  "Vanaheim",   "Asgard",   "Midgard",   "Midgard", "Muspelheim", "Muspelheim"},
-            // y = 3
-            {"Vanaheim",    "Vanaheim",  "Vanaheim",   "Midgard",   "Midgard",   "Midgard", "Muspelheim", "Muspelheim"},
-            // y = 4
-            {"Vanaheim",   "Jotunheim", "Vanaheim",  "Vanaheim",  "Nilfheim",  "Helheim",    "Svartalfheim",    "Svartalfheim"},
-            // y = 5
-            {"Jotunheim",   "Jotunheim", "Nilfheim",  "Nilfheim",  "Helheim",  "Helheim",    "Helheim",    "Svartalfheim"},
-            // y = 6 (bottom row)
-            {"Jotunheim",   "Jotunheim", "Nilfheim",  "Nilfheim",  "Nilfheim",  "Helheim",    "Helheim",    "Helheim"}
-    };
-
 
     /**
      * Initialize board with a specified number of tiles
@@ -58,9 +60,9 @@ public class Board {
                 // Set world based on coordinates
                 tilebuilder.setWorld(determineWorld(i, j));
                 // Set monument based on coordinates
-                tilebuilder.setEntity(determineMonument(i,j));
+                tilebuilder.setEntity(determineMonument(i, j));
                 // Set river based on coordinates
-                tilebuilder.setHasRiver(determineRiver(i,j));
+                tilebuilder.setHasRiver(determineRiver(i, j));
                 // Optional artifact
                 if (RandomGenerator.chance(SETTINGS.Config.ARTIFACT_CHANCE.getValue())) {
                     tilebuilder.setArtifact(EntityRegistry.getRandomArtifact());
@@ -120,18 +122,7 @@ public class Board {
     private boolean determineRiver(int x, int y) {
         if (x <= 2 && y == 2) return true;
         if (x <= 1 && y == 3) return true;
-        if (x == 0 && y == 4) return true;
-        return false;
-    }
-
-
-    /**
-     * Adds a tile to the board.
-     *
-     * @param tiles The 2D array of tiles to be added.
-     */
-    public void setTiles(Tile[][] tiles) {
-        this.tiles = tiles;
+        return x == 0 && y == 4;
     }
 
     /**
@@ -203,6 +194,15 @@ public class Board {
      */
     public Tile[][] getTiles() {
         return tiles;
+    }
+
+    /**
+     * Adds a tile to the board.
+     *
+     * @param tiles The 2D array of tiles to be added.
+     */
+    public void setTiles(Tile[][] tiles) {
+        this.tiles = tiles;
     }
 
     /**

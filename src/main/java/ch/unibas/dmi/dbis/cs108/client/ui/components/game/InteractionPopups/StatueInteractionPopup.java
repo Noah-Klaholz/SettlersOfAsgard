@@ -6,7 +6,6 @@ import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.util.function.Consumer;

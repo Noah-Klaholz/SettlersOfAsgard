@@ -3,7 +3,8 @@ package ch.unibas.dmi.dbis.cs108.client.core.state;
 import ch.unibas.dmi.dbis.cs108.server.core.model.BoardManager;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Logger;
@@ -15,19 +16,33 @@ import java.util.logging.Logger;
  * It gets updated after every action by the GameStateManager.
  */
 public class GameState {
-    /** Logger to log logging */
+    /**
+     * Logger to log logging
+     */
     private static final Logger LOGGER = Logger.getLogger(ch.unibas.dmi.dbis.cs108.client.core.state.GameState.class.getName());
-    /** State Lock for Thread safe handling */
+    /**
+     * State Lock for Thread safe handling
+     */
     private final ReadWriteLock stateLock = new ReentrantReadWriteLock();
-    /** BoardManager that contains all info about the board & tiles */
+    /**
+     * BoardManager that contains all info about the board & tiles
+     */
     private final BoardManager boardManager;
-    /** List of players in the game (stored as player objects) */
+    /**
+     * List of players in the game (stored as player objects)
+     */
     private final List<Player> players = new ArrayList<>();
-    /** The index of the player whose turn it is (0 to 3) */
+    /**
+     * The index of the player whose turn it is (0 to 3)
+     */
     private int playerRound;
-    /** The gameRound (0 to 4) */
+    /**
+     * The gameRound (0 to 4)
+     */
     private int gameRound;
-    /** The name of the players whose turn it is */
+    /**
+     * The name of the players whose turn it is
+     */
     private String playerTurn;
 
     /**
@@ -36,33 +51,6 @@ public class GameState {
     public GameState() {
         this.boardManager = new BoardManager(stateLock);
         boardManager.initializeBoard(8, 7);
-    }
-
-    /**
-     * Sets the playerTurn
-     *
-     * @param playerTurn the playerTurn to set
-     */
-    public void setPlayerTurn(String playerTurn) {
-        this.playerTurn = playerTurn;
-    }
-
-    /**
-     * Sets the playerRound
-     *
-     * @param playerRound the playerRound to set
-     */
-    public void setPlayerRound(int playerRound) {
-        this.playerRound = playerRound;
-    }
-
-    /**
-     * Sets the gameRound
-     *
-     * @param gameRound the gameRound to set
-     */
-    public void setGameRound(int gameRound) {
-        this.gameRound = gameRound;
     }
 
     /**
@@ -75,12 +63,30 @@ public class GameState {
     }
 
     /**
+     * Sets the playerTurn
+     *
+     * @param playerTurn the playerTurn to set
+     */
+    public void setPlayerTurn(String playerTurn) {
+        this.playerTurn = playerTurn;
+    }
+
+    /**
      * Gets the playerRound
      *
      * @return the playerRound
      */
     public int getPlayerRound() {
         return playerRound;
+    }
+
+    /**
+     * Sets the playerRound
+     *
+     * @param playerRound the playerRound to set
+     */
+    public void setPlayerRound(int playerRound) {
+        this.playerRound = playerRound;
     }
 
     /**
@@ -93,20 +99,12 @@ public class GameState {
     }
 
     /**
-     * Sets the list of players
+     * Sets the gameRound
      *
-     * @param playerNames the players to set
+     * @param gameRound the gameRound to set
      */
-    public void setPlayers(String[] playerNames) {
-        stateLock.writeLock().lock();
-        try {
-            players.clear();
-            for (String name : playerNames) {
-                players.add(new Player(name));
-            }
-        } finally {
-            stateLock.writeLock().unlock();
-        }
+    public void setGameRound(int gameRound) {
+        this.gameRound = gameRound;
     }
 
     /**
@@ -138,6 +136,23 @@ public class GameState {
     }
 
     /**
+     * Sets the list of players
+     *
+     * @param playerNames the players to set
+     */
+    public void setPlayers(String[] playerNames) {
+        stateLock.writeLock().lock();
+        try {
+            players.clear();
+            for (String name : playerNames) {
+                players.add(new Player(name));
+            }
+        } finally {
+            stateLock.writeLock().unlock();
+        }
+    }
+
+    /**
      * Finds the player with a given name
      *
      * @param name the name of the player
@@ -157,6 +172,7 @@ public class GameState {
 
     /**
      * Gets the current state of the BoardManager.
+     *
      * @return The current object of the BoardManager.
      */
     public BoardManager getBoardManager() {
@@ -165,6 +181,7 @@ public class GameState {
 
     /**
      * Gets the current state of the StateLock.
+     *
      * @return The current object of the StateLock.
      */
     public ReadWriteLock getStateLock() {

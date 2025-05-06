@@ -1,8 +1,9 @@
 package ch.unibas.dmi.dbis.cs108.client.core.events;
+
+import ch.unibas.dmi.dbis.cs108.client.core.observer.GameEventListener;
+
 import java.util.ArrayList;
 import java.util.List;
-import ch.unibas.dmi.dbis.cs108.client.core.events.*;
-import ch.unibas.dmi.dbis.cs108.client.core.observer.GameEventListener;
 
 /**
  * EventDispatcher is responsible for managing and dispatching game events to registered listeners.
@@ -12,7 +13,7 @@ public class EventDispatcher {
     /**
      * List of registered listeners that will be notified when an event occurs.
      */
-    private List<GameEventListener> listeners = new ArrayList<GameEventListener>();
+    private final List<GameEventListener> listeners = new ArrayList<GameEventListener>();
 
     /**
      * Registers a listener to receive game events.

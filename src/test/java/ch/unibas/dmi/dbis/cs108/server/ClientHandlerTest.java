@@ -1,9 +1,9 @@
 package ch.unibas.dmi.dbis.cs108.server;
 
 import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
-import ch.unibas.dmi.dbis.cs108.server.networking.GameServer;
-import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
+import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
+import ch.unibas.dmi.dbis.cs108.server.networking.GameServer;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

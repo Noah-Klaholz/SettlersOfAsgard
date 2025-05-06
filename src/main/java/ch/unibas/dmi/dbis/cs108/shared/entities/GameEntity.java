@@ -47,13 +47,14 @@ public abstract class GameEntity {
     /**
      * Default constructor for GameEntity.
      */
-    public GameEntity() {}
+    public GameEntity() {
+    }
 
     /**
      * Constructs a new GameEntity with specified values.
      *
-     * @param id The unique identifier for this entity
-     * @param name The name of this entity
+     * @param id          The unique identifier for this entity
+     * @param name        The name of this entity
      * @param description The description of this entity
      */
     public GameEntity(int id, String name, String description, String usage) {
@@ -68,21 +69,27 @@ public abstract class GameEntity {
      *
      * @return The entity's ID
      */
-    public int getId() { return id; }
+    public int getId() {
+        return id;
+    }
 
     /**
      * Returns the name of this entity.
      *
      * @return The entity's name
      */
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
 
     /**
      * Returns the description of this entity.
      *
      * @return The entity's description
      */
-    public String getDescription() { return description; }
+    public String getDescription() {
+        return description;
+    }
 
     /**
      * Returns the usage of this entity.
@@ -98,7 +105,9 @@ public abstract class GameEntity {
      *
      * @return The list of parameters
      */
-    public List<Parameter> getParams() { return params; }
+    public List<Parameter> getParams() {
+        return params;
+    }
 
 
     /**
@@ -106,28 +115,36 @@ public abstract class GameEntity {
      *
      * @return true if it is, false otherwise
      */
-    public boolean isStructure() { return this instanceof Structure; }
+    public boolean isStructure() {
+        return this instanceof Structure;
+    }
 
     /**
      * Returns if this entity is a statue.
      *
      * @return true if it is, false otherwise
      */
-    public boolean isStatue() { return this instanceof Statue; }
+    public boolean isStatue() {
+        return this instanceof Statue;
+    }
 
     /**
      * Returns if this entity is a Monument
      *
      * @return true if it is, false otherwise
      */
-    public boolean isMonument() { return this instanceof Monument; }
+    public boolean isMonument() {
+        return this instanceof Monument;
+    }
 
     /**
      * Returns if this entity is an artifact.
      *
      * @return true if it is, false otherwise
      */
-    public boolean isArtifact() { return this instanceof Artifact; }
+    public boolean isArtifact() {
+        return this instanceof Artifact;
+    }
 
     /**
      * Sets the value of the parameter at the specified index to the given value
@@ -139,17 +156,18 @@ public abstract class GameEntity {
         Parameter param = new Parameter(params.get(index).getName(), value);
         params.set(index, param);
     }
+
     /**
      * Loads entity data from a JSON object.
      * In addition to id, name and description, it loads a list of parameters
      * if available.
-     *
+     * <p>
      * Expected JSON format:
      * {
-     *    "id": 1,
-     *    "name": "Example Entity",
-     *    "description": "Description text",
-     *    "params": [10, 20] // list of parameters
+     * "id": 1,
+     * "name": "Example Entity",
+     * "description": "Description text",
+     * "params": [10, 20] // list of parameters
      * }
      *
      * @param json The JSON object containing entity data.
