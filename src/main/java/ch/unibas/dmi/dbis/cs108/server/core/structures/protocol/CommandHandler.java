@@ -239,6 +239,9 @@ public class CommandHandler {
         String lobbyId = cmd.getArgs()[1];
         int maxPlayers = Integer.parseInt(cmd.getArgs()[2]);
         Lobby lobby = server.createLobby(lobbyId, maxPlayers);
+        if (lobby == null) {
+            return false;
+        }
         return handleJoinLobby(new Command(CommunicationAPI.NetworkProtocol.Commands.JOIN.getCommand() + "$" + ch.getPlayerName() + "$" + lobbyId, ch.getPlayer()));
     }
 
