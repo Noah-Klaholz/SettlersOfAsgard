@@ -716,11 +716,13 @@ public class GameScreenController extends BaseController {
                 eventBus.publish(new LeaveLobbyRequestEvent(currentLobbyId));
                 sceneManager.switchToScene(SceneManager.SceneType.MAIN_MENU);
                 chatComponentController.setInGame(false);
+                cleanup();
             });
             dialog.setOnLobbyAction(() -> {
                 eventBus.publish(new LeaveLobbyRequestEvent(currentLobbyId));
                 sceneManager.switchToScene(SceneManager.SceneType.LOBBY);
                 chatComponentController.setInGame(false);
+                cleanup();
             });
             StackPane root = (StackPane) gameCanvas.getParent();
             root.getChildren().add(dialog.getView());
@@ -766,8 +768,6 @@ public class GameScreenController extends BaseController {
 
         playerManager.removePlayerUpdateListener(this::handlePlayerUpdate);
 
-        if (chatComponentController != null)
-            chatComponentController.cleanup();
         if (settingsDialog != null)
             settingsDialog.close();
         if (gameCanvas != null) {
@@ -780,6 +780,19 @@ public class GameScreenController extends BaseController {
                 Tooltip.uninstall(tooltip.getOwnerNode(), tooltip);
             }
             cardTooltips.clear();
+        }
+        if (timerComponent != null) {
+            timerComponent.stop();
+            timerComponent = null;
+        }
+        if (resourceOverviewDialog != null) {
+            resourceOverviewDialog.close();
+            resourceOverviewDialog = null;
+        }
+        if (currentTileTooltip != null) {
+            hideTileTooltip();
+            currentTileTooltip = null;
+            pendingTooltipCol = pendingTooltipRow = lastTooltipRow = lastTooltipCol = -1;
         }
         LOGGER.info("GameScreenController resources cleaned up");
     }

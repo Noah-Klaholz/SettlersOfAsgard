@@ -95,6 +95,10 @@ public class TileTooltip {
         tooltip.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         tooltip.getStyleClass().add("tile-tooltip");
     }
+
+    public void close() {
+        tooltip.hide();
+    }
     
     /**
      * Gets the tooltip object.

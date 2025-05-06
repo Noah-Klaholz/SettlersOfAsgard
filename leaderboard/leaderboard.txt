@@ -1,5 +1,5 @@
-noahklaholz2: 5217
-noahklaholz: 5035
+noahklaholz2: 5557
+noahklaholz: 5273
 odin: 725
 thor: 640
 noi: 572
@@ -9,8 +9,8 @@ loki: 402
 vincent: 382
 vincent2: 382
 freya: 334
+noah: 265
 vincent1: 220
 noh: 188
 vincent3: 50
 vincent4: 50
-noah: 50
