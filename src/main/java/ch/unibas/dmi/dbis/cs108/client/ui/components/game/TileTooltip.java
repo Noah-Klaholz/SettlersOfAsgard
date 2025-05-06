@@ -96,10 +96,15 @@ public class TileTooltip {
         tooltip.getStyleClass().add("tile-tooltip");
     }
 
+    /**
+     * Closes all resources for the tooltip and hides it.
+     */
     public void close() {
         tooltip.hide();
+        tooltip.getGraphic().setVisible(false);
+        tooltip.getGraphic().setManaged(false);
     }
-    
+
     /**
      * Gets the tooltip object.
      * @return The JavaFX tooltip

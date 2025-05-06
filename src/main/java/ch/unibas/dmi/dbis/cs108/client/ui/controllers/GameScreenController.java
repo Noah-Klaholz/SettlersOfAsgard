@@ -683,6 +683,11 @@ public class GameScreenController extends BaseController {
                     hideTileTooltip();
                 }
             });
+
+
+            hideTileTooltip();
+            currentTileTooltip = null;
+            pendingTooltipCol = pendingTooltipRow = lastTooltipRow = lastTooltipCol = -1;
         }
 
         // Hide any visible tile tooltip and cancel tooltip delay
@@ -790,8 +795,8 @@ public class GameScreenController extends BaseController {
             resourceOverviewDialog = null;
         }
         if (currentTileTooltip != null) {
+            currentTileTooltip.close();
             hideTileTooltip();
-            currentTileTooltip = null;
             pendingTooltipCol = pendingTooltipRow = lastTooltipRow = lastTooltipCol = -1;
         }
         LOGGER.info("GameScreenController resources cleaned up");
@@ -1057,6 +1062,9 @@ public class GameScreenController extends BaseController {
         tooltip.show(gameCanvas.getScene().getWindow(), screen.getX(), screen.getY());
     }
 
+    /**
+     * Hides the currently displayed tile tooltip.
+     */
     private void hideTileTooltip() {
         if (currentTileTooltip != null) {
             currentTileTooltip.getTooltip().hide();
