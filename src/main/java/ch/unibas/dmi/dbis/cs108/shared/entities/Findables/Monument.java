@@ -243,6 +243,11 @@ public class Monument extends FindableEntity {
         return (Monument) copyTo(clone);
     }
 
+    /**
+     * A class representing a pair of coordinates defined by x and y values.
+     * This class is immutable and provides an implementation for equals and hashCode
+     * methods, making it suitable for use in collections that rely on these methods.
+     */
     public static class Coordinates {
         public final int x;
         public final int y;

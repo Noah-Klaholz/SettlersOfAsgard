@@ -30,6 +30,9 @@ public class StructureBehaviorRegistry {
         initializeBehaviors();
     }
 
+    /**
+     * Initializes behavior based on  type.
+     */
     private void initializeBehaviors() {
         registerBehavior("Rune Table", (structure, gameState, player) -> {
             if (player.getEnergy() < 4) {
