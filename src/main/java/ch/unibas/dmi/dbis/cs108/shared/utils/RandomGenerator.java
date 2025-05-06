@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 
 public class RandomGenerator {
+    /** Object of the type random */
     private static final Random RANDOM = new Random();
 
     /**

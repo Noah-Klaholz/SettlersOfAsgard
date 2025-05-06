@@ -18,16 +18,25 @@ import java.util.UUID;
  * Player class is responsible for creating a player object
  */
 public class Player {
-    //private final String id;
+    /** The UUID of the player */
     private final UUID playerID;
+    /** The name of the player */
     private String name;
+    /** The amount of runes the player has */
     private int runes;
+    /** The amount of energy the player has */
     private int energy;
+    /** The list of owned tiles*/
     private List<Tile> ownedTiles = new ArrayList<>();
+    /** The list of artifacts */
     private List<Artifact> artifacts = new ArrayList<>();
+    /** The list of purchasable entities */
     private List<PurchasableEntity> purchasableEntities = new ArrayList<>();
+    /** The list of monuments */
     private List<Monument> monuments = new ArrayList<>();
+    /**  The status of the player */
     private Status status;
+    /** The number of tiles the player has bought this round */
     private int roundBoughtTiles;
 
     /**
@@ -93,6 +102,11 @@ public class Player {
         status.buff(buff, value);
     }
 
+    /**
+     * Checks if the player is debuffable.
+     *
+     * @return true if the player is debuffable.
+     */
     public boolean isDebuffable() {
         return status.get(Status.BuffType.DEBUFFABLE) == 1.0;
     }
