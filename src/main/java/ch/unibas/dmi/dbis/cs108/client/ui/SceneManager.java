@@ -100,6 +100,9 @@ public class SceneManager {
      * @param sceneType Target scene type
      */
     private void switchToSceneInternal(SceneType sceneType) {
+        if (sceneType == SceneType.GAME) {
+            clearCache(sceneType);
+        }
         NodeHolder holder = nodeCache.computeIfAbsent(sceneType, this::loadNodeAndController);
         if (holder == null || holder.getNode() == null) {
             LOGGER.severe("Failed to load or retrieve node holder for scene: " + sceneType);
@@ -133,6 +136,14 @@ public class SceneManager {
             });
             fadeOut.play();
         }
+    }
+
+    /**
+     * Removes the cached node and controller for the given scene type.
+     * Use this to force a reload of the scene/controller on next switch.
+     */
+    public void clearCache(SceneType sceneType) {
+        nodeCache.remove(sceneType);
     }
 
     /**

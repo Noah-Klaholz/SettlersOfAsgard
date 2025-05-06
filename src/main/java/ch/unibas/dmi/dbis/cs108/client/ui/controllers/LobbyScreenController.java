@@ -544,10 +544,12 @@ public class LobbyScreenController extends BaseController {
      * Handles notification that the game has started for the current lobby.
      */
     private void handleGameStarted(GameStartedEvent event) {
-        // Objects.requireNonNull(event, "GameStart edEvent cannot be null");
+        Objects.requireNonNull(event, "GameStartedEvent cannot be null");
         LOGGER.info("Game started for lobby: " + currentLobbyId + ". Switching to game screen.");
         GameApplication.setPlayers(playersInCurrentLobby.stream().toList());
         Platform.runLater(() -> {
+            // Clear the cached GameScreenController so it reloads fresh every time
+            sceneManager.clearCache(SceneManager.SceneType.GAME);
             sceneManager.switchToScene(SceneManager.SceneType.GAME);
         });
     }
@@ -1032,3 +1034,4 @@ public class LobbyScreenController extends BaseController {
         }
     }
 }
+
