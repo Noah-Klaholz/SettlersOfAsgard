@@ -9,10 +9,15 @@ import ch.unibas.dmi.dbis.cs108.shared.game.Player;
  * Provides flexible storage and validation for different parameter types.
  */
 public class StatueParameters {
+    /** Player object */
     private Player targetPlayer;
+    /** x-coordinate */
     private Integer x;
+    /** y-coordinate */
     private Integer y;
+    /** structure parameter object */
     private Structure structure;
+    /** artifact parameter object */
     private Artifact artifact;
 
     /**

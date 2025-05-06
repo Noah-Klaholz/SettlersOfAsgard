@@ -33,10 +33,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class StatueBehaviorRegistry {
 
-    // Map: Statue Name -> (Map: Effect Type -> Behavior)
+    /** Map: Statue Name -> (Map: Effect Type -> Behavior) */
     private final Map<String, Map<StatueEffectType, StatueBehavior>> behaviors = new HashMap<>();
-    // Map: Statue Name -> (Map: Effect Type -> Parameter Requirements)
+    /** Map: Statue Name -> (Map: Effect Type -> Parameter Requirements) */
     private final Map<String, Map<StatueEffectType, StatueParameterRequirement>> requirements = new HashMap<>();
+    /** Object of type random */
     private final Random random = new Random();
 
     /**
