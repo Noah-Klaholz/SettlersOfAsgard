@@ -26,7 +26,7 @@ public class ResourceOverviewDialog extends UIComponent<StackPane> {
     private final ResourceLoader resourceLoader;
     private VBox content;
     ScrollPane scrollPane;
-    private final Map<String, Color> playerColors;
+    private Map<String, Color> playerColors;
 
     public ResourceOverviewDialog(ResourceLoader resourceLoader, Map<String, Color> playerColors) {
         super("");
@@ -98,8 +98,7 @@ public class ResourceOverviewDialog extends UIComponent<StackPane> {
 
     public void updatePlayers(List<Player> players, String currentTurnPlayer, Map<String, Color> playerColors) {
         // Update player colors
-        this.playerColors.clear();
-        this.playerColors.putAll(playerColors);
+        this.playerColors = playerColors;
         // Clear existing player rows
         VBox playerList = (VBox) scrollPane.getContent();
         playerList.getChildren().clear();
