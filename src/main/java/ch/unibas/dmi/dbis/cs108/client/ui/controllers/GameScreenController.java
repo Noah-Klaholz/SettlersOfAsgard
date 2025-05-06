@@ -10,6 +10,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.WinScreenDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.GridAdjustmentManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.ResourceOverviewDialog;
+import ch.unibas.dmi.dbis.cs108.client.ui.components.game.StatueConfirmationDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.StatueSelectionPopup;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.TileTooltip;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.TimerComponent;
@@ -140,6 +141,8 @@ public class GameScreenController extends BaseController {
     private int pendingTooltipRow = -1;
     private int pendingTooltipCol = -1;
 
+    private StatueConfirmationDialog statueConfirmationDialog;
+
     /*
      * --------------------------------------------------
      * FXML‑injected UI elements
@@ -221,6 +224,9 @@ public class GameScreenController extends BaseController {
 
         initialiseSettingsDialog();
         initialiseChatComponent();
+
+        // Initialize the statue confirmation dialog
+        statueConfirmationDialog = new StatueConfirmationDialog(resourceLoader);
 
         Logger.getGlobal().info("GameScreenController initialized");
     }
@@ -618,7 +624,8 @@ public class GameScreenController extends BaseController {
         // Remove event handlers added via addEventHandler (for all event types)
         gameCanvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, e -> handleCanvasClick(e.getX(), e.getY()));
         gameCanvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            if (e.getClickCount() == 2) handleCanvasDoubleClick(e.getX(), e.getY());
+            if (e.getClickCount() == 2)
+                handleCanvasDoubleClick(e.getX(), e.getY());
         });
         gameCanvas.removeEventHandler(MouseEvent.MOUSE_ENTERED_TARGET, e -> handleCanvasEntered(e.getX(), e.getY()));
         gameCanvas.removeEventHandler(MouseEvent.MOUSE_MOVED, e -> handleCanvasMouseMove(e.getX(), e.getY()));
@@ -696,8 +703,10 @@ public class GameScreenController extends BaseController {
 
         // Optionally, hide or disable the canvas and overlays
         gameCanvas.setDisable(true);
-        if (backgroundCanvas != null) backgroundCanvas.setDisable(true);
-        if (overlayCanvas != null) overlayCanvas.setDisable(true);
+        if (backgroundCanvas != null)
+            backgroundCanvas.setDisable(true);
+        if (overlayCanvas != null)
+            overlayCanvas.setDisable(true);
 
         // Optionally, hide the canvas visually (uncomment if you want it invisible)
         // gameCanvas.setVisible(false);
@@ -906,7 +915,7 @@ public class GameScreenController extends BaseController {
             clearHighlight();
             highlightedTile = null;
             cancelTooltipDelay(); // Cancel any pending tooltip
-            hideTileTooltip();    // Hide any visible tooltip
+            hideTileTooltip(); // Hide any visible tooltip
         });
 
         /*
@@ -1058,7 +1067,8 @@ public class GameScreenController extends BaseController {
         // Convert canvas coordinates to screen coordinates
         Point2D screen = gameCanvas.localToScreen(px + 16, py + 16);
 
-        // Show the tooltip at the calculated position - no delay here since we've already delayed
+        // Show the tooltip at the calculated position - no delay here since we've
+        // already delayed
         tooltip.show(gameCanvas.getScene().getWindow(), screen.getX(), screen.getY());
     }
 
@@ -1147,34 +1157,32 @@ public class GameScreenController extends BaseController {
 
                     // --- Jörmungandr (ID 30) Specific Interactions ---
                     if (entityId == 30) {
-                        // Always allow Upgrade if not max level (assuming max level 3 for now)
-                        if (statue.getLevel() < 3) {
-                            MenuItem upgradeItem = new MenuItem(
-                                    "Upgrade Statue (Cost: " + statue.getUpgradePrice() + " Runes)");
-                            upgradeItem.setOnAction(e -> levelUpStatue(clickedTile));
-                            // Disable if player cannot afford
-                            upgradeItem.setDisable(getPlayerRunes() < statue.getUpgradePrice());
-                            contextMenu.getItems().add(upgradeItem);
-                        }
+                        // Add menu items for Jörmungandr interactions
+                        MenuItem upgradeItem = new MenuItem("Upgrade Statue");
+                        upgradeItem.setOnAction(e -> handleJormungandrUpgrade(clickedTile, statue));
+                        contextMenu.getItems().add(upgradeItem);
 
-                        // Allow "Make Deal" at Level 2
-                        if (statue.getLevel() == 2) {
-                            MenuItem dealItem = new MenuItem("Make Deal (Sacrifice)");
+                        // Add "Make Deal" option if the statue is upgraded to level 2 or higher
+                        if (statue.getLevel() >= 2) {
+                            MenuItem dealItem = new MenuItem("Make a Deal");
                             dealItem.setOnAction(e -> initiateJormungandrDeal(clickedTile));
-                            // Add cost check if deal has a rune cost
                             contextMenu.getItems().add(dealItem);
                         }
-                        // Add Blessing action if Level 3 and blessing exists
-                        // if (statue.getLevel() == 3) { ... }
+
+                        // Add info menu item
+                        MenuItem infoItem = new MenuItem("Statue Info");
+                        infoItem.setOnAction(e -> showJormungandrInfo(statue));
+                        contextMenu.getItems().add(infoItem);
                     }
                     // --- Add other statue interactions here using else if (entityId == ...) ---
                     // else if (entityId == 31) { /* Freyr interactions */ }
 
                     // Show context menu if it has items
                     if (!contextMenu.getItems().isEmpty()) {
-                        // Convert canvas coordinates to screen coordinates for the menu
-                        Point2D screenCoords = gameCanvas.localToScreen(px, py);
-                        contextMenu.show(gameCanvas.getScene().getWindow(), screenCoords.getX(), screenCoords.getY());
+                        // Calculate position for the context menu
+                        double screenX = gameCanvas.localToScreen(px, py).getX();
+                        double screenY = gameCanvas.localToScreen(px, py).getY();
+                        contextMenu.show(gameCanvas, screenX, screenY);
                     }
                 }
             }
@@ -1516,7 +1524,8 @@ public class GameScreenController extends BaseController {
                 double scaledHeight = image.getHeight() * scale;
 
                 // Draw image centered in the hex
-                gc.drawImage(image, centerX - scaledWidth / 2, centerY - 3 * scaledHeight / 4, scaledWidth, scaledHeight);
+                gc.drawImage(image, centerX - scaledWidth / 2, centerY - 3 * scaledHeight / 4, scaledWidth,
+                        scaledHeight);
             }
 
             // Restore graphics state
@@ -2136,7 +2145,8 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Updates a single card in the artifact hand with the correct image using getCardDetails
+     * Updates a single card in the artifact hand with the correct image using
+     * getCardDetails
      * (isCard=true).
      * Uses a cached red placeholder on failure.
      *
@@ -2556,6 +2566,7 @@ public class GameScreenController extends BaseController {
         if (gameState == null || localPlayer == null)
             return;
 
+        // Get list of other players
         List<String> otherPlayerNames = gameState.getPlayers().stream()
                 .map(Player::getName)
                 .filter(name -> !name.equals(localPlayer.getName()))
@@ -2563,6 +2574,13 @@ public class GameScreenController extends BaseController {
 
         if (otherPlayerNames.isEmpty()) {
             showNotification("No other players to target.");
+            return;
+        }
+
+        // First validation - Check if player has at least one structure to sacrifice
+        int structureCount = countPlayerStructures(localPlayer.getName());
+        if (structureCount == 0) {
+            showNotification("You don't have any structures to sacrifice for the deal.");
             return;
         }
 
@@ -2575,22 +2593,320 @@ public class GameScreenController extends BaseController {
         Optional<String> result = dialog.showAndWait();
 
         result.ifPresent(selectedPlayerName -> {
-            // Confirmation Dialog
-            Alert confirmation = new Alert(AlertType.CONFIRMATION);
-            confirmation.setTitle("Confirm Jörmungandr's Deal");
-            confirmation.setHeaderText("Confirm Sacrifice and Attack");
-            confirmation.setContentText("This will destroy 1 random structure of " + selectedPlayerName +
-                    " and sacrifice 1 random structure of your own.\n\nProceed?");
+            // Check if target player has structures
+            int targetStructureCount = countPlayerStructures(selectedPlayerName);
+            if (targetStructureCount == 0) {
+                showNotification("Target player has no structures to destroy.");
+                return;
+            }
 
-            Optional<ButtonType> confirmationResult = confirmation.showAndWait();
+            // Create a StatueDetailsWrapper for Jörmungandr
+            GameEntity jormungandr = tile.getEntity();
+            if (!(jormungandr instanceof Statue)) {
+                LOGGER.severe("Entity is not a Statue: " + jormungandr);
+                return;
+            }
 
-            if (confirmationResult.isPresent() && confirmationResult.get() == ButtonType.OK) {
-                LOGGER.info("Jörmungandr Deal initiated against " + selectedPlayerName);
-                showNotification("Jörmungandr's deal initiated against " + selectedPlayerName + "...");
+            // Create custom description for Jörmungandr's deal
+            String description = "This will destroy 1 random structure of " + selectedPlayerName +
+                    " and sacrifice 1 random structure of your own.\n\nProceed?";
+
+            // Use StatueConfirmationDialog instead of Alert
+            showJormungandrDealConfirmation((Statue) jormungandr, selectedPlayerName, tile, description);
+        });
+    }
+
+    /**
+     * Shows a confirmation dialog for Jörmungandr's deal using the
+     * StatueConfirmationDialog component.
+     * 
+     * @param statue           The Jörmungandr statue
+     * @param targetPlayerName The name of the target player
+     * @param tile             The tile containing the statue
+     * @param description      Description of the deal
+     */
+    private void showJormungandrDealConfirmation(Statue statue, String targetPlayerName, Tile tile,
+            String description) {
+        // Initialize the dialog if not already done
+        if (statueConfirmationDialog == null) {
+            statueConfirmationDialog = new StatueConfirmationDialog(resourceLoader);
+        }
+
+        // Configure the confirmation dialog for Jörmungandr's deal
+        statueConfirmationDialog
+                .withTitle("Confirm Jörmungandr's Deal")
+                .withDescription(description)
+                .withConfirmButtonText("Make Deal")
+                .withoutCost(); // No direct cost since we sacrifice a structure
+
+        // Show the dialog and handle the result
+        Window window = gameCanvas.getScene().getWindow();
+        statueConfirmationDialog.setOnShown(event -> {
+            // Center the dialog
+            double centerX = window.getX() + (window.getWidth() / 2) - (statueConfirmationDialog.getWidth() / 2);
+            double centerY = window.getY() + (window.getHeight() / 2) - (statueConfirmationDialog.getHeight() / 2);
+            statueConfirmationDialog.setX(centerX);
+            statueConfirmationDialog.setY(centerY);
+        });
+
+        // Set the callback for when the user makes a decision
+        statueConfirmationDialog.resultCallback = confirmed -> {
+            if (confirmed) {
+                // Second validation - Check if conditions are still valid right before
+                // execution
+                if (!validateJormungandrDealRequirements(localPlayer.getName(), targetPlayerName)) {
+                    return;
+                }
+
+                // Execute the deal since validation passed
+                executeJormungandrDeal(tile, targetPlayerName);
             } else {
                 LOGGER.info("Jörmungandr Deal cancelled.");
             }
+        };
+
+        // Show the dialog
+        statueConfirmationDialog.show(window);
+    }
+
+    /**
+     * Validates that both the player and target still have structures available for
+     * the deal.
+     * 
+     * @param playerName       The name of the player making the deal
+     * @param targetPlayerName The name of the target player
+     * @return true if both players have structures, false otherwise
+     */
+    private boolean validateJormungandrDealRequirements(String playerName, String targetPlayerName) {
+        // Check if player still has structures to sacrifice
+        int playerStructureCount = countPlayerStructures(playerName);
+        if (playerStructureCount == 0) {
+            showNotification("Cannot complete deal: You no longer have structures to sacrifice.");
+            return false;
+        }
+
+        // Check if target player still has structures to destroy
+        int targetStructureCount = countPlayerStructures(targetPlayerName);
+        if (targetStructureCount == 0) {
+            showNotification("Cannot complete deal: Target player no longer has structures to destroy.");
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Executes the Jörmungandr deal after all validations have passed.
+     * 
+     * @param tile             The tile containing the Jörmungandr statue
+     * @param targetPlayerName The name of the target player
+     */
+    private void executeJormungandrDeal(Tile tile, String targetPlayerName) {
+        try {
+            LOGGER.info("Executing Jörmungandr Deal against " + targetPlayerName);
+
+            // Create parameters for the deal (target player)
+            String params = "player:" + targetPlayerName;
+
+            // Send UseStatueUIEvent with the parameters
+            eventBus.publish(new UseStatueUIEvent(tile.getX(), tile.getY(), tile.getEntity().getId(), params));
+
+            showNotification("Jörmungandr's deal initiated against " + targetPlayerName + ".");
+        } catch (Exception e) {
+            LOGGER.severe("Error executing Jörmungandr deal: " + e.getMessage());
+            showNotification("Error executing deal. Please try again.");
+        }
+    }
+
+    /**
+     * Handles the placement of a statue on a tile.
+     * 
+     * @param tile        The target tile
+     * @param statue      The statue entity to place
+     * @param cardDetails The card details of the statue
+     * @param row         The row index of the tile
+     * @param col         The column index of the tile
+     */
+    private void handleStatuePlacement(Tile tile, Statue statue, CardDetails cardDetails, int row, int col) {
+        // Check if player already has a statue
+        if (hasPlacedStatue) {
+            showNotification("You can only place one statue in the world.");
+            return;
+        }
+
+        // Check if player has enough resources
+        if (!canAffordCard("statue")) {
+            showNotification("Not enough runes to place this statue.");
+            return;
+        }
+
+        // Handle specific statue placement logic
+        if (statue.getId() == 30) {
+            // Initialize the dialog if not already done
+            if (statueConfirmationDialog == null) {
+                statueConfirmationDialog = new StatueConfirmationDialog(resourceLoader);
+            }
+
+            // Create a wrapper for Jörmungandr to use with StatueConfirmationDialog
+            // This is a simplified version since we don't have access to the full
+            // StatueDetailsWrapper
+            Image statueImage = resourceLoader.getCardImage(statue.getId());
+
+            Window window = gameCanvas.getScene().getWindow();
+
+            // Configure the confirmation dialog
+            statueConfirmationDialog
+                    .withTitle("Place Jörmungandr")
+                    .withDescription("Place Jörmungandr at (" + col + ", " + row + ")?\n\n" +
+                            "Jörmungandr represents inevitable destruction and rebirth. " +
+                            "Once upgraded, you can make deals to destroy enemy structures.")
+                    .withCost("Cost: " + cardDetails.getPrice() + " runes")
+                    .withConfirmButtonText("Place Statue");
+
+            // Show the dialog and handle the result
+            statueConfirmationDialog.setOnShown(event -> {
+                // Center the dialog
+                double centerX = window.getX() + (window.getWidth() / 2) - (statueConfirmationDialog.getWidth() / 2);
+                double centerY = window.getY() + (window.getHeight() / 2) - (statueConfirmationDialog.getHeight() / 2);
+                statueConfirmationDialog.setX(centerX);
+                statueConfirmationDialog.setY(centerY);
+            });
+
+            // Set the callback for when the user makes a decision
+            statueConfirmationDialog.resultCallback = confirmed -> {
+                if (confirmed) {
+                    // Place the statue
+                    // ToDo: Implement the actual placement logic
+                    showNotification("Jörmungandr placed at (" + col + ", " + row + ").");
+                }
+            };
+
+            // Show the dialog
+            statueConfirmationDialog.show(window);
+        } else {
+            // Logic for other statues
+            // ToDo: Implement other statue placement logic
+            showNotification(statue.getName() + " placed at (" + col + ", " + row + ").");
+        }
+    }
+
+    /**
+     * Handles the upgrade action for Jörmungandr statue.
+     *
+     * @param tile   The tile containing the statue
+     * @param statue The statue entity
+     */
+    private void handleJormungandrUpgrade(Tile tile, Statue statue) {
+        // Calculate upgrade cost - use the upgradePrice from the statue entity
+        int upgradeCost = statue.getPrice(); // Use default price if upgrade price is not available
+
+        // Check if player has enough runes
+        if (gamePlayer.getRunes() < upgradeCost) {
+            showNotification("Not enough runes to upgrade Jörmungandr. Required: " + upgradeCost);
+            return;
+        }
+
+        // Initialize the dialog if not already done
+        if (statueConfirmationDialog == null) {
+            statueConfirmationDialog = new StatueConfirmationDialog(resourceLoader);
+        }
+
+        String nextLevelEffect;
+        if (statue.getLevel() == 1) {
+            nextLevelEffect = "At Level 2, you can make a deal: Destroy 1 random structure of a chosen player in exchange for sacrificing 1 of your own structures.";
+        } else {
+            nextLevelEffect = "Maximum level reached";
+        }
+
+        // Configure the confirmation dialog
+        statueConfirmationDialog
+                .withTitle("Upgrade Jörmungandr")
+                .withDescription("Upgrade Jörmungandr to Level " + (statue.getLevel() + 1) + "?\n\n" + nextLevelEffect)
+                .withCost("Cost: " + upgradeCost + " runes")
+                .withConfirmButtonText("Upgrade");
+
+        Window window = gameCanvas.getScene().getWindow();
+
+        // Show the dialog and handle the result
+        statueConfirmationDialog.setOnShown(event -> {
+            // Center the dialog
+            double centerX = window.getX() + (window.getWidth() / 2) - (statueConfirmationDialog.getWidth() / 2);
+            double centerY = window.getY() + (window.getHeight() / 2) - (statueConfirmationDialog.getHeight() / 2);
+            statueConfirmationDialog.setX(centerX);
+            statueConfirmationDialog.setY(centerY);
         });
+
+        // Set the callback for when the user makes a decision
+        statueConfirmationDialog.resultCallback = confirmed -> {
+            if (confirmed) {
+                try {
+                    // Verify the player still has enough runes right before upgrading
+                    if (gamePlayer.getRunes() < upgradeCost) {
+                        showNotification("Not enough runes to upgrade Jörmungandr. Required: " + upgradeCost);
+                        return;
+                    }
+
+                    // Publish event to upgrade the statue
+                    eventBus.publish(new UpgradeStatueUIEvent(statue.getId(), tile.getX(), tile.getY()));
+                    showNotification("Upgrading Jörmungandr...");
+                } catch (Exception e) {
+                    LOGGER.severe("Error upgrading Jörmungandr: " + e.getMessage());
+                    showNotification("Error upgrading statue. Please try again.");
+                }
+            }
+        };
+
+        // Show the dialog
+        statueConfirmationDialog.show(window);
+    }
+
+    /**
+     * Shows detailed information about the Jörmungandr statue.
+     *
+     * @param statue The Jörmungandr statue
+     */
+    private void showJormungandrInfo(Statue statue) {
+        Alert info = new Alert(AlertType.INFORMATION);
+        info.setTitle("Jörmungandr");
+        info.setHeaderText("The Midgard Serpent (Level " + statue.getLevel() + ")");
+
+        String description = "Jörmungandr, also known as the Midgard Serpent, is a giant sea serpent, destined to kill Thor during Ragnarök. "
+                +
+                "He wraps around the world, biting his own tail, symbolizing the cyclicality of life and the boundaries of the known world.";
+
+        String abilities = "\n\nAbilities:";
+        if (statue.getLevel() >= 2) {
+            abilities += "\n• Make a Deal: Destroys 1 random structure of a chosen player; sacrifices 1 structure of your own.";
+        } else {
+            abilities += "\n• No abilities available yet. Upgrade to unlock.";
+        }
+
+        info.setContentText(description + abilities);
+        info.showAndWait();
+    }
+
+    /**
+     * Counts the number of structures owned by a player.
+     *
+     * @param playerName The name of the player
+     * @return The number of structures
+     */
+    private int countPlayerStructures(String playerName) {
+        int count = 0;
+        for (int r = 0; r < HEX_ROWS; r++) {
+            for (int c = 0; c < HEX_COLS; c++) {
+                Tile tile = getTile(r, c);
+                if (tile != null &&
+                        tile.getOwner() != null &&
+                        tile.getOwner().equals(playerName) &&
+                        tile.hasEntity() &&
+                        tile.getEntity().isStructure() &&
+                        !tile.getEntity().isStatue()) {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
 }
