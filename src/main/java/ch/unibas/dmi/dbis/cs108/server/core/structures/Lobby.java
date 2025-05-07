@@ -6,9 +6,11 @@ import ch.unibas.dmi.dbis.cs108.server.core.logic.GameLogic;
 import ch.unibas.dmi.dbis.cs108.server.core.model.Leaderboard;
 import ch.unibas.dmi.dbis.cs108.server.networking.ClientHandler;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
+import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -164,6 +166,9 @@ public class Lobby implements GameEventNotifier {
             return false;
         }
         if (!players.isEmpty() && players.contains(player)) {
+            if (status == LobbyStatus.IN_GAME) {
+                endGame();
+            }
             players.remove(player);
             logger.info(player + " has been removed from Lobby: " + id);
             return true;
@@ -241,7 +246,7 @@ public class Lobby implements GameEventNotifier {
 
         this.gameLogic = new GameLogic(this);
         gameLogic.startGame(playerNames);
-
+        broadcastMessage(gameLogic.getGameState().createDetailedStatusMessage());
         startTurnScheduler();
         return true;
     }

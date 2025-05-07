@@ -14,3 +14,5 @@ vincent1: 220
 noh: 188
 vincent3: 50
 vincent4: 50
+vincen2: 50
+vincen1: 40

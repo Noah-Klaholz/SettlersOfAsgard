@@ -63,6 +63,10 @@ public interface CommunicationAPI {
              */
             REGISTER("RGST"),
             /**
+             * Player reconnects after a connection loss.
+             */
+            RECONNECT("RECO"),
+            /**
              * Player changes their nickname
              */
             CHANGENAME("CHAN"),

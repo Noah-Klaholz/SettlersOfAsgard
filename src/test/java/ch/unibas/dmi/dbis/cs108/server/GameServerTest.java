@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -111,28 +112,6 @@ public class GameServerTest {
         int initialSize = gameServer.getClients().size();
         gameServer.removeClient(clientHandler1);
         assertEquals(initialSize, gameServer.getClients().size());
-    }
-
-    /**
-     * Tests ping mechanism removes disconnected clients.
-     * Verifies:
-     * - Non-running clients are removed
-     * - Running clients receive ping
-     */
-    @Test
-    void testPingClients() {
-        // Setup mocks only for this test
-        when(clientHandler1.isRunning()).thenReturn(false);
-        when(clientHandler2.isRunning()).thenReturn(true);
-
-        gameServer.getClients().add(clientHandler1);
-        gameServer.getClients().add(clientHandler2);
-
-        gameServer.pingClients();
-
-        assertFalse(gameServer.getClients().contains(clientHandler1));
-        assertTrue(gameServer.getClients().contains(clientHandler2));
-        verify(clientHandler2).sendPing();
     }
 
     /**

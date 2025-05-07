@@ -307,6 +307,19 @@ public class CommandHandler {
     }
 
     /**
+     * Handles the reconnection of the client.
+     *
+     * @return true if the reconnection was successful, false otherwise.
+     */
+    public boolean handleReconnect() {
+        if (ch.isDisconnected) {
+            ch.markConnected();
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * This method handles the sending of a private message to another player.
      *
      * @param cmd the transmitted command
