@@ -446,6 +446,24 @@ public class AudioManager {
     }
 
     /**
+     * Gets the current volume level.
+     *
+     * @return the current volume level (0.0 to 1.0)
+     */
+    public double getVolume() {
+        return volume;
+    }
+
+    /**
+     * Gets the current mute state.
+     *
+     * @return true if audio is muted, false otherwise
+     */
+    public boolean isMuted() {
+        return muted;
+    }
+
+    /**
      * Gets the Set of available music tracks.
      *
      * @return a Set of music track names

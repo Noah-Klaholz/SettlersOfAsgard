@@ -53,6 +53,10 @@ public class SettingsDialog extends UIComponent<StackPane> {
         StylesheetLoader.loadDialogStylesheets(this.view);
         StylesheetLoader.loadStylesheet(this.view, "/css/settings-dialog.css");
 
+        // Set up audio properties
+        this.volumeProperty.set(AudioManager.getInstance().getVolume() * 100);
+        this.muteProperty.set(AudioManager.getInstance().isMuted());
+
         this.view.setAlignment(Pos.CENTER);
         dialogContent = createDialogContent();
         StackPane.setAlignment(dialogContent, Pos.CENTER);
