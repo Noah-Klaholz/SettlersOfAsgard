@@ -130,7 +130,6 @@ public class LobbyScreenController extends BaseController {
             errorMessage.setVisible(false);
             errorMessage.setManaged(false);
             requestLobbyList();
-            startMusic();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Critical error during LobbyScreenController initialization", e);
             showError("Failed to initialize lobby screen. Please try returning to the main menu.");
@@ -138,19 +137,6 @@ public class LobbyScreenController extends BaseController {
             lobbyNameField.setDisable(true);
         }
         LOGGER.info("LobbyScreenController initialization complete.");
-    }
-
-    /**
-     * Starts the background music for the lobby screen.
-     */
-    private void startMusic() {
-        try {
-            AudioManager manager = AudioManager.getInstance();
-            String trackName = AudioTracks.Track.LOBBY_SCREEN_EPIC.getFileName();
-            manager.playMusic(trackName);
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Failed to start lobby screen music", e);
-        }
     }
 
     /**

@@ -93,25 +93,11 @@ public class MainMenuController extends BaseController {
             setupEventHandlers();
             setupChatComponent(); // Call this after localPlayer is set
             establishServerConnection();
-            startMusic();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Critical error during MainMenuController initialization", e);
             displayInitializationError("Error initializing main menu interface.");
         }
         LOGGER.info("MainMenuController initialization complete.");
-    }
-
-    /**
-     * Starts the background music for the main menu.
-     */
-    private void startMusic() {
-        try {
-            AudioManager manager = AudioManager.getInstance();
-            String trackName = AudioTracks.Track.MAIN_MENU_CHOIR.getFileName();
-            manager.playMusic(trackName);
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Failed to start main menu music", e);
-        }
     }
 
     /**

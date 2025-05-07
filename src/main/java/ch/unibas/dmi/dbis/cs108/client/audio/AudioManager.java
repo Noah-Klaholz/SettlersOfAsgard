@@ -199,7 +199,7 @@ public class AudioManager {
 
     /**
      * Lists all resource files in a directory path.
-     * Works both in development environment and in a JAR file.
+     * Works both in a development environment and in a JAR file.
      *
      * @param directoryPath the path to the directory in resources
      * @return a list of resource file paths
