@@ -141,14 +141,29 @@ public class GameServer {
 
     /**
      * Sends a ping message to all connected running clients.
+     * If the player is disconnected and should be removed, call the removeClient method.
+     * Else if the player is running, send ping.
+     * Else mark the player as disconnected.
      */
     public void pingClients() {
         for (ClientHandler client : clients) {
+            if (client.isDisconnected) {
+                if (client.shouldRemove()) {
+                    logger.info("Client " + client + " is disconnected. Removing from list.");
+                    removeClient(client);
+                }
+                continue;
+            }
             if (client.isRunning()) {
                 client.sendPing();
-            } else {
-                logger.info("Client " + client + " is not running. Removing from list.");
-                removeClient(client);
+            }
+            else {
+                logger.info("Client " + client.getPlayerName() + " is not running. Marking as disconnected.");
+                client.markDisconnected();
+                Lobby lobby = client.getCurrentLobby();
+                if (lobby != null) {
+                    lobby.broadcastMessage("DISC$" + client.getPlayerName()); // Notify the players in the lobby
+                }
             }
         }
     }

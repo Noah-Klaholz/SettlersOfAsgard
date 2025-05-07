@@ -63,6 +63,14 @@ public interface CommunicationAPI {
              */
             REGISTER("RGST"),
             /**
+             * Another player disconnects from the server.
+             */
+            DISCONNECT("DISC"),
+            /**
+             * Player reconnects after a connection loss.
+             */
+            RECONNECT("RECO"),
+            /**
              * Player changes their nickname
              */
             CHANGENAME("CHAN"),
@@ -170,10 +178,6 @@ public interface CommunicationAPI {
              * Player uses a field artifact
              */
             USEFIELDARTIFACT("USFA"),
-            /**
-             * Player disconnects from the game
-             */
-            DISCONNECT("DISC"),
             /**
              * Entity notifies player
              */

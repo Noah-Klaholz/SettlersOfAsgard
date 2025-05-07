@@ -23,55 +23,30 @@ import java.util.logging.Logger;
  * It also implements the CommunicationAPI interface to allow for communication with the server.
  */
 public class ClientHandler implements Runnable, CommunicationAPI {
-    /**
-     * Logger to log logging
-     */
+    /** Logger to log logging */
     private static final Logger logger = Logger.getLogger(ClientHandler.class.getName());
-
-    /**
-     * Reference to a CommandHandler
-     */
+    /** Reference to a CommandHandler */
     private final CommandHandler ch;
-
-    /**
-     * Reference to the GameServer
-     */
+    /** reference to the server */
     protected GameServer server;
-
-    /**
-     * Reference to the current lobby of the client
-     */
+    /** Reference to the current lobby of the client */
     protected Lobby currentLobby = null;
-
-    /**
-     * Reference to the local player of the client
-     */
+    /** Reference to the local player of the client */
     protected Player localPlayer = null;
-
-    /**
-     * The socket for the client connection
-     */
+    /** The socket for the client connection */
     private Socket socket;
-
-    /**
-     * PrintWriter for sending messages to the client
-     */
+    /** PrintWriter for sending messages to the client */
     private PrintWriter out;
-
-    /**
-     * BufferedReader for receiving messages from the client
-     */
+    /** BufferedReader for receiving messages from the client */
     private BufferedReader in;
-
-    /**
-     * Last time a ping was sent
-     */
+    /** Last time a ping was sent */
     private long lastPingTime = System.currentTimeMillis();
-
-    /**
-     * Flag to indicate if the client handler is running
-     */
+    /** Flag to indicate if the client handler is running */
     private boolean running;
+    /** 0 if the player is connected, otherwise the currentMillis of the last disconnection */
+    public long lastDisconnectionTime;
+    /** A flag to indicate if the player is disconnected */
+    public boolean isDisconnected;
 
     /**
      * Constructor for the ClientHandler class.
@@ -84,6 +59,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         this.socket = socket;
         this.server = server;
         this.running = true;
+        this.isDisconnected = false;
         this.ch = new CommandHandler(this);
         try {
             socket.setSoTimeout(SETTINGS.Config.TIMEOUT.getValue()); // 5 second timeout
@@ -389,6 +365,10 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                 answer = false;
                 worked = ch.handleListPlayers(cmd);
                 break;
+            case RECONNECT:
+                answer = false;
+                worked = ch.handleReconnect();
+                break;
             case EXIT:
                 logger.info("Client sent an exit command.");
                 worked = ch.handleLeaveLobby();
@@ -398,5 +378,27 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         if (answer && worked) {
             sendMessage("OK$" + cmd); // Echo the command back to the client with an OK response
         }
+    }
+
+    public void markDisconnected() {
+        isDisconnected = true;
+        lastDisconnectionTime = System.currentTimeMillis();
+    }
+
+    public void markConnected() {
+        isDisconnected = false;
+        lastDisconnectionTime = 0;
+    }
+
+    /**
+     * This method checks if the clientHandler should be removed by the server.
+     * It checks if the difference of current time and last disconnection time is greater
+     * than the grace period (defined in settings).
+     *
+     * @return true if the clientHandler should be removed, false otherwise.
+     */
+    public boolean shouldRemove() {
+        long currentTime = System.currentTimeMillis();
+        return (currentTime - lastDisconnectionTime) > SETTINGS.Config.GRACE_PERIOD.getValue();
     }
 }

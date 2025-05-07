@@ -23,7 +23,8 @@ public class SETTINGS {
         MAX_STRUCTURES(6),
         MONUMENT_SIZE(33),
         ENTITY_SIZE(33), // Size of the monument
-        TURN_TIME(60); // Seconds
+        TURN_TIME(60), // Seconds
+        GRACE_PERIOD(30000); // Milliseconds
 
         private final int value;
 
