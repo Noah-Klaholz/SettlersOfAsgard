@@ -23,7 +23,7 @@ javadoc {
 
 javafx {
     version = "19.0.2.1"
-    modules = ['javafx.controls', 'javafx.fxml', 'javafx.base']
+    modules = ['javafx.controls', 'javafx.fxml', 'javafx.base', 'javafx.media']
 }
 
 sourceSets {
@@ -52,6 +52,7 @@ dependencies {
     implementation "org.openjfx:javafx-base:${javafx.version}"
     implementation "org.openjfx:javafx-controls:${javafx.version}"
     implementation "org.openjfx:javafx-fxml:${javafx.version}"
+    implementation "org.openjfx:javafx-media:${javafx.version}"
 }
 
 jacoco {
@@ -222,3 +223,4 @@ tasks.register('runGame', JavaExec) {
             '--add-modules', 'javafx.controls,javafx.fxml,javafx.base'
     ]
 }
+
