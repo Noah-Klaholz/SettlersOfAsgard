@@ -7,7 +7,7 @@ public class AudioTracks {
 
         // Music tracks
         MAIN_MENU_CHOIR("music_mainMenuChoir"),
-        MAIN_MENU_EPIC("music_mainMenuEpic"),
+        LOBBY_SCREEN_EPIC("music_mainMenuEpic"),
         GAME_BACKGROUND_PRIMARY("music_gameBackgroundPrimary"),
         GAME_BACKGROUND_SECONDARY("music_gameBackgroundSecondary"),
         UPBEAT_WINSCREEN("music_upbeatWinscreen");

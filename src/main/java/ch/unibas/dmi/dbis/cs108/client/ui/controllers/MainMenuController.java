@@ -106,11 +106,8 @@ public class MainMenuController extends BaseController {
      */
     private void startMusic() {
         try {
-            LOGGER.info("Starting main menu music...");
             AudioManager manager = AudioManager.getInstance();
-            LOGGER.info("Available music: " + manager.getAvailableMusic());
             String trackName = AudioTracks.Track.MAIN_MENU_CHOIR.getFileName();
-            LOGGER.info("Requesting to play: " + trackName);
             manager.playMusic(trackName);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Failed to start main menu music", e);
