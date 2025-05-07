@@ -1,5 +1,5 @@
-noahklaholz2: 6530
-noahklaholz: 5792
+noahklaholz2: 7153
+noahklaholz: 5920
 odin: 725
 thor: 640
 noi: 572

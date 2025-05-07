@@ -61,7 +61,7 @@ public class TileTooltip {
 
         // Entity information if present
         if (tile.hasEntity()) {
-            GameEntity entity = EntityRegistry.getGameEntityOriginalById(tile.getEntity().getId());
+            GameEntity entity = tile.getEntity();
 
             content.getChildren().add(new Separator());
 

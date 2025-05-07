@@ -621,6 +621,7 @@ public class GameScreenController extends BaseController {
         if (overlayCanvas != null)
             overlayCanvas.setDisable(true);
 
+
         // Remove event handlers added via addEventHandler (for all event types)
         gameCanvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, e -> handleCanvasClick(e.getX(), e.getY()));
         gameCanvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
