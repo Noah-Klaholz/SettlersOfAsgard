@@ -6,6 +6,7 @@ import ch.unibas.dmi.dbis.cs108.client.networking.events.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ServerCommandEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.EndTurnRequestEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.GameStartedEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyListResponseEvent;
@@ -284,6 +285,9 @@ public class CommunicationMediator {
                 new EventDispatcher.EventListener<ConnectionEvent>() {
                     @Override
                     public void onEvent(ConnectionEvent event) {
+                        if (event.getState() == ConnectionEvent.ConnectionState.DISCONNECTED) {
+                            UIEventBus.getInstance().publish(new GlobalChatEvent(event.getMessage(), "Server", GlobalChatEvent.ChatType.SYSTEM));
+                        }
                         UIEventBus.getInstance().publish(new ConnectionStatusEvent(event.getState(), event.getMessage()));
                     }
 
