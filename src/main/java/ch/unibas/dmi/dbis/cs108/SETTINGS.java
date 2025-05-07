@@ -25,7 +25,7 @@ public class SETTINGS {
         ENTITY_SIZE(33), // Size of the monument
         TURN_TIME(60), // Seconds
         GRACE_PERIOD(30000), // Milliseconds
-        AUDIO_CROSSFADE_DURATION_MS(1000); // Crossfade duration in ms
+        AUDIO_CROSSFADE_DURATION_MS(2500); // Crossfade duration in ms
 
         private final int value;
 
