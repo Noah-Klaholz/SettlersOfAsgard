@@ -5,7 +5,6 @@ public class AudioTracks {
         // Sound effects
         INTRO_EFFECT("track2"), // placeHolder
 
-
         // Music tracks
         MAIN_MENU_CHOIR("music_mainMenuChoir"),
         MAIN_MENU_EPIC("music_mainMenuEpic"),

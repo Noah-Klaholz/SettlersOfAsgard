@@ -1,5 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
+import ch.unibas.dmi.dbis.cs108.client.audio.AudioManager;
+import ch.unibas.dmi.dbis.cs108.client.audio.AudioTracks;
 import ch.unibas.dmi.dbis.cs108.client.core.PlayerIdentityManager;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
@@ -91,11 +93,28 @@ public class MainMenuController extends BaseController {
             setupEventHandlers();
             setupChatComponent(); // Call this after localPlayer is set
             establishServerConnection();
+            startMusic();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Critical error during MainMenuController initialization", e);
             displayInitializationError("Error initializing main menu interface.");
         }
         LOGGER.info("MainMenuController initialization complete.");
+    }
+
+    /**
+     * Starts the background music for the main menu.
+     */
+    private void startMusic() {
+        try {
+            LOGGER.info("Starting main menu music...");
+            AudioManager manager = AudioManager.getInstance();
+            LOGGER.info("Available music: " + manager.getAvailableMusic());
+            String trackName = AudioTracks.Track.MAIN_MENU_CHOIR.getFileName();
+            LOGGER.info("Requesting to play: " + trackName);
+            manager.playMusic(trackName);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Failed to start main menu music", e);
+        }
     }
 
     /**

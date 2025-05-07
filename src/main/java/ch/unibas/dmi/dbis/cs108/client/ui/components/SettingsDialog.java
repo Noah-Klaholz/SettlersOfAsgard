@@ -20,16 +20,24 @@ import java.util.logging.Logger;
  * including player name, audio settings, and connection status.
  */
 public class SettingsDialog extends UIComponent<StackPane> {
+    /** Logger for logging events */
     private static final Logger LOGGER = Logger.getLogger(SettingsDialog.class.getName());
+    /** Title of the settings dialog */
     private static final String SETTINGS_TITLE = "Game Settings";
-
+    /** The main VBOX of the dialog */
     private final VBox dialogContent;
+    /** The volume property for audio settings */
     private final SimpleDoubleProperty volumeProperty = new SimpleDoubleProperty(50);
+    /** The mute property for audio settings */
     private final BooleanProperty muteProperty = new SimpleBooleanProperty(false);
+    /** The player name property */
     private final StringProperty playerNameProperty = new SimpleStringProperty("Guest");
     private Runnable onSaveAction;
+    /** Boolean for connectionStatue */
     private boolean isConnected = false;
+    /** The connection status text */
     private String connectionStatusText = "Disconnected";
+    /** The main view of the dialog */
     private Label statusValueLabel; // Keep reference to update style class
 
     /**
@@ -200,7 +208,7 @@ public class SettingsDialog extends UIComponent<StackPane> {
     }
 
     /**
-     * Creates the buttons row for the dialog.
+     * Creates the button row for the dialog.
      *
      * @return HBox containing dialog buttons.
      */
