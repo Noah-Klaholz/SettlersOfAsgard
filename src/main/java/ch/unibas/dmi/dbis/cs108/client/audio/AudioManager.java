@@ -1,20 +1,32 @@
 package ch.unibas.dmi.dbis.cs108.client.audio;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
+import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import javafx.application.Platform;
 import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Singleton class to manage audio playback in the application.
  */
 public class AudioManager {
+    private static final Logger LOGGER = Logger.getLogger(AudioManager.class.getName());
+    private static final String SOUNDS_DIRECTORY = "/sounds";
+
     /** Singleton instance of AudioManager */
     private static AudioManager instance;
     /** Map of music tracks, keyed by their names */
@@ -33,10 +45,21 @@ public class AudioManager {
     private double volume = 0.5;
     /** Flag to indicate if audio is muted */
     private boolean muted = false;
+    /** Resource loader for loading audio files */
+    private final ResourceLoader resourceLoader = new ResourceLoader();
+    /** Flag to track if audio playback is available */
+    private boolean audioPlaybackAvailable = true;
 
     /** Private constructor to prevent instantiation */
     private AudioManager() {
-        preloadAudio();
+        try {
+            preloadAudio();
+            LOGGER.info("AudioManager initialized. Music tracks loaded: " + musicTracks.keySet());
+            LOGGER.info("AudioManager initialized. Sound effects loaded: " + soundEffects.keySet());
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error initializing AudioManager", e);
+            audioPlaybackAvailable = false;
+        }
     }
 
     /**
@@ -53,25 +76,184 @@ public class AudioManager {
 
     /**
      * Preloads audio files from the resources directory.
-     * This method scans the "sounds" directory for audio files and loads them into memory.
+     * This method uses the ResourceLoader to load audio files in a way that works
+     * both in development environment and when packaged in a JAR.
      */
     private void preloadAudio() {
-        File soundsDir = new File("src/main/resources/sounds");
-        if (!soundsDir.exists() || !soundsDir.isDirectory()) return;
+        LOGGER.info("Preloading audio from " + SOUNDS_DIRECTORY);
 
-        for (File file : Objects.requireNonNull(soundsDir.listFiles())) {
-            String name = file.getName();
-            if (name.startsWith("music_") && (name.endsWith(".wav") || name.endsWith(".mp3"))) {
-                String key = name.substring(0, name.length() - 4); // remove .wav
-                Media media = new Media(file.toURI().toString());
-                musicTracks.put(key, media);
-                musicTrackNames.add(key);
-            } else if (name.startsWith("effect_") && (name.endsWith(".wav") || name.endsWith(".mp3"))) {
-                String key = name.substring(0, name.length() - 4);
-                AudioClip clip = new AudioClip(file.toURI().toString());
-                soundEffects.put(key, clip);
+        try {
+            // Since we can't reliably list resources in a JAR, load directly from AudioTracks enum
+            loadTracksFromEnum();
+
+            // If no tracks were loaded from enum, try the directory listing approach
+            if (musicTracks.isEmpty() && soundEffects.isEmpty()) {
+                LOGGER.info("No tracks loaded from enum, trying directory listing");
+                loadTracksFromDirectory();
+            }
+
+            if (musicTracks.isEmpty() && soundEffects.isEmpty()) {
+                LOGGER.warning("No audio files could be loaded. Make sure audio files exist in the resources/sounds directory.");
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error preloading audio files", e);
+        }
+    }
+
+    /**
+     * Loads audio tracks defined in the AudioTracks enum using ResourceLoader.
+     */
+    private void loadTracksFromEnum() {
+        LOGGER.info("Loading audio tracks from AudioTracks enum");
+
+        for (AudioTracks.Track track : AudioTracks.Track.values()) {
+            String fileName = track.getFileName();
+            LOGGER.info("Attempting to load track: " + fileName);
+
+            // Try MP3 first, then WAV
+            if (tryLoadAudioFile(fileName, ".mp3")) {
+                LOGGER.info("Successfully loaded " + fileName + " as MP3");
+            } else if (tryLoadAudioFile(fileName, ".wav")) {
+                LOGGER.info("Successfully loaded " + fileName + " as WAV");
+            } else {
+                LOGGER.warning("Failed to load track: " + fileName + " (neither MP3 nor WAV found)");
             }
         }
+    }
+
+    /**
+     * Tries to load an audio file with the given name and extension using ResourceLoader.
+     *
+     * @param fileName Base file name without extension
+     * @param extension File extension including the dot (e.g., ".mp3")
+     * @return true if loading was successful, false otherwise
+     */
+    private boolean tryLoadAudioFile(String fileName, String extension) {
+        String resourcePath = SOUNDS_DIRECTORY + "/" + fileName + extension;
+
+        if (fileName.startsWith("music_")) {
+            Media media = resourceLoader.loadMusicCached(resourcePath);
+            if (media != null) {
+                musicTracks.put(fileName, media);
+                if (!musicTrackNames.contains(fileName)) {
+                    musicTrackNames.add(fileName);
+                }
+                LOGGER.info("Added music track: " + fileName);
+                return true;
+            }
+        } else if (fileName.startsWith("effect_")) {
+            AudioClip clip = resourceLoader.loadSoundEffectCached(resourcePath);
+            if (clip != null) {
+                soundEffects.put(fileName, clip);
+                LOGGER.info("Added sound effect: " + fileName);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Attempts to load audio files by listing the contents of the sounds directory.
+     * This is a fallback method and may not work reliably in a JAR.
+     */
+    private void loadTracksFromDirectory() {
+        List<String> audioFiles = listResourceFiles(SOUNDS_DIRECTORY);
+
+        if (audioFiles.isEmpty()) {
+            LOGGER.warning("No audio files found in " + SOUNDS_DIRECTORY);
+            return;
+        }
+
+        LOGGER.info("Found " + audioFiles.size() + " audio files in " + SOUNDS_DIRECTORY);
+
+        for (String filePath : audioFiles) {
+            try {
+                String fileName = filePath.substring(filePath.lastIndexOf('/') + 1);
+
+                if (!fileName.endsWith(".mp3") && !fileName.endsWith(".wav")) {
+                    continue; // Skip non-audio files
+                }
+
+                String key = fileName.substring(0, fileName.lastIndexOf('.'));
+
+                if (fileName.startsWith("music_")) {
+                    Media media = resourceLoader.loadMusicCached(filePath);
+                    if (media != null) {
+                        musicTracks.put(key, media);
+                        musicTrackNames.add(key);
+                        LOGGER.info("Added music track from directory: " + key);
+                    }
+                } else if (fileName.startsWith("effect_")) {
+                    AudioClip clip = resourceLoader.loadSoundEffectCached(filePath);
+                    if (clip != null) {
+                        soundEffects.put(key, clip);
+                        LOGGER.info("Added sound effect from directory: " + key);
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Failed to load audio file: " + filePath, e);
+            }
+        }
+    }
+
+    /**
+     * Lists all resource files in a directory path.
+     * Works both in development environment and in a JAR file.
+     *
+     * @param directoryPath the path to the directory in resources
+     * @return a list of resource file paths
+     */
+    private List<String> listResourceFiles(String directoryPath) {
+        List<String> fileNames = new ArrayList<>();
+
+        try {
+            URL directoryUrl = getClass().getResource(directoryPath);
+            if (directoryUrl == null) {
+                LOGGER.warning("Directory not found in resources: " + directoryPath);
+                return fileNames;
+            }
+
+            // Use the class loader to get a list of all resources
+            URI uri = directoryUrl.toURI();
+            LOGGER.info("Resource directory URI: " + uri);
+
+            // Try JAR approach first
+            try {
+                InputStream is = getClass().getResourceAsStream(directoryPath);
+                if (is != null) {
+                    try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+                        String resource;
+                        while ((resource = br.readLine()) != null) {
+                            fileNames.add(directoryPath + "/" + resource);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.INFO, "Could not list JAR resources, trying file system", e);
+            }
+
+            // If we couldn't get resources from JAR, try the file system (development environment)
+            if (fileNames.isEmpty() && "file".equals(uri.getScheme())) {
+                try {
+                    Path dirPath = Paths.get(uri);
+                    LOGGER.info("Trying to list files from directory: " + dirPath);
+
+                    Files.list(dirPath).forEach(path -> {
+                        String relativePath = directoryPath + "/" + path.getFileName().toString();
+                        fileNames.add(relativePath);
+                    });
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, "Failed to list files in directory: " + uri, e);
+                }
+            }
+
+            LOGGER.info("Found resources in directory: " + fileNames);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error listing resources in directory: " + directoryPath, e);
+        }
+
+        return fileNames;
     }
 
     /**
@@ -80,16 +262,53 @@ public class AudioManager {
      * @param name the name of the music track to play
      */
     public void playMusic(String name) {
+        if (!audioPlaybackAvailable) {
+            LOGGER.info("Audio playback unavailable, skipping playMusic: " + name);
+            return;
+        }
+
+        LOGGER.info("Request to play music: " + name);
+
         Media media = musicTracks.get(name);
-        if (media == null) return;
-        if (currentMusicPlayer != null) {
-            crossfadeTo(media);
-        } else {
-            currentMusicPlayer = new MediaPlayer(media);
-            applyMusicSettings(currentMusicPlayer);
-            currentMusicPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-            currentMusicPlayer.play();
-            currentMusicIndex = musicTrackNames.indexOf(name);
+        if (media == null) {
+            LOGGER.warning("Music track not found: " + name + ". Available tracks: " + musicTracks.keySet());
+            return;
+        }
+
+        try {
+            if (currentMusicPlayer != null) {
+                LOGGER.info("Crossfading to track: " + name);
+                crossfadeTo(media);
+            } else {
+                LOGGER.info("Starting new music track: " + name);
+                currentMusicPlayer = new MediaPlayer(media);
+
+                currentMusicPlayer.setOnError(() -> {
+                    LOGGER.severe("MediaPlayer error: " + currentMusicPlayer.getError());
+                    if (currentMusicPlayer.getError() != null) {
+                        LOGGER.severe("Error details: " + currentMusicPlayer.getError().getMessage());
+                        audioPlaybackAvailable = false;
+                    }
+                });
+
+                currentMusicPlayer.setOnReady(() -> {
+                    LOGGER.info("MediaPlayer ready for track: " + name);
+                    applyMusicSettings(currentMusicPlayer);
+                    currentMusicPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+                    try {
+                        currentMusicPlayer.play();
+                        LOGGER.info("Started playing track: " + name);
+                    } catch (Exception e) {
+                        LOGGER.log(Level.SEVERE, "Error playing track: " + name, e);
+                        audioPlaybackAvailable = false;
+                    }
+                });
+
+                currentMusicIndex = musicTrackNames.indexOf(name);
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error playing music track: " + name, e);
+            audioPlaybackAvailable = false;
         }
     }
 
@@ -125,6 +344,7 @@ public class AudioManager {
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             double t = 0;
+
             @Override
             public void run() {
                 t += 0.05;
@@ -159,7 +379,14 @@ public class AudioManager {
      * @param player the MediaPlayer to apply settings to
      */
     private void applyMusicSettings(MediaPlayer player) {
-        player.setVolume(volume * (muted ? 0 : 1));
+        try {
+            double effectiveVolume = volume * (muted ? 0 : 1);
+            LOGGER.info("Applying settings: volume=" + volume + ", muted=" + muted +
+                    ", effective volume=" + effectiveVolume);
+            player.setVolume(effectiveVolume);
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error applying music settings", e);
+        }
     }
 
     /**
@@ -169,16 +396,32 @@ public class AudioManager {
      * @param name the name of the sound effect to play
      */
     public void playSoundEffect(String name) {
+        if (!audioPlaybackAvailable) {
+            LOGGER.info("Audio playback unavailable, skipping playSoundEffect: " + name);
+            return;
+        }
+
+        LOGGER.info("Request to play sound effect: " + name);
+
         AudioClip clip = soundEffects.get(name);
-        if (clip == null) return;
-        clip.stop(); // Interrupt previous if still playing
-        clip.setVolume(volume * (muted ? 0 : 1));
-        clip.play();
+        if (clip == null) {
+            LOGGER.warning("Sound effect not found: " + name + ". Available effects: " + soundEffects.keySet());
+            return;
+        }
+
+        try {
+            clip.stop(); // Interrupt previous if still playing
+            clip.setVolume(volume * (muted ? 0 : 1));
+            clip.play();
+            LOGGER.info("Playing sound effect: " + name);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error playing sound effect: " + name, e);
+            audioPlaybackAvailable = false;
+        }
     }
 
     /**
      * Sets the volume level for all audio playbacks.
-     *
      *
      * @param volume the volume level (0.0 to 1.0)
      */
@@ -218,5 +461,14 @@ public class AudioManager {
      */
     public Set<String> getAvailableEffects() {
         return Collections.unmodifiableSet(soundEffects.keySet());
+    }
+
+    /**
+     * Checks if audio playback is available in this application instance.
+     *
+     * @return true if audio playback is available, false otherwise
+     */
+    public boolean isAudioPlaybackAvailable() {
+        return audioPlaybackAvailable;
     }
 }

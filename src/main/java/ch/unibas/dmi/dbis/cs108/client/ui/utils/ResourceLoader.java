@@ -3,14 +3,17 @@ package ch.unibas.dmi.dbis.cs108.client.ui.utils;
 import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
+import javafx.scene.media.AudioClip;
+import javafx.scene.media.Media;
 
 import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Utility for loading resources such as FXML, images, CSS, and fonts.
+ * Utility for loading resources such as FXML, images, CSS, fonts, and audio.
  */
 public class ResourceLoader {
     public static final String SPLASH_SCREEN_FXML = "/fxml/splash_screen.fxml";
@@ -37,10 +40,11 @@ public class ResourceLoader {
     private static final Logger LOGGER = Logger.getLogger(ResourceLoader.class.getName());
     private final Map<String, Image> entityImageCache = new ConcurrentHashMap<>();
     private final Map<Integer, Image> cardImageCache = new ConcurrentHashMap<>();
+    private final Map<String, Media> musicCache = new ConcurrentHashMap<>();
+    private final Map<String, AudioClip> soundEffectCache = new ConcurrentHashMap<>();
 
     // Private constructor to prevent instantiation
-    public ResourceLoader() {
-    }
+    public ResourceLoader() {}
 
     /**
      * Loads an image from the given resource path.
@@ -55,18 +59,7 @@ public class ResourceLoader {
         }
 
         try {
-            // Remove "resources/" prefix if it exists
-            String correctedPath = path;
-            if (correctedPath.startsWith("resources/")) {
-                correctedPath = correctedPath.substring("resources/".length());
-            }
-
-            // Ensure path starts with a single slash
-            if (!correctedPath.startsWith("/")) {
-                correctedPath = "/" + correctedPath;
-            } else if (correctedPath.startsWith("//")) {
-                correctedPath = correctedPath.substring(1); // Remove one of the slashes
-            }
+            String correctedPath = correctResourcePath(path);
 
             LOGGER.info("Loading image from: " + correctedPath);
 
@@ -111,6 +104,118 @@ public class ResourceLoader {
         });
     }
 
+    /**
+     * Loads a music track from the given resource path.
+     *
+     * @param path Resource path (e.g., "/sounds/music_mainMenu.mp3")
+     * @return Media object or null if not found
+     */
+    public Media loadMusic(String path) {
+        if (path == null || path.isEmpty()) {
+            LOGGER.warning("Empty music path provided");
+            return null;
+        }
+
+        try {
+            String correctedPath = correctResourcePath(path);
+            LOGGER.info("Loading music from: " + correctedPath);
+
+            URL resourceUrl = getClass().getResource(correctedPath);
+            if (resourceUrl != null) {
+                try {
+                    return new Media(resourceUrl.toExternalForm());
+                } catch (Exception e) {
+                    // Check if this is a file access exception (common when multiple clients run)
+                    if (e.getCause() != null && e.getCause().getMessage() != null &&
+                        e.getCause().getMessage().contains("FileAlreadyExistsException")) {
+                        LOGGER.info("Media file access conflict - this is normal when running multiple clients");
+                        // Still return the Media object - it might work despite the error
+                        return new Media(resourceUrl.toExternalForm());
+                    }
+                    throw e;
+                }
+            }
+
+            LOGGER.warning("Music file not found: " + path);
+            return null;
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error loading music: " + path, e);
+            return null;
+        }
+    }
+
+    /**
+     * Loads a sound effect from the given resource path.
+     *
+     * @param path Resource path (e.g., "/sounds/effect_click.mp3")
+     * @return AudioClip object or null if not found
+     */
+    public AudioClip loadSoundEffect(String path) {
+        if (path == null || path.isEmpty()) {
+            LOGGER.warning("Empty sound effect path provided");
+            return null;
+        }
+
+        try {
+            String correctedPath = correctResourcePath(path);
+            LOGGER.info("Loading sound effect from: " + correctedPath);
+
+            URL resourceUrl = getClass().getResource(correctedPath);
+            if (resourceUrl != null) {
+                return new AudioClip(resourceUrl.toExternalForm());
+            }
+
+            LOGGER.warning("Sound effect not found: " + path);
+            return null;
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error loading sound effect: " + path, e);
+            return null;
+        }
+    }
+
+    /**
+     * Loads a music track and caches it for future use.
+     *
+     * @param path Resource path
+     * @return Media object or null if not found
+     */
+    public Media loadMusicCached(String path) {
+        return musicCache.computeIfAbsent(path, this::loadMusic);
+    }
+
+    /**
+     * Loads a sound effect and caches it for future use.
+     *
+     * @param path Resource path
+     * @return AudioClip object or null if not found
+     */
+    public AudioClip loadSoundEffectCached(String path) {
+        return soundEffectCache.computeIfAbsent(path, this::loadSoundEffect);
+    }
+
+    /**
+     * Corrects a resource path to ensure it starts with a single slash.
+     *
+     * @param path The resource path to correct
+     * @return The corrected path
+     */
+    private String correctResourcePath(String path) {
+        String correctedPath = path;
+
+        // Remove "resources/" prefix if it exists
+        if (correctedPath.startsWith("resources/")) {
+            correctedPath = correctedPath.substring("resources/".length());
+        }
+
+        // Ensure path starts with a single slash
+        if (!correctedPath.startsWith("/")) {
+            correctedPath = "/" + correctedPath;
+        } else if (correctedPath.startsWith("//")) {
+            correctedPath = correctedPath.substring(1); // Remove one of the slashes
+        }
+
+        return correctedPath;
+    }
 
     /**
      * Low-level helper that never blocks the FX thread.
