@@ -47,35 +47,45 @@ public class ArtifactActionHandler {
      */
     public boolean useFieldArtifact(int x, int y, int artifactId, String playerName) {
         return executeWithLock(() -> {
+            System.out.println("[ArtifactActionHandler] useFieldArtifact called with x=" + x + ", y=" + y + ", artifactId=" + artifactId + ", playerName=" + playerName);
+
             // Validate player
             Player player = gameState.findPlayerByName(playerName);
             if (player == null) {
+                System.out.println("[ArtifactActionHandler] Player not found: " + playerName);
                 return false;
             }
 
             // Verify the player has the artifact
             Artifact artifact = findPlayerArtifact(player, artifactId);
             if (artifact == null) {
+                System.out.println("[ArtifactActionHandler] Artifact with ID " + artifactId + " not found in player inventory.");
                 return false;
             }
 
             // Validate target tile
             Tile targetTile = gameState.getBoardManager().getTile(x, y);
             if (targetTile == null) {
+                System.out.println("[ArtifactActionHandler] Target tile (" + x + "," + y + ") is null.");
                 return false;
             }
 
             // Check if artifact is a field artifact
             if (!(artifact.getUseType() == Artifact.UseType.FIELD)) {
+                System.out.println("[ArtifactActionHandler] Artifact " + artifact.getName() + " is not a FIELD artifact.");
                 return false;
             }
 
             // Execute artifact effect
             boolean success = registry.executeFieldArtifact(artifact, gameState, player, x, y);
+            System.out.println("[ArtifactActionHandler] registry.executeFieldArtifact returned: " + success);
 
             // Remove artifact from player inventory if used successfully
             if (success) {
                 player.removeArtifact(artifact);
+                System.out.println("[ArtifactActionHandler] Artifact removed from player inventory.");
+            } else {
+                System.out.println("[ArtifactActionHandler] Artifact NOT removed (effect failed).");
             }
 
             return success;
@@ -92,35 +102,45 @@ public class ArtifactActionHandler {
      */
     public boolean usePlayerArtifact(int artifactId, String targetPlayerName, String playerName) {
         return executeWithLock(() -> {
+            System.out.println("[ArtifactActionHandler] usePlayerArtifact called with artifactId=" + artifactId + ", targetPlayerName=" + targetPlayerName + ", playerName=" + playerName);
+
             // Validate player
             Player player = gameState.findPlayerByName(playerName);
             if (player == null) {
+                System.out.println("[ArtifactActionHandler] Player not found: " + playerName);
                 return false;
             }
 
             // Verify the player has the artifact
             Artifact artifact = findPlayerArtifact(player, artifactId);
             if (artifact == null) {
+                System.out.println("[ArtifactActionHandler] Artifact with ID " + artifactId + " not found in player inventory.");
                 return false;
             }
 
             // Validate target player
             Player targetPlayer = gameState.findPlayerByName(targetPlayerName);
             if (targetPlayer == null) {
+                System.out.println("[ArtifactActionHandler] Target player not found: " + targetPlayerName);
                 return false;
             }
 
             // Check if artifact is a player artifact
             if (!(artifact.getUseType() == Artifact.UseType.PLAYER)) {
+                System.out.println("[ArtifactActionHandler] Artifact " + artifact.getName() + " is not a PLAYER artifact.");
                 return false;
             }
 
             // Execute artifact effect
             boolean success = registry.executePlayerArtifact(artifact, gameState, player, targetPlayer);
+            System.out.println("[ArtifactActionHandler] registry.executePlayerArtifact returned: " + success);
 
             // Remove artifact from player inventory if used successfully
             if (success) {
                 player.removeArtifact(artifact);
+                System.out.println("[ArtifactActionHandler] Artifact removed from player inventory.");
+            } else {
+                System.out.println("[ArtifactActionHandler] Artifact NOT removed (effect failed).");
             }
 
             return success;
