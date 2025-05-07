@@ -92,14 +92,14 @@ public class NetworkController {
 
     /**
      * Disconnects from the game server.
-     * Sends a disconnect message to the server and stops the ping scheduler.
+     * Sends an exit message to the server and stops the ping scheduler.
      */
     public void disconnect() {
         if (networkClient.isConnected()) {
-            String disconnectMessage = translator.formatDisconnect(localPlayer.getName());
+            String disconnectMessage = translator.formatExit(localPlayer.getName());
             networkClient.send(disconnectMessage)
                     .exceptionally(ex -> {
-                        LOGGER.warning("Error sending disconnect message: " + ex.getMessage());
+                        LOGGER.warning("Error sending exit message: " + ex.getMessage());
                         return null;
                     })
                     .thenRun(() -> {

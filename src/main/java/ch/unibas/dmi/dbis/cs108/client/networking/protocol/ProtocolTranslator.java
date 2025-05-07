@@ -177,6 +177,10 @@ public class ProtocolTranslator implements CommunicationAPI {
         }
     }
 
+    private void processDisconnect(String args) {
+        // TODO: this message is a piece of information about another player disconnecting while in game.
+    }
+
     private void processLobbyListMessage(String args) {
         eventDispatcher.dispatchEvent(new LobbyListEvent(args));
     }
@@ -238,12 +242,16 @@ public class ProtocolTranslator implements CommunicationAPI {
         return Commands.LEADERBOARD.getCommand() + DELIMITER;
     }
 
-    public String formatDisconnect(String playerName) {
-        return Commands.DISCONNECT.getCommand() + DELIMITER + playerName; // Not in Commands enum
-    }
-
     public String formatPong(String playerName) {
         return Commands.OK.getCommand() + DELIMITER + Commands.PING.getCommand() + DELIMITER + playerName; // Pong response
+    }
+
+    public String formatExit(String playerName) {
+        return Commands.EXIT + DELIMITER + playerName;
+    }
+
+    public String formatReconnect() {
+        return Commands.RECONNECT + DELIMITER;
     }
 
     public String formatRegister(String playerName) {

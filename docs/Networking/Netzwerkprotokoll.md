@@ -1,4 +1,4 @@
-# Netzwerkprotokoll für Settlers of Asgard (Programmierprojekt CS108 Gruppe3) v3.0.0
+# Netzwerkprotokoll für Settlers of Asgard (Programmierprojekt CS108 Gruppe3) v5.0.0
 
 ## 1. Einleitung
 Dieses Dokument beschreibt das Netzwerkprotokoll für das rundenbasierte Strategiespiel Settlers of Asgard. Es basiert auf TCP und verwendet ein textbasiertes, befehlsorientiertes Format mit fester Befehlslänge. Alle Nachrichten bestehen aus Befehlen und Parametern. Zwischen jedem Befehl und Parameter muss ein Dollar-Zeichen (`$`) stehen.
@@ -28,6 +28,8 @@ Dieser Befehl bedeutet, dass Spieler PL01 eine Struktur vom Typ "Castle" auf das
 | `JOIN` | **C→S**       | Spieler tritt Lobby bei                                       | `Spielername$Lobbyname`               | `CREA$Lobby1$ThorOdinson`                       |
 | `LEAV` | **C→S**       | Spieler verlässt Lobby                                        | `Spielername$Lobbyname`               | `LEAV$ThorOdinson$Lobby1`                       |
 | `EXIT` | **C→S**       | Spieler disconnected                                          | `Spielername$`                        | `EXIT$ThorOdinson`                              |
+| `DISC` | **S→C**       | Info: Ein anderer Spieler disconnected                        | `Spielername$`                        | `DISC$ThorOdinson`                              |
+| `RECO` | **C→S**       | Client versucht sich erneut zu verbinden                      |                                       | `RECO$`                                         |
 | `LEAD` | **C→S**       | Globales Leaderboard abfragen                                 |                                       | `LEAD$`                                         |
 | `CHAN` | **C→S & S→C** | Spieler möchte seinen Namen ändern                            | `Spielername`                         | `CHAN$LokiLaufeyson`                            |
 | `CHTG` | **C→S**       | Nachricht senden (global)                                     | `Spielername$Nachricht`               | `CHTG$ThorOdinson$HelloWorld!`                  |
