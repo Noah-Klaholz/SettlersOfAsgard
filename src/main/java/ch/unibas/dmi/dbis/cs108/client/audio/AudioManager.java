@@ -17,7 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AudioManager {
     /** Singleton instance of AudioManager */
     private static AudioManager instance;
-
     /** Map of music tracks, keyed by their names */
     private final Map<String, Media> musicTracks = new LinkedHashMap<>();
     /** Map of sound effects, keyed by their names */
@@ -62,12 +61,12 @@ public class AudioManager {
 
         for (File file : Objects.requireNonNull(soundsDir.listFiles())) {
             String name = file.getName();
-            if (name.startsWith("music_") && name.endsWith(".wav")) {
+            if (name.startsWith("music_") && (name.endsWith(".wav") || name.endsWith(".mp3"))) {
                 String key = name.substring(0, name.length() - 4); // remove .wav
                 Media media = new Media(file.toURI().toString());
                 musicTracks.put(key, media);
                 musicTrackNames.add(key);
-            } else if (name.startsWith("effect_") && name.endsWith(".wav")) {
+            } else if (name.startsWith("effect_") && (name.endsWith(".wav") || name.endsWith(".mp3"))) {
                 String key = name.substring(0, name.length() - 4);
                 AudioClip clip = new AudioClip(file.toURI().toString());
                 soundEffects.put(key, clip);
@@ -178,7 +177,7 @@ public class AudioManager {
     }
 
     /**
-     * Sets the volume level for all audio playback.
+     * Sets the volume level for all audio playbacks.
      *
      *
      * @param volume the volume level (0.0 to 1.0)
