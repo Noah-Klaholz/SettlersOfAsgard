@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.components;
 
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.StylesheetLoader;
+import ch.unibas.dmi.dbis.cs108.client.audio.AudioManager;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.property.*;
@@ -210,6 +211,9 @@ public class SettingsDialog extends UIComponent<StackPane> {
         Button saveButton = new Button("Save Settings");
         saveButton.getStyleClass().addAll("dialog-button", "dialog-button-save"); // Use style classes
         saveButton.setOnAction(e -> {
+            // Update AudioManager with new settings
+            AudioManager.getInstance().setVolume(volumeProperty.get() / 100.0);
+            AudioManager.getInstance().setMute(muteProperty.get());
             if (onSaveAction != null) {
                 onSaveAction.run();
             }
