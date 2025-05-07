@@ -614,6 +614,13 @@ public class GameScreenController extends BaseController {
         gameCanvas.setOnMouseExited(null);
         gameCanvas.setOnKeyPressed(null);
 
+        // Optionally, hide or disable the canvas and overlays
+        gameCanvas.setDisable(true);
+        if (backgroundCanvas != null)
+            backgroundCanvas.setDisable(true);
+        if (overlayCanvas != null)
+            overlayCanvas.setDisable(true);
+
         // Remove event handlers added via addEventHandler (for all event types)
         gameCanvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, e -> handleCanvasClick(e.getX(), e.getY()));
         gameCanvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
@@ -683,31 +690,25 @@ public class GameScreenController extends BaseController {
                     hideTileTooltip();
                 }
             });
-
-
-            hideTileTooltip();
-            currentTileTooltip = null;
-            pendingTooltipCol = pendingTooltipRow = lastTooltipRow = lastTooltipCol = -1;
         }
+
+
+        clearHighlight();
+        highlightedTile = null;
+        hideTileTooltip();
 
         // Hide any visible tile tooltip and cancel tooltip delay
         cancelTooltipDelay();
-        hideTileTooltip();
+        if (currentTileTooltip != null) {
+            currentTileTooltip.close(); // Use the close() method instead of just hiding
+            currentTileTooltip = null;
+        }
 
-        // Optionally, hide or disable the canvas and overlays
-        gameCanvas.setDisable(true);
-        if (backgroundCanvas != null)
-            backgroundCanvas.setDisable(true);
-        if (overlayCanvas != null)
-            overlayCanvas.setDisable(true);
-
-        // Optionally, hide the canvas visually (uncomment if you want it invisible)
-        // gameCanvas.setVisible(false);
-        // if (backgroundCanvas != null) backgroundCanvas.setVisible(false);
-        // if (overlayCanvas != null) overlayCanvas.setVisible(false);
-
-        // Close any other popups related to the board (if you have references)
-        // (Add code here if you have custom popups to close)
+        // Reset tooltip tracking variables
+        pendingTooltipCol = -1;
+        pendingTooltipRow = -1;
+        lastTooltipCol = -1;
+        lastTooltipRow = -1;
     }
 
     /**
@@ -1755,6 +1756,7 @@ public class GameScreenController extends BaseController {
         Tooltip tooltip = new Tooltip();
         tooltip.setShowDelay(Duration.millis(500));
         tooltip.setHideDelay(Duration.millis(200));
+        tooltip.setShowDuration(Duration.INDEFINITE);
 
         String id = card.getId();
         CardDetails details;
