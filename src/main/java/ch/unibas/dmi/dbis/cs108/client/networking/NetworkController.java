@@ -20,13 +20,19 @@ import java.util.logging.Logger;
  * It handles sending and receiving messages, pinging the server, and managing the connection state.
  */
 public class NetworkController {
+    /** Logger to log logging */
     private static final Logger LOGGER = Logger.getLogger(NetworkController.class.getName());
-
+    /** Network Client */
     private final NetworkClient networkClient;
+    /** Protocol Translator */
     private final ProtocolTranslator translator;
+    /** Event Dispatcher */
     private final EventDispatcher eventDispatcher;
+    /** Player object */
     private final Player localPlayer;
+    /** Last ping time */
     private final AtomicLong lastPingTime = new AtomicLong(0);
+    /** Ping Scheduler */
     private ScheduledExecutorService pingScheduler;
 
     /**
@@ -125,8 +131,6 @@ public class NetworkController {
 
     /**
      * Checks if the client is connected to the server and if the connection is not closed.
-     *
-     * @return true if connected and not closed, false otherwise.
      */
     private void startPingScheduler() {
         stopPingScheduler();
@@ -442,8 +446,6 @@ public class NetworkController {
     /**
      * Sends a message to the server to get the local player's information.
      */
-    // Add getter for localPlayer if needed by other components (like
-    // CommunicationMediator)
     public Player getLocalPlayer() {
         return localPlayer;
     }
