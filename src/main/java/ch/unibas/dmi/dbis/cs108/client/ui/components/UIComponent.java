@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.components;
 
+import ch.unibas.dmi.dbis.cs108.client.audio.AudioManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.StylesheetLoader;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;

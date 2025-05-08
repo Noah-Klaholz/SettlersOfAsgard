@@ -234,6 +234,9 @@ public class LobbyScreenController extends BaseController {
         }
         settingsDialog.setOnSaveAction(this::handleSettingsSave);
         settingsDialog.setConnectionStatus(isConnected.get(), isConnected.get() ? "Connected" : "Disconnected");
+        settingsDialog.setMusicVolume(AudioManager.getInstance().getMusicVolume());
+        settingsDialog.setEffectsVolume(AudioManager.getInstance().getEffectsVolume());
+        settingsDialog.setMute(AudioManager.getInstance().isMuted());
     }
 
     /**
@@ -741,6 +744,7 @@ public class LobbyScreenController extends BaseController {
     private void handleSettings() {
         LOGGER.info("Settings button clicked.");
 
+        settingsDialog.updateAudioProperties();
         settingsDialog.setConnectionStatus(isConnected.get(), isConnected.get() ? "Connected" : "Disconnected");
         if (localPlayer != null) {
             settingsDialog.playerNameProperty().set(this.localPlayer.getName());
@@ -788,11 +792,6 @@ public class LobbyScreenController extends BaseController {
             if (localPlayer != null) {
                 settingsDialog.playerNameProperty().set(localPlayer.getName());
             }
-        }
-
-        if (chatComponentController != null) {
-            chatComponentController.addSystemMessage(
-                    "Audio settings saved. " + (muted ? "Muted." : "Volume: " + (int) volume + "%"));
         }
     }
 

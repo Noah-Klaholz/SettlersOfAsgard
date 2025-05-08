@@ -560,25 +560,18 @@ public class GameScreenController extends BaseController {
             return;
         }
 
+        settingsDialog.updateAudioProperties();
         updateSettingsConnectionStatus();
         settingsDialog.playerNameProperty().set(localPlayer.getName());
 
         settingsDialog.setOnSaveAction(() -> {
-            boolean muted = settingsDialog.muteProperty().get();
-            double volume = settingsDialog.musicVolumeProperty().get();
             String requested = settingsDialog.playerNameProperty().get();
-            LOGGER.info("Settings dialog save requested – Volume: " + volume + ", Muted: " + muted
-                    + ", Requested Name: " + requested);
-
             if (requested != null && !requested.trim().isEmpty() && !requested.equals(localPlayer.getName())) {
                 requestNameChange(requested.trim());
             } else if (requested != null && requested.trim().isEmpty()) {
                 chatComponentController.addSystemMessage("Error: Player name cannot be empty.");
                 settingsDialog.playerNameProperty().set(localPlayer.getName());
             }
-
-            chatComponentController
-                    .addSystemMessage("Audio settings saved. " + (muted ? "Muted." : "Volume: " + (int) volume + "%"));
         });
 
         showDialogAsOverlay(settingsDialog, root);
@@ -1655,6 +1648,9 @@ public class GameScreenController extends BaseController {
         settingsDialog.playerNameProperty().set(localPlayer.getName());
         settingsDialog.setOnSaveAction(this::handleSettingsSave);
         updateSettingsConnectionStatus();
+        settingsDialog.setMusicVolume(AudioManager.getInstance().getMusicVolume());
+        settingsDialog.setEffectsVolume(AudioManager.getInstance().getEffectsVolume());
+        settingsDialog.setMute(AudioManager.getInstance().isMuted());
     }
 
     /**
@@ -1669,12 +1665,26 @@ public class GameScreenController extends BaseController {
      * Handles the save button inside the settings dialog.
      */
     private void handleSettingsSave() {
-        String newName = settingsDialog.playerNameProperty().get().trim();
-        if (!newName.isEmpty() && !newName.equals(localPlayer.getName())) {
-            eventBus.publish(new NameChangeRequestEvent(newName));
-        } else if (newName.isEmpty()) {
-            settingsDialog.playerNameProperty().set(localPlayer.getName());
-        }
+        settingsDialog.setOnSaveAction(() -> {
+            boolean muted = settingsDialog.muteProperty().get();
+            double volume = settingsDialog.musicVolumeProperty().get();
+            String requestedName = settingsDialog.playerNameProperty().get();
+            LOGGER.info("Settings dialog save requested - Volume: " + volume + ", Muted: " + muted
+                    + ", Requested Name: " + requestedName);
+
+            if (localPlayer != null && requestedName != null && !requestedName.trim().isEmpty()
+                    && !requestedName.equals(localPlayer.getName())) {
+                requestNameChange(requestedName.trim());
+            } else if (requestedName != null && requestedName.trim().isEmpty()) {
+                LOGGER.warning("Attempted to save empty player name.");
+                if (chatComponentController != null) {
+                    chatComponentController.addSystemMessage("Error: Player name cannot be empty.");
+                }
+                if (localPlayer != null) {
+                    settingsDialog.playerNameProperty().set(localPlayer.getName());
+                }
+            }
+        });
     }
 
     /*

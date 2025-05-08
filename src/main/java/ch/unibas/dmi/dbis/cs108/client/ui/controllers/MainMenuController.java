@@ -93,7 +93,6 @@ public class MainMenuController extends BaseController {
             setupChatComponent(); // Call this after localPlayer is set
             establishServerConnection();
 
-            // Attach click sound to all buttons in the scene graph
             AudioManager.attachClickSoundToAllButtons(mainMenuRoot);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Critical error during MainMenuController initialization", e);
@@ -297,6 +296,7 @@ public class MainMenuController extends BaseController {
     private void handleSettings() {
         LOGGER.info("Settings button clicked.");
 
+        settingsDialog.updateAudioProperties();
         settingsDialog.setConnectionStatus(isConnected.get(), isConnected.get() ? "Connected" : "Disconnected");
         if (localPlayer != null) {
             settingsDialog.playerNameProperty().set(this.localPlayer.getName());
@@ -306,12 +306,7 @@ public class MainMenuController extends BaseController {
         }
 
         settingsDialog.setOnSaveAction(() -> {
-            boolean muted = settingsDialog.muteProperty().get();
-            double volume = settingsDialog.musicVolumeProperty().get();
             String requestedName = settingsDialog.playerNameProperty().get();
-            LOGGER.info("Settings dialog save requested - Volume: " + volume + ", Muted: " + muted
-                    + ", Requested Name: " + requestedName);
-
             if (localPlayer != null && requestedName != null && !requestedName.trim().isEmpty()
                     && !requestedName.equals(localPlayer.getName())) {
                 requestNameChange(requestedName.trim());
@@ -323,11 +318,6 @@ public class MainMenuController extends BaseController {
                 if (localPlayer != null) {
                     settingsDialog.playerNameProperty().set(localPlayer.getName());
                 }
-            }
-
-            if (chatComponentController != null) {
-                chatComponentController.addSystemMessage(
-                        "Audio settings saved. " + (muted ? "Muted." : "Volume: " + (int) volume + "%"));
             }
         });
 
