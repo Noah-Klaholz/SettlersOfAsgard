@@ -88,7 +88,7 @@ public class MusicManager {
         }
         
         // Play the selected track
-        AudioManager.getInstance().playMusic(selectedTrack.getFileName());
+        AudioManager.getInstance().playMusic(selectedTrack.getFileName(), sceneType, selectionMode);
         LOGGER.info("Changed music to " + selectedTrack.name() + " for scene: " + sceneType);
     }
     

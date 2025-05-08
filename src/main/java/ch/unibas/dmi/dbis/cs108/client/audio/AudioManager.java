@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.audio;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
+import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import javafx.application.Platform;
 import javafx.scene.Node;
@@ -44,8 +45,6 @@ public class AudioManager {
     private MediaPlayer nextMusicPlayer;
     /** Timer for crossfade transitions */
     private Timer crossfadeTimer = null;
-    /** Index of the currently playing music track */
-    private int currentMusicIndex = 0;
     /** Volume level (0.0 to 1.0) */
     private double musicVolume = 0.5;
     /** Effects volume level (0.0 to 1.0) */
@@ -56,6 +55,10 @@ public class AudioManager {
     private final ResourceLoader resourceLoader = new ResourceLoader();
     /** Flag to track if audio playback is available */
     private boolean audioPlaybackAvailable = true;
+    /** The current scene type for music sequencing */
+    private SceneManager.SceneType currentSceneType = null;
+    /** The current selection mode for music sequencing */
+    private MusicManager.SelectionMode currentSelectionMode = MusicManager.SelectionMode.SEQUENTIAL;
 
     /** Private constructor to prevent instantiation */
     private AudioManager() {
@@ -269,6 +272,17 @@ public class AudioManager {
      * @param name the name of the music track to play
      */
     public void playMusic(String name) {
+        playMusic(name, null, null);
+    }
+
+    /**
+     * Plays a music track by its name, and optionally sets up sequencing for a scene.
+     *
+     * @param name the name of the music track to play
+     * @param sceneType the scene type (for sequencing), or null
+     * @param selectionMode the selection mode (for sequencing), or null
+     */
+    public void playMusic(String name, SceneManager.SceneType sceneType, MusicManager.SelectionMode selectionMode) {
         if (!audioPlaybackAvailable) {
             LOGGER.info("Audio playback unavailable, skipping playMusic: " + name);
             return;
@@ -282,8 +296,13 @@ public class AudioManager {
             return;
         }
 
+        // Store scene and mode for sequencing
+        if (sceneType != null && selectionMode != null) {
+            this.currentSceneType = sceneType;
+            this.currentSelectionMode = selectionMode;
+        }
+
         try {
-            // --- NEW: Stop any ongoing crossfade and cleanup players ---
             stopCrossfadeAndCleanup();
 
             if (currentMusicPlayer != null) {
@@ -304,7 +323,7 @@ public class AudioManager {
                 currentMusicPlayer.setOnReady(() -> {
                     LOGGER.info("MediaPlayer ready for track: " + name);
                     applyMusicSettings(currentMusicPlayer);
-                    currentMusicPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+                    currentMusicPlayer.setCycleCount(1); // Play once, not indefinitely
                     try {
                         currentMusicPlayer.play();
                         LOGGER.info("Started playing track: " + name);
@@ -314,7 +333,10 @@ public class AudioManager {
                     }
                 });
 
-                currentMusicIndex = musicTrackNames.indexOf(name);
+                // When track ends, play next if sequencing is enabled
+                currentMusicPlayer.setOnEndOfMedia(() -> {
+                    MusicManager.getInstance().changeMusic(currentSceneType, currentSelectionMode);
+                });
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error playing music track: " + name, e);
@@ -353,7 +375,6 @@ public class AudioManager {
      * Crossfades from the current music player to the next media.
      */
     private void crossfadeTo(Media nextMedia) {
-        // --- NEW: Cancel any previous crossfade before starting a new one ---
         if (crossfadeTimer != null) {
             crossfadeTimer.cancel();
             crossfadeTimer = null;
@@ -362,14 +383,30 @@ public class AudioManager {
         if (currentMusicPlayer == null) {
             currentMusicPlayer = new MediaPlayer(nextMedia);
             applyMusicSettings(currentMusicPlayer);
-            currentMusicPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+            currentMusicPlayer.setCycleCount(1);
+            currentMusicPlayer.setOnEndOfMedia(() -> {
+                if (currentSceneType != null && currentSelectionMode != null) {
+                    AudioTracks.Track nextTrack = MusicManager.getInstance().getNextTrack(currentSceneType);
+                    if (nextTrack != null) {
+                        Platform.runLater(() -> playMusic(nextTrack.getFileName(), currentSceneType, currentSelectionMode));
+                    }
+                }
+            });
             currentMusicPlayer.play();
             return;
         }
         nextMusicPlayer = new MediaPlayer(nextMedia);
         applyMusicSettings(nextMusicPlayer);
-        nextMusicPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+        nextMusicPlayer.setCycleCount(1);
         nextMusicPlayer.setVolume(0);
+        nextMusicPlayer.setOnEndOfMedia(() -> {
+            if (currentSceneType != null && currentSelectionMode != null) {
+                AudioTracks.Track nextTrack = MusicManager.getInstance().getNextTrack(currentSceneType);
+                if (nextTrack != null) {
+                    Platform.runLater(() -> playMusic(nextTrack.getFileName(), currentSceneType, currentSelectionMode));
+                }
+            }
+        });
         nextMusicPlayer.play();
 
         double fadeDuration = SETTINGS.Config.AUDIO_CROSSFADE_DURATION_MS.getValue() / 1000.0;
@@ -404,16 +441,6 @@ public class AudioManager {
                 }
             }
         }, 0, 50);
-    }
-
-    /**
-     * Plays the next music track in the list.
-     * If the current track is the last one, it loops back to the first track.
-     */
-    public void playNextMusic() {
-        if (musicTrackNames.isEmpty()) return;
-        int nextIndex = (currentMusicIndex + 1) % musicTrackNames.size();
-        playMusic(musicTrackNames.get(nextIndex));
     }
 
     /**

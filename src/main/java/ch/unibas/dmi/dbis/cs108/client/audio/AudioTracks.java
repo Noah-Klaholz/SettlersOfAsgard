@@ -8,6 +8,7 @@ public class AudioTracks {
         PLACE_STRUCTURE("effect_placeStructure"),
         USE_ARTIFACT("effect_useArtifact"),
         FANFARE("effect_fanfare"),
+        BUY_TILE("effect_buyTile"),
 
         // Music tracks
         MAIN_MENU_CHOIR("music_mainMenuChoir"),
