@@ -1441,7 +1441,7 @@ public class GameScreenController extends BaseController {
         GameEntity entity = tile.getEntity();
         if (entity != null) {
             int id = tile.getEntity().getId();
-            drawEntityImage(gc, null, cx, cy, size, gridAdjustmentManager.getHorizontalSquishFactor(), id);
+            drawEntityImage(gc, cx, cy, size, gridAdjustmentManager.getHorizontalSquishFactor(), id);
         }
     }
 
@@ -1452,14 +1452,13 @@ public class GameScreenController extends BaseController {
      * placeholder if missing.
      *
      * @param gc       The graphics context to draw on
-     * @param imageUrl The URL of the image to draw (obtained with isCard=false)
      * @param centerX  The x-coordinate of the hex center
      * @param centerY  The y-coordinate of the hex center
      * @param hexSize  The size of the hex
      * @param hSquish  The horizontal squish factor
      * @param entityId The ID of the entity being drawn (for logging)
      */
-    private void drawEntityImage(GraphicsContext gc, String imageUrl, double centerX, double centerY, double hexSize,
+    private void drawEntityImage(GraphicsContext gc, double centerX, double centerY, double hexSize,
                                  double hSquish, int entityId) {
         // Calculate placeholder size relative to hex (adjust as needed for map
         // entities)
@@ -1488,12 +1487,7 @@ public class GameScreenController extends BaseController {
         // return;
         // }
 
-        // obtain the URL if the caller passed null (drawHexSprite intentionally does
-        // this)
-        if (imageUrl == null || imageUrl.isEmpty()) {
-            imageUrl = EntityRegistry.getURL(entityId, false);
-        }
-
+        String imageUrl = EntityRegistry.getURL(entityId, false);
         GameEntity gm = EntityRegistry.getGameEntityOriginalById(entityId);
 
         try {
@@ -1536,7 +1530,7 @@ public class GameScreenController extends BaseController {
                 double scaledHeight = image.getHeight() * scale;
 
                 // Draw image centered in the hex
-                gc.drawImage(image, centerX - scaledWidth / 2, centerY - 3 * scaledHeight / 4, scaledWidth,
+                gc.drawImage(image, centerX - scaledWidth / 2, centerY - 2 * scaledHeight / 3, scaledWidth,
                         scaledHeight);
             }
 
