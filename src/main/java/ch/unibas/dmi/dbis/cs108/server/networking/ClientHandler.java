@@ -162,10 +162,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      */
     public void sendPing() {
         if (System.currentTimeMillis() - lastPingTime > SETTINGS.Config.TIMEOUT.getValue()) {
-            logger.warning("Client timed out: " + (socket != null ? socket.getRemoteSocketAddress() : "unknown"));
-            closeResources();
-            server.removeClient(this);
-            stop();
+            markDisconnected();
         } else {
             sendMessage("PING$");
         }
