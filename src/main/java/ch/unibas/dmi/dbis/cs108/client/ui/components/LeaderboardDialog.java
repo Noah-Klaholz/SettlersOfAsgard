@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.components;
 
+import ch.unibas.dmi.dbis.cs108.client.audio.AudioManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.StylesheetLoader;
 import ch.unibas.dmi.dbis.cs108.server.core.model.Leaderboard;
 import javafx.animation.FadeTransition;
@@ -65,6 +66,8 @@ public class LeaderboardDialog extends UIComponent<StackPane> {
         });
         this.view.setVisible(false);
         this.view.setManaged(false);
+
+        AudioManager.attachClickSoundToAllButtons(this.view);
     }
 
     /**

@@ -163,7 +163,7 @@ tasks.register('build-cs108') {
 
 tasks.register('buildWebsite') {
     dependsOn jar, javadoc
-    description = 'Builds the main JAR file and Javadocs'
+    description = 'Builds the main JAR file and Javadocs and copies them to the website directory'
     group = 'build'
 
     doLast {

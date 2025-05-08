@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.components.game;
 
+import ch.unibas.dmi.dbis.cs108.client.audio.AudioManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.UIComponent;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.StylesheetLoader;
@@ -54,6 +55,8 @@ public class ResourceOverviewDialog extends UIComponent<StackPane> {
         });
         this.view.setVisible(false);
         this.view.setManaged(false);
+
+        AudioManager.attachClickSoundToAllButtons(this.view);
     }
 
     public VBox createDialogContent() {
