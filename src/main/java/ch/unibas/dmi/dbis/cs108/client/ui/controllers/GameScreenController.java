@@ -11,10 +11,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.components.WinScreenDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeRequestEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LeaveLobbyRequestEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyJoinedEvent;
@@ -203,6 +200,9 @@ public class GameScreenController extends BaseController {
             selectedStatue = new CardDetails(EntityRegistry.getGameEntityOriginalById(38), true);
         }
         Logger.getGlobal().info("GameScreenController created and subscribed to events.");
+
+        // Request the gameState from the server
+        eventBus.publish(new RequestGameStateEvent());
     }
 
     /**

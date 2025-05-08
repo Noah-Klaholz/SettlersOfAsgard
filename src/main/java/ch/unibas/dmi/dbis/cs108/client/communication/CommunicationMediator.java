@@ -5,6 +5,7 @@ import ch.unibas.dmi.dbis.cs108.client.networking.NetworkController;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.RequestGameStateEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ServerCommandEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.EndTurnRequestEvent;
@@ -177,12 +178,16 @@ public class CommunicationMediator {
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent.class,
                 event -> networkController.changeName(event.getNewName()));
 
-        UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.admin.StatusUIEvent.class,
+        UIEventBus.getInstance().subscribe(RequestGameStateEvent.class,
                 event -> networkController.getGameState());
 
         UIEventBus.getInstance().subscribe(
                 ch.unibas.dmi.dbis.cs108.client.ui.events.admin.LeaderboardRequestUIEvent.class,
                 event -> networkController.getLeaderboard());
+
+        UIEventBus.getInstance().subscribe(
+                RequestGameStateEvent.class,
+                event -> networkController.getGameState());
     }
 
     /**
