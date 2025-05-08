@@ -3,11 +3,11 @@ package ch.unibas.dmi.dbis.cs108.client.audio;
 public class AudioTracks {
     public enum Track {
         // Sound effects
-        INTRO_EFFECT("effect_logo.mp3"), // placeHolder
-        BUTTON_CLICK("effect_button.mp3"),
-        PLACE_STRUCTURE("effect_placeStructure.mp3"),
-        USE_ARTIFACT("effect_useArtifact.mp3"),
-        FANFARE("effect_fanfare.mp3"),
+        INTRO_EFFECT("effect_logo"), // placeHolder
+        BUTTON_CLICK("effect_button"),
+        PLACE_STRUCTURE("effect_placeStructure"),
+        USE_ARTIFACT("effect_useArtifact"),
+        FANFARE("effect_fanfare"),
 
         // Music tracks
         MAIN_MENU_CHOIR("music_mainMenuChoir"),
