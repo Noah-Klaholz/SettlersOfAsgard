@@ -166,9 +166,9 @@ public class SocketNetworkClient implements NetworkClient {
     }
 
     /**
-     * Gets the message handler.
+     * Notifies about the disconnect
      *
-     * @return The current message handler.
+     * @param cause the cause if the disconnect
      */
     private void notifyDisconnect(Throwable cause) {
         if (!running) return;

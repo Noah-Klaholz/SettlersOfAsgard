@@ -285,15 +285,6 @@ public class ProtocolTranslator implements CommunicationAPI {
      *
      * @param args the args of the message.
      */
-    private void processDisconnect(String args) {
-        // TODO: this message is a piece of information about another player disconnecting while in game.
-    }
-
-    /**
-     * This method invokes a new Event based on the message.
-     *
-     * @param args the args of the message.
-     */
     private void processLobbyListMessage(String args) {
         eventDispatcher.dispatchEvent(new LobbyListEvent(args));
     }
