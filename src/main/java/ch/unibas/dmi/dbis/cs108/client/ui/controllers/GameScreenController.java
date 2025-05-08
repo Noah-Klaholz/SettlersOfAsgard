@@ -3,6 +3,7 @@ package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.client.app.GameApplication;
 import ch.unibas.dmi.dbis.cs108.client.audio.AudioManager;
+import ch.unibas.dmi.dbis.cs108.client.audio.AudioTracks;
 import ch.unibas.dmi.dbis.cs108.client.core.PlayerIdentityManager;
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
@@ -732,6 +733,7 @@ public class GameScreenController extends BaseController {
         Platform.runLater(() -> {
             disableGameBoardInteractions();
             WinScreenDialog dialog = new WinScreenDialog(event.getLeaderboard());
+            AudioManager.getInstance().playMusic(AudioTracks.Track.UPBEAT_WINSCREEN.getFileName());
             dialog.setOnMenuAction(() -> {
                 eventBus.publish(new LeaveLobbyRequestEvent(currentLobbyId));
                 sceneManager.switchToScene(SceneManager.SceneType.MAIN_MENU);
@@ -1117,12 +1119,15 @@ public class GameScreenController extends BaseController {
                         } else if (entityToPlace.isStructure()) {
                             eventBus.publish(new PlaceStructureUIEvent(col, row, cardDetails.getID()));
                         }
+                        AudioManager.getInstance().playSoundEffect(AudioTracks.Track.PLACE_STRUCTURE.getFileName());
                     } else if (entityToPlace instanceof Artifact a) {
                         if (a.isFieldTarget()) {
                             eventBus.publish(new UseFieldArtifactUIEvent(col, row, cardDetails.getID()));
+                            AudioManager.getInstance().playSoundEffect(AudioTracks.Track.USE_ARTIFACT.getFileName());
                         } else if (a.isPlayerTarget() && clickedTile.getOwner() != null) {
                             // Target the tile owner if the artifact is player-targeted
                             eventBus.publish(new UsePlayerArtifactUIEvent(cardDetails.getID(), clickedTile.getOwner()));
+                            AudioManager.getInstance().playSoundEffect(AudioTracks.Track.USE_ARTIFACT.getFileName());
                         } else if (a.isPlayerTarget()) {
                             // If tile has no owner, maybe prompt for player or disallow? For now, log.
                             LOGGER.info("Cannot use player-target artifact on unowned tile.");
