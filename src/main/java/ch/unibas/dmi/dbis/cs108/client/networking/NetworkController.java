@@ -9,6 +9,7 @@ import ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import javafx.application.Platform;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -155,7 +156,9 @@ public class NetworkController {
      * This method is called when the client disconnects from the server.
      */
     private void performDisconnect() {
-        networkClient.disconnect();
+        if (networkClient.isConnected()) {
+            networkClient.disconnect();
+        }
         eventDispatcher.dispatchEvent(new ConnectionEvent(
                 ConnectionEvent.ConnectionState.DISCONNECTED,
                 "Disconnected by user"
@@ -180,84 +183,124 @@ public class NetworkController {
         stopPingScheduler();
         pingScheduler = Executors.newSingleThreadScheduledExecutor();
         pingScheduler.scheduleAtFixedRate(() -> {
-            if (lastPingTime.get() > 0) {
-                long elapsed = Instant.now().toEpochMilli() - lastPingTime.get();
-                if (elapsed > SETTINGS.Config.TIMEOUT.getValue()) {
-                    if (!isReconnecting) {
-                        LOGGER.warning("Ping timeout detected. Attempting to reconnect...");
-                        eventDispatcher.dispatchEvent(new ConnectionEvent(
-                                ConnectionEvent.ConnectionState.DISCONNECTED,
-                                "Connection lost: " + localPlayer.getName()
-                        ));
-                        attemptReconnect();
+                    try {
+                        if (!networkClient.isConnected()) {
+                            return;
+                        }
+
+                        long lastPing = lastPingTime.get();
+                        if (lastPing > 0) {
+                            long elapsed = Instant.now().toEpochMilli() - lastPing;
+                            LOGGER.fine("Ping check - elapsed: " + elapsed);
+
+                            if (elapsed > SETTINGS.Config.TIMEOUT.getValue()) {
+                                LOGGER.warning("Ping timeout exceeded");
+                                Platform.runLater(this::handlePingTimeout);
+                                return;
+                            }
+                        }
+                        sendPing();
+                    } catch (Exception e) {
+                        LOGGER.warning("Ping scheduler error: " + e.getMessage());
                     }
-                    return;
-                }
-            }
-            sendPing();
-        }, SETTINGS.Config.PING_INTERVAL.getValue(),
-        SETTINGS.Config.PING_INTERVAL.getValue(), TimeUnit.MILLISECONDS);
+                }, SETTINGS.Config.PING_INTERVAL.getValue(),
+                SETTINGS.Config.PING_INTERVAL.getValue(),
+                TimeUnit.MILLISECONDS);
     }
 
-
+    /**
+     * This method is called when the ping timeout is detected.
+     */
+    private void handlePingTimeout() {
+        eventDispatcher.dispatchEvent(new ConnectionEvent(
+                ConnectionEvent.ConnectionState.DISCONNECTED,
+                "Connection lost: " + localPlayer.getName()
+        ));
+        attemptReconnect();
+    }
 
     /**
      * Attempts to reconnect to the server when connection is lost.
      * After MAX_RECONNECT_ATTEMPTS, gives up and handles the permanent disconnection.
      */
     private void attemptReconnect() {
-        if (isReconnecting || reconnectAttempts >= SETTINGS.Config.MAX_RECONNECT_ATTEMPTS.getValue()) {
-            return;
-        }
-
-        if (reconnectTimer == null || reconnectTimer.isShutdown()) {
-            reconnectTimer = Executors.newSingleThreadScheduledExecutor();
-        }
-
-        isReconnecting = true;
-        reconnectAttempts++;
-        if (networkClient.isConnected()) {
-            String reconnectMessage = translator.formatReconnect();
-            networkClient.send(reconnectMessage)
-                    .exceptionally(ex -> {
-                        LOGGER.warning("Error sending reconnect message: " + ex.getMessage());
-                        return null;
-                    });
-        }
-
-        reconnectTimer.schedule(() -> {
-            if (serverHost == null || serverPort == 0) {
-                LOGGER.warning("No host or port specified for reconnect attempt.");
-                handlePermanentDisconnection();
-                return;
+        Platform.runLater(() -> {
+            synchronized (this) {
+                if (isReconnecting || reconnectAttempts >= SETTINGS.Config.MAX_RECONNECT_ATTEMPTS.getValue()) {
+                    return;
+                }
+                isReconnecting = true;
+                reconnectAttempts++;
             }
-            LOGGER.info("Attempting reconnect (" + reconnectAttempts + "/" + SETTINGS.Config.MAX_RECONNECT_ATTEMPTS.getValue() + ")");
-            LOGGER.info("Attempting to reconnect to " + serverHost + ":" + serverPort + "...");
-            networkClient.connect(serverHost, serverPort)
-                    .thenRun(() -> {
-                        // Successful
-                        isReconnecting = false;
-                        reconnectAttempts = 0;
-                        lastPingTime.set(0);
-                        LOGGER.info("Reconnected to successfully!");
-                        eventDispatcher.dispatchEvent(new ConnectionEvent(
-                            ConnectionEvent.ConnectionState.CONNECTED,
-                            "Reconnected to server"));
-                        startPingScheduler();
-                        stopReconnectTimer();
-                    })
-                    .exceptionally(ex -> {
-                        // Failed
-                        LOGGER.warning("Error reconnecting: " + ex.getMessage());
-                        if (reconnectAttempts >= SETTINGS.Config.MAX_RECONNECT_ATTEMPTS.getValue()) {
-                            handlePermanentDisconnection();
-                        }
-                        else {
-                            attemptReconnect();
-                        }
-                        return null;
-                    });
-        },SETTINGS.Config.RECONNECT_DELAYS_MS.getValue(), TimeUnit.MILLISECONDS);
+
+            LOGGER.info("Starting reconnect attempt " + reconnectAttempts +
+                    "/" + SETTINGS.Config.MAX_RECONNECT_ATTEMPTS.getValue());
+
+            // Immediate cleanup if still connected
+            if (networkClient.isConnected()) {
+                networkClient.disconnect();
+            }
+
+            // Schedule the reconnect attempt
+            if (reconnectTimer == null || reconnectTimer.isShutdown()) {
+                reconnectTimer = Executors.newSingleThreadScheduledExecutor();
+            }
+
+            reconnectTimer.schedule(() -> {
+                try {
+                    if (serverHost == null || serverPort == 0) {
+                        throw new IOException("No host or port specified");
+                    }
+
+                    networkClient.connect(serverHost, serverPort)
+                            .thenRun(() -> {
+                                Platform.runLater(this::handleReconnectSuccess);
+                            })
+                            .exceptionally(ex -> {
+                                Platform.runLater(() -> handleReconnectFailure(ex));
+                                return null;
+                            });
+                } catch (Exception e) {
+                    Platform.runLater(() -> handleReconnectFailure(e));
+                }
+            }, SETTINGS.Config.RECONNECT_DELAYS_MS.getValue(), TimeUnit.MILLISECONDS);
+        });
+    }
+
+    /**
+     * This method is called when the reconnection attempt failed.
+     *
+     * @param ex the cause of the reconnection failure.
+     */
+    private void handleReconnectFailure(Throwable ex) {
+        synchronized (this) {
+            if (reconnectAttempts >= SETTINGS.Config.MAX_RECONNECT_ATTEMPTS.getValue()) {
+                isReconnecting = false;
+                handlePermanentDisconnection();
+            } else {
+                LOGGER.warning("Reconnect failed (" + reconnectAttempts +
+                        "/" + SETTINGS.Config.MAX_RECONNECT_ATTEMPTS.getValue() +
+                        "): " + ex.getMessage());
+                attemptReconnect(); // Try again
+            }
+        }
+    }
+
+    /**
+     * This method is called when the reconnection attempt was successful.
+     */
+    private void handleReconnectSuccess() {
+        synchronized (this) {
+            isReconnecting = false;
+            reconnectAttempts = 0;
+        }
+        lastPingTime.set(0);
+        LOGGER.info("Reconnected successfully!");
+        eventDispatcher.dispatchEvent(new ConnectionEvent(
+                ConnectionEvent.ConnectionState.CONNECTED,
+                "Reconnected to server"));
+        startPingScheduler();
+        stopReconnectTimer();
     }
 
     /**
@@ -309,16 +352,17 @@ public class NetworkController {
      */
     private void handleIncomingMessage(String message) {
         if (message.startsWith("PING$")) {
-            // Auto-respond to ping with pong.
-            String pongMessage = translator.formatPong(localPlayer.getName());
-            networkClient.send(pongMessage);
+            LOGGER.fine("Received ping request");
+            networkClient.send(translator.formatPong(localPlayer.getName()));
             return;
         }
+
         if (message.startsWith("OK$PING$")) {
-            if (lastPingTime.get() > 0) {
-                long rtt = Instant.now().toEpochMilli() - lastPingTime.get();
-                LOGGER.fine("Ping RTT: " + rtt + "ms");
-                lastPingTime.set(0);
+            long pingTime = lastPingTime.get();
+            if (pingTime > 0) {
+                long rtt = Instant.now().toEpochMilli() - pingTime;
+                LOGGER.fine("Received pong after " + rtt + "ms");
+                lastPingTime.compareAndSet(pingTime, 0); // Atomic reset
             }
             return;
         }
@@ -428,18 +472,26 @@ public class NetworkController {
     }
 
     /**
-     * sends a ping message to the server.
+     * Sends a ping message to the server.
      * This method is called periodically to check the connection status.
      * It updates the lastPingTime to the current time.
      * If the server does not respond within the timeout period,
      * the client will disconnect.
      */
     private void sendPing() {
-        lastPingTime.set(Instant.now().toEpochMilli());
-        String pingMessage = "PING$" + localPlayer.getName();
-        networkClient.send(pingMessage)
+        if (!networkClient.isConnected()) {
+            LOGGER.warning("Not connected - skipping ping");
+            return;
+        }
+
+        long now = Instant.now().toEpochMilli();
+        lastPingTime.set(now);
+        LOGGER.fine("Sending ping at " + now);
+
+        networkClient.send("PING$" + localPlayer.getName())
                 .exceptionally(ex -> {
-                    LOGGER.warning("Error sending ping: " + ex.getMessage());
+                    LOGGER.warning("Ping send failed: " + ex.getMessage());
+                    Platform.runLater(() -> handleConnectionLost(ex));
                     return null;
                 });
     }

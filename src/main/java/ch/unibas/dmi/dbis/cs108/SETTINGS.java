@@ -9,7 +9,7 @@ public class SETTINGS {
         SHOW_SPLASH_SCREEN(0), // 1 is true, 0 is false
         SPLASH_SCREEN_DURATION(3), // Seconds
         PING_INTERVAL(1000),
-        TIMEOUT(2 * 1000), // Milliseconds
+        TIMEOUT(6 * 1000), // Milliseconds
         MAX_ARTIFACTS(3),
         START_RUNES(50),
         START_ENERGY(0),
