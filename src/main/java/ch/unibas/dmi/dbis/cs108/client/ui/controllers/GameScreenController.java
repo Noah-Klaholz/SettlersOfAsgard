@@ -466,32 +466,50 @@ public class GameScreenController extends BaseController {
             if (firstSync) {
                 LOGGER.info("First GameSyncEvent processed. Proceeding to full UI initialization...");
                 initializeUI();
-            }
 
-            updatePlayerColors();
-
-            artifacts = gamePlayer.getArtifacts();
-            markStatuePlaced(gamePlayer.hasStatue());
-
-            updateRunesAndEnergyBar();
-            updateCardImages();
-            updatePlayerList();
-            updateMap();
-
-            // Initialize TimerComponent after FXML injection and only once
-            if (timerComponent == null && timerRoot != null) {
-                LOGGER.info("Initializing TimerComponent...");
-                timerComponent = new TimerComponent();
-                timerRoot.getChildren().setAll(timerComponent);
-            }
-
-            String currentPlayerTurn = gameState.getPlayerTurn();
-            if (timerComponent != null) {
-                LOGGER.info("Updating TimerComponent...");
-                timerComponent.resetIfPlayerChanged(currentPlayerTurn);
+                // For the first sync, use a small delay to ensure initialization completes
+                // This is especially important on slower PCs or networks
+                PauseTransition delay = new PauseTransition(Duration.millis(200));
+                delay.setOnFinished(event -> {
+                    LOGGER.info("Performing first UI update after initialization");
+                    performUIUpdate();
+                });
+                delay.play();
+            } else {
+                // For subsequent syncs, update immediately
+                performUIUpdate();
             }
         });
     }
+
+    /**
+     * Updates all UI elements after a game sync event.
+     * Extracted to avoid code duplication between first and subsequent syncs.
+     */
+    private void performUIUpdate() {
+        updatePlayerColors();
+        artifacts = gamePlayer.getArtifacts();
+        markStatuePlaced(gamePlayer.hasStatue());
+
+        updateRunesAndEnergyBar();
+        updateCardImages();
+        updatePlayerList();
+        updateMap();
+
+        // Initialize TimerComponent after FXML injection and only once
+        if (timerComponent == null && timerRoot != null) {
+            LOGGER.info("Initializing TimerComponent...");
+            timerComponent = new TimerComponent();
+            timerRoot.getChildren().setAll(timerComponent);
+        }
+
+        String currentPlayerTurn = gameState.getPlayerTurn();
+        if (timerComponent != null) {
+            LOGGER.info("Updating TimerComponent...");
+            timerComponent.resetIfPlayerChanged(currentPlayerTurn);
+        }
+    }
+
 
     /**
      * Shows an error message in the chat component.
