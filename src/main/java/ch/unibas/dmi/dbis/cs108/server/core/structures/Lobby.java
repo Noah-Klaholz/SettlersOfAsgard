@@ -246,7 +246,6 @@ public class Lobby implements GameEventNotifier {
 
         this.gameLogic = new GameLogic(this);
         gameLogic.startGame(playerNames);
-        broadcastMessage(gameLogic.getGameState().createDetailedStatusMessage());
         startTurnScheduler();
         return true;
     }
