@@ -234,9 +234,6 @@ public class LobbyScreenController extends BaseController {
         }
         settingsDialog.setOnSaveAction(this::handleSettingsSave);
         settingsDialog.setConnectionStatus(isConnected.get(), isConnected.get() ? "Connected" : "Disconnected");
-        settingsDialog.setMusicVolume(AudioManager.getInstance().getMusicVolume());
-        settingsDialog.setEffectsVolume(AudioManager.getInstance().getEffectsVolume());
-        settingsDialog.setMute(AudioManager.getInstance().isMuted());
     }
 
     /**
@@ -326,6 +323,25 @@ public class LobbyScreenController extends BaseController {
         eventBus.publish(new CreateLobbyRequestEvent(name, localPlayer.getName(), maxPlayers));
         lobbyNameField.clear();
         requestLobbyList();
+    }
+
+    /**
+     * Handles the "Settings" button click. Shows the settings dialog.
+     */
+    @FXML
+    private void handleSettings() {
+        LOGGER.info("Settings button clicked.");
+
+        settingsDialog.updateAudioProperties();
+        settingsDialog.setConnectionStatus(isConnected.get(), isConnected.get() ? "Connected" : "Disconnected");
+        if (localPlayer != null) {
+            settingsDialog.playerNameProperty().set(this.localPlayer.getName());
+        } else {
+            LOGGER.warning("Cannot set player name in settings: localPlayer is null.");
+            settingsDialog.playerNameProperty().set("ErrorGuest");
+        }
+
+        showDialogAsOverlay(settingsDialog, rootPane);
     }
 
     /**
@@ -738,26 +754,6 @@ public class LobbyScreenController extends BaseController {
     }
 
     /**
-     * Handles the "Settings" button click. Shows the settings dialog.
-     */
-    @FXML
-    private void handleSettings() {
-        LOGGER.info("Settings button clicked.");
-
-        settingsDialog.updateAudioProperties();
-        settingsDialog.setConnectionStatus(isConnected.get(), isConnected.get() ? "Connected" : "Disconnected");
-        if (localPlayer != null) {
-            settingsDialog.playerNameProperty().set(this.localPlayer.getName());
-        } else {
-            LOGGER.warning("Cannot set player name in settings: localPlayer is null.");
-            settingsDialog.playerNameProperty().set("ErrorGuest");
-        }
-        settingsDialog.setConnectionStatus(isConnected.get(), isConnected.get() ? "Connected" : "Disconnected");
-
-        showDialogAsOverlay(settingsDialog, rootPane);
-    }
-
-    /**
      * Sends a name change request to the server via the event bus.
      *
      * @param newName The desired new player name.
@@ -775,11 +771,7 @@ public class LobbyScreenController extends BaseController {
      * Checks if the player name has changed and sends an update request.
      */
     private void handleSettingsSave() {
-        boolean muted = settingsDialog.muteProperty().get();
-        double volume = settingsDialog.musicVolumeProperty().get();
         String requestedName = settingsDialog.playerNameProperty().get();
-        LOGGER.info("Settings dialog save requested - Volume: " + volume + ", Muted: " + muted
-                + ", Requested Name: " + requestedName);
 
         if (localPlayer != null && requestedName != null && !requestedName.trim().isEmpty()
                 && !requestedName.equals(localPlayer.getName())) {

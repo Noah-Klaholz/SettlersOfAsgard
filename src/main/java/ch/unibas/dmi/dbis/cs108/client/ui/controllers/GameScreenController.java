@@ -420,8 +420,10 @@ public class GameScreenController extends BaseController {
             if (e.getMessage() != null && !e.getMessage().isEmpty()) {
                 chatComponentController.addSystemMessage(e.getMessage());
             }
-            if (settingsDialog != null)
-                updateSettingsConnectionStatus();
+            if (settingsDialog != null) {
+                String status = connectionStatusLabel.getText();
+                settingsDialog.setConnectionStatus("Connected".equals(status), status);
+            }
         });
     }
 
@@ -561,18 +563,10 @@ public class GameScreenController extends BaseController {
         }
 
         settingsDialog.updateAudioProperties();
-        updateSettingsConnectionStatus();
         settingsDialog.playerNameProperty().set(localPlayer.getName());
 
-        settingsDialog.setOnSaveAction(() -> {
-            String requested = settingsDialog.playerNameProperty().get();
-            if (requested != null && !requested.trim().isEmpty() && !requested.equals(localPlayer.getName())) {
-                requestNameChange(requested.trim());
-            } else if (requested != null && requested.trim().isEmpty()) {
-                chatComponentController.addSystemMessage("Error: Player name cannot be empty.");
-                settingsDialog.playerNameProperty().set(localPlayer.getName());
-            }
-        });
+        String status = connectionStatusLabel.getText();
+        settingsDialog.setConnectionStatus("Connected".equals(status), status);
 
         showDialogAsOverlay(settingsDialog, root);
     }
@@ -1647,16 +1641,6 @@ public class GameScreenController extends BaseController {
         settingsDialog = new SettingsDialog();
         settingsDialog.playerNameProperty().set(localPlayer.getName());
         settingsDialog.setOnSaveAction(this::handleSettingsSave);
-        updateSettingsConnectionStatus();
-        settingsDialog.setMusicVolume(AudioManager.getInstance().getMusicVolume());
-        settingsDialog.setEffectsVolume(AudioManager.getInstance().getEffectsVolume());
-        settingsDialog.setMute(AudioManager.getInstance().isMuted());
-    }
-
-    /**
-     * Synchronises the connection indicator shown inside the dialog.
-     */
-    private void updateSettingsConnectionStatus() {
         String status = connectionStatusLabel.getText();
         settingsDialog.setConnectionStatus("Connected".equals(status), status);
     }
@@ -1665,26 +1649,20 @@ public class GameScreenController extends BaseController {
      * Handles the save button inside the settings dialog.
      */
     private void handleSettingsSave() {
-        settingsDialog.setOnSaveAction(() -> {
-            boolean muted = settingsDialog.muteProperty().get();
-            double volume = settingsDialog.musicVolumeProperty().get();
-            String requestedName = settingsDialog.playerNameProperty().get();
-            LOGGER.info("Settings dialog save requested - Volume: " + volume + ", Muted: " + muted
-                    + ", Requested Name: " + requestedName);
+        String requestedName = settingsDialog.playerNameProperty().get();
 
-            if (localPlayer != null && requestedName != null && !requestedName.trim().isEmpty()
-                    && !requestedName.equals(localPlayer.getName())) {
-                requestNameChange(requestedName.trim());
-            } else if (requestedName != null && requestedName.trim().isEmpty()) {
-                LOGGER.warning("Attempted to save empty player name.");
-                if (chatComponentController != null) {
-                    chatComponentController.addSystemMessage("Error: Player name cannot be empty.");
-                }
-                if (localPlayer != null) {
-                    settingsDialog.playerNameProperty().set(localPlayer.getName());
-                }
+        if (localPlayer != null && requestedName != null && !requestedName.trim().isEmpty()
+                && !requestedName.equals(localPlayer.getName())) {
+            requestNameChange(requestedName.trim());
+        } else if (requestedName != null && requestedName.trim().isEmpty()) {
+            LOGGER.warning("Attempted to save empty player name.");
+            if (chatComponentController != null) {
+                chatComponentController.addSystemMessage("Error: Player name cannot be empty.");
             }
-        });
+            if (localPlayer != null) {
+                settingsDialog.playerNameProperty().set(localPlayer.getName());
+            }
+        }
     }
 
     /*

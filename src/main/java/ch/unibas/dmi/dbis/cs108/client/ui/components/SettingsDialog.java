@@ -203,6 +203,7 @@ public class SettingsDialog extends UIComponent<StackPane> {
         muteCheckbox.selectedProperty().bindBidirectional(muteProperty);
         muteProperty.addListener((obs, oldVal, newVal) -> {
             volumeSlider.setDisable(newVal);
+            effectVolumeSlider.setDisable(newVal);
             AudioManager.getInstance().setMute(newVal);
         });
         muteRow.getChildren().addAll(muteLabel, muteCheckbox);

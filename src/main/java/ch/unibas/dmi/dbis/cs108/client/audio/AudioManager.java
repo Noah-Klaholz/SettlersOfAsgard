@@ -42,6 +42,8 @@ public class AudioManager {
     private MediaPlayer currentMusicPlayer;
     /** Media player for next music (for crossfade) */
     private MediaPlayer nextMusicPlayer;
+    /** Timer for crossfade transitions */
+    private Timer crossfadeTimer = null;
     /** Index of the currently playing music track */
     private int currentMusicIndex = 0;
     /** Volume level (0.0 to 1.0) */
@@ -281,6 +283,9 @@ public class AudioManager {
         }
 
         try {
+            // --- NEW: Stop any ongoing crossfade and cleanup players ---
+            stopCrossfadeAndCleanup();
+
             if (currentMusicPlayer != null) {
                 LOGGER.info("Crossfading to track: " + name);
                 crossfadeTo(media);
@@ -318,20 +323,42 @@ public class AudioManager {
     }
 
     /**
-     * Plays the next music track in the list.
-     * If the current track is the last one, it loops back to the first track.
+     * Stops any ongoing crossfade and cleans up MediaPlayers.
      */
-    public void playNextMusic() {
-        if (musicTrackNames.isEmpty()) return;
-        int nextIndex = (currentMusicIndex + 1) % musicTrackNames.size();
-        playMusic(musicTrackNames.get(nextIndex));
+    private void stopCrossfadeAndCleanup() {
+        // Cancel any running crossfade timer
+        if (crossfadeTimer != null) {
+            crossfadeTimer.cancel();
+            crossfadeTimer = null;
+        }
+        // Stop and dispose nextMusicPlayer if it exists
+        if (nextMusicPlayer != null) {
+            try {
+                nextMusicPlayer.stop();
+                nextMusicPlayer.dispose();
+            } catch (Exception ignored) {}
+            nextMusicPlayer = null;
+        }
+        // Stop and dispose currentMusicPlayer if it exists
+        if (currentMusicPlayer != null) {
+            try {
+                currentMusicPlayer.stop();
+                currentMusicPlayer.dispose();
+            } catch (Exception ignored) {}
+            currentMusicPlayer = null;
+        }
     }
 
     /**
-     * Plays the previous music track in the list.
-     * If the current track is the first one, it loops back to the last track.
+     * Crossfades from the current music player to the next media.
      */
     private void crossfadeTo(Media nextMedia) {
+        // --- NEW: Cancel any previous crossfade before starting a new one ---
+        if (crossfadeTimer != null) {
+            crossfadeTimer.cancel();
+            crossfadeTimer = null;
+        }
+
         if (currentMusicPlayer == null) {
             currentMusicPlayer = new MediaPlayer(nextMedia);
             applyMusicSettings(currentMusicPlayer);
@@ -346,8 +373,8 @@ public class AudioManager {
         nextMusicPlayer.play();
 
         double fadeDuration = SETTINGS.Config.AUDIO_CROSSFADE_DURATION_MS.getValue() / 1000.0;
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
+        crossfadeTimer = new Timer();
+        crossfadeTimer.scheduleAtFixedRate(new TimerTask() {
             double t = 0;
 
             @Override
@@ -363,7 +390,8 @@ public class AudioManager {
                     }
                 });
                 if (progress >= 1.0) {
-                    timer.cancel();
+                    crossfadeTimer.cancel();
+                    crossfadeTimer = null;
                     Platform.runLater(() -> {
                         if (currentMusicPlayer != null) {
                             currentMusicPlayer.stop();
@@ -379,9 +407,18 @@ public class AudioManager {
     }
 
     /**
-     * Applies audio Settings for music
-     *
-     * @param player the MediaPlayer to apply settings to
+     * Plays the next music track in the list.
+     * If the current track is the last one, it loops back to the first track.
+     */
+    public void playNextMusic() {
+        if (musicTrackNames.isEmpty()) return;
+        int nextIndex = (currentMusicIndex + 1) % musicTrackNames.size();
+        playMusic(musicTrackNames.get(nextIndex));
+    }
+
+    /**
+     * Plays the previous music track in the list.
+     * If the current track is the first one, it loops back to the last track.
      */
     private void applyMusicSettings(MediaPlayer player) {
         try {

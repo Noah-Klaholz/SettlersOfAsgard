@@ -27,7 +27,7 @@ public class MusicManager {
     }
     
     /**
-     * Gets the singleton instance of MusicManager.
+     * Gets the singleton instance of MusicManager.S
      *
      * @return The MusicManager instance
      */
