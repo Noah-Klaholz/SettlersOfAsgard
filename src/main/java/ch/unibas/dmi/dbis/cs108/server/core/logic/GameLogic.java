@@ -103,7 +103,7 @@ public class GameLogic implements GameLogicInterface {
                     LOGGER.warning("Error processing game command: " + command + " led to response: " + response);
                     notifier.sendMessageToPlayer(command.getPlayer().getName(), response);
                 } else {
-                    LOGGER.info("Command processed successfully: " + response);
+                    //LOGGER.info("Command processed successfully: " + response);
                 }
                 // Send an updated version of the GameState to all players
                 notifier.broadcastMessage(gameState.createDetailedStatusMessage());
