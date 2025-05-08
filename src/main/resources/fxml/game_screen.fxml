@@ -133,10 +133,6 @@
                                   onMouseClicked="#handleCardClick"
                                   onMouseEntered="#handleCardMouseEntered"
                                   onMouseExited="#handleCardMouseExited"/>
-                            <StackPane id="statue" styleClass="game-card"
-                                       onMouseClicked="#handleCardClick"
-                                       onMouseEntered="#handleCardMouseEntered"
-                                       onMouseExited="#handleCardMouseExited"/>
                         </FlowPane>
                     </VBox>
                 </HBox>
