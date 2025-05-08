@@ -160,6 +160,10 @@ public class NetworkController {
                 if (elapsed > SETTINGS.Config.TIMEOUT.getValue()) {
                     if (!isReconnecting) {
                         LOGGER.warning("Ping timeout detected. Attempting to reconnect...");
+                        eventDispatcher.dispatchEvent(new ConnectionEvent(
+                                ConnectionEvent.ConnectionState.DISCONNECTED,
+                                "Connection lost: " + localPlayer.getName()
+                        ));
                         attemptReconnect();
                     }
                     return;
