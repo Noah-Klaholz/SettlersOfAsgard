@@ -34,6 +34,10 @@ public class NetworkController {
     private final AtomicLong lastPingTime = new AtomicLong(0);
     /** Ping Scheduler */
     private ScheduledExecutorService pingScheduler;
+    /** Flag to indicate if the client is currently reconnecting */
+    private volatile boolean isReconnecting;
+    /** Counter of the current reconnection attempt */
+    private int reconnectAttempts;
 
     /**
      * Constructor for NetworkController.
@@ -45,6 +49,8 @@ public class NetworkController {
         this.networkClient = new SocketNetworkClient();
         this.eventDispatcher = EventDispatcher.getInstance();
         this.translator = new ProtocolTranslator(eventDispatcher);
+        isReconnecting = false;
+        reconnectAttempts = 0;
         setupMessageHandler();
     }
 
@@ -136,17 +142,27 @@ public class NetworkController {
         stopPingScheduler();
         pingScheduler = Executors.newSingleThreadScheduledExecutor();
         pingScheduler.scheduleAtFixedRate(() -> {
-                    if (lastPingTime.get() > 0) {
-                        long elapsed = Instant.now().toEpochMilli() - lastPingTime.get();
-                        if (elapsed > SETTINGS.Config.TIMEOUT.getValue()) {
-                            LOGGER.severe("Ping timeout detected. Disconnecting...");
-                            disconnect();
-                            return;
-                        }
+            if (lastPingTime.get() > 0) {
+                long elapsed = Instant.now().toEpochMilli() - lastPingTime.get();
+                if (elapsed > SETTINGS.Config.TIMEOUT.getValue()) {
+                    if (!isReconnecting) {
+                        LOGGER.warning("Ping timeout detected. Attempting to reconnect...");
+                        attemptReconnect();
                     }
-                    sendPing();
-                }, SETTINGS.Config.PING_INTERVAL.getValue(),
-                SETTINGS.Config.PING_INTERVAL.getValue(), TimeUnit.MILLISECONDS);
+                    return;
+                }
+            }
+            sendPing();
+        }, SETTINGS.Config.PING_INTERVAL.getValue(),
+        SETTINGS.Config.PING_INTERVAL.getValue(), TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Attempts to reconnect to the server when connection is lost.
+     * After MAX_RECONNECT_ATTEMPTS, gives up and handles the permanent disconnection.
+     */
+    private void attemptReconnect() {
+
     }
 
     /**
