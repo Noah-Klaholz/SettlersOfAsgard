@@ -345,10 +345,6 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                 answer = false;
                 worked = ch.handleStartGame();
                 break;
-            case DISCONNECT:
-                answer = false;
-                worked = ch.handleDisconnect();
-                break;
             case CHANGENAME:
                 answer = false;
                 worked = ch.handleChangeName(cmd);
@@ -370,9 +366,8 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                 worked = ch.handleReconnect();
                 break;
             case EXIT:
-                logger.info("Client sent an exit command.");
-                worked = ch.handleLeaveLobby();
-                server.removeClient(this);
+                worked = ch.handleExit();
+                answer = false;
                 break;
         }
         if (answer && worked) {

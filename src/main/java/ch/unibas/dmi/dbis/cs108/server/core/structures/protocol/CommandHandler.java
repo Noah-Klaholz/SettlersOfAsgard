@@ -133,10 +133,10 @@ public class CommandHandler {
      *
      * @return true if the command was handled successfully, false otherwise
      */
-    public boolean handleDisconnect() {
+    public boolean handleExit() {
         handleLeaveLobby();
         server.removeClient(ch);
-        sendMessage("OK$DISC$" + ch.getPlayerName());
+        sendMessage("OK$EXIT" + ch.getPlayerName());
         return true;
     }
 
