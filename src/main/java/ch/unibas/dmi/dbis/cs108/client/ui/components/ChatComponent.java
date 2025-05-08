@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.components;
 
+import ch.unibas.dmi.dbis.cs108.client.audio.AudioManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.LobbyChatEvent;
@@ -158,6 +159,8 @@ public class ChatComponent extends UIComponent<BorderPane> {
         globalChatButton.setSelected(true);
         lobbyChatButton.setDisable(currentLobbyId == null || currentLobbyId.isEmpty());
         addSystemMessage("Chat component initialized. Use /w <username> <message> to whisper.");
+
+        AudioManager.attachClickSoundToAllButtons(this.view);
     }
 
     /**
