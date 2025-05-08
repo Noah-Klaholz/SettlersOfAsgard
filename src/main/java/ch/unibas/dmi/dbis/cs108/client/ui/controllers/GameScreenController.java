@@ -1223,6 +1223,7 @@ public class GameScreenController extends BaseController {
             if (runes >= price) {
                 // Immediately buy the tile without confirmation
                 eventBus.publish(new BuyTileUIEvent(col, row));
+                AudioManager.getInstance().playSoundEffect(AudioTracks.Track.BUY_TILE.getFileName());
             } else {
                 showNotification("Not enough runes to buy this tile (Cost: " + price + ").");
             }
