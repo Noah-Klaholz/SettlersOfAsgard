@@ -2,6 +2,7 @@ package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.client.app.GameApplication;
+import ch.unibas.dmi.dbis.cs108.client.audio.AudioManager;
 import ch.unibas.dmi.dbis.cs108.client.core.PlayerIdentityManager;
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
@@ -100,7 +101,8 @@ public class GameScreenController extends BaseController {
     /*
      * The following fields are package‑private because the adjustment manager
      * accesses them directly.
-     */ double effectiveHexSize;
+     */
+    double effectiveHexSize;
     double gridOffsetX;
     double gridOffsetY;
     private Player localPlayer;
@@ -252,6 +254,10 @@ public class GameScreenController extends BaseController {
         setupCanvasStack();
         setupCanvasListeners();
         loadMapImage();
+
+
+        // Attach click sound to all buttons in the scene graph
+        AudioManager.attachClickSoundToAllButtons(gameCanvas.getParent().getParent());
     }
 
     /**
@@ -559,7 +565,7 @@ public class GameScreenController extends BaseController {
 
         settingsDialog.setOnSaveAction(() -> {
             boolean muted = settingsDialog.muteProperty().get();
-            double volume = settingsDialog.volumeProperty().get();
+            double volume = settingsDialog.musicVolumeProperty().get();
             String requested = settingsDialog.playerNameProperty().get();
             LOGGER.info("Settings dialog save requested – Volume: " + volume + ", Muted: " + muted
                     + ", Requested Name: " + requested);

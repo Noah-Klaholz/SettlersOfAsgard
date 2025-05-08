@@ -2,7 +2,6 @@ package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
 import ch.unibas.dmi.dbis.cs108.client.app.GameApplication;
 import ch.unibas.dmi.dbis.cs108.client.audio.AudioManager;
-import ch.unibas.dmi.dbis.cs108.client.audio.AudioTracks;
 import ch.unibas.dmi.dbis.cs108.client.core.PlayerIdentityManager;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
@@ -130,6 +129,9 @@ public class LobbyScreenController extends BaseController {
             errorMessage.setVisible(false);
             errorMessage.setManaged(false);
             requestLobbyList();
+
+            // Attach click sound to all buttons in the scene graph
+            AudioManager.attachClickSoundToAllButtons(rootPane);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Critical error during LobbyScreenController initialization", e);
             showError("Failed to initialize lobby screen. Please try returning to the main menu.");
@@ -770,7 +772,7 @@ public class LobbyScreenController extends BaseController {
      */
     private void handleSettingsSave() {
         boolean muted = settingsDialog.muteProperty().get();
-        double volume = settingsDialog.volumeProperty().get();
+        double volume = settingsDialog.musicVolumeProperty().get();
         String requestedName = settingsDialog.playerNameProperty().get();
         LOGGER.info("Settings dialog save requested - Volume: " + volume + ", Muted: " + muted
                 + ", Requested Name: " + requestedName);
@@ -1033,4 +1035,3 @@ public class LobbyScreenController extends BaseController {
         }
     }
 }
-

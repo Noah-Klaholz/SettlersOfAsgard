@@ -1,7 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
 import ch.unibas.dmi.dbis.cs108.client.audio.AudioManager;
-import ch.unibas.dmi.dbis.cs108.client.audio.AudioTracks;
 import ch.unibas.dmi.dbis.cs108.client.core.PlayerIdentityManager;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
@@ -93,6 +92,9 @@ public class MainMenuController extends BaseController {
             setupEventHandlers();
             setupChatComponent(); // Call this after localPlayer is set
             establishServerConnection();
+
+            // Attach click sound to all buttons in the scene graph
+            AudioManager.attachClickSoundToAllButtons(mainMenuRoot);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Critical error during MainMenuController initialization", e);
             displayInitializationError("Error initializing main menu interface.");
@@ -305,7 +307,7 @@ public class MainMenuController extends BaseController {
 
         settingsDialog.setOnSaveAction(() -> {
             boolean muted = settingsDialog.muteProperty().get();
-            double volume = settingsDialog.volumeProperty().get();
+            double volume = settingsDialog.musicVolumeProperty().get();
             String requestedName = settingsDialog.playerNameProperty().get();
             LOGGER.info("Settings dialog save requested - Volume: " + volume + ", Muted: " + muted
                     + ", Requested Name: " + requestedName);
