@@ -7,6 +7,7 @@ import ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher;
 import ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
+import javafx.application.Platform;
 
 import java.time.Instant;
 import java.util.concurrent.Executors;
@@ -38,6 +39,12 @@ public class NetworkController {
     private volatile boolean isReconnecting;
     /** Counter of the current reconnection attempt */
     private int reconnectAttempts;
+    /** The ip of the server (saved for reconnection attempts) */
+    String serverHost;
+    /** The port of the connection (saved for reconnection attempts) */
+    int serverPort;
+    /** Reconnect Scheduler */
+    private ScheduledExecutorService reconnectTimer;
 
     /**
      * Constructor for NetworkController.
@@ -51,6 +58,7 @@ public class NetworkController {
         this.translator = new ProtocolTranslator(eventDispatcher);
         isReconnecting = false;
         reconnectAttempts = 0;
+        reconnectTimer = Executors.newSingleThreadScheduledExecutor();
         setupMessageHandler();
     }
 
@@ -83,6 +91,9 @@ public class NetworkController {
      * @param port The server port number.
      */
     public void connect(String host, int port) {
+        // save host and port for reconnection attempts
+        this.serverHost = host;
+        this.serverPort = port;
         eventDispatcher.dispatchEvent(new ConnectionEvent(
                 ConnectionEvent.ConnectionState.CONNECTING,
                 "Connecting to " + host + ":" + port));
@@ -107,6 +118,8 @@ public class NetworkController {
      * Sends an exit message to the server and stops the ping scheduler.
      */
     public void disconnect() {
+        isReconnecting = false;
+        reconnectAttempts = 0;
         if (networkClient.isConnected()) {
             String disconnectMessage = translator.formatExit(localPlayer.getName());
             networkClient.send(disconnectMessage)
@@ -157,12 +170,77 @@ public class NetworkController {
         SETTINGS.Config.PING_INTERVAL.getValue(), TimeUnit.MILLISECONDS);
     }
 
+
+
     /**
      * Attempts to reconnect to the server when connection is lost.
      * After MAX_RECONNECT_ATTEMPTS, gives up and handles the permanent disconnection.
      */
     private void attemptReconnect() {
+        if (isReconnecting || reconnectAttempts >= SETTINGS.Config.MAX_RECONNECT_ATTEMPTS.getValue()) {
+            return;
+        }
+        isReconnecting = true;
+        reconnectAttempts++;
+        if (networkClient.isConnected()) {
+            String reconnectMessage = translator.formatReconnect();
+            networkClient.send(reconnectMessage)
+                    .exceptionally(ex -> {
+                        LOGGER.warning("Error sending reconnect message: " + ex.getMessage());
+                        return null;
+                    });
+        }
 
+        reconnectTimer.schedule(() -> {
+            if (serverHost == null || serverPort == 0) {
+                LOGGER.warning("No host or port specified for reconnect attempt.");
+                handlePermanentDisconnection();
+                return;
+            }
+            LOGGER.info("Attempting reconnect (" + reconnectAttempts + "/" + SETTINGS.Config.MAX_RECONNECT_ATTEMPTS.getValue() + ")");
+            LOGGER.info("Attempting to reconnect to " + serverHost + ":" + serverPort + "...");
+            networkClient.connect(serverHost, serverPort)
+                    .thenRun(() -> {
+                        // Successful
+                        isReconnecting = false;
+                        reconnectAttempts = 0;
+                        lastPingTime.set(0);
+                        LOGGER.info("Reconnected to successfully!");
+                        eventDispatcher.dispatchEvent(new ConnectionEvent(
+                            ConnectionEvent.ConnectionState.CONNECTED,
+                            "Reconnected to server"));
+                        startPingScheduler();
+                        stopReconnectTimer();
+                    })
+                    .exceptionally(ex -> {
+                        // Failed
+                        LOGGER.warning("Error reconnecting: " + ex.getMessage());
+                        if (reconnectAttempts >= SETTINGS.Config.MAX_RECONNECT_ATTEMPTS.getValue()) {
+                            handlePermanentDisconnection();
+                        }
+                        else {
+                            attemptReconnect();
+                        }
+                        return null;
+                    });
+        },SETTINGS.Config.RECONNECT_DELAYS_MS.getValue(), TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * This method is responsible for handling a permanent disconnection.
+     */
+    private void handlePermanentDisconnection() {
+        eventDispatcher.dispatchEvent(new ConnectionEvent(
+                ConnectionEvent.ConnectionState.DISCONNECTED,
+                "Connection lost. Server closed the connection."));
+        stopPingScheduler();
+        stopReconnectTimer();
+        networkClient.disconnect();
+        isReconnecting = false;
+        reconnectAttempts = 0;
+        lastPingTime.set(0);
+        Platform.exit();
+        System.exit(0);
     }
 
     /**
@@ -173,6 +251,18 @@ public class NetworkController {
         if (pingScheduler != null && !pingScheduler.isShutdown()) {
             pingScheduler.shutdownNow();
             pingScheduler = null;
+        }
+    }
+
+    /**
+     * Stops the reconnection scheduler if it is running.
+     * This method is called when the reconnection attempt was
+     * either successful or failed.
+     */
+    private void stopReconnectTimer() {
+        if (reconnectTimer != null && !reconnectTimer.isShutdown()) {
+            reconnectTimer.shutdownNow();
+            reconnectTimer = null;
         }
     }
 

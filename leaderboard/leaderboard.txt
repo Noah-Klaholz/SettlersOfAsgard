@@ -3,8 +3,8 @@ noahklaholz: 6081
 odin: 725
 thor: 640
 noi: 572
-vincent: 432
-vincent2: 432
+vincent: 482
+vincent2: 482
 nahk: 423
 l: 412
 loki: 402
