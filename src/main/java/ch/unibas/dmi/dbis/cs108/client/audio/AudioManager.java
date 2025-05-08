@@ -371,7 +371,7 @@ public class AudioManager {
                         }
                         currentMusicPlayer = nextMusicPlayer;
                         nextMusicPlayer = null;
-                        currentMusicPlayer.setVolume(musicVolume * (muted ? 0 : 1));
+                        applyMusicSettings(currentMusicPlayer);
                     });
                 }
             }
