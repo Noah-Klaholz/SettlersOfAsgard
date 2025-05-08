@@ -15,6 +15,8 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.PlayerJoinedLobbyEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.PlayerLeftLobbyEvent;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
 
 import java.util.Arrays;
 import java.util.List;
@@ -301,6 +303,50 @@ public class CommunicationMediator {
                         return ConnectionEvent.class;
                     }
                 });
+
+        EventDispatcher.getInstance().registerListener(ShutdownEvent.class,
+                new EventDispatcher.EventListener<ShutdownEvent>() {
+                    @Override
+                    public void onEvent(ShutdownEvent event) {
+                        // Notify UI that shutdown is happening
+                        UIEventBus.getInstance().publish(new GlobalChatEvent(
+                                "⚠ " + event.getReason(), "System", GlobalChatEvent.ChatType.SYSTEM));
+
+                        // Show dialog and exit app gracefully
+                        Platform.runLater(() -> {
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setTitle("Server Shutdown");
+                            alert.setHeaderText("The server has requested shutdown.");
+                            alert.setContentText(event.getReason());
+                            alert.setOnCloseRequest(e -> {
+                                Platform.exit();
+                                System.exit(0);
+                            });
+
+                            // Auto-close after 2 seconds if user doesn't respond
+                            new Thread(() -> {
+                                try {
+                                    Thread.sleep(2000);
+                                    if (alert.isShowing()) {
+                                        Platform.runLater(() -> {
+                                            alert.close();
+                                            Platform.exit();
+                                            System.exit(0);
+                                        });
+                                    }
+                                } catch (InterruptedException ignored) {}
+                            }).start();
+
+                            alert.showAndWait();
+                        });
+                    }
+
+                    @Override
+                    public Class<ShutdownEvent> getEventType() {
+                        return ShutdownEvent.class;
+                    }
+                });
+
 
         // Name Change Events
         EventDispatcher.getInstance().registerListener(NameChangeResponseEvent.class,

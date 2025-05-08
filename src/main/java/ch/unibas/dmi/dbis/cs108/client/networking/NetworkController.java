@@ -5,6 +5,7 @@ import ch.unibas.dmi.dbis.cs108.client.networking.core.NetworkClient;
 import ch.unibas.dmi.dbis.cs108.client.networking.core.SocketNetworkClient;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.EventDispatcher;
+import ch.unibas.dmi.dbis.cs108.client.networking.events.ShutdownEvent;
 import ch.unibas.dmi.dbis.cs108.client.networking.protocol.ProtocolTranslator;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import javafx.application.Platform;
@@ -276,15 +277,14 @@ public class NetworkController {
         synchronized (this) {
             if (reconnectAttempts >= SETTINGS.Config.MAX_RECONNECT_ATTEMPTS.getValue()) {
                 isReconnecting = false;
-                handlePermanentDisconnection();
+                eventDispatcher.dispatchEvent(new ShutdownEvent("Failed to reconnect to the server."));
             } else {
-                LOGGER.warning("Reconnect failed (" + reconnectAttempts +
-                        "/" + SETTINGS.Config.MAX_RECONNECT_ATTEMPTS.getValue() +
-                        "): " + ex.getMessage());
-                attemptReconnect(); // Try again
+                LOGGER.warning("Reconnect failed (" + reconnectAttempts + "/" + SETTINGS.Config.MAX_RECONNECT_ATTEMPTS.getValue() + "): " + ex.getMessage());
+                attemptReconnect();
             }
         }
     }
+
 
     /**
      * This method is called when the reconnection attempt was successful.
@@ -301,24 +301,6 @@ public class NetworkController {
                 "Reconnected to server"));
         startPingScheduler();
         stopReconnectTimer();
-    }
-
-    /**
-     * This method is responsible for handling a permanent disconnection.
-     */
-    private void handlePermanentDisconnection() {
-        eventDispatcher.dispatchEvent(new ConnectionEvent(
-                ConnectionEvent.ConnectionState.DISCONNECTED,
-                "Connection lost. Server closed the connection."));
-        stopPingScheduler();
-        stopReconnectTimer();
-        networkClient.disconnect();
-        isReconnecting = false;
-        reconnectAttempts = 0;
-        lastPingTime.set(0);
-        // TODO: Find a better solution
-        Platform.exit();
-        System.exit(0);
     }
 
     /**
