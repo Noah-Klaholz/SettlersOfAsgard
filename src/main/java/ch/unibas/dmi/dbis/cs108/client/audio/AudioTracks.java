@@ -10,6 +10,7 @@ public class AudioTracks {
         USE_ARTIFACT("effect_useArtifact"),
         FANFARE("effect_fanfare"),
         BUY_TILE("effect_buyTile"),
+        MESSAGE_SENT("effect_messageSent"),
 
         // Music tracks
         MAIN_MENU_CHOIR("music_mainMenuChoir"),
