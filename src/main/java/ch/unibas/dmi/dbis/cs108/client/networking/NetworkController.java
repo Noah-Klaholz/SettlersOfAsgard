@@ -180,6 +180,11 @@ public class NetworkController {
         if (isReconnecting || reconnectAttempts >= SETTINGS.Config.MAX_RECONNECT_ATTEMPTS.getValue()) {
             return;
         }
+
+        if (reconnectTimer == null || reconnectTimer.isShutdown()) {
+            reconnectTimer = Executors.newSingleThreadScheduledExecutor();
+        }
+
         isReconnecting = true;
         reconnectAttempts++;
         if (networkClient.isConnected()) {
@@ -239,6 +244,7 @@ public class NetworkController {
         isReconnecting = false;
         reconnectAttempts = 0;
         lastPingTime.set(0);
+        // TODO: Find a better solution
         Platform.exit();
         System.exit(0);
     }

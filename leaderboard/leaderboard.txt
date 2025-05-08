@@ -16,3 +16,4 @@ vincent3: 90
 vincent4: 50
 vincen2: 50
 vincen1: 40
+vince: 10
