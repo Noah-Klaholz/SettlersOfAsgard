@@ -3,8 +3,9 @@ package ch.unibas.dmi.dbis.cs108.client.audio;
 public class AudioTracks {
     public enum Track {
         // Sound effects
-        INTRO_EFFECT("effect_logo"), // placeHolder
+        INTRO_EFFECT("effect_logo"),
         BUTTON_CLICK("effect_button"),
+        MUTE_UNMUTE("effect_muteUnmute"),
         PLACE_STRUCTURE("effect_placeStructure"),
         USE_ARTIFACT("effect_useArtifact"),
         FANFARE("effect_fanfare"),
