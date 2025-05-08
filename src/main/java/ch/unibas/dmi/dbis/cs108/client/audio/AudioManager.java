@@ -3,9 +3,12 @@ package ch.unibas.dmi.dbis.cs108.client.audio;
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import javafx.application.Platform;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.control.Button;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -42,7 +45,9 @@ public class AudioManager {
     /** Index of the currently playing music track */
     private int currentMusicIndex = 0;
     /** Volume level (0.0 to 1.0) */
-    private double volume = 0.5;
+    private double musicVolume = 0.5;
+    /** Effects volume level (0.0 to 1.0) */
+    private double effectsVolume = 0.5;
     /** Flag to indicate if audio is muted */
     private boolean muted = false;
     /** Resource loader for loading audio files */
@@ -351,10 +356,10 @@ public class AudioManager {
                 double progress = Math.min(t / fadeDuration, 1.0);
                 Platform.runLater(() -> {
                     if (currentMusicPlayer != null) {
-                        currentMusicPlayer.setVolume(volume * (1 - progress) * (muted ? 0 : 1));
+                        currentMusicPlayer.setVolume(musicVolume * (1 - progress) * (muted ? 0 : 1));
                     }
                     if (nextMusicPlayer != null) {
-                        nextMusicPlayer.setVolume(volume * progress * (muted ? 0 : 1));
+                        nextMusicPlayer.setVolume(musicVolume * progress * (muted ? 0 : 1));
                     }
                 });
                 if (progress >= 1.0) {
@@ -366,7 +371,7 @@ public class AudioManager {
                         }
                         currentMusicPlayer = nextMusicPlayer;
                         nextMusicPlayer = null;
-                        currentMusicPlayer.setVolume(volume * (muted ? 0 : 1));
+                        currentMusicPlayer.setVolume(musicVolume * (muted ? 0 : 1));
                     });
                 }
             }
@@ -374,14 +379,14 @@ public class AudioManager {
     }
 
     /**
-     * Stops the currently playing music.
+     * Applies audio Settings for music
      *
      * @param player the MediaPlayer to apply settings to
      */
     private void applyMusicSettings(MediaPlayer player) {
         try {
-            double effectiveVolume = volume * (muted ? 0 : 1);
-            LOGGER.info("Applying settings: volume=" + volume + ", muted=" + muted +
+            double effectiveVolume = musicVolume * (muted ? 0 : 1);
+            LOGGER.info("Applying settings: volume=" + musicVolume + ", muted=" + muted +
                     ", effective volume=" + effectiveVolume);
             player.setVolume(effectiveVolume);
         } catch (Exception e) {
@@ -411,7 +416,7 @@ public class AudioManager {
 
         try {
             clip.stop(); // Interrupt previous if still playing
-            clip.setVolume(volume * (muted ? 0 : 1));
+            clip.setVolume(effectsVolume * (muted ? 0 : 1));
             clip.play();
             LOGGER.info("Playing sound effect: " + name);
         } catch (Exception e) {
@@ -423,13 +428,23 @@ public class AudioManager {
     /**
      * Sets the volume level for all audio playbacks.
      *
-     * @param volume the volume level (0.0 to 1.0)
+     * @param musicVolume the volume level (0.0 to 1.0)
      */
-    public void setVolume(double volume) {
-        this.volume = volume;
+    public void setMusicVolume(double musicVolume) {
+        this.musicVolume = musicVolume;
         if (currentMusicPlayer != null) {
-            currentMusicPlayer.setVolume(volume * (muted ? 0 : 1));
+            currentMusicPlayer.setVolume(musicVolume * (muted ? 0 : 1));
         }
+        // AudioClips get volume set on play
+    }
+
+    /**
+     * Sets the volume level for sound effects.
+     *
+     * @param effectsVolume the volume level (0.0 to 1.0)
+     */
+    public void setEffectsVolume(double effectsVolume) {
+        this.effectsVolume = effectsVolume;
         // AudioClips get volume set on play
     }
 
@@ -441,7 +456,7 @@ public class AudioManager {
     public void setMute(boolean mute) {
         this.muted = mute;
         if (currentMusicPlayer != null) {
-            currentMusicPlayer.setVolume(volume * (muted ? 0 : 1));
+            currentMusicPlayer.setVolume(musicVolume * (muted ? 0 : 1));
         }
     }
 
@@ -450,8 +465,17 @@ public class AudioManager {
      *
      * @return the current volume level (0.0 to 1.0)
      */
-    public double getVolume() {
-        return volume;
+    public double getMusicVolume() {
+        return musicVolume;
+    }
+
+    /**
+     * Gets the current effects volume level.
+     *
+     * @return the current effects volume level (0.0 to 1.0)
+     */
+    public double getEffectsVolume() {
+        return effectsVolume;
     }
 
     /**
@@ -488,5 +512,29 @@ public class AudioManager {
      */
     public boolean isAudioPlaybackAvailable() {
         return audioPlaybackAvailable;
+    }
+
+    /**
+     * Recursively attaches click sound to all Button nodes in the given parent node.
+     */
+    public static void attachClickSoundToAllButtons(Parent parent) {
+        for (Node node : parent.getChildrenUnmodifiable()) {
+            if (node instanceof Button) {
+                AudioManager.attachClickSound((Button) node);
+            } else if (node instanceof Parent) {
+                attachClickSoundToAllButtons((Parent) node);
+            }
+        }
+    }
+
+    /**
+     * Static utility to attach a click sound effect to a button.
+     */
+    public static void attachClickSound(Button button) {
+        if (button != null) {
+            button.addEventHandler(javafx.event.ActionEvent.ACTION, event -> {
+                AudioManager.getInstance().playSoundEffect(AudioTracks.Track.BUTTON_CLICK.getFileName());
+            });
+        }
     }
 }
