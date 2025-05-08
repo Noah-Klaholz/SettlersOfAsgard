@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.components;
 
+import ch.unibas.dmi.dbis.cs108.client.audio.AudioTracks;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.StylesheetLoader;
 import ch.unibas.dmi.dbis.cs108.client.audio.AudioManager;
 import javafx.animation.FadeTransition;
@@ -28,9 +29,9 @@ public class SettingsDialog extends UIComponent<StackPane> {
     /** The main VBOX of the dialog */
     private final VBox dialogContent;
     /** The music volume property for audio settings */
-    private final SimpleDoubleProperty musicVolumeProperty = new SimpleDoubleProperty(50);
+    private final SimpleDoubleProperty musicVolumeProperty = new SimpleDoubleProperty(80);
     /** The effects volume property for audio settings */
-    private final SimpleDoubleProperty effectsVolumeProperty = new SimpleDoubleProperty(50);
+    private final SimpleDoubleProperty effectsVolumeProperty = new SimpleDoubleProperty(80);
     /** The mute property for audio settings */
     private final BooleanProperty muteProperty = new SimpleBooleanProperty(false);
     /** The player name property */
@@ -202,6 +203,7 @@ public class SettingsDialog extends UIComponent<StackPane> {
         CheckBox muteCheckbox = new CheckBox();
         muteCheckbox.selectedProperty().bindBidirectional(muteProperty);
         muteProperty.addListener((obs, oldVal, newVal) -> {
+            AudioManager.getInstance().playSoundEffect(AudioTracks.Track.MUTE_UNMUTE.getFileName());
             volumeSlider.setDisable(newVal);
             effectVolumeSlider.setDisable(newVal);
             AudioManager.getInstance().setMute(newVal);

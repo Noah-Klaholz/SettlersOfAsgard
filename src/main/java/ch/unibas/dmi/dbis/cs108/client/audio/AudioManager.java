@@ -46,9 +46,9 @@ public class AudioManager {
     /** Timer for crossfade transitions */
     private Timer crossfadeTimer = null;
     /** Volume level (0.0 to 1.0) */
-    private double musicVolume = 0.5;
+    private double musicVolume = 0.8;
     /** Effects volume level (0.0 to 1.0) */
-    private double effectsVolume = 0.5;
+    private double effectsVolume = 0.8;
     /** Flag to indicate if audio is muted */
     private boolean muted = false;
     /** Resource loader for loading audio files */
