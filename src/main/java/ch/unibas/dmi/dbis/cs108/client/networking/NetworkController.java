@@ -75,13 +75,26 @@ public class NetworkController {
 
             @Override
             public void onDisconnect(Throwable cause) {
-                Logger.getGlobal().info("NetworkController: Disconnected from server: " + cause.getMessage());
-                stopPingScheduler();
-                eventDispatcher.dispatchEvent(new ConnectionEvent(
-                        ConnectionEvent.ConnectionState.DISCONNECTED,
-                        "Connection lost: " + cause.getMessage()));
+                Platform.runLater(() -> handleConnectionLost(cause));
             }
         });
+    }
+
+    /**
+     * This method is called when the connection is lost.
+     *
+     * @param cause the cause of the connection loss.
+     */
+    private void handleConnectionLost(Throwable cause) {
+        LOGGER.info("Connection lost: " + cause.getMessage());
+        stopPingScheduler();
+        if (!isReconnecting) {
+            eventDispatcher.dispatchEvent(new ConnectionEvent(
+                    ConnectionEvent.ConnectionState.DISCONNECTED,
+                    "Connection lost: " + cause.getMessage()
+            ));
+            attemptReconnect();
+        }
     }
 
     /**
@@ -120,6 +133,11 @@ public class NetworkController {
     public void disconnect() {
         isReconnecting = false;
         reconnectAttempts = 0;
+        stopReconnectTimer();
+        stopPingScheduler();
+        eventDispatcher.dispatchEvent(new ConnectionEvent(
+                ConnectionEvent.ConnectionState.DISCONNECTED,
+                "Lost connection to server."));
         if (networkClient.isConnected()) {
             String disconnectMessage = translator.formatExit(localPlayer.getName());
             networkClient.send(disconnectMessage)
@@ -127,17 +145,24 @@ public class NetworkController {
                         LOGGER.warning("Error sending exit message: " + ex.getMessage());
                         return null;
                     })
-                    .thenRun(() -> {
-                        stopPingScheduler();
-                        networkClient.disconnect();
-                    });
+                    .thenRun(this::performDisconnect);
         } else {
             networkClient.disconnect();
         }
+    }
+
+    /**
+     * This method is called when the client disconnects from the server.
+     */
+    private void performDisconnect() {
+        networkClient.disconnect();
         eventDispatcher.dispatchEvent(new ConnectionEvent(
                 ConnectionEvent.ConnectionState.DISCONNECTED,
-                "Lost connection to server."));
+                "Disconnected by user"
+        ));
+        lastPingTime.set(0);
     }
+
 
     /**
      * Checks if the client is connected to the server.

@@ -1,5 +1,5 @@
 noahklaholz2: 7263
-noahklaholz: 6131
+noahklaholz: 6181
 odin: 725
 thor: 640
 noi: 572
@@ -13,7 +13,7 @@ noah: 265
 vincent1: 220
 noh: 188
 vincent3: 90
+vince: 60
 vincent4: 50
 vincen2: 50
 vincen1: 40
-vince: 10

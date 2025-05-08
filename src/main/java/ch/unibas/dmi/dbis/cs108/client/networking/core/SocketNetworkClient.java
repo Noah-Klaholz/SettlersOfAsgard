@@ -53,21 +53,26 @@ public class SocketNetworkClient implements NetworkClient {
                 running = true;
                 startReaderThread();
                 future.complete(null);
-                LOGGER.info("Connected to " + host + ":" + port);
             } catch (Exception e) {
-                // Ensure the socket is closed if a connection error occurs.
-                if (socket != null && !socket.isClosed()) {
-                    try {
-                        socket.close();
-                    } catch (IOException ioEx) {
-                        LOGGER.log(Level.WARNING, "Error closing socket after connection failure", ioEx);
-                    }
-                }
+                cleanupResources();
                 future.completeExceptionally(e);
-                LOGGER.log(Level.SEVERE, "Failed to connect", e);
             }
         });
         return future;
+    }
+
+    private void cleanupResources() {
+        try {
+            if (readerThread != null) {
+                readerThread.interrupt();
+            }
+            if (out != null) out.close();
+            if (in != null) in.close();
+            if (socket != null) socket.close();
+        }
+        catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Failed to close socket", e);
+        }
     }
 
     /**
@@ -80,18 +85,24 @@ public class SocketNetworkClient implements NetworkClient {
                 String line;
                 while (running && (line = in.readLine()) != null) {
                     final String message = line;
-                    if (messageHandler != null) {
-                        executorService.submit(() -> messageHandler.onMessage(message));
-                    }
+                    executorService.submit(() -> {
+                        if (messageHandler != null) {
+                            messageHandler.onMessage(message);
+                        }
+                    });
                 }
             } catch (IOException e) {
                 if (running) {
-                    notifyDisconnect(e);
+                    executorService.submit(() -> {
+                        if (messageHandler != null) {
+                            messageHandler.onDisconnect(e);
+                        }
+                    });
                 }
             } finally {
-                notifyDisconnect(new IOException("Stream closed"));
+                cleanupResources();
             }
-        }, "SocketReaderThread");
+        });
         readerThread.setDaemon(true);
         readerThread.start();
     }
@@ -102,19 +113,9 @@ public class SocketNetworkClient implements NetworkClient {
      */
     @Override
     public void disconnect() {
+        if (!running) return;
         running = false;
-        try {
-            if (readerThread != null) {
-                readerThread.interrupt();
-            }
-            if (out != null) out.close();
-            if (in != null) in.close();
-            if (socket != null) socket.close();
-            LOGGER.info("Disconnected from server");
-            notifyDisconnect(new IOException("Disconnected from server."));
-        } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Error during disconnect", e);
-        }
+        cleanupResources();
     }
 
     /**
