@@ -137,6 +137,9 @@ public class GameScreenController extends BaseController {
     private int pendingTooltipCol = -1;
     private boolean isTooltipDisabled = false;
 
+    /** Keeps the last round that has already been rendered. –1 ⇒ not initialised */
+    private int lastKnownRound = -1;
+
     private StatueConfirmationDialog statueConfirmationDialog;
 
     /*
@@ -460,6 +463,7 @@ public class GameScreenController extends BaseController {
         }
 
         GameState updatedState = e.getGameState();
+        detectRoundChangeAndRefresh();
 
         // Log details about the received event
         LOGGER.info(String.format("Received GameSyncEvent: Updating game state. Board size: %d tiles. Player turn: %s",
@@ -2063,6 +2067,36 @@ public class GameScreenController extends BaseController {
     }
 
     /**
+     * If the round number reported by the server changed we are at the start of a
+     * brand-new round.
+     * All cards must therefore be re-evaluated (price buffs may have expired, a
+     * statue could have been sold, …) and the “unaffordable” overlay has to be
+     * recalculated from scratch.
+     */
+    private void detectRoundChangeAndRefresh() {
+        if (gameState == null) {
+            return;
+        }
+        int currentRound = gameState.getGameRound();           // <- this is already sent by the server
+        if (currentRound != lastKnownRound) {
+            lastKnownRound = currentRound;
+            LOGGER.info("↻ New round " + currentRound + " detected – resetting card states");
+
+            Platform.runLater(() -> {                      // always touch the scene graph on the FX thread
+                /* 1.  clear every temporary style */
+                structureHand.getChildren().forEach(node -> {
+                    node.getStyleClass().removeAll("selected-card", "unaffordable-card");
+                    node.setDisable(false);
+                });
+
+                /* 2.  rebuild price modifiers and re-evaluate affordability */
+                refreshCardAffordability();   // cosmetic (shows/hides grey filter)
+                updatePurchasableStates();     // enables / disables & adds CSS class
+            });
+        }
+    }
+
+    /**
      * Centralized method to update the visual state (enabled/disabled,
      * affordable/unaffordable style)
      * of all purchasable structures based on the current player's runes.
@@ -2223,6 +2257,8 @@ public class GameScreenController extends BaseController {
             CardDetails details = getCardDetails(id); // Uses isCard=true internally
             String imageUrl = details.getImageUrl();
 
+            pane.setUserData(details);
+
             if (imageUrl != null && !imageUrl.isEmpty()) {
                 Image image = resourceLoader.getCardImage(details.getID());
 
@@ -2282,6 +2318,7 @@ public class GameScreenController extends BaseController {
     private void updateArtifactCard(Node card, CardDetails details) {
         if (card instanceof Pane pane) {
             pane.getChildren().clear();
+            pane.setUserData(details);
 
             try {
                 // Load the statue image first
@@ -2374,6 +2411,7 @@ public class GameScreenController extends BaseController {
     private void updateStatueCard(Node card, CardDetails details) {
         if (card instanceof Pane pane) {
             pane.getChildren().clear();
+            pane.setUserData(details);
 
             try {
                 // Load the statue image first
@@ -2460,6 +2498,8 @@ public class GameScreenController extends BaseController {
             runesLabel.setText("0");
             energyBar.setProgress(0.0);
         }
+        // Re-evaluate cards immediately when my rune total changed
+        Platform.runLater(this::updatePurchasableStates);
     }
 
     public void updateMap() {
