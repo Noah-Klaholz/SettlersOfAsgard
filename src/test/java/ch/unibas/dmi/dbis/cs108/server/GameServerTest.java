@@ -78,8 +78,8 @@ public class GameServerTest {
         gameServer.getClients().add(clientHandler2);
         gameServer.shutdown();
 
-        verify(clientHandler1).closeResources();
-        verify(clientHandler2).closeResources();
+        verify(clientHandler1).shutdown();
+        verify(clientHandler2).shutdown();
         assertTrue(gameServer.getClients().isEmpty());
     }
 

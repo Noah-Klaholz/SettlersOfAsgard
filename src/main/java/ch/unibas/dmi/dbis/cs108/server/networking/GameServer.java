@@ -18,41 +18,23 @@ import java.util.stream.Collectors;
  * It listens for incoming connections and creates a new ClientHandler for each client.
  */
 public class GameServer {
-    /**
-     * Logger instance for server logging
-     */
+    /** Logger instance for server logging */
     private static final Logger logger = Logger.getLogger(GameServer.class.getName());
-    /**
-     * Scheduler for periodic ping tasks to check client connection
-     */
-    private final ScheduledExecutorService pingScheduler = Executors.newScheduledThreadPool(1);
-    /**
-     * The port number on which the server listens for connections.
-     */
+    /** Scheduler for periodic ping tasks to check client connection */
+    private final ScheduledExecutorService pingScheduler;
+    /** The port number on which the server listens for connections. */
     private final int port;
-    /**
-     * Thread pool executor for handling client connections
-     */
+    /** Thread pool executor for handling client connections */
     private final ExecutorService executor;
-    /**
-     * Thread-safe list of currently connected clients
-     */
+    /** Thread-safe list of currently connected clients */
     private final List<ClientHandler> clients;
-    /**
-     * Thread-safe list of active game lobbies
-     */
+    /** Thread-safe list of active game lobbies */
     private final List<Lobby> lobbies;
-    /**
-     * Leaderboard (global)
-     */
+    /** Leaderboard (global) */
     private final Leaderboard leaderboard;
-    /**
-     * Flag indicating whether the server is currently running
-     */
-    private boolean running;
-    /**
-     * The server socket used to accept client connections
-     */
+    /** Flag indicating whether the server is currently running */
+    private volatile boolean running;
+    /** The server socket used to accept client connections */
     private ServerSocket serverSocket;
 
     /**
@@ -65,6 +47,7 @@ public class GameServer {
         this.port = port;
         clients = new CopyOnWriteArrayList<>();
         executor = Executors.newCachedThreadPool();
+        this.pingScheduler = Executors.newScheduledThreadPool(1);
         this.lobbies = new CopyOnWriteArrayList<>();
         this.leaderboard = new Leaderboard();
     }
@@ -79,7 +62,12 @@ public class GameServer {
             logger.info("Server started on port " + port);
 
             // Schedule ping task to check if clients are still connected
-            pingScheduler.scheduleAtFixedRate(this::pingClients, SETTINGS.Config.PING_INTERVAL.getValue(), SETTINGS.Config.PING_INTERVAL.getValue(), TimeUnit.MILLISECONDS);
+            pingScheduler.scheduleAtFixedRate(
+                    this::checkClientConnections,
+                    SETTINGS.Config.PING_INTERVAL.getValue(),
+                    SETTINGS.Config.PING_INTERVAL.getValue(),
+                    TimeUnit.MILLISECONDS
+            );
 
             while (running) {
                 try {
@@ -109,63 +97,30 @@ public class GameServer {
         pingScheduler.shutdown();
         // Disconnect all clients
         broadcast("STDN$");
-        for (ClientHandler client : clients) {  //forcefully close all sockets and clear the clients list
-            try {
-                client.closeResources();
-            } catch (Exception e) {
-                logger.warning("Error closing client socket: " + e.getMessage());
-            }
-        }
+        pingScheduler.shutdown();
+        executor.shutdown();
+        clients.forEach(ClientHandler::shutdown);
         clients.clear();
-        if (executor != null) {
-            executor.shutdown();
-            try {
-                if (!executor.awaitTermination(5, java.util.concurrent.TimeUnit.SECONDS)) {
-                    executor.shutdownNow();
-                }
-            } catch (InterruptedException e) {
-                logger.warning("Executor shutdown interrupted: " + e.getMessage());
-                executor.shutdownNow();
-                Thread.currentThread().interrupt();
-            }
-        }
-
-        if (serverSocket != null && !serverSocket.isClosed()) {
-            try {
-                serverSocket.close();
-            } catch (IOException e) {
-                logger.warning("Error closing server socket: " + e.getMessage());
-            }
+        try {
+            if (serverSocket != null) serverSocket.close();
+        } catch (IOException e) {
+            logger.warning("Error closing server socket: " + e.getMessage());
         }
     }
 
-    /**
-     * Sends a ping message to all connected running clients.
-     * If the player is disconnected and should be removed, call the removeClient method.
-     * Else if the player is running, send ping.
-     * Else mark the player as disconnected.
-     */
-    public void pingClients() {
-        for (ClientHandler client : clients) {
-            if (client.isDisconnected) {
-                if (client.shouldRemove()) {
-                    logger.info("Client " + client + " is disconnected. Removing from list.");
+    public void checkClientConnections() {
+        clients.forEach(client -> {
+            if (client.isDisconnected()) {
+                if (client.isShutdown()) {
                     removeClient(client);
                 }
-                continue;
+                return;
             }
-            if (client.isRunning()) {
+
+            if (client.isConnected()) {
                 client.sendPing();
             }
-            else {
-                logger.info("Client " + client.getPlayerName() + " is not running. Marking as disconnected.");
-                client.markDisconnected();
-                Lobby lobby = client.getCurrentLobby();
-                if (lobby != null) {
-                    lobby.broadcastMessage("DISC$" + client.getPlayerName()); // Notify the players in the lobby
-                }
-            }
-        }
+        });
     }
 
     /**
@@ -174,9 +129,11 @@ public class GameServer {
      * @param message The message to broadcast
      */
     public void broadcast(String message) {
-        for (ClientHandler client : clients) {
-            client.sendMessage(message);
-        }
+        clients.stream()
+                .filter(ClientHandler::isConnected)
+                .forEach(client -> {
+                    client.sendMessage(message);
+                });
     }
 
     /**
@@ -185,8 +142,7 @@ public class GameServer {
      * @param client The client to remove
      */
     public void removeClient(ClientHandler client) {
-        if (clients.contains(client)) {
-            clients.remove(client);
+        if (clients.remove(client)) {
             Lobby clientLobby = client.getCurrentLobby();
             if (clientLobby != null) {
                 clientLobby.removePlayer(client);

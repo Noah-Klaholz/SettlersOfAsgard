@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.server.networking;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
+import ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.Lobby;
 import ch.unibas.dmi.dbis.cs108.server.core.structures.protocol.CommandHandler;
@@ -14,6 +15,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 /**
@@ -25,6 +29,12 @@ import java.util.logging.Logger;
 public class ClientHandler implements Runnable, CommunicationAPI {
     /** Logger to log logging */
     private static final Logger logger = Logger.getLogger(ClientHandler.class.getName());
+    /** Connection state connected */
+    private static final int STATE_CONNECTED = 0;
+    /** Connection state disconnected */
+    private static final int STATE_DISCONNECTED = 1;
+    /** Connection state shutdown */
+    private static final int STATE_SHUTDOWN = 2;
     /** Reference to a CommandHandler */
     private final CommandHandler ch;
     /** reference to the server */
@@ -41,12 +51,11 @@ public class ClientHandler implements Runnable, CommunicationAPI {
     private BufferedReader in;
     /** Last time a ping was sent */
     private long lastPingTime = System.currentTimeMillis();
-    /** Flag to indicate if the client handler is running */
-    private boolean running;
+    /** Timeout scheduler */
+    private final ScheduledExecutorService timeoutScheduler = Executors.newSingleThreadScheduledExecutor();
     /** 0 if the player is connected, otherwise the currentMillis of the last disconnection */
     public long lastDisconnectionTime;
-    /** A flag to indicate if the player is disconnected */
-    public boolean isDisconnected;
+    private volatile int connectionState = STATE_CONNECTED;
 
     /**
      * Constructor for the ClientHandler class.
@@ -58,17 +67,15 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         logger.setFilter(new PingFilter());
         this.socket = socket;
         this.server = server;
-        this.running = true;
-        this.isDisconnected = false;
         this.ch = new CommandHandler(this);
         try {
-            socket.setSoTimeout(SETTINGS.Config.TIMEOUT.getValue()); // 5 second timeout
+            socket.setSoTimeout(SETTINGS.Config.TIMEOUT.getValue());
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         } catch (IOException e) {
             logger.severe("Error setting up client handler: " + e.getMessage());
             closeResources();
-            running = false;
+            connectionState = STATE_SHUTDOWN;
         }
     }
 
@@ -79,17 +86,32 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      */
     @Override
     public void run() {
-        String received;
         try {
-            while (running && (received = in.readLine()) != null) {
-                processMessage(received);
+            while (connectionState != STATE_SHUTDOWN) {
+                String received;
+                try {
+                    received = in.readLine();
+                    if (received == null) {
+                        disconnect();
+                        break;
+                    }
+
+                    if (connectionState == STATE_DISCONNECTED) {
+                        reconnect();
+                    }
+
+                    processMessage(received);
+                    lastPingTime = System.currentTimeMillis();
+
+                } catch (IOException e) {
+                    if (connectionState != STATE_SHUTDOWN) {
+                        disconnect();
+                    }
+                    break;
+                }
             }
-        } catch (IOException e) {
-            logger.info("Client disconnected unexpectedly: " + e.getMessage());
         } finally {
-            closeResources();
-            server.removeClient(this); // Notify the server to remove this client
-            stop();
+            shutdown();
         }
     }
 
@@ -100,25 +122,65 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         sendMessage(NetworkProtocol.Commands.START + "$");
     }
 
+    private void checkReconnectionTimeout() {
+        if (connectionState == STATE_DISCONNECTED) {
+            if (currentLobby != null) {
+                currentLobby.endGame();
+            }
+            server.removeClient(this);
+            shutdown();
+        }
+    }
+
+    public synchronized void shutdown() {
+        if (connectionState != STATE_SHUTDOWN) {
+            connectionState = STATE_SHUTDOWN;
+            timeoutScheduler.shutdownNow();
+            closeResources();
+        }
+    }
+
+    /**
+     * Transition to connected state
+     */
+    public synchronized void reconnect() {
+        if (connectionState == STATE_DISCONNECTED) {
+            connectionState = STATE_CONNECTED;
+            if (currentLobby != null) {
+                currentLobby.broadcastMessage("RECO$" + getPlayerName());
+            }
+        }
+    }
+
+    /**
+     * Transition to disconnected state
+     */
+    public synchronized void disconnect() {
+        if (connectionState == STATE_CONNECTED) {
+            connectionState = STATE_DISCONNECTED;
+            lastDisconnectionTime = System.currentTimeMillis();
+
+            // Notify lobby
+            if (currentLobby != null) {
+                currentLobby.broadcastMessage("DISC$" + getPlayerName());
+            }
+
+            // Schedule cleanup
+            timeoutScheduler.schedule(this::checkReconnectionTimeout,
+                    SETTINGS.Config.GRACE_PERIOD.getValue(), TimeUnit.MILLISECONDS);
+        }
+    }
+
     /**
      * Closes the resources associated with the client handler.
      */
-    public void closeResources() {
+    private void closeResources() {
         try {
-            if (out != null) {
-                out.close();
-                out = null;
-            }
-            if (in != null) {
-                in.close();
-                in = null;
-            }
-            if (socket != null && !socket.isClosed()) {
-                socket.close();
-                socket = null;
-            }
+            if (out != null) out.close();
+            if (in != null) in.close();
+            if (socket != null && !socket.isClosed()) socket.close();
         } catch (IOException e) {
-            Logger.getLogger(ClientHandler.class.getName()).warning("Error closing resources: " + e.getMessage());
+            logger.warning("Error closing resources: " + e.getMessage());
         }
     }
 
@@ -129,22 +191,17 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      */
     @Override
     public void sendMessage(String message) {
-        if (out != null && socket != null && !socket.isClosed()) {
-            out.println(message);
-            if (out.checkError()) { // Check if there was an error during write
-                logger.warning("Error sending message to client, closing connection.");
-                closeResources();
-                server.removeClient(this);
-                stop();
+        if (connectionState == STATE_SHUTDOWN) return;
+
+        try {
+            if (out != null && !out.checkError()) {
+                out.println(message);
+                return;
             }
-        } else {
-            logger.info("Client socket is closed. Unable to send message: " + message);
-            if (running) {
-                server.removeClient(this);
-                closeResources();
-                stop();
-            }
+        } catch (Exception e) {
+            logger.fine("Error sending message: " + e.getMessage());
         }
+        disconnect();
     }
 
     /**
@@ -161,27 +218,15 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      * If the client does not respond within the timeout period, the client is disconnected.
      */
     public void sendPing() {
+        if (out == null || out.checkError()) {
+            disconnect();
+            return;
+        }
         if (System.currentTimeMillis() - lastPingTime > SETTINGS.Config.TIMEOUT.getValue()) {
-            markDisconnected();
+            disconnect();
         } else {
             sendMessage("PING$");
         }
-    }
-
-    /**
-     * Returns the running status of the client handler.
-     *
-     * @return true if the client handler is running, false otherwise
-     */
-    public boolean isRunning() {
-        return running;
-    }
-
-    /**
-     * Stops the client handler.
-     */
-    public void stop() {
-        running = false;
     }
 
     /**
@@ -372,25 +417,16 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         }
     }
 
-    public void markDisconnected() {
-        isDisconnected = true;
-        lastDisconnectionTime = System.currentTimeMillis();
+    public boolean isConnected() {
+        return connectionState == STATE_CONNECTED;
     }
 
-    public void markConnected() {
-        isDisconnected = false;
-        lastDisconnectionTime = 0;
+    public boolean isDisconnected() {
+        return connectionState == STATE_DISCONNECTED;
     }
 
-    /**
-     * This method checks if the clientHandler should be removed by the server.
-     * It checks if the difference of current time and last disconnection time is greater
-     * than the grace period (defined in settings).
-     *
-     * @return true if the clientHandler should be removed, false otherwise.
-     */
-    public boolean shouldRemove() {
-        long currentTime = System.currentTimeMillis();
-        return (currentTime - lastDisconnectionTime) > SETTINGS.Config.GRACE_PERIOD.getValue();
+    public boolean isShutdown() {
+        return connectionState == STATE_SHUTDOWN;
     }
+
 }
