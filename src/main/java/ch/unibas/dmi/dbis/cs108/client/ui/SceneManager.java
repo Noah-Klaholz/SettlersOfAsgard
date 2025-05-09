@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.ui;
 
+import ch.unibas.dmi.dbis.cs108.client.audio.MusicManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ThemeManager;
 import javafx.animation.FadeTransition;
@@ -32,6 +33,9 @@ public class SceneManager {
     private final Map<SceneType, NodeHolder> nodeCache = new ConcurrentHashMap<>();
     private final ResourceLoader resourceLoader;
     private Stage primaryStage;
+
+    // Track the current scene type to avoid unnecessary music changes
+    private SceneType currentSceneType;
 
     /**
      * Private constructor for singleton.
@@ -107,6 +111,13 @@ public class SceneManager {
             LOGGER.severe("Failed to load or retrieve node holder for scene: " + sceneType);
             return;
         }
+
+        // Change background music if scene type has changed
+        if (sceneType != currentSceneType) {
+            changeMusicForScene(sceneType);
+            currentSceneType = sceneType;
+        }
+
         Parent newRoot = holder.getNode();
         Scene currentScene = primaryStage.getScene();
 
@@ -134,6 +145,21 @@ public class SceneManager {
                 fadeIn.play();
             });
             fadeOut.play();
+        }
+    }
+
+    /**
+     * Changes the background music based on the scene type.
+     *
+     * @param sceneType The scene type to play music for
+     */
+    private void changeMusicForScene(SceneType sceneType) {
+        try {
+            LOGGER.info("Changing music for scene: " + sceneType);
+            // Use MusicManager to handle music selection and playback
+            MusicManager.getInstance().changeMusic(sceneType, MusicManager.SelectionMode.SEQUENTIAL);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error changing background music for scene: " + sceneType, e);
         }
     }
 

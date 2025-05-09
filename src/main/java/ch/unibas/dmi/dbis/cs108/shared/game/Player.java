@@ -18,16 +18,25 @@ import java.util.UUID;
  * Player class is responsible for creating a player object
  */
 public class Player {
-    //private final String id;
+    /** The UUID of the player */
     private final UUID playerID;
+    /** The name of the player */
     private String name;
+    /** The amount of runes the player has */
     private int runes;
+    /** The amount of energy the player has */
     private int energy;
+    /** The list of owned tiles*/
     private List<Tile> ownedTiles = new ArrayList<>();
+    /** The list of artifacts */
     private List<Artifact> artifacts = new ArrayList<>();
+    /** The list of purchasable entities */
     private List<PurchasableEntity> purchasableEntities = new ArrayList<>();
+    /** The list of monuments */
     private List<Monument> monuments = new ArrayList<>();
+    /**  The status of the player */
     private Status status;
+    /** The number of tiles the player has bought this round */
     private int roundBoughtTiles;
 
     /**
@@ -93,12 +102,19 @@ public class Player {
         status.buff(buff, value);
     }
 
+    /**
+     * Checks if the player is debuffable.
+     *
+     * @return true if the player is debuffable.
+     */
     public boolean isDebuffable() {
         return status.get(Status.BuffType.DEBUFFABLE) == 1.0;
     }
 
     /**
      * Getter for owned purchasableEntity
+     *
+     * @return the purchasableEntities
      */
     public List<PurchasableEntity> getPurchasableEntities() {
         return purchasableEntities;
@@ -106,6 +122,8 @@ public class Player {
 
     /**
      * Setter for owned purchasableEntity
+     *
+     * @param purchasableEntities the purchasableEntities to set
      */
     public void setPurchasableEntities(List<PurchasableEntity> purchasableEntities) {
         this.purchasableEntities = purchasableEntities;
@@ -113,6 +131,8 @@ public class Player {
 
     /**
      * adds a purchasableEntity to the player
+     *
+     * @param entity the purchasable entity to add
      */
     public void addPurchasableEntity(PurchasableEntity entity) {
         purchasableEntities.add(entity);
@@ -130,6 +150,8 @@ public class Player {
 
     /**
      * Getter for owned monument
+     *
+     * @return the monuments
      */
     public List<Monument> getMonuments() {
         return monuments;
@@ -137,6 +159,8 @@ public class Player {
 
     /**
      * Setter for owned monument
+     *
+     * @param monuments the monuments to set
      */
     public void setMonuments(List<Monument> monuments) {
         this.monuments = monuments;
@@ -207,6 +231,8 @@ public class Player {
 
     /**
      * Getter for artifacts
+     *
+     * @return the artifacts
      */
     public List<Artifact> getArtifacts() {
         return artifacts;
@@ -214,6 +240,8 @@ public class Player {
 
     /**
      * Setter for artifacts
+     *
+     * @param artifacts the artifacts
      */
     public void setArtifacts(List<Artifact> artifacts) {
         this.artifacts = artifacts;
@@ -223,6 +251,7 @@ public class Player {
      * adds an artifact to the player
      *
      * @param artifact Artefact
+     * @return true if the action was successful
      */
     public boolean addArtifact(Artifact artifact) {
         if (artifacts.size() < SETTINGS.Config.MAX_ARTIFACTS.getValue()) {

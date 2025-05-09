@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
 import ch.unibas.dmi.dbis.cs108.client.app.GameApplication;
+import ch.unibas.dmi.dbis.cs108.client.audio.AudioManager;
 import ch.unibas.dmi.dbis.cs108.client.core.PlayerIdentityManager;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
@@ -128,6 +129,9 @@ public class LobbyScreenController extends BaseController {
             errorMessage.setVisible(false);
             errorMessage.setManaged(false);
             requestLobbyList();
+
+            // Attach click sound to all buttons in the scene graph
+            AudioManager.attachClickSoundToAllButtons(rootPane);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Critical error during LobbyScreenController initialization", e);
             showError("Failed to initialize lobby screen. Please try returning to the main menu.");
@@ -319,6 +323,25 @@ public class LobbyScreenController extends BaseController {
         eventBus.publish(new CreateLobbyRequestEvent(name, localPlayer.getName(), maxPlayers));
         lobbyNameField.clear();
         requestLobbyList();
+    }
+
+    /**
+     * Handles the "Settings" button click. Shows the settings dialog.
+     */
+    @FXML
+    private void handleSettings() {
+        LOGGER.info("Settings button clicked.");
+
+        settingsDialog.updateAudioProperties();
+        settingsDialog.setConnectionStatus(isConnected.get(), isConnected.get() ? "Connected" : "Disconnected");
+        if (localPlayer != null) {
+            settingsDialog.playerNameProperty().set(this.localPlayer.getName());
+        } else {
+            LOGGER.warning("Cannot set player name in settings: localPlayer is null.");
+            settingsDialog.playerNameProperty().set("ErrorGuest");
+        }
+
+        showDialogAsOverlay(settingsDialog, rootPane);
     }
 
     /**
@@ -731,25 +754,6 @@ public class LobbyScreenController extends BaseController {
     }
 
     /**
-     * Handles the "Settings" button click. Shows the settings dialog.
-     */
-    @FXML
-    private void handleSettings() {
-        LOGGER.info("Settings button clicked.");
-
-        settingsDialog.setConnectionStatus(isConnected.get(), isConnected.get() ? "Connected" : "Disconnected");
-        if (localPlayer != null) {
-            settingsDialog.playerNameProperty().set(this.localPlayer.getName());
-        } else {
-            LOGGER.warning("Cannot set player name in settings: localPlayer is null.");
-            settingsDialog.playerNameProperty().set("ErrorGuest");
-        }
-        settingsDialog.setConnectionStatus(isConnected.get(), isConnected.get() ? "Connected" : "Disconnected");
-
-        showDialogAsOverlay(settingsDialog, rootPane);
-    }
-
-    /**
      * Sends a name change request to the server via the event bus.
      *
      * @param newName The desired new player name.
@@ -767,11 +771,7 @@ public class LobbyScreenController extends BaseController {
      * Checks if the player name has changed and sends an update request.
      */
     private void handleSettingsSave() {
-        boolean muted = settingsDialog.muteProperty().get();
-        double volume = settingsDialog.volumeProperty().get();
         String requestedName = settingsDialog.playerNameProperty().get();
-        LOGGER.info("Settings dialog save requested - Volume: " + volume + ", Muted: " + muted
-                + ", Requested Name: " + requestedName);
 
         if (localPlayer != null && requestedName != null && !requestedName.trim().isEmpty()
                 && !requestedName.equals(localPlayer.getName())) {
@@ -784,11 +784,6 @@ public class LobbyScreenController extends BaseController {
             if (localPlayer != null) {
                 settingsDialog.playerNameProperty().set(localPlayer.getName());
             }
-        }
-
-        if (chatComponentController != null) {
-            chatComponentController.addSystemMessage(
-                    "Audio settings saved. " + (muted ? "Muted." : "Volume: " + (int) volume + "%"));
         }
     }
 
@@ -1031,4 +1026,3 @@ public class LobbyScreenController extends BaseController {
         }
     }
 }
-

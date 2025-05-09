@@ -22,7 +22,7 @@ public class TileTooltip {
 
     public TileTooltip(Tile tile) {
         tooltip = new Tooltip();
-        tooltip.setShowDelay(Duration.ZERO);
+        tooltip.setShowDelay(Duration.millis(500)); // Show immediately
         tooltip.setHideDelay(Duration.ZERO); // Ensure it disappears immediately when mouse leaves
 
         // Create a layout with styled sections
@@ -61,7 +61,7 @@ public class TileTooltip {
 
         // Entity information if present
         if (tile.hasEntity()) {
-            GameEntity entity = EntityRegistry.getGameEntityOriginalById(tile.getEntity().getId());
+            GameEntity entity = tile.getEntity();
 
             content.getChildren().add(new Separator());
 
@@ -100,9 +100,21 @@ public class TileTooltip {
      * Closes all resources for the tooltip and hides it.
      */
     public void close() {
-        tooltip.hide();
-        tooltip.getGraphic().setVisible(false);
-        tooltip.getGraphic().setManaged(false);
+        Tooltip tooltip = getTooltip();
+        if (tooltip != null) {
+            tooltip.hide();
+
+            // Uninstall the tooltip if it has an owner
+            if (tooltip.getOwnerNode() != null) {
+                Tooltip.uninstall(tooltip.getOwnerNode(), tooltip);
+            }
+
+            // Remove graphics
+            if (tooltip.getGraphic() != null) {
+                tooltip.getGraphic().setVisible(false);
+                tooltip.getGraphic().setManaged(false);
+            }
+        }
     }
 
     /**

@@ -1,6 +1,8 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.components;
 
+import ch.unibas.dmi.dbis.cs108.client.audio.AudioTracks;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.StylesheetLoader;
+import ch.unibas.dmi.dbis.cs108.client.audio.AudioManager;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.property.*;
@@ -11,6 +13,7 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+import javax.swing.*;
 import java.util.logging.Logger;
 
 /**
@@ -19,16 +22,27 @@ import java.util.logging.Logger;
  * including player name, audio settings, and connection status.
  */
 public class SettingsDialog extends UIComponent<StackPane> {
+    /** Logger for logging events */
     private static final Logger LOGGER = Logger.getLogger(SettingsDialog.class.getName());
+    /** Title of the settings dialog */
     private static final String SETTINGS_TITLE = "Game Settings";
-
+    /** The main VBOX of the dialog */
     private final VBox dialogContent;
-    private final SimpleDoubleProperty volumeProperty = new SimpleDoubleProperty(50);
+    /** The music volume property for audio settings */
+    private final SimpleDoubleProperty musicVolumeProperty = new SimpleDoubleProperty(80);
+    /** The effects volume property for audio settings */
+    private final SimpleDoubleProperty effectsVolumeProperty = new SimpleDoubleProperty(80);
+    /** The mute property for audio settings */
     private final BooleanProperty muteProperty = new SimpleBooleanProperty(false);
+    /** The player name property */
     private final StringProperty playerNameProperty = new SimpleStringProperty("Guest");
+    /** The runnable for saving action */
     private Runnable onSaveAction;
+    /** Boolean for connectionStatue */
     private boolean isConnected = false;
+    /** The connection status text */
     private String connectionStatusText = "Disconnected";
+    /** The main view of the dialog */
     private Label statusValueLabel; // Keep reference to update style class
 
     /**
@@ -44,6 +58,12 @@ public class SettingsDialog extends UIComponent<StackPane> {
         StylesheetLoader.loadDialogStylesheets(this.view);
         StylesheetLoader.loadStylesheet(this.view, "/css/settings-dialog.css");
 
+        // Set up audio properties
+        this.musicVolumeProperty.set(AudioManager.getInstance().getMusicVolume() * 100);
+        this.effectsVolumeProperty.set(AudioManager.getInstance().getEffectsVolume() * 100);
+        this.muteProperty.set(AudioManager.getInstance().isMuted());
+        Logger.getGlobal().info("Audio manager status: Muted: " + muteProperty.get() + " Volume: " + musicVolumeProperty.get() + "%" + " Effects Volume: " + effectsVolumeProperty.get() + "%");
+
         this.view.setAlignment(Pos.CENTER);
         dialogContent = createDialogContent();
         StackPane.setAlignment(dialogContent, Pos.CENTER);
@@ -57,6 +77,8 @@ public class SettingsDialog extends UIComponent<StackPane> {
         });
         this.view.setVisible(false);
         this.view.setManaged(false);
+
+        AudioManager.attachClickSoundToAllButtons(this.view);
     }
 
     /**
@@ -137,21 +159,41 @@ public class SettingsDialog extends UIComponent<StackPane> {
 
         HBox volumeRow = new HBox(10);
         volumeRow.setAlignment(Pos.CENTER_LEFT);
-        Label volumeLabel = new Label("Volume:");
+        Label volumeLabel = new Label("Music volume:  ");
         volumeLabel.getStyleClass().add("dialog-label");
 
-        Slider volumeSlider = new Slider(0, 100, volumeProperty.get());
-        volumeSlider.valueProperty().bindBidirectional(volumeProperty);
+        Slider volumeSlider = new Slider(0, 100, musicVolumeProperty.get());
+        volumeSlider.valueProperty().bindBidirectional(musicVolumeProperty);
         volumeSlider.setMinWidth(200); // Keep min width
         volumeSlider.setDisable(muteProperty.get());
 
-        Label volumeValue = new Label(String.format("%.0f%%", volumeProperty.get()));
+        Label volumeValue = new Label(String.format("%.0f%%", musicVolumeProperty.get()));
         volumeValue.getStyleClass().add("dialog-label"); // Use dialog-label for consistency
         volumeValue.setMinWidth(50); // Keep min width
-        volumeProperty.addListener((obs, oldVal, newVal) -> {
+        musicVolumeProperty.addListener((obs, oldVal, newVal) -> {
             volumeValue.setText(String.format("%.0f%%", newVal.doubleValue()));
+            AudioManager.getInstance().setMusicVolume(newVal.doubleValue() / 100.0);
         });
         volumeRow.getChildren().addAll(volumeLabel, volumeSlider, volumeValue);
+
+        HBox effectsVolumeRow = new HBox(10);
+        effectsVolumeRow.setAlignment(Pos.CENTER_LEFT);
+        Label effectsVolumeLabel = new Label("Effects volume:");
+        effectsVolumeLabel.getStyleClass().add("dialog-label");
+
+        Slider effectVolumeSlider = new Slider(0, 100, effectsVolumeProperty.get());
+        effectVolumeSlider.valueProperty().bindBidirectional(effectsVolumeProperty);
+        effectVolumeSlider.setMinWidth(200); // Keep min width
+        effectVolumeSlider.setDisable(muteProperty.get());
+
+        Label effectVolumeValue = new Label(String.format("%.0f%%", effectsVolumeProperty.get()));
+        effectVolumeValue.getStyleClass().add("dialog-label"); // Use dialog-label for consistency
+        effectVolumeValue.setMinWidth(50); // Keep min width
+        effectsVolumeProperty.addListener((obs, oldVal, newVal) -> {
+            effectVolumeValue.setText(String.format("%.0f%%", newVal.doubleValue()));
+            AudioManager.getInstance().setEffectsVolume(newVal.doubleValue() / 100.0);
+        });
+        effectsVolumeRow.getChildren().addAll(effectsVolumeLabel, effectVolumeSlider, effectVolumeValue);
 
         HBox muteRow = new HBox(10);
         muteRow.setAlignment(Pos.CENTER_LEFT);
@@ -161,14 +203,14 @@ public class SettingsDialog extends UIComponent<StackPane> {
         CheckBox muteCheckbox = new CheckBox();
         muteCheckbox.selectedProperty().bindBidirectional(muteProperty);
         muteProperty.addListener((obs, oldVal, newVal) -> {
+            AudioManager.getInstance().playSoundEffect(AudioTracks.Track.MUTE_UNMUTE.getFileName());
             volumeSlider.setDisable(newVal);
+            effectVolumeSlider.setDisable(newVal);
+            AudioManager.getInstance().setMute(newVal);
         });
         muteRow.getChildren().addAll(muteLabel, muteCheckbox);
 
-        Label audioNoteLabel = new Label("Note: Audio is not yet implemented in this version.");
-        audioNoteLabel.getStyleClass().add("dialog-note");
-
-        audioSection.getChildren().addAll(sectionTitle, volumeRow, muteRow, audioNoteLabel);
+        audioSection.getChildren().addAll(sectionTitle, volumeRow, effectsVolumeRow, muteRow);
         return audioSection;
     }
 
@@ -199,7 +241,7 @@ public class SettingsDialog extends UIComponent<StackPane> {
     }
 
     /**
-     * Creates the buttons row for the dialog.
+     * Creates the button row for the dialog.
      *
      * @return HBox containing dialog buttons.
      */
@@ -210,6 +252,10 @@ public class SettingsDialog extends UIComponent<StackPane> {
         Button saveButton = new Button("Save Settings");
         saveButton.getStyleClass().addAll("dialog-button", "dialog-button-save"); // Use style classes
         saveButton.setOnAction(e -> {
+            // Update AudioManager with new settings
+            AudioManager.getInstance().setMusicVolume(musicVolumeProperty.get() / 100.0);
+            AudioManager.getInstance().setEffectsVolume(effectsVolumeProperty.get() / 100.0);
+            AudioManager.getInstance().setMute(muteProperty.get());
             if (onSaveAction != null) {
                 onSaveAction.run();
             }
@@ -283,12 +329,59 @@ public class SettingsDialog extends UIComponent<StackPane> {
     }
 
     /**
+     * Updates all audio properties.
+     */
+    public void updateAudioProperties() {
+        this.musicVolumeProperty.set(AudioManager.getInstance().getMusicVolume() * 100);
+        this.effectsVolumeProperty.set(AudioManager.getInstance().getEffectsVolume() * 100);
+        this.muteProperty.set(AudioManager.getInstance().isMuted());
+        LOGGER.info("Audio manager status: Muted: " + muteProperty.get() + " Volume: " + musicVolumeProperty.get() + "%" + " Effects Volume: " + effectsVolumeProperty.get() + "%");
+    }
+
+    /**
+     * Sets the music volume property.
+     *
+     * @param volume The volume level (0-100).
+     */
+    public void setMusicVolume(double volume) {
+        this.musicVolumeProperty.set(volume);
+    }
+
+    /**
+     * Sets the effects volume property.
+     *
+     * @param volume The volume level (0-100).
+     */
+    public void setEffectsVolume(double volume) {
+        this.effectsVolumeProperty.set(volume);
+    }
+
+    /**
+     * Sets the mute property.
+     *
+     * @param mute The mute status.
+     */
+    public void setMute(boolean mute) {
+        this.muteProperty.set(mute);
+    }
+
+    /**
      * Gets the current volume property.
      *
-     * @return SimpleDoubleProperty for volume.
+     * @return SimpleDoubleProperty for music volume.
      */
-    public SimpleDoubleProperty volumeProperty() {
-        return volumeProperty;
+    public SimpleDoubleProperty musicVolumeProperty() {
+        return musicVolumeProperty;
+    }
+
+
+    /**
+     * Gets the current volume property.
+     *
+     * @return SimpleDoubleProperty for effect volume.
+     */
+    public SimpleDoubleProperty effectsVolumeProperty() {
+        return effectsVolumeProperty;
     }
 
     /**

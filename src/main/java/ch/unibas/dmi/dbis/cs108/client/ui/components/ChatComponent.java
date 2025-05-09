@@ -1,5 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.components;
 
+import ch.unibas.dmi.dbis.cs108.client.audio.AudioManager;
+import ch.unibas.dmi.dbis.cs108.client.audio.AudioTracks;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.LobbyChatEvent;
@@ -158,6 +160,13 @@ public class ChatComponent extends UIComponent<BorderPane> {
         globalChatButton.setSelected(true);
         lobbyChatButton.setDisable(currentLobbyId == null || currentLobbyId.isEmpty());
         addSystemMessage("Chat component initialized. Use /w <username> <message> to whisper.");
+
+        globalChatButton.addEventHandler(javafx.event.ActionEvent.ACTION, event -> {
+            AudioManager.getInstance().playSoundEffect(AudioTracks.Track.BUTTON_CLICK.getFileName());
+        });
+        lobbyChatButton.addEventHandler(javafx.event.ActionEvent.ACTION, event -> {
+            AudioManager.getInstance().playSoundEffect(AudioTracks.Track.BUTTON_CLICK.getFileName());
+        });
     }
 
     /**
@@ -227,6 +236,7 @@ public class ChatComponent extends UIComponent<BorderPane> {
                 LOGGER.warning("No chat type selected, defaulting to GLOBAL");
                 eventBus.publish(new GlobalChatEvent(input, GlobalChatEvent.ChatType.GLOBAL));
             }
+            AudioManager.getInstance().playSoundEffect(AudioTracks.Track.MESSAGE_SENT.getFileName());
             chatInput.clear();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error sending message", e);

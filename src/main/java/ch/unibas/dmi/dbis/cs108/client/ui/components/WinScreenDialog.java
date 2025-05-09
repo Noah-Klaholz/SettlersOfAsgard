@@ -1,5 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.components;
 
+import ch.unibas.dmi.dbis.cs108.client.audio.AudioManager;
+import ch.unibas.dmi.dbis.cs108.client.audio.AudioTracks;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.StylesheetLoader;
 import javafx.animation.FadeTransition;
 import javafx.event.Event;
@@ -57,6 +59,8 @@ public class WinScreenDialog extends UIComponent<StackPane> {
         });
         this.view.setVisible(false);
         this.view.setManaged(false);
+
+        AudioManager.attachClickSoundToAllButtons(this.view);
     }
 
     /**
@@ -114,6 +118,7 @@ public class WinScreenDialog extends UIComponent<StackPane> {
         this.view.setOpacity(0);
         this.view.toFront();
         FadeTransition fadeIn = new FadeTransition(Duration.millis(200), this.view);
+        AudioManager.getInstance().playSoundEffect(AudioTracks.Track.FANFARE.getFileName());
         fadeIn.setFromValue(0);
         fadeIn.setToValue(1);
         fadeIn.play();

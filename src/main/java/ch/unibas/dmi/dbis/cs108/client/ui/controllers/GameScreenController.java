@@ -2,6 +2,8 @@ package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
 import ch.unibas.dmi.dbis.cs108.client.app.GameApplication;
+import ch.unibas.dmi.dbis.cs108.client.audio.AudioManager;
+import ch.unibas.dmi.dbis.cs108.client.audio.AudioTracks;
 import ch.unibas.dmi.dbis.cs108.client.core.PlayerIdentityManager;
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameState;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
@@ -11,10 +13,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.components.WinScreenDialog;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.game.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeRequestEvent;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LeaveLobbyRequestEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyJoinedEvent;
@@ -103,7 +102,8 @@ public class GameScreenController extends BaseController {
     /*
      * The following fields are package‑private because the adjustment manager
      * accesses them directly.
-     */ double effectiveHexSize;
+     */
+    double effectiveHexSize;
     double gridOffsetX;
     double gridOffsetY;
     private Player localPlayer;
@@ -205,6 +205,9 @@ public class GameScreenController extends BaseController {
             selectedStatue = new CardDetails(EntityRegistry.getGameEntityOriginalById(38), true);
         }
         Logger.getGlobal().info("GameScreenController created and subscribed to events.");
+
+        // Request the gameState from the server
+        eventBus.publish(new RequestGameStateEvent());
     }
 
     /**
@@ -256,6 +259,10 @@ public class GameScreenController extends BaseController {
         setupCanvasStack();
         setupCanvasListeners();
         loadMapImage();
+
+
+        // Attach click sound to all buttons in the scene graph
+        AudioManager.attachClickSoundToAllButtons(gameCanvas.getParent().getParent());
     }
 
     /**
@@ -418,8 +425,10 @@ public class GameScreenController extends BaseController {
             if (e.getMessage() != null && !e.getMessage().isEmpty()) {
                 chatComponentController.addSystemMessage(e.getMessage());
             }
-            if (settingsDialog != null)
-                updateSettingsConnectionStatus();
+            if (settingsDialog != null) {
+                String status = connectionStatusLabel.getText();
+                settingsDialog.setConnectionStatus("Connected".equals(status), status);
+            }
         });
     }
 
@@ -470,32 +479,50 @@ public class GameScreenController extends BaseController {
             if (firstSync) {
                 LOGGER.info("First GameSyncEvent processed. Proceeding to full UI initialization...");
                 initializeUI();
-            }
 
-            updatePlayerColors();
-
-            artifacts = gamePlayer.getArtifacts();
-            markStatuePlaced(gamePlayer.hasStatue());
-
-            updateRunesAndEnergyBar();
-            updateCardImages();
-            updatePlayerList();
-            updateMap();
-
-            // Initialize TimerComponent after FXML injection and only once
-            if (timerComponent == null && timerRoot != null) {
-                LOGGER.info("Initializing TimerComponent...");
-                timerComponent = new TimerComponent();
-                timerRoot.getChildren().setAll(timerComponent);
-            }
-
-            String currentPlayerTurn = gameState.getPlayerTurn();
-            if (timerComponent != null) {
-                LOGGER.info("Updating TimerComponent...");
-                timerComponent.resetIfPlayerChanged(currentPlayerTurn);
+                // For the first sync, use a small delay to ensure initialization completes
+                // This is especially important on slower PCs or networks
+                PauseTransition delay = new PauseTransition(Duration.millis(200));
+                delay.setOnFinished(event -> {
+                    LOGGER.info("Performing first UI update after initialization");
+                    performUIUpdate();
+                });
+                delay.play();
+            } else {
+                // For subsequent syncs, update immediately
+                performUIUpdate();
             }
         });
     }
+
+    /**
+     * Updates all UI elements after a game sync event.
+     * Extracted to avoid code duplication between first and subsequent syncs.
+     */
+    private void performUIUpdate() {
+        updatePlayerColors();
+        artifacts = gamePlayer.getArtifacts();
+        markStatuePlaced(gamePlayer.hasStatue());
+
+        updateRunesAndEnergyBar();
+        updateCardImages();
+        updatePlayerList();
+        updateMap();
+
+        // Initialize TimerComponent after FXML injection and only once
+        if (timerComponent == null && timerRoot != null) {
+            LOGGER.info("Initializing TimerComponent...");
+            timerComponent = new TimerComponent();
+            timerRoot.getChildren().setAll(timerComponent);
+        }
+
+        String currentPlayerTurn = gameState.getPlayerTurn();
+        if (timerComponent != null) {
+            LOGGER.info("Updating TimerComponent...");
+            timerComponent.resetIfPlayerChanged(currentPlayerTurn);
+        }
+    }
+
 
     /**
      * Shows an error message in the chat component.
@@ -540,26 +567,11 @@ public class GameScreenController extends BaseController {
             return;
         }
 
-        updateSettingsConnectionStatus();
+        settingsDialog.updateAudioProperties();
         settingsDialog.playerNameProperty().set(localPlayer.getName());
 
-        settingsDialog.setOnSaveAction(() -> {
-            boolean muted = settingsDialog.muteProperty().get();
-            double volume = settingsDialog.volumeProperty().get();
-            String requested = settingsDialog.playerNameProperty().get();
-            LOGGER.info("Settings dialog save requested – Volume: " + volume + ", Muted: " + muted
-                    + ", Requested Name: " + requested);
-
-            if (requested != null && !requested.trim().isEmpty() && !requested.equals(localPlayer.getName())) {
-                requestNameChange(requested.trim());
-            } else if (requested != null && requested.trim().isEmpty()) {
-                chatComponentController.addSystemMessage("Error: Player name cannot be empty.");
-                settingsDialog.playerNameProperty().set(localPlayer.getName());
-            }
-
-            chatComponentController
-                    .addSystemMessage("Audio settings saved. " + (muted ? "Muted." : "Volume: " + (int) volume + "%"));
-        });
+        String status = connectionStatusLabel.getText();
+        settingsDialog.setConnectionStatus("Connected".equals(status), status);
 
         showDialogAsOverlay(settingsDialog, root);
     }
@@ -619,6 +631,14 @@ public class GameScreenController extends BaseController {
         gameCanvas.setOnMouseEntered(null);
         gameCanvas.setOnMouseExited(null);
         gameCanvas.setOnKeyPressed(null);
+
+        // Optionally, hide or disable the canvas and overlays
+        gameCanvas.setDisable(true);
+        if (backgroundCanvas != null)
+            backgroundCanvas.setDisable(true);
+        if (overlayCanvas != null)
+            overlayCanvas.setDisable(true);
+
 
         // Remove event handlers added via addEventHandler (for all event types)
         gameCanvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, e -> handleCanvasClick(e.getX(), e.getY()));
@@ -689,32 +709,26 @@ public class GameScreenController extends BaseController {
                     hideTileTooltip();
                 }
             });
-
-
-            hideTileTooltip();
-            currentTileTooltip = null;
-            pendingTooltipCol = pendingTooltipRow = lastTooltipRow = lastTooltipCol = -1;
         }
+
+
+        clearHighlight();
+        highlightedTile = null;
+        hideTileTooltip();
 
         // Hide any visible tile tooltip and cancel tooltip delay
         isTooltipDisabled = true;
         cancelTooltipDelay();
-        hideTileTooltip();
+        if (currentTileTooltip != null) {
+            currentTileTooltip.close(); // Use the close() method instead of just hiding
+            currentTileTooltip = null;
+        }
 
-        // Optionally, hide or disable the canvas and overlays
-        gameCanvas.setDisable(true);
-        if (backgroundCanvas != null)
-            backgroundCanvas.setDisable(true);
-        if (overlayCanvas != null)
-            overlayCanvas.setDisable(true);
-
-        // Optionally, hide the canvas visually (uncomment if you want it invisible)
-        // gameCanvas.setVisible(false);
-        // if (backgroundCanvas != null) backgroundCanvas.setVisible(false);
-        // if (overlayCanvas != null) overlayCanvas.setVisible(false);
-
-        // Close any other popups related to the board (if you have references)
-        // (Add code here if you have custom popups to close)
+        // Reset tooltip tracking variables
+        pendingTooltipCol = -1;
+        pendingTooltipRow = -1;
+        lastTooltipCol = -1;
+        lastTooltipRow = -1;
     }
 
     /**
@@ -726,6 +740,7 @@ public class GameScreenController extends BaseController {
         Platform.runLater(() -> {
             disableGameBoardInteractions();
             WinScreenDialog dialog = new WinScreenDialog(event.getLeaderboard());
+            AudioManager.getInstance().playMusic(AudioTracks.Track.UPBEAT_WINSCREEN.getFileName());
             dialog.setOnMenuAction(() -> {
                 eventBus.publish(new LeaveLobbyRequestEvent(currentLobbyId));
                 sceneManager.switchToScene(SceneManager.SceneType.MAIN_MENU);
@@ -1122,12 +1137,15 @@ public class GameScreenController extends BaseController {
                         } else if (entityToPlace.isStructure()) {
                             eventBus.publish(new PlaceStructureUIEvent(col, row, cardDetails.getID()));
                         }
+                        AudioManager.getInstance().playSoundEffect(AudioTracks.Track.PLACE_STRUCTURE.getFileName());
                     } else if (entityToPlace instanceof Artifact a) {
                         if (a.isFieldTarget()) {
                             eventBus.publish(new UseFieldArtifactUIEvent(col, row, cardDetails.getID()));
+                            AudioManager.getInstance().playSoundEffect(AudioTracks.Track.USE_ARTIFACT.getFileName());
                         } else if (a.isPlayerTarget() && clickedTile.getOwner() != null) {
                             // Target the tile owner if the artifact is player-targeted
                             eventBus.publish(new UsePlayerArtifactUIEvent(cardDetails.getID(), clickedTile.getOwner()));
+                            AudioManager.getInstance().playSoundEffect(AudioTracks.Track.USE_ARTIFACT.getFileName());
                         } else if (a.isPlayerTarget()) {
                             // If tile has no owner, maybe prompt for player or disallow? For now, log.
                             LOGGER.info("Cannot use player-target artifact on unowned tile.");
@@ -1223,6 +1241,7 @@ public class GameScreenController extends BaseController {
             if (runes >= price) {
                 // Immediately buy the tile without confirmation
                 eventBus.publish(new BuyTileUIEvent(col, row));
+                AudioManager.getInstance().playSoundEffect(AudioTracks.Track.BUY_TILE.getFileName());
             } else {
                 showNotification("Not enough runes to buy this tile (Cost: " + price + ").");
             }
@@ -1440,7 +1459,7 @@ public class GameScreenController extends BaseController {
         GameEntity entity = tile.getEntity();
         if (entity != null) {
             int id = tile.getEntity().getId();
-            drawEntityImage(gc, null, cx, cy, size, gridAdjustmentManager.getHorizontalSquishFactor(), id);
+            drawEntityImage(gc, cx, cy, size, gridAdjustmentManager.getHorizontalSquishFactor(), id);
         }
     }
 
@@ -1451,14 +1470,13 @@ public class GameScreenController extends BaseController {
      * placeholder if missing.
      *
      * @param gc       The graphics context to draw on
-     * @param imageUrl The URL of the image to draw (obtained with isCard=false)
      * @param centerX  The x-coordinate of the hex center
      * @param centerY  The y-coordinate of the hex center
      * @param hexSize  The size of the hex
      * @param hSquish  The horizontal squish factor
      * @param entityId The ID of the entity being drawn (for logging)
      */
-    private void drawEntityImage(GraphicsContext gc, String imageUrl, double centerX, double centerY, double hexSize,
+    private void drawEntityImage(GraphicsContext gc, double centerX, double centerY, double hexSize,
                                  double hSquish, int entityId) {
         // Calculate placeholder size relative to hex (adjust as needed for map
         // entities)
@@ -1487,12 +1505,7 @@ public class GameScreenController extends BaseController {
         // return;
         // }
 
-        // obtain the URL if the caller passed null (drawHexSprite intentionally does
-        // this)
-        if (imageUrl == null || imageUrl.isEmpty()) {
-            imageUrl = EntityRegistry.getURL(entityId, false);
-        }
-
+        String imageUrl = EntityRegistry.getURL(entityId, false);
         GameEntity gm = EntityRegistry.getGameEntityOriginalById(entityId);
 
         try {
@@ -1535,7 +1548,7 @@ public class GameScreenController extends BaseController {
                 double scaledHeight = image.getHeight() * scale;
 
                 // Draw image centered in the hex
-                gc.drawImage(image, centerX - scaledWidth / 2, centerY - 3 * scaledHeight / 4, scaledWidth,
+                gc.drawImage(image, centerX - scaledWidth / 2, centerY - 2 * scaledHeight / 3, scaledWidth,
                         scaledHeight);
             }
 
@@ -1646,13 +1659,6 @@ public class GameScreenController extends BaseController {
         settingsDialog = new SettingsDialog();
         settingsDialog.playerNameProperty().set(localPlayer.getName());
         settingsDialog.setOnSaveAction(this::handleSettingsSave);
-        updateSettingsConnectionStatus();
-    }
-
-    /**
-     * Synchronises the connection indicator shown inside the dialog.
-     */
-    private void updateSettingsConnectionStatus() {
         String status = connectionStatusLabel.getText();
         settingsDialog.setConnectionStatus("Connected".equals(status), status);
     }
@@ -1661,11 +1667,19 @@ public class GameScreenController extends BaseController {
      * Handles the save button inside the settings dialog.
      */
     private void handleSettingsSave() {
-        String newName = settingsDialog.playerNameProperty().get().trim();
-        if (!newName.isEmpty() && !newName.equals(localPlayer.getName())) {
-            eventBus.publish(new NameChangeRequestEvent(newName));
-        } else if (newName.isEmpty()) {
-            settingsDialog.playerNameProperty().set(localPlayer.getName());
+        String requestedName = settingsDialog.playerNameProperty().get();
+
+        if (localPlayer != null && requestedName != null && !requestedName.trim().isEmpty()
+                && !requestedName.equals(localPlayer.getName())) {
+            requestNameChange(requestedName.trim());
+        } else if (requestedName != null && requestedName.trim().isEmpty()) {
+            LOGGER.warning("Attempted to save empty player name.");
+            if (chatComponentController != null) {
+                chatComponentController.addSystemMessage("Error: Player name cannot be empty.");
+            }
+            if (localPlayer != null) {
+                settingsDialog.playerNameProperty().set(localPlayer.getName());
+            }
         }
     }
 
@@ -1773,6 +1787,7 @@ public class GameScreenController extends BaseController {
         Tooltip tooltip = new Tooltip();
         tooltip.setShowDelay(Duration.millis(500));
         tooltip.setHideDelay(Duration.millis(200));
+        tooltip.setShowDuration(Duration.INDEFINITE);
 
         String id = card.getId();
         CardDetails details;

@@ -5,7 +5,9 @@ import ch.unibas.dmi.dbis.cs108.client.networking.NetworkController;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.RequestGameStateEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ServerCommandEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.EndTurnRequestEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.GameStartedEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyListResponseEvent;
@@ -13,6 +15,8 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.PlayerJoinedLobbyEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.PlayerLeftLobbyEvent;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
 
 import java.util.Arrays;
 import java.util.List;
@@ -176,12 +180,16 @@ public class CommunicationMediator {
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent.class,
                 event -> networkController.changeName(event.getNewName()));
 
-        UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.admin.StatusUIEvent.class,
+        UIEventBus.getInstance().subscribe(RequestGameStateEvent.class,
                 event -> networkController.getGameState());
 
         UIEventBus.getInstance().subscribe(
                 ch.unibas.dmi.dbis.cs108.client.ui.events.admin.LeaderboardRequestUIEvent.class,
                 event -> networkController.getLeaderboard());
+
+        UIEventBus.getInstance().subscribe(
+                RequestGameStateEvent.class,
+                event -> networkController.getGameState());
     }
 
     /**
@@ -284,6 +292,9 @@ public class CommunicationMediator {
                 new EventDispatcher.EventListener<ConnectionEvent>() {
                     @Override
                     public void onEvent(ConnectionEvent event) {
+                        if (event.getState() == ConnectionEvent.ConnectionState.DISCONNECTED) {
+                            UIEventBus.getInstance().publish(new GlobalChatEvent(event.getMessage(), "Server", GlobalChatEvent.ChatType.SYSTEM));
+                        }
                         UIEventBus.getInstance().publish(new ConnectionStatusEvent(event.getState(), event.getMessage()));
                     }
 
@@ -293,6 +304,50 @@ public class CommunicationMediator {
                     }
                 });
 
+        EventDispatcher.getInstance().registerListener(ShutdownEvent.class,
+                new EventDispatcher.EventListener<ShutdownEvent>() {
+                    @Override
+                    public void onEvent(ShutdownEvent event) {
+                        // Notify UI that shutdown is happening
+                        UIEventBus.getInstance().publish(new GlobalChatEvent(
+                                "⚠ " + event.getReason(), "System", GlobalChatEvent.ChatType.SYSTEM));
+
+                        // Show dialog and exit app gracefully
+                        Platform.runLater(() -> {
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setTitle("Server Shutdown");
+                            alert.setHeaderText("The server has requested shutdown.");
+                            alert.setContentText(event.getReason());
+                            alert.setOnCloseRequest(e -> {
+                                Platform.exit();
+                                System.exit(0);
+                            });
+
+                            // Auto-close after 2 seconds if user doesn't respond
+                            new Thread(() -> {
+                                try {
+                                    Thread.sleep(2000);
+                                    if (alert.isShowing()) {
+                                        Platform.runLater(() -> {
+                                            alert.close();
+                                            Platform.exit();
+                                            System.exit(0);
+                                        });
+                                    }
+                                } catch (InterruptedException ignored) {}
+                            }).start();
+
+                            alert.showAndWait();
+                        });
+                    }
+
+                    @Override
+                    public Class<ShutdownEvent> getEventType() {
+                        return ShutdownEvent.class;
+                    }
+                });
+
+
         // Name Change Events
         EventDispatcher.getInstance().registerListener(NameChangeResponseEvent.class,
                 new EventDispatcher.EventListener<NameChangeResponseEvent>() {
@@ -300,7 +355,7 @@ public class CommunicationMediator {
                     public void onEvent(NameChangeResponseEvent event) {
                         Logger.getGlobal().info("NameChangeResponseEvent: " + event.getMessage());
                         if (event.isSuccess()) {
-                            // Update game core with new name
+                            // Update game core with a new name
                             player.setName(event.getNewName());
                         }
                     }

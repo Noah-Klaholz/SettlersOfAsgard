@@ -10,17 +10,29 @@ import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
  */
 public class Tile {
 
+    /** x-coordinate */
     private final int x;
+    /** y-coordinate */
     private final int y;
+    /** name of the owner */
     private String owner; //ownerID
+    /** price of the tile */
     private int price;
+    /** The entity on the tile */
     private GameEntity entity; // Not an artifact
+    /** The artifact on the tile */
     private Artifact artefact;
+    /** The world the tile is in */
     private String world;
+    /** If the tile is purchased or not */
     private boolean purchased;
+    /** The value of the tile */
     private int resourceValue; //Runes: bei spezifischen sind es energy: dort vermerkt
+    /** If the tile has a river */
     private boolean hasRiver; //has a river = true
+    /** the id of the tile */
     private int tileID;
+    /** the status of the tile */
     private final Status status;
 
     /**
@@ -98,7 +110,7 @@ public class Tile {
     /**
      * getter for the entity
      *
-     * @return
+     * @return the entity
      */
     public GameEntity getEntity() {
         return entity;
@@ -116,7 +128,7 @@ public class Tile {
     /**
      * getter for the owner
      *
-     * @return
+     * @return the owner
      */
     public String getOwner() {
         return owner;
@@ -125,7 +137,7 @@ public class Tile {
     /**
      * setter for the owner
      *
-     * @param owner
+     * @param owner the owner to set
      */
     public void setOwner(String owner) {
         this.owner = owner;
@@ -134,7 +146,7 @@ public class Tile {
     /**
      * getter for the price
      *
-     * @return
+     * @return the price
      */
     public int getPrice() {
         return price;
@@ -147,7 +159,7 @@ public class Tile {
     /**
      * getter for the artefact
      *
-     * @return
+     * @return the artifact
      */
     public Artifact getArtifact() {
         return artefact;
@@ -156,7 +168,7 @@ public class Tile {
     /**
      * setter for the artefact
      *
-     * @param artefact
+     * @param artefact the artifact to set
      */
     public void setArtifact(Artifact artefact) {
         this.artefact = artefact;
@@ -165,7 +177,7 @@ public class Tile {
     /**
      * getter for the world
      *
-     * @return
+     * @return the world
      */
     public String getWorld() {
         return world;
@@ -178,7 +190,7 @@ public class Tile {
     /**
      * getter for the purchased status
      *
-     * @return
+     * @return true if the tile is purchased, false otherwise
      */
     public boolean isPurchased() {
         return purchased;
@@ -187,7 +199,7 @@ public class Tile {
     /**
      * setter for the purchased status
      *
-     * @param purchased
+     * @param purchased the value to set
      */
     public void setPurchased(boolean purchased) {
         this.purchased = purchased;
@@ -196,7 +208,7 @@ public class Tile {
     /**
      * getter for the resource value
      *
-     * @return
+     * @return the value
      */
     public int getResourceValue() {
         return resourceValue;
@@ -205,7 +217,7 @@ public class Tile {
     /**
      * setter for the resource value
      *
-     * @param resourceValue
+     * @param resourceValue the value to set
      */
     public void setResourceValue(int resourceValue) {
         this.resourceValue = resourceValue;
@@ -214,7 +226,7 @@ public class Tile {
     /**
      * getter for the hasRiver status
      *
-     * @return
+     * @return if the tile has a river
      */
     public boolean hasRiver() {
         return hasRiver;
@@ -223,7 +235,7 @@ public class Tile {
     /**
      * setter for the hasRiver status
      *
-     * @param hasRiver
+     * @param hasRiver sets if the tile has a river
      */
     public void setHasRiver(boolean hasRiver) {
         this.hasRiver = hasRiver;
@@ -232,12 +244,17 @@ public class Tile {
     /**
      * getter for the tileID
      *
-     * @return
+     * @return the tileID
      */
     public int getTileID() {
         return tileID;
     }
 
+    /**
+     * Sets the tile ID.
+     *
+     * @param i the tileID.
+     */
     public void setTileID(int i) {
         this.tileID = i;
     }
@@ -277,6 +294,11 @@ public class Tile {
         return owner != null;
     }
 
+    /**
+     * Sets the owner name
+     *
+     * @param newName the name to set
+     */
     public void setOwnerName(String newName) {
         this.owner = newName;
     }

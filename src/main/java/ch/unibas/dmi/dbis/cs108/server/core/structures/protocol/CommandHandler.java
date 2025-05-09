@@ -133,10 +133,10 @@ public class CommandHandler {
      *
      * @return true if the command was handled successfully, false otherwise
      */
-    public boolean handleDisconnect() {
+    public boolean handleExit() {
         handleLeaveLobby();
         server.removeClient(ch);
-        sendMessage("OK$DISC$" + ch.getPlayerName());
+        sendMessage("OK$EXIT" + ch.getPlayerName());
         return true;
     }
 
@@ -239,6 +239,9 @@ public class CommandHandler {
         String lobbyId = cmd.getArgs()[1];
         int maxPlayers = Integer.parseInt(cmd.getArgs()[2]);
         Lobby lobby = server.createLobby(lobbyId, maxPlayers);
+        if (lobby == null) {
+            return false;
+        }
         return handleJoinLobby(new Command(CommunicationAPI.NetworkProtocol.Commands.JOIN.getCommand() + "$" + ch.getPlayerName() + "$" + lobbyId, ch.getPlayer()));
     }
 
@@ -301,6 +304,19 @@ public class CommandHandler {
             sendMessage("ERR$106$NOT_IN_LOBBY");
             return false;
         }
+    }
+
+    /**
+     * Handles the reconnection of the client.
+     *
+     * @return true if the reconnection was successful, false otherwise.
+     */
+    public boolean handleReconnect() {
+        if (ch.isDisconnected) {
+            ch.markConnected();
+            return true;
+        }
+        return false;
     }
 
     /**

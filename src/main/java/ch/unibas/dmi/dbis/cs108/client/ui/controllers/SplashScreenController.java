@@ -1,6 +1,8 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.controllers;
 
 import ch.unibas.dmi.dbis.cs108.SETTINGS;
+import ch.unibas.dmi.dbis.cs108.client.audio.AudioManager;
+import ch.unibas.dmi.dbis.cs108.client.audio.AudioTracks;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
@@ -62,6 +64,9 @@ public class SplashScreenController extends BaseController {
     private void playIntroAnimations() {
         // Initial setup - hide elements
         titleLabel.setOpacity(0);
+
+        // Start intro music and effects
+        playIntroAudio();
 
         // Create a white rectangle for the light effect
         Rectangle lightStrip = new Rectangle();
@@ -137,5 +142,10 @@ public class SplashScreenController extends BaseController {
 
         sequence.play();
         titleFade.play();
+    }
+
+    private void playIntroAudio() {
+        // Play intro music and sound effects
+        AudioManager.getInstance().playSoundEffect(AudioTracks.Track.INTRO_EFFECT.getFileName());
     }
 }
