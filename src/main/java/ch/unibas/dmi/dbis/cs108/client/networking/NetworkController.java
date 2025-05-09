@@ -274,14 +274,10 @@ public class NetworkController {
      * @param ex the cause of the reconnection failure.
      */
     private void handleReconnectFailure(Throwable ex) {
-        synchronized (this) {
-            if (reconnectAttempts >= SETTINGS.Config.MAX_RECONNECT_ATTEMPTS.getValue()) {
-                isReconnecting = false;
-                eventDispatcher.dispatchEvent(new ShutdownEvent("Failed to reconnect to the server."));
-            } else {
-                LOGGER.warning("Reconnect failed (" + reconnectAttempts + "/" + SETTINGS.Config.MAX_RECONNECT_ATTEMPTS.getValue() + "): " + ex.getMessage());
-                attemptReconnect();
-            }
+       synchronized (this) {
+           isReconnecting = false;
+           eventDispatcher.dispatchEvent(new ShutdownEvent("Failed to reconnect to the server."));
+           LOGGER.info("Reconnect failed (" + reconnectAttempts + "/" + SETTINGS.Config.MAX_RECONNECT_ATTEMPTS.getValue() + "): " + ex.getMessage());
         }
     }
 

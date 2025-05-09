@@ -61,7 +61,7 @@ public class SocketNetworkClient implements NetworkClient {
         return future;
     }
 
-    private void cleanupResources() {
+    public void cleanupResources() {
         try {
             if (readerThread != null) {
                 readerThread.interrupt();
@@ -100,7 +100,7 @@ public class SocketNetworkClient implements NetworkClient {
                     });
                 }
             } finally {
-                cleanupResources();
+                // cleanupResources();
             }
         });
         readerThread.setDaemon(true);
@@ -115,7 +115,6 @@ public class SocketNetworkClient implements NetworkClient {
     public void disconnect() {
         if (!running) return;
         running = false;
-        cleanupResources();
     }
 
     /**

@@ -33,6 +33,11 @@ public interface NetworkClient {
     boolean isConnected();
 
     /**
+     * Cleans up resources used by the client.
+     */
+    void cleanupResources();
+
+    /**
      * Sets a message handler to process incoming messages.
      *
      * @param handler Message handler.
