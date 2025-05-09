@@ -149,6 +149,8 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             if (currentLobby != null) {
                 currentLobby.broadcastMessage("RECO$" + getPlayerName());
             }
+
+            logger.info("Player " + localPlayer.getName() + " has reconnected.");
         }
     }
 
@@ -168,6 +170,8 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             // Schedule cleanup
             timeoutScheduler.schedule(this::checkReconnectionTimeout,
                     SETTINGS.Config.GRACE_PERIOD.getValue(), TimeUnit.MILLISECONDS);
+
+            logger.info("Player " + localPlayer.getName() + " has disconnected.");
         }
     }
 
