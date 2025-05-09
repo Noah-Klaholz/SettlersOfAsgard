@@ -2077,21 +2077,21 @@ public class GameScreenController extends BaseController {
         if (gameState == null) {
             return;
         }
-        int currentRound = gameState.getGameRound();           // <- this is already sent by the server
+        int currentRound = gameState.getGameRound(); // <- this is already sent by the server
         if (currentRound != lastKnownRound) {
             lastKnownRound = currentRound;
             LOGGER.info("↻ New round " + currentRound + " detected – resetting card states");
 
-            Platform.runLater(() -> {                      // always touch the scene graph on the FX thread
-                /* 1.  clear every temporary style */
+            Platform.runLater(() -> { // always touch the scene graph on the FX thread
+                /* 1. clear every temporary style */
                 structureHand.getChildren().forEach(node -> {
                     node.getStyleClass().removeAll("selected-card", "unaffordable-card");
                     node.setDisable(false);
                 });
 
-                /* 2.  rebuild price modifiers and re-evaluate affordability */
-                refreshCardAffordability();   // cosmetic (shows/hides grey filter)
-                updatePurchasableStates();     // enables / disables & adds CSS class
+                /* 2. rebuild price modifiers and re-evaluate affordability */
+                refreshCardAffordability(); // cosmetic (shows/hides grey filter)
+                updatePurchasableStates(); // enables / disables & adds CSS class
             });
         }
     }
