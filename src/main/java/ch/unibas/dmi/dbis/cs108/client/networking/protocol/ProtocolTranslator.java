@@ -120,7 +120,7 @@ public class ProtocolTranslator implements CommunicationAPI {
      */
     public void processDisconnectMessage(String args) {
         eventDispatcher.dispatchEvent(
-                new ChatMessageEvent(args, " Player has disconnected from the game", ChatMessageEvent.ChatType.LOBBY)
+                new ConnectionEvent(ConnectionEvent.ConnectionState.DISCONNECTED, "Player " + args + " has disconnected. ", false)
         ); // args is the player name
     }
 
@@ -131,7 +131,7 @@ public class ProtocolTranslator implements CommunicationAPI {
      */
     public void processReconnectMessage(String args) {
         eventDispatcher.dispatchEvent(
-                new ChatMessageEvent(args, " Player has reconnected to the game", ChatMessageEvent.ChatType.LOBBY)
+                new ConnectionEvent(ConnectionEvent.ConnectionState.CONNECTED, "Player " + args + " has disconnected. ", false)
         );
     }
 
@@ -367,7 +367,7 @@ public class ProtocolTranslator implements CommunicationAPI {
     private void processShutdownMessage(String args) {
         ConnectionEvent event = new ConnectionEvent(
                 ConnectionEvent.ConnectionState.DISCONNECTED,
-                "Server is shutting down"
+                "Server is shutting down" ,true
         );
         eventDispatcher.dispatchEvent(event);
     }
