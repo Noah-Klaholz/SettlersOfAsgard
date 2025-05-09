@@ -128,11 +128,13 @@ public class GameScreenController extends BaseController {
     private GridAdjustmentManager gridAdjustmentManager;
     // --- Tile tooltip support ---
     private TileTooltip currentTileTooltip = null;
-    private int lastTooltipRow = -1, lastTooltipCol = -1;
+    private int lastTooltipRow = -1;
+    private int lastTooltipCol = -1;
     // Add these fields to the class to track hover state and delay
     private PauseTransition tooltipShowDelay;
     private int pendingTooltipRow = -1;
     private int pendingTooltipCol = -1;
+    private boolean isTooltipDisabled = false;
 
     private StatueConfirmationDialog statueConfirmationDialog;
 
@@ -217,6 +219,7 @@ public class GameScreenController extends BaseController {
 
         initialiseSettingsDialog();
         initialiseChatComponent();
+        isTooltipDisabled = false;
 
         // Initialize the statue confirmation dialog
         statueConfirmationDialog = new StatueConfirmationDialog(resourceLoader);
@@ -234,6 +237,7 @@ public class GameScreenController extends BaseController {
      * Initialises the UI components and sets up the game state.
      */
     private void initializeUI() {
+        isTooltipDisabled = false;
 
         if (localPlayer == null) {
             LOGGER.severe("LocalPlayer is null during GameScreenController initialisation!");
@@ -606,6 +610,8 @@ public class GameScreenController extends BaseController {
      * Should be called when the WinScreenDialog is shown.
      */
     private void disableGameBoardInteractions() {
+        isTooltipDisabled = true;
+
         // Remove all event handlers from gameCanvas
         gameCanvas.setOnMousePressed(null);
         gameCanvas.setOnMouseClicked(null);
@@ -691,6 +697,7 @@ public class GameScreenController extends BaseController {
         }
 
         // Hide any visible tile tooltip and cancel tooltip delay
+        isTooltipDisabled = true;
         cancelTooltipDelay();
         hideTileTooltip();
 
@@ -989,6 +996,12 @@ public class GameScreenController extends BaseController {
      * @param py The y-coordinate of the mouse pointer.
      */
     private void handleTileTooltipHover(double px, double py) {
+        if (isTooltipDisabled || gridAdjustmentManager.isGridAdjustmentModeActive() || gameState == null) {
+            hideTileTooltip();
+            cancelTooltipDelay();
+            return;
+        }
+
         int[] tile = getHexAt(px, py);
         if (tile == null) {
             cancelTooltipDelay();
@@ -1051,6 +1064,11 @@ public class GameScreenController extends BaseController {
     }
 
     private void showTileTooltip(Tile tile, double px, double py) {
+        // Todo: Adjust if statement
+        if (isTooltipDisabled || gameState == null) {
+            hideTileTooltip();
+            return;   
+        }
         hideTileTooltip();
         currentTileTooltip = new TileTooltip(tile);
 
