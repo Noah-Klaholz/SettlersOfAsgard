@@ -623,6 +623,9 @@ public class GameScreenController extends BaseController {
      */
     private void disableGameBoardInteractions() {
         isTooltipDisabled = true;
+        if (timerComponent != null) {
+            timerComponent.stop();
+        }
 
         // Remove all event handlers from gameCanvas
         gameCanvas.setOnMousePressed(null);
@@ -737,6 +740,7 @@ public class GameScreenController extends BaseController {
      * @param event The event containing the leaderboard data.
      */
     private void handleEndGame(EndGameEvent event) {
+        LOGGER.info("Game has ended. Showing win screen.");
         Platform.runLater(() -> {
             disableGameBoardInteractions();
             WinScreenDialog dialog = new WinScreenDialog(event.getLeaderboard());
