@@ -114,9 +114,11 @@ public class GameServer {
                 if (client.isShutdown()) {
                     removeClient(client);
                 }
-                else {
-                    client.sendPing();
-                }
+                return;
+            }
+
+            if (client.isConnected()) {
+                client.sendPing();
             }
         });
     }
@@ -127,9 +129,11 @@ public class GameServer {
      * @param message The message to broadcast
      */
     public void broadcast(String message) {
-        for (ClientHandler client : clients) {
-            client.sendMessage(message);
-        }
+        clients.stream()
+                .filter(ClientHandler::isConnected)
+                .forEach(client -> {
+                    client.sendMessage(message);
+                });
     }
 
     /**
