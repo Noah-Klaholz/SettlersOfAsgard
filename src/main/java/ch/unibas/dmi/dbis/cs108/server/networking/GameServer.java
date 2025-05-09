@@ -108,7 +108,7 @@ public class GameServer {
         }
     }
 
-    private void checkClientConnections() {
+    public void checkClientConnections() {
         clients.forEach(client -> {
             if (client.isDisconnected()) {
                 if (client.isShutdown()) {

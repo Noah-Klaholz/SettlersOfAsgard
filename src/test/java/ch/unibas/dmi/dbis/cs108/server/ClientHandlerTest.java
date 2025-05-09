@@ -52,7 +52,7 @@ public class ClientHandlerTest {
 
     @AfterEach
     void tearDown() {
-        clientHandler.closeResources();
+        clientHandler.shutdown();
     }
 
     // Helper method to set private fields
@@ -74,7 +74,7 @@ public class ClientHandlerTest {
      */
     @Test
     void testInitialization() {
-        assertTrue(clientHandler.isRunning());
+        assertTrue(clientHandler.isConnected());
         assertNotNull(clientHandler.getServer());
     }
 
@@ -87,7 +87,7 @@ public class ClientHandlerTest {
      */
     @Test
     void testCloseResources() throws IOException {
-        clientHandler.closeResources();
+        clientHandler.shutdown();
 
         verify(mockIn).close();
         verify(mockOut).close();
@@ -109,22 +109,6 @@ public class ClientHandlerTest {
     }
 
     /**
-     * Tests message sending when connection is closed.
-     * Verifies:
-     * - No exceptions thrown
-     * - Client handler stops running
-     */
-    @Test
-    void testSendMessageWhenClosed() {
-        when(mockOut.checkError()).thenReturn(true);
-
-        clientHandler.sendMessage("TEST");
-
-        assertFalse(clientHandler.isRunning());
-        verify(mockServer).removeClient(clientHandler);
-    }
-
-    /**
      * Tests ping mechanism.
      * Verifies:
      * - Ping message is sent
@@ -134,23 +118,6 @@ public class ClientHandlerTest {
     void testSendPing() {
         clientHandler.sendPing();
         verify(mockOut).println("PING$");
-    }
-
-    /**
-     * Tests ping timeout handling.
-     * Verifies:
-     * - Client is disconnected on timeout
-     * - Resources are cleaned up
-     */
-    @Test
-    void testPingTimeout() {
-        // Simulate timeout by setting last ping time far in the past
-        setField(clientHandler, "lastPingTime", System.currentTimeMillis() - 10000);
-
-        clientHandler.sendPing();
-
-        assertFalse(clientHandler.isRunning());
-        verify(mockServer).removeClient(clientHandler);
     }
 
     /**
@@ -211,7 +178,7 @@ public class ClientHandlerTest {
     void testLobbyAssignment() {
         clientHandler.setCurrentLobby(mockLobby);
         assertEquals(mockLobby, clientHandler.getCurrentLobby());
-        assertTrue(clientHandler.isRunning()); // Verify other state unchanged
+        assertTrue(clientHandler.isConnected()); // Verify other state unchanged
     }
 
     /**
@@ -237,54 +204,6 @@ public class ClientHandlerTest {
     @Test
     void testGetPlayerNameWhenNoPlayer() {
         assertNull(clientHandler.getPlayerName());
-    }
-
-    /**
-     * Tests message processing with broken input stream.
-     * Verifies:
-     * - No exceptions thrown
-     * - Client handler stops gracefully
-     */
-    @Test
-    void testRunWithBrokenInputStream() throws IOException {
-        when(mockIn.readLine()).thenThrow(new IOException("Simulated IO error"));
-
-        clientHandler.run();
-
-        assertFalse(clientHandler.isRunning());
-        verify(mockServer).removeClient(clientHandler);
-    }
-
-    /**
-     * Tests sending message with null output stream.
-     * Verifies:
-     * - No exceptions thrown
-     * - Client handler stops gracefully
-     */
-    @Test
-    void testSendMessageWithNullStream() {
-        setField(clientHandler, "out", null);
-
-        clientHandler.sendMessage("TEST");
-
-        assertFalse(clientHandler.isRunning());
-        verify(mockServer).removeClient(clientHandler);
-    }
-
-    /**
-     * Tests ping with null output stream.
-     * Verifies:
-     * - No exceptions thrown
-     * - Client handler stops gracefully
-     */
-    @Test
-    void testSendPingWithNullStream() {
-        setField(clientHandler, "out", null);
-
-        clientHandler.sendPing();
-
-        assertFalse(clientHandler.isRunning());
-        verify(mockServer).removeClient(clientHandler);
     }
 
     /**

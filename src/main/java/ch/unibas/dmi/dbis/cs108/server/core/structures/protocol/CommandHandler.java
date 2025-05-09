@@ -128,6 +128,7 @@ public class CommandHandler {
      * @return true if the command was handled successfully, false otherwise
      */
     public boolean handleExit() {
+        Player localPlayer = ch.getPlayer();
         handleLeaveLobby();
         server.removeClient(ch);
         sendMessage("OK$EXIT" + ch.getPlayerName());

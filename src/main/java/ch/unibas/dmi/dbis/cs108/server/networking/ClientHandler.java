@@ -218,6 +218,10 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      * If the client does not respond within the timeout period, the client is disconnected.
      */
     public void sendPing() {
+        if (out == null || out.checkError()) {
+            disconnect();
+            return;
+        }
         if (System.currentTimeMillis() - lastPingTime > SETTINGS.Config.TIMEOUT.getValue()) {
             disconnect();
         } else {
