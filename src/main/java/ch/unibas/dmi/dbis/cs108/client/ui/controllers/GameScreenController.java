@@ -23,6 +23,7 @@ import ch.unibas.dmi.dbis.cs108.shared.entities.EntityRegistry;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Artifact;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Findables.Monument;
 import ch.unibas.dmi.dbis.cs108.shared.entities.GameEntity;
+import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.PurchasableEntity;
 import ch.unibas.dmi.dbis.cs108.shared.entities.Purchasables.Statues.Statue;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
@@ -259,7 +260,6 @@ public class GameScreenController extends BaseController {
         setupCanvasStack();
         setupCanvasListeners();
         loadMapImage();
-
 
         // Attach click sound to all buttons in the scene graph
         AudioManager.attachClickSoundToAllButtons(gameCanvas.getParent().getParent());
@@ -501,11 +501,19 @@ public class GameScreenController extends BaseController {
      */
     private void performUIUpdate() {
         updatePlayerColors();
-        artifacts = gamePlayer.getArtifacts();
-        markStatuePlaced(gamePlayer.hasStatue());
+        if (gamePlayer != null) { // Ensure gamePlayer is not null before accessing its properties
+            artifacts = gamePlayer.getArtifacts();
+            markStatuePlaced(gamePlayer.hasStatue());
+        } else {
+            artifacts.clear();
+            markStatuePlaced(false);
+        }
 
-        updateRunesAndEnergyBar();
-        updateCardImages();
+        updateRunesAndEnergyBar(); // Updates rune label based on gamePlayer
+        updateCardImages(); // Sets up card visuals and UserData based on gamePlayer
+
+        updatePurchasableStates(); // <<< CALL THE NEW CENTRALIZED METHOD HERE
+
         updatePlayerList();
         updateMap();
 
@@ -522,7 +530,6 @@ public class GameScreenController extends BaseController {
             timerComponent.resetIfPlayerChanged(currentPlayerTurn);
         }
     }
-
 
     /**
      * Shows an error message in the chat component.
@@ -642,7 +649,6 @@ public class GameScreenController extends BaseController {
         if (overlayCanvas != null)
             overlayCanvas.setDisable(true);
 
-
         // Remove event handlers added via addEventHandler (for all event types)
         gameCanvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, e -> handleCanvasClick(e.getX(), e.getY()));
         gameCanvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
@@ -713,7 +719,6 @@ public class GameScreenController extends BaseController {
                 }
             });
         }
-
 
         clearHighlight();
         highlightedTile = null;
@@ -1086,7 +1091,7 @@ public class GameScreenController extends BaseController {
         // Todo: Adjust if statement
         if (isTooltipDisabled || gameState == null) {
             hideTileTooltip();
-            return;   
+            return;
         }
         hideTileTooltip();
         currentTileTooltip = new TileTooltip(tile);
@@ -1399,7 +1404,7 @@ public class GameScreenController extends BaseController {
      * Also draws the entity image if present.
      */
     private void drawHex(GraphicsContext gc, double cx, double cy, double size, int row, int col, boolean selected,
-                         boolean withEntity) {
+            boolean withEntity) {
         double[] xs = new double[6];
         double[] ys = new double[6];
 
@@ -1481,7 +1486,7 @@ public class GameScreenController extends BaseController {
      * @param entityId The ID of the entity being drawn (for logging)
      */
     private void drawEntityImage(GraphicsContext gc, double centerX, double centerY, double hexSize,
-                                 double hSquish, int entityId) {
+            double hSquish, int entityId) {
         // Calculate placeholder size relative to hex (adjust as needed for map
         // entities)
         double placeholderSizeRatio = 0.7; // Make placeholder 70% of hex width
@@ -1604,7 +1609,7 @@ public class GameScreenController extends BaseController {
      * Transforms canvas coordinates to logical grid coordinates.
      *
      * @return {@code int[]{row,col}} or {@code null} if the point is not inside
-     * any tile.
+     *         any tile.
      */
     int[] getHexAt(double px, double py) {
         if (!isMapLoaded || effectiveHexSize <= 0)
@@ -1618,7 +1623,7 @@ public class GameScreenController extends BaseController {
                 double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2);
                 double cy = gridOffsetY + r * vSpacing;
                 if (pointInHex(px, py, cx, cy, effectiveHexSize)) {
-                    return new int[]{r, c};
+                    return new int[] { r, c };
                 }
             }
         }
@@ -2055,6 +2060,98 @@ public class GameScreenController extends BaseController {
                 updateStatueCard(card, selectedStatue);
             }
         }
+    }
+
+    /**
+     * Centralized method to update the visual state (enabled/disabled,
+     * affordable/unaffordable style)
+     * of all purchasable structures based on the current player's runes.
+     */
+    private void updatePurchasableStates() {
+        if (gamePlayer == null) {
+            LOGGER.warning("Cannot update purchasable states: gamePlayer is null.");
+            // Disable all structure cards if gamePlayer is not available
+            if (structureHand != null) {
+                Platform.runLater(() -> {
+                    structureHand.getChildren().forEach(node -> {
+                        if (node instanceof Pane) {
+                            Pane cardPane = (Pane) node;
+                            cardPane.getStyleClass().remove("selected-card"); // Ensure deselected
+                            cardPane.getStyleClass().add("unaffordable-card");
+                            cardPane.setDisable(true);
+                        }
+                    });
+                });
+            }
+            // TODO: Handle artifact cards similarly if they are purchasable from a hand
+            return;
+        }
+
+        int currentRunes = gamePlayer.getRunes();
+        LOGGER.fine("Updating purchasable states with current runes: " + currentRunes);
+
+        // Update Structures in structureHand
+        if (structureHand != null) {
+            Platform.runLater(() -> { // Ensure all UI updates are on the JavaFX Application Thread
+                for (Node cardNode : structureHand.getChildren()) {
+                    if (cardNode instanceof Pane) {
+                        Pane cardPane = (Pane) cardNode;
+                        Object userData = cardPane.getUserData();
+
+                        if (userData instanceof CardDetails) {
+                            CardDetails cardDetails = (CardDetails) userData;
+                            GameEntity entity = cardDetails.getEntity();
+
+                            // Check if it's a purchasable entity and has a cost
+                            // Adjust 'Purchasable.class' to your actual base class or interface for items
+                            // with a cost
+                            if (entity instanceof PurchasableEntity) {
+                                PurchasableEntity purchasableEntity = (PurchasableEntity) entity;
+
+                                int cost = purchasableEntity.getPrice();
+                                boolean affordable = currentRunes >= cost;
+
+                                if (affordable) {
+                                    cardPane.getStyleClass().remove("unaffordable-card");
+                                    cardPane.setDisable(false);
+                                } else {
+                                    // If it becomes unaffordable, also remove 'selected-card' style if present
+                                    if (cardPane.getStyleClass().contains("selected-card")) {
+                                        cardPane.getStyleClass().remove("selected-card");
+                                        if (selectedCard == cardPane) { // also clear the controller's selection state
+                                            selectedCard = null;
+                                            // TODO: Potentially notify other parts of UI that selection changed
+                                        }
+                                    }
+                                    cardPane.getStyleClass().add("unaffordable-card");
+                                    cardPane.setDisable(true);
+                                }
+                                LOGGER.finer("Structure " + entity.getName() + " (cost: " + cost + ") affordable: "
+                                        + affordable + ". Classes: " + cardPane.getStyleClass());
+                            } else {
+                                // Not a known purchasable entity with a cost, ensure it's enabled and not
+                                // styled as unaffordable.
+                                cardPane.getStyleClass().remove("unaffordable-card");
+                                cardPane.setDisable(false);
+                            }
+                        } else if (cardPane.isVisible() && cardPane.getUserData() == null) {
+                            // If a card pane is visible but has no CardDetails, treat as
+                            // unaffordable/disabled
+                            LOGGER.warning("Visible structure card pane missing CardDetails in userData: "
+                                    + cardPane.getId() + ". Marking as unaffordable.");
+                            cardPane.getStyleClass().remove("selected-card");
+                            cardPane.getStyleClass().add("unaffordable-card");
+                            cardPane.setDisable(true);
+                        }
+                        // If cardPane is not visible, or userData is not CardDetails but card is not
+                        // visible, do nothing.
+                    }
+                }
+            });
+        }
+
+        // TODO: If artifactHand contains purchasable artifacts, apply similar logic:
+        // if (artifactHand != null) { ... }
     }
 
     /**
@@ -2656,7 +2753,7 @@ public class GameScreenController extends BaseController {
      * @param description      Description of the deal
      */
     private void showJormungandrDealConfirmation(Statue statue, String targetPlayerName, Tile tile,
-                                                 String description) {
+            String description) {
         // Initialize the dialog if not already done
         if (statueConfirmationDialog == null) {
             statueConfirmationDialog = new StatueConfirmationDialog(resourceLoader);
