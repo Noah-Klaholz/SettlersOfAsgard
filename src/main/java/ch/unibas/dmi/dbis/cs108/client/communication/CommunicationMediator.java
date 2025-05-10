@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.cs108.client.communication;
 
+import ch.unibas.dmi.dbis.cs108.client.core.PlayerIdentityManager;
 import ch.unibas.dmi.dbis.cs108.client.core.state.GameStateManager;
 import ch.unibas.dmi.dbis.cs108.client.networking.NetworkController;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.*;
@@ -396,7 +397,7 @@ public class CommunicationMediator {
                                 // Lobby left event. This should be handled by the UI.
                                 LOGGER.log(Level.INFO, "Lobby Left Event (Network): Player={0}",
                                         new Object[]{event.getPlayerName()});
-                                if (event.getPlayerName().equals(player.getName())) {
+                                if (event.getPlayerName().equals(PlayerIdentityManager.getInstance().getLocalPlayer().getName())) {
                                     // Local player left the lobby
                                     UIEventBus.getInstance().publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyLeftEvent(
                                             event.getLobbyName()));

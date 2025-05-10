@@ -388,7 +388,7 @@ public class LobbyScreenController extends BaseController {
             LOGGER.warning("Attempted to start game while not in a lobby.");
             return;
         }
-        int minPlayers = 2;
+        int minPlayers = maxLobbyPlayers; // Minimum players to start the game are equal to max players
         if (playersInCurrentLobby.size() < minPlayers) {
             showError("Need at least " + minPlayers + " players to start the game.");
             return;
@@ -509,6 +509,7 @@ public class LobbyScreenController extends BaseController {
      * Handles notification that another player has left the current lobby.
      */
     private void handlePlayerLeftLobby(PlayerLeftLobbyEvent event) {
+        LOGGER.fine("Handling PlayerLeftLobbyEvent for player: " + event.getPlayerName() + " in lobby: " + event.getLobbyId() + " with currentLobbyId: " + currentLobbyId);
         Objects.requireNonNull(event, "PlayerLeftLobbyEvent cannot be null");
         if (currentLobbyId != null && currentLobbyId.equals(event.getLobbyId())) {
             Platform.runLater(() -> {
@@ -518,8 +519,15 @@ public class LobbyScreenController extends BaseController {
                     if (chatComponentController != null) {
                         chatComponentController.addSystemMessage(leftPlayerName + " left the lobby.");
                     }
+                    playerList.setItems(playersInCurrentLobby);
+                    playerList.refresh();
                     updateLobbyPlayerCountInTable(currentLobbyId, playersInCurrentLobby.size());
                     updateStartGameButtonStyle();
+                    LOGGER.info("Updated player list after " + leftPlayerName + " left and " + playersInCurrentLobby.toString() + " are still in the lobby.");
+                    if (playersInCurrentLobby.get(0) != null && playersInCurrentLobby.get(0).equals(playerManager.getLocalPlayer().getName())) {
+                        isHost = true;
+                        updateStartGameButtonStyle();
+                    }
                 } else {
                     LOGGER.warning("Received PlayerLeftLobbyEvent for player not in list: " + leftPlayerName);
                 }
@@ -692,6 +700,10 @@ public class LobbyScreenController extends BaseController {
         if (currentLobbyId != null) {
             LOGGER.fine("Requesting player list for lobby: " + currentLobbyId);
             eventBus.publish(new PlayerListRequestEvent(currentLobbyId));
+        } else {
+            playersInCurrentLobby.clear();
+            playerList.setItems(playersInCurrentLobby);
+            playerList.refresh();
         }
     }
 
@@ -713,6 +725,8 @@ public class LobbyScreenController extends BaseController {
         currentLobbyId = null;
         isHost = false;
         playersInCurrentLobby.clear();
+        playerList.setItems(playersInCurrentLobby);
+        playerList.refresh();
         leaveLobbyButton.setDisable(true);
         clearError();
         lobbyNameField.setDisable(false);
