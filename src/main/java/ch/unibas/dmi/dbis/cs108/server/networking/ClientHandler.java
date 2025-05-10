@@ -122,16 +122,6 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         sendMessage(NetworkProtocol.Commands.START + "$");
     }
 
-    private void checkReconnectionTimeout() {
-        if (connectionState == STATE_DISCONNECTED) {
-            if (currentLobby != null) {
-                currentLobby.endGame();
-            }
-            server.removeClient(this);
-            shutdown();
-        }
-    }
-
     public synchronized void shutdown() {
         if (connectionState != STATE_SHUTDOWN) {
             connectionState = STATE_SHUTDOWN;
@@ -144,14 +134,12 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      * Transition to connected state
      */
     public synchronized void reconnect() {
-        if (connectionState == STATE_DISCONNECTED) {
-            connectionState = STATE_CONNECTED;
-            if (currentLobby != null) {
-                currentLobby.broadcastMessage("RECO$" + getPlayerName());
-            }
-
-            logger.info("Player " + localPlayer.getName() + " has reconnected.");
+        connectionState = STATE_CONNECTED;
+        if (currentLobby != null) {
+            currentLobby.broadcastMessage("RECO$" + getPlayerName());
         }
+
+        logger.info("Player " + localPlayer.getName() + " has reconnected.");
     }
 
     /**
@@ -166,11 +154,6 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             if (currentLobby != null) {
                 currentLobby.broadcastMessage("DISC$" + getPlayerName());
             }
-
-            // Schedule cleanup
-            timeoutScheduler.schedule(this::checkReconnectionTimeout,
-                    SETTINGS.Config.GRACE_PERIOD.getValue(), TimeUnit.MILLISECONDS);
-
             logger.info("Player " + localPlayer.getName() + " has disconnected.");
         }
     }
@@ -408,8 +391,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                 worked = ch.handleListPlayers(cmd);
                 break;
             case RECONNECT:
-                answer = false;
-                worked = ch.handleReconnect();
+                worked = ch.handleReconnect(cmd);
                 break;
             case EXIT:
                 worked = ch.handleExit();

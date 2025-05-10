@@ -111,7 +111,9 @@ public class GameServer {
     public void checkClientConnections() {
         clients.forEach(client -> {
             if (client.isDisconnected()) {
-                if (client.isShutdown()) {
+                // Only remove if grace period has expired
+                if (System.currentTimeMillis() - client.lastDisconnectionTime >=
+                        SETTINGS.Config.GRACE_PERIOD.getValue()) {
                     removeClient(client);
                 }
                 return;
@@ -143,14 +145,17 @@ public class GameServer {
      */
     public void removeClient(ClientHandler client) {
         if (clients.remove(client)) {
-            Lobby clientLobby = client.getCurrentLobby();
-            if (clientLobby != null) {
-                clientLobby.removePlayer(client);
-                if (clientLobby.isEmpty()) {
-                    removeLobby(clientLobby);
+            // Only remove from lobby if client is shutting down completely
+            if (client.isShutdown()) {
+                Lobby clientLobby = client.getCurrentLobby();
+                if (clientLobby != null) {
+                    clientLobby.removePlayer(client);
+                    if (clientLobby.isEmpty()) {
+                        removeLobby(clientLobby);
+                    }
                 }
             }
-            logger.info("Removed " + client);
+            logger.info("Removed client: " + client);
         }
     }
 
@@ -299,5 +304,16 @@ public class GameServer {
      */
     public Leaderboard getLeaderboard() {
         return leaderboard;
+    }
+
+    /**
+     * Finds a client handler by player name, even if disconnected
+     */
+    public ClientHandler findClientHandler(String playerName) {
+        return clients.stream()
+                .filter(c -> c.getPlayer() != null)
+                .filter(c -> playerName.equals(c.getPlayerName()))
+                .findFirst()
+                .orElse(null);
     }
 }

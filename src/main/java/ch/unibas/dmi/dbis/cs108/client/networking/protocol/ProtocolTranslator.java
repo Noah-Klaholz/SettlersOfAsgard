@@ -131,7 +131,7 @@ public class ProtocolTranslator implements CommunicationAPI {
      */
     public void processReconnectMessage(String args) {
         eventDispatcher.dispatchEvent(
-                new ConnectionEvent(ConnectionEvent.ConnectionState.CONNECTED, "Player " + args + " has disconnected. ", false)
+                new ConnectionEvent(ConnectionEvent.ConnectionState.CONNECTED, "Player " + args + " has reconnected. ", false)
         );
     }
 
@@ -415,8 +415,8 @@ public class ProtocolTranslator implements CommunicationAPI {
      *
      * @return the formatted messages.
      */
-    public String formatReconnect() {
-        return Commands.RECONNECT + DELIMITER;
+    public String formatReconnect(String args) {
+        return Commands.RECONNECT.getCommand() + DELIMITER + args;
     }
 
     /**
