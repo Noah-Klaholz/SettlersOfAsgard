@@ -1866,7 +1866,7 @@ public class GameScreenController extends BaseController {
         }
 
         if (details.getPrice() > 0) {
-            Label priceLabel = new Label("Price: " + details.getPrice() + " runes");
+            Label priceLabel = new Label("Price: " + details.getShopPrice(localPlayer.getStatus()) + " runes");
             priceLabel.getStyleClass().add("tooltip-price");
             priceLabel.setWrapText(true);
             content.getChildren().add(priceLabel);
