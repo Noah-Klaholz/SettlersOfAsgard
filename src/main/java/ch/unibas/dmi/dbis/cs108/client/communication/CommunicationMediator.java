@@ -5,6 +5,7 @@ import ch.unibas.dmi.dbis.cs108.client.networking.NetworkController;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.PlayerListRequestEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.RequestGameStateEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ServerCommandEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
@@ -134,6 +135,9 @@ public class CommunicationMediator {
 
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyListRequestEvent.class,
                 event -> networkController.listLobbies());
+
+        UIEventBus.getInstance().subscribe(PlayerListRequestEvent.class,
+                event -> networkController.listLobbyPlayers(event.getLobbyId()));
 
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.StartGameRequestEvent.class,
                 event -> networkController.startGame());
@@ -554,6 +558,22 @@ public class CommunicationMediator {
                     @Override
                     public Class<LeaderboardResponseEvent> getEventType() {
                         return LeaderboardResponseEvent.class;
+                    }
+                });
+
+        // Player List Event
+        EventDispatcher.getInstance().registerListener(PlayerListEvent.class,
+                new EventDispatcher.EventListener<PlayerListEvent>() {
+                    @Override
+                    public void onEvent(PlayerListEvent event) {
+                        // Publish player list event to UI
+                        UIEventBus.getInstance()
+                                .publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.PlayerListResponseUIEvent(event.getPlayers(), event.getType()));
+                    }
+
+                    @Override
+                    public Class<PlayerListEvent> getEventType() {
+                        return PlayerListEvent.class;
                     }
                 });
 

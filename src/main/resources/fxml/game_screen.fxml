@@ -21,6 +21,11 @@
             <!-- Flexible space -->
             <Region HBox.hgrow="ALWAYS"/>
 
+            <Label fx:id="roundLabel" text="Round 1" styleClass="round-label"/>
+
+            <!-- Flexible space -->
+            <Region HBox.hgrow="ALWAYS"/>
+
             <!-- Middle - Settings button -->
             <Button text="Settings" onAction="#handleSettings" styleClass="action-button"/>
 

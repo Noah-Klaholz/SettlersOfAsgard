@@ -184,7 +184,7 @@ public class CommandHandler {
                 Lobby lobby = server.getLobby(arg[1]);
                 if (lobby != null) {
                     list = lobby.listPlayers();
-                    sendMessage("OK$LSTP$LOBBY$" + lobby.getId() + "$" + list);
+                    sendMessage("OK$LSTP$LOBBY$" + list);
                     return true;
                 } else {
                     sendMessage("ERR$106$NOT_IN_LOBBY");
@@ -306,12 +306,28 @@ public class CommandHandler {
      *
      * @return true if the reconnection was successful, false otherwise.
      */
-    public boolean handleReconnect() {
-        if (ch.isDisconnected()) {
-            ch.reconnect();
-            return true;
+    public boolean handleReconnect(Command cmd) {
+        String playerName = cmd.getArgs()[0];
+        if (playerName == null || playerName.isEmpty()) {
+            sendMessage("ERR$100$MISSING_PLAYER_NAME");
+            return false;
         }
-        return false;
+
+        // Find existing client handler
+        ClientHandler existingHandler = server.findClientHandler(playerName);
+
+        if (existingHandler != null) {
+            // Transfer player reference to new connection
+            ch.setPlayer(existingHandler.getPlayer());
+            existingHandler.shutdown(); // Clean up old connection
+        } else {
+            sendMessage("ERR$101$PLAYER_NOT_FOUND");
+            return false;
+        }
+
+        ch.reconnect();
+        sendMessage("OK$RECONNECTED$" + playerName);
+        return true;
     }
 
     /**

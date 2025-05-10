@@ -122,16 +122,6 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         sendMessage(NetworkProtocol.Commands.START + "$");
     }
 
-    private void checkReconnectionTimeout() {
-        if (connectionState == STATE_DISCONNECTED) {
-            if (currentLobby != null) {
-                currentLobby.endGame();
-            }
-            server.removeClient(this);
-            shutdown();
-        }
-    }
-
     public synchronized void shutdown() {
         if (connectionState != STATE_SHUTDOWN) {
             connectionState = STATE_SHUTDOWN;
@@ -144,15 +134,25 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      * Transition to connected state
      */
     public synchronized void reconnect() {
-        if (connectionState == STATE_DISCONNECTED) {
-            connectionState = STATE_CONNECTED;
-            if (currentLobby != null) {
-                currentLobby.broadcastMessage("RECO$" + getPlayerName());
-            }
-
-            logger.info("Player " + localPlayer.getName() + " has reconnected.");
+        connectionState = STATE_CONNECTED;
+        if (currentLobby != null) {
+            currentLobby.broadcastMessage("RECO$" + getPlayerName());
         }
+
+        logger.info("Player " + localPlayer.getName() + " has reconnected.");
     }
+
+    /*
+    private void checkReconnectionTimeout() {
+        if (connectionState == STATE_DISCONNECTED) {
+            if (currentLobby != null) {
+                currentLobby.endGame();
+                currentLobby.removePlayer(this);
+            }
+            server.removeClient(this);
+            shutdown();
+        }
+    }*/
 
     /**
      * Transition to disconnected state
@@ -165,11 +165,19 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             // Notify lobby
             if (currentLobby != null) {
                 currentLobby.broadcastMessage("DISC$" + getPlayerName());
+                if (currentLobby.getStatus().equals(Lobby.LobbyStatus.IN_GAME.getStatus())) {
+                    currentLobby.endGame(); // current implementation: game ends immediately, no reconnect possible
+                }
+                else if (currentLobby.getStatus().equals(Lobby.LobbyStatus.IN_LOBBY.getStatus())) {
+                    currentLobby.removePlayer(this);
+                }
             }
-
-            // Schedule cleanup
-            timeoutScheduler.schedule(this::checkReconnectionTimeout,
-                    SETTINGS.Config.GRACE_PERIOD.getValue(), TimeUnit.MILLISECONDS);
+            /*
+            timeoutScheduler.schedule(
+                    this::checkReconnectionTimeout,
+                    SETTINGS.Config.GRACE_PERIOD.getValue(),
+                    TimeUnit.MILLISECONDS
+            );*/
 
             logger.info("Player " + localPlayer.getName() + " has disconnected.");
         }
@@ -408,8 +416,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                 worked = ch.handleListPlayers(cmd);
                 break;
             case RECONNECT:
-                answer = false;
-                worked = ch.handleReconnect();
+                worked = ch.handleReconnect(cmd);
                 break;
             case EXIT:
                 worked = ch.handleExit();

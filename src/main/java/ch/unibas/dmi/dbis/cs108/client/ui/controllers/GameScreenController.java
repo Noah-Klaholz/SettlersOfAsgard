@@ -171,6 +171,8 @@ public class GameScreenController extends BaseController {
     private VBox chatContainer;
     @FXML
     private StackPane timerRoot;
+    @FXML
+    private Label roundLabel;
 
     private ChatComponent chatComponentController;
     private ResourceOverviewDialog resourceOverviewDialog;
@@ -476,6 +478,10 @@ public class GameScreenController extends BaseController {
         LOGGER.info(String.format("Received GameSyncEvent: Updating game state. Board size: %d tiles. Player turn: %s",
                 updatedState.getBoardManager().getBoard().getTiles().length, updatedState.getPlayerTurn()));
 
+        updatedState.getPlayers().forEach(player -> {
+            LOGGER.info("Player: " + player.getName() + ", Status: " + player.getStatus().toString());
+        });
+
         Platform.runLater(() -> {
             gameState = updatedState;
             LOGGER.info("GameSyncEvent received. Searching for player " + localPlayer.getName());
@@ -524,10 +530,10 @@ public class GameScreenController extends BaseController {
         updateCardImages(); // Sets up card visuals and UserData based on gamePlayer
 
         updatePurchasableStates(); // <<< CALL THE NEW CENTRALIZED METHOD HERE
-
         updatePlayerList();
         updateMap();
 
+        roundLabel.setText("Round: " + (gameState.getGameRound() + 1));
         // Initialize TimerComponent after FXML injection and only once
         if (timerComponent == null && timerRoot != null) {
             LOGGER.info("Initializing TimerComponent...");
@@ -1271,6 +1277,7 @@ public class GameScreenController extends BaseController {
                 Tile t = getTile(row, col);
                 if (t.hasEntity() && t.getEntity().getId() == 1) {
                     eventBus.publish(new UseStructureUIEvent(col, row, t.getEntity().getId()));
+                    AudioManager.getInstance().playSoundEffect(AudioTracks.Track.USE_STRUCTURE.getFileName());
                 }
             } else {
                 showNotification("You already own this tile.");
@@ -1733,6 +1740,7 @@ public class GameScreenController extends BaseController {
                 selectedCard.getStyleClass().remove("selected-card");
             card.getStyleClass().add("selected-card");
             selectedCard = card;
+            AudioManager.getInstance().playSoundEffect(AudioTracks.Track.SELECT_CARD.getFileName());
         }
         event.consume();
     }
@@ -1875,7 +1883,7 @@ public class GameScreenController extends BaseController {
         }
 
         if (details.getPrice() > 0) {
-            Label priceLabel = new Label("Price: " + details.getPrice() + " runes");
+            Label priceLabel = new Label("Price: " + details.getShopPrice(localPlayer.getStatus()) + " runes");
             priceLabel.getStyleClass().add("tooltip-price");
             priceLabel.setWrapText(true);
             content.getChildren().add(priceLabel);

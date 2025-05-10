@@ -7,6 +7,7 @@ import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -71,6 +72,7 @@ public class ProtocolTranslator implements CommunicationAPI {
         commandHandlers.put(Commands.INFO.getCommand(), this::processNotificationMessage);
         commandHandlers.put(Commands.ERROR.getCommand(), this::processErrorMessage);
         commandHandlers.put(Commands.LISTLOBBIES.getCommand(), this::processLobbyListMessage);
+        commandHandlers.put(Commands.LISTPLAYERS.getCommand(), this::processPlayerListMessage);
         commandHandlers.put(Commands.OK.getCommand(), this::processSuccessMessage);
         commandHandlers.put(Commands.PING.getCommand(), this::processPingMessage);
         commandHandlers.put(Commands.SHUTDOWN.getCommand(), this::processShutdownMessage);
@@ -131,7 +133,7 @@ public class ProtocolTranslator implements CommunicationAPI {
      */
     public void processReconnectMessage(String args) {
         eventDispatcher.dispatchEvent(
-                new ConnectionEvent(ConnectionEvent.ConnectionState.CONNECTED, "Player " + args + " has disconnected. ", false)
+                new ConnectionEvent(ConnectionEvent.ConnectionState.CONNECTED, "Player " + args + " has reconnected. ", false)
         );
     }
 
@@ -355,6 +357,22 @@ public class ProtocolTranslator implements CommunicationAPI {
      *
      * @param args the args of the message.
      */
+    private void processPlayerListMessage(String args) {
+        String[] parts = args.split("\\" + DELIMITER, 2);
+        if (parts.length >= 2) {
+            PlayerListEvent.ListType type = Objects.equals(parts[0], "LOBBY") ? PlayerListEvent.ListType.LOBBY_LIST : PlayerListEvent.ListType.SERVER_LIST;
+            String playerList = parts[1];
+            eventDispatcher.dispatchEvent(new PlayerListEvent(playerList, type));
+        } else {
+            LOGGER.warning("Invalid PLAYER_LIST message format: " + args);
+        }
+    }
+
+    /**
+     * This method invokes a new Event based on the message.
+     *
+     * @param args the args of the message.
+     */
     private void processPingMessage(String args) {
         // Handled in NetworkController
     }
@@ -415,8 +433,8 @@ public class ProtocolTranslator implements CommunicationAPI {
      *
      * @return the formatted messages.
      */
-    public String formatReconnect() {
-        return Commands.RECONNECT + DELIMITER;
+    public String formatReconnect(String args) {
+        return Commands.RECONNECT.getCommand() + DELIMITER + args;
     }
 
     /**
@@ -531,7 +549,7 @@ public class ProtocolTranslator implements CommunicationAPI {
      * @return the formatted messages.
      */
     public String formatListLobbyPlayers(String lobbyName) {
-        return Commands.LISTPLAYERS.getCommand() + DELIMITER + lobbyName;
+        return Commands.LISTPLAYERS.getCommand() + DELIMITER + "LOBBY" + DELIMITER + lobbyName;
     }
 
     /**
@@ -540,7 +558,7 @@ public class ProtocolTranslator implements CommunicationAPI {
      * @return the formatted messages.
      */
     public String formatListAllPlayers() {
-        return "APLR" + DELIMITER; // Not in Commands enum
+        return Commands.LISTPLAYERS.getCommand() + DELIMITER + "SERVER";
     }
 
     /**
@@ -644,7 +662,7 @@ public class ProtocolTranslator implements CommunicationAPI {
      * @return the formatted messages.
      */
     public String formatUseFieldArtifact(int x, int y, int artifactID) {
-        return Commands.USEFIELDARTIFACT.getCommand() + DELIMITER + artifactID + DELIMITER + x + DELIMITER + y;
+        return Commands.USEFIELDARTIFACT.getCommand() + DELIMITER + x + DELIMITER + y + DELIMITER + artifactID;
     }
 
     /**

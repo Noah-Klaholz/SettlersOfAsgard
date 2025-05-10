@@ -12,6 +12,7 @@ import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -142,7 +143,7 @@ public class GameStateManager {
             gameState.addPlayer(player);
 
             // Parse properties
-            for (String prop : props.split(",(?=[A-Z]{1,2}:)")) { // Split on commas before property codes
+            for (String prop : splitTopLevelProperties(props)) {
                 String[] keyValue = prop.split(":", 2);
                 if (keyValue.length != 2) continue;
 
@@ -182,31 +183,45 @@ public class GameStateManager {
                         player.setPurchasableEntities(entities);
                         break;
                     case "ST":
+                        LOGGER.info("Parsing status for player " + playerName);
                         // Status buffs
                         String[] buffs = keyValue[1].substring(1, keyValue[1].length() - 1).split(",");
+                        LOGGER.info("Status buffs: " + Arrays.toString(buffs));
+                        Status status = player.getStatus();
                         for (String buff : buffs) {
+                            LOGGER.info("Parsing buff: " + buff);
                             String[] buffParts = buff.split(":");
+                            LOGGER.info("Buff parts: " + Arrays.toString(buffParts));
+                            if (buffParts.length != 2) {
+                                LOGGER.warning("Invalid status buff format: " + buff + " for player " + playerName);
+                                continue;
+                            }
+
                             double value = Double.parseDouble(buffParts[1]);
                             switch (buffParts[0]) {
                                 case "RG":
-                                    player.addBuff(Status.BuffType.RUNE_GENERATION, value - player.getStatus().get(Status.BuffType.RUNE_GENERATION));
+                                    status.set(Status.BuffType.RUNE_GENERATION, value); // Set directly
                                     break;
                                 case "EG":
-                                    player.addBuff(Status.BuffType.ENERGY_GENERATION, value - player.getStatus().get(Status.BuffType.ENERGY_GENERATION));
+                                    status.set(Status.BuffType.ENERGY_GENERATION, value); // Set directly
                                     break;
                                 case "RR":
-                                    player.addBuff(Status.BuffType.RIVER_RUNE_GENERATION, value - player.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION));
+                                    status.set(Status.BuffType.RIVER_RUNE_GENERATION, value); // Set directly
                                     break;
                                 case "SP":
-                                    player.addBuff(Status.BuffType.SHOP_PRICE, value - player.getStatus().get(Status.BuffType.SHOP_PRICE));
+                                    status.set(Status.BuffType.SHOP_PRICE, value); // Set directly
                                     break;
                                 case "AC":
-                                    player.addBuff(Status.BuffType.ARTIFACT_CHANCE, value - player.getStatus().get(Status.BuffType.ARTIFACT_CHANCE));
+                                    status.set(Status.BuffType.ARTIFACT_CHANCE, value); // Set directly
                                     break;
                                 case "DB":
-                                    player.addBuff(Status.BuffType.DEBUFFABLE, value > 0 ? 1 : -1);
+                                    status.set(Status.BuffType.DEBUFFABLE, value); // Set directly
                                     break;
+                                default:
+                                    LOGGER.warning("Unknown status buff type: " + buffParts[0] + " for player " + playerName);
+                                    continue;
                             }
+                            LOGGER.info("Set status " + buffParts[0] + " to " + value + " for player " + playerName);
                         }
                         break;
                 }
@@ -355,6 +370,11 @@ public class GameStateManager {
                                 break;
                             case "ST":
                                 // Format: RG:<val>,EG:<val>,RR:<val>,SP:<val>,AC:<val>,DB:<val>
+                                Status status = tile.getStatus();
+                                if (status == null) {
+                                    LOGGER.warning("No status found for tile (" + x + "," + y + ")");
+                                    continue;
+                                }
                                 String[] buffs = value.split(",");
                                 for (String buff : buffs) {
                                     String[] buffParts = buff.split(":");
@@ -362,22 +382,22 @@ public class GameStateManager {
                                     double buffVal = Double.parseDouble(buffParts[1]);
                                     switch (buffParts[0]) {
                                         case "RG":
-                                            tile.addBuff(Status.BuffType.RUNE_GENERATION, buffVal - tile.getStatus().get(Status.BuffType.RUNE_GENERATION));
+                                            status.set(Status.BuffType.RUNE_GENERATION, buffVal);
                                             break;
                                         case "EG":
-                                            tile.addBuff(Status.BuffType.ENERGY_GENERATION, buffVal - tile.getStatus().get(Status.BuffType.ENERGY_GENERATION));
+                                            status.set(Status.BuffType.ENERGY_GENERATION, buffVal);
                                             break;
                                         case "RR":
-                                            tile.addBuff(Status.BuffType.RIVER_RUNE_GENERATION, buffVal - tile.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION));
+                                            status.set(Status.BuffType.RIVER_RUNE_GENERATION, buffVal);
                                             break;
                                         case "SP":
-                                            tile.addBuff(Status.BuffType.SHOP_PRICE, buffVal - tile.getStatus().get(Status.BuffType.SHOP_PRICE));
+                                            status.set(Status.BuffType.SHOP_PRICE, buffVal);
                                             break;
                                         case "AC":
-                                            tile.addBuff(Status.BuffType.ARTIFACT_CHANCE, buffVal - tile.getStatus().get(Status.BuffType.ARTIFACT_CHANCE));
+                                            status.set(Status.BuffType.ARTIFACT_CHANCE, buffVal);
                                             break;
                                         case "DB":
-                                            tile.addBuff(Status.BuffType.DEBUFFABLE, buffVal > 0 ? 1 : -1);
+                                            status.set(Status.BuffType.DEBUFFABLE, buffVal > 0 ? 1 : -1);
                                             break;
                                     }
                                 }
@@ -393,143 +413,31 @@ public class GameStateManager {
         }
     }
 
-    /**
-     * Handles the properties of a statue on a tile.
-     *
-     * @param props the properties of the statue.
-     * @return the Statue object
-     */
-    private Statue parseStatue(String props) {
-        // Match format "STAid,DI<disabled>,AC<activated>,LV<level>"
-        String staPattern = "STA\\d+,";
-        if (props.contains("STA,")) {
-            // Handle format with comma: "STA,id,DI<disabled>,AC<activated>,LV<level>"
-            String[] parts = props.split("STA,")[1].split(",");
-            int id = Integer.parseInt(parts[0]);
-            int disabled = Integer.parseInt(parts[1].substring(2));
-            boolean activated = Boolean.parseBoolean(parts[2].substring(2));
-            int level = Integer.parseInt(parts[3].substring(2));
+    private List<String> splitTopLevelProperties(String props) {
+        List<String> result = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+        int braceDepth = 0;
+        int bracketDepth = 0;
 
-            Statue statue = EntityRegistry.getStatue(id);
-            if (statue != null) {
-                statue.setDisabled(disabled);
-                statue.setActivated(activated);
-                statue.setLevel(level);
+        for (int i = 0; i < props.length(); i++) {
+            char c = props.charAt(i);
+            if (c == ',' && braceDepth == 0 && bracketDepth == 0) {
+                result.add(current.toString());
+                current.setLength(0);
+            } else {
+                if (c == '{') braceDepth++;
+                else if (c == '}') braceDepth--;
+                else if (c == '[') bracketDepth++;
+                else if (c == ']') bracketDepth--;
+                current.append(c);
             }
-            return statue;
-        } else {
-            // Handle format without comma: "STAid,DI<disabled>,AC<activated>,LV<level>"
-            String idStr = props.substring(props.indexOf("STA") + 3, props.indexOf(",DI"));
-            int id = Integer.parseInt(idStr);
-
-            // Extract other properties
-            String[] segments = props.split(",");
-            int disabled = 0;
-            boolean activated = false;
-            int level = 1;
-
-            for (String segment : segments) {
-                if (segment.startsWith("DI")) {
-                    disabled = Integer.parseInt(segment.substring(2));
-                } else if (segment.startsWith("AC")) {
-                    activated = segment.substring(2).equalsIgnoreCase("true") || segment.substring(2).equals("1");
-                } else if (segment.startsWith("LV")) {
-                    level = Integer.parseInt(segment.substring(2));
-                }
-            }
-
-            Statue statue = EntityRegistry.getStatue(id);
-            if (statue != null) {
-                statue.setDisabled(disabled);
-                statue.setActivated(activated);
-                statue.setLevel(level);
-            }
-            return statue;
         }
+
+        if (current.length() > 0) {
+            result.add(current.toString());
+        }
+
+        return result;
     }
 
-    /**
-     * Handles the properties of a monument on a tile.
-     *
-     * @param props the properties of the monument.
-     * @return the monument object
-     */
-    private Monument parseMonument(String props) {
-        if (props.contains("MON,")) {
-            // Format with comma: "MON,id,DI<disabled>"
-            String[] parts = props.split("MON,")[1].split(",");
-            int id = Integer.parseInt(parts[0]);
-            int disabled = Integer.parseInt(parts[1].substring(2));
-
-            Monument monument = EntityRegistry.getMonument(id);
-            if (monument != null) {
-                monument.setDisabled(disabled);
-            }
-            return monument;
-        } else {
-            // Format without comma: "MONid,DI<disabled>"
-            String idStr = props.substring(props.indexOf("MON") + 3, props.indexOf(",DI"));
-            int id = Integer.parseInt(idStr);
-
-            // Extract disabled property
-            String disabledStr = props.substring(props.indexOf("DI") + 2);
-            if (disabledStr.contains(",")) {
-                disabledStr = disabledStr.substring(0, disabledStr.indexOf(","));
-            }
-            int disabled = Integer.parseInt(disabledStr);
-
-            Monument monument = EntityRegistry.getMonument(id);
-            if (monument != null) {
-                monument.setDisabled(disabled);
-            }
-            return monument;
-        }
-    }
-
-    /**
-     * Handles the properties of a Structure on a tile.
-     *
-     * @param props the properties of the Structure.
-     * @return the Structure object
-     */
-    private Structure parseStructure(String props) {
-        if (props.contains("STR,")) {
-            // Format with comma: "STR,id,DI<disabled>,AC<activated>"
-            String[] parts = props.split("STR,")[1].split(",");
-            int id = Integer.parseInt(parts[0]);
-            int disabled = Integer.parseInt(parts[1].substring(2));
-            boolean activated = parts[2].substring(2).equalsIgnoreCase("true") || parts[2].substring(2).equals("1");
-
-            Structure structure = EntityRegistry.getStructure(id);
-            if (structure != null) {
-                structure.setDisabled(disabled);
-                structure.setActivated(activated);
-            }
-            return structure;
-        } else {
-            // Format without comma: "STRid,DI<disabled>,AC<activated>"
-            String idStr = props.substring(props.indexOf("STR") + 3, props.indexOf(",DI"));
-            int id = Integer.parseInt(idStr);
-
-            // Extract other properties
-            String[] segments = props.split(",");
-            boolean disabled = false;
-            boolean activated = false;
-
-            for (String segment : segments) {
-                if (segment.startsWith("DI")) {
-                    disabled = Boolean.parseBoolean(segment.substring(2));
-                } else if (segment.startsWith("AC")) {
-                    activated = segment.substring(2).equalsIgnoreCase("true") || segment.substring(2).equals("1");
-                }
-            }
-
-            Structure structure = EntityRegistry.getStructure(id);
-            if (structure != null) {
-                structure.setDisabled(disabled ? 1 : 0);
-                structure.setActivated(activated);
-            }
-            return structure; // returns the structure
-        }
-    }
 }

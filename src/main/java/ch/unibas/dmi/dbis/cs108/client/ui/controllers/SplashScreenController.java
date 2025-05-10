@@ -119,7 +119,7 @@ public class SplashScreenController extends BaseController {
         );
 
         sequence.setOnFinished(e -> {
-            PauseTransition delay = new PauseTransition(Duration.seconds(1));
+            PauseTransition delay = new PauseTransition(Duration.seconds(SETTINGS.Config.SPLASH_SCREEN_DURATION.getValue()));
             delay.setOnFinished(event -> {
                 sceneManager.switchToScene(SceneManager.SceneType.MAIN_MENU);
 

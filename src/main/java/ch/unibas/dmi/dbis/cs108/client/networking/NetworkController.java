@@ -88,15 +88,18 @@ public class NetworkController {
      * @param cause the cause of the connection loss.
      */
     private void handleConnectionLost(Throwable cause) {
-        LOGGER.info("Connection lost: " + cause.getMessage());
+        /*LOGGER.info("Connection lost: " + cause.getMessage());
         stopPingScheduler();
-        if (!isReconnecting) {
-            eventDispatcher.dispatchEvent(new ConnectionEvent(
-                    ConnectionEvent.ConnectionState.DISCONNECTED,
-                    "Connection lost: " + cause.getMessage(), true
-            ));
-            attemptReconnect();
-        }
+        eventDispatcher.dispatchEvent(new ConnectionEvent(
+                ConnectionEvent.ConnectionState.DISCONNECTED,
+                "Connection lost: " + cause.getMessage(), true
+        ));
+        attemptReconnect();*/
+        eventDispatcher.dispatchEvent(new ConnectionEvent(
+                ConnectionEvent.ConnectionState.DISCONNECTED,
+                "Connection lost: " + cause.getMessage(), true
+        ));
+        eventDispatcher.dispatchEvent(new ShutdownEvent("Connection lost: " + cause.getMessage()));
     }
 
     /**
@@ -298,6 +301,11 @@ public class NetworkController {
         }
         lastPingTime.set(0);
         LOGGER.info("Reconnected successfully!");
+        networkClient.send(translator.formatReconnect(getLocalPlayer().getName()))
+                 .exceptionally(ex -> {
+                     LOGGER.warning("Error sending reconnect message: " + ex.getMessage());
+                     return null;
+                 });
         eventDispatcher.dispatchEvent(new ConnectionEvent(
                 ConnectionEvent.ConnectionState.CONNECTED,
                 "Reconnected to server", true));

@@ -4,6 +4,7 @@ import ch.unibas.dmi.dbis.cs108.client.app.GameApplication;
 import ch.unibas.dmi.dbis.cs108.client.audio.AudioManager;
 import ch.unibas.dmi.dbis.cs108.client.core.PlayerIdentityManager;
 import ch.unibas.dmi.dbis.cs108.client.networking.events.ConnectionEvent;
+import ch.unibas.dmi.dbis.cs108.client.networking.events.PlayerListEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.SceneManager;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.ChatComponent;
 import ch.unibas.dmi.dbis.cs108.client.ui.components.SettingsDialog;
@@ -12,6 +13,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ChangeNameUIEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ConnectionStatusEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.NameChangeResponseEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.PlayerListRequestEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.utils.ResourceLoader;
 import ch.unibas.dmi.dbis.cs108.shared.game.Player;
@@ -257,6 +259,7 @@ public class LobbyScreenController extends BaseController {
      */
     private void setupEventHandlers() {
         eventBus.subscribe(LobbyListResponseEvent.class, this::handleLobbyListResponse);
+        eventBus.subscribe(PlayerListResponseUIEvent.class, this::handlePlayerListResponse);
         eventBus.subscribe(LobbyJoinedEvent.class, this::handleLobbyJoined);
         eventBus.subscribe(PlayerJoinedLobbyEvent.class, this::handlePlayerJoinedLobby);
         eventBus.subscribe(PlayerLeftLobbyEvent.class, this::handlePlayerLeftLobby);
@@ -411,6 +414,24 @@ public class LobbyScreenController extends BaseController {
     }
 
     /**
+     * Handles the response containing the list of players in the current lobby.
+     */
+    private void handlePlayerListResponse(PlayerListResponseUIEvent event) {
+        Objects.requireNonNull(event, "PlayerListResponseUIEvent cannot be null");
+        Platform.runLater(() -> {
+            if (event.getListType() == PlayerListEvent.ListType.LOBBY_LIST) {
+                LOGGER.fine("Received player list from lobby.");
+                List<String> players = event.getPlayerList().stream()
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+                playersInCurrentLobby.setAll(players);
+                playerList.refresh();
+                LOGGER.info("Player list updated with " + playersInCurrentLobby.size() + " players.");
+                updateLobbyPlayerCountInTable(currentLobbyId, playersInCurrentLobby.size());
+            }});
+    }
+
+    /**
      * Handles the confirmation that the player has successfully joined a lobby.
      */
     private void handleLobbyJoined(LobbyJoinedEvent event) {
@@ -513,9 +534,9 @@ public class LobbyScreenController extends BaseController {
     private void handleSelfLeftLobby(LobbyLeftEvent event) {
         Objects.requireNonNull(event, "LobbyLeftEvent cannot be null");
         if (currentLobbyId != null && currentLobbyId.equals(event.getLobbyId())) {
-            playersInCurrentLobby.removeAll();
-            leaveLobbyButton.setDisable(true);
             Platform.runLater(() -> {
+                playersInCurrentLobby.clear(); // <-- Use clear() instead of removeAll()
+                leaveLobbyButton.setDisable(true);
                 LOGGER.info("Left lobby: " + currentLobbyId);
                 resetLobbyState();
                 requestLobbyList();
@@ -523,6 +544,7 @@ public class LobbyScreenController extends BaseController {
                 if (chatComponentController != null) {
                     chatComponentController.addSystemMessage("You left the lobby.");
                 }
+                playerList.refresh(); // <-- Force refresh after clearing
             });
         } else {
             LOGGER.warning("Received SelfLeftLobby event for a lobby mismatch. Current: " + currentLobbyId + ", Event: "
@@ -667,6 +689,10 @@ public class LobbyScreenController extends BaseController {
     private void requestLobbyList() {
         LOGGER.fine("Requesting updated lobby list...");
         eventBus.publish(new LobbyListRequestEvent());
+        if (currentLobbyId != null) {
+            LOGGER.fine("Requesting player list for lobby: " + currentLobbyId);
+            eventBus.publish(new PlayerListRequestEvent(currentLobbyId));
+        }
     }
 
     /**

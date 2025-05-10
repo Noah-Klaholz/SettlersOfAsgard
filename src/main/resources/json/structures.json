@@ -95,11 +95,11 @@
     "params": [
       {
         "name": "NumberOfBuffs",
-        "value": 1
+        "value": 1.0
       },
       {
         "name": "DebuffOtherPlayers",
-        "value": 0
+        "value": 0.0
       },
       {
         "name": "Rune generation",
@@ -119,7 +119,7 @@
       },
       {
         "name": "Artifact Chance",
-        "value": 5.0
+        "value": 0.05
       }
     ]
   },
