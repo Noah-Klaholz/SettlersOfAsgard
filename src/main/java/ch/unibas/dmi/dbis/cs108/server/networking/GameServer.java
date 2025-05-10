@@ -110,15 +110,6 @@ public class GameServer {
 
     public void checkClientConnections() {
         clients.forEach(client -> {
-            if (client.isDisconnected()) {
-                // Only remove if grace period has expired
-                if (System.currentTimeMillis() - client.lastDisconnectionTime >=
-                        SETTINGS.Config.GRACE_PERIOD.getValue()) {
-                    removeClient(client);
-                }
-                return;
-            }
-
             if (client.isConnected()) {
                 client.sendPing();
             }

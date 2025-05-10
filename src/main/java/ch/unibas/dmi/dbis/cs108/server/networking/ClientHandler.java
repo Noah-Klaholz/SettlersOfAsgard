@@ -142,6 +142,17 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         logger.info("Player " + localPlayer.getName() + " has reconnected.");
     }
 
+    private void checkReconnectionTimeout() {
+        if (connectionState == STATE_DISCONNECTED) {
+            if (currentLobby != null) {
+                currentLobby.endGame();
+                currentLobby.removePlayer(this);
+            }
+            server.removeClient(this);
+            shutdown();
+        }
+    }
+
     /**
      * Transition to disconnected state
      */
@@ -154,6 +165,13 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             if (currentLobby != null) {
                 currentLobby.broadcastMessage("DISC$" + getPlayerName());
             }
+
+            timeoutScheduler.schedule(
+                    this::checkReconnectionTimeout,
+                    SETTINGS.Config.GRACE_PERIOD.getValue(),
+                    TimeUnit.MILLISECONDS
+            );
+
             logger.info("Player " + localPlayer.getName() + " has disconnected.");
         }
     }
