@@ -1816,7 +1816,7 @@ public class GameScreenController extends BaseController {
         // Create a layout with styled sections
         VBox content = new VBox(5);
         content.setPadding(new Insets(8));
-        content.setMaxWidth(300);
+        content.setMaxWidth(400);
         content.getStyleClass().add("tooltip-content");
 
         // Only add components with actual content
@@ -1872,8 +1872,8 @@ public class GameScreenController extends BaseController {
         }
 
         // Set the tooltip properties
-        tooltip.setMaxWidth(300);
-        tooltip.setMaxHeight(200);
+        tooltip.setMaxWidth(400);
+        tooltip.setMaxHeight(300);
         content.setMinHeight(Region.USE_PREF_SIZE);
         content.setPrefHeight(Region.USE_COMPUTED_SIZE);
         content.setMaxHeight(Region.USE_PREF_SIZE);
