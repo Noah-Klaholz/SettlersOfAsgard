@@ -58,10 +58,7 @@ public class MusicManager {
             AudioTracks.Track.GAME_BACKGROUND_SECONDARY
         ));
         
-        // Splash screen uses main theme
-        sceneMusicMap.put(SceneManager.SceneType.SPLASH, Arrays.asList(
-            AudioTracks.Track.MAIN_MENU_CHOIR
-        ));
+        // Splash screen: no music, so do not add SPLASH to the map
     }
     
     /**
