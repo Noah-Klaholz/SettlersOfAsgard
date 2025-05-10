@@ -168,6 +168,9 @@ public class ClientHandler implements Runnable, CommunicationAPI {
                 if (currentLobby.getStatus().equals(Lobby.LobbyStatus.IN_GAME.getStatus())) {
                     currentLobby.endGame(); // current implementation: game ends immediately, no reconnect possible
                 }
+                else if (currentLobby.getStatus().equals(Lobby.LobbyStatus.IN_LOBBY.getStatus())) {
+                    currentLobby.removePlayer(this);
+                }
             }
             /*
             timeoutScheduler.schedule(
