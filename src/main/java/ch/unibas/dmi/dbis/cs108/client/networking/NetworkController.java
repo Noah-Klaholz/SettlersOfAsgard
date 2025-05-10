@@ -88,14 +88,18 @@ public class NetworkController {
      * @param cause the cause of the connection loss.
      */
     private void handleConnectionLost(Throwable cause) {
-        LOGGER.info("Connection lost: " + cause.getMessage());
+        /*LOGGER.info("Connection lost: " + cause.getMessage());
         stopPingScheduler();
         eventDispatcher.dispatchEvent(new ConnectionEvent(
                 ConnectionEvent.ConnectionState.DISCONNECTED,
                 "Connection lost: " + cause.getMessage(), true
         ));
-        attemptReconnect();
-
+        attemptReconnect();*/
+        eventDispatcher.dispatchEvent(new ConnectionEvent(
+                ConnectionEvent.ConnectionState.DISCONNECTED,
+                "Connection lost: " + cause.getMessage(), true
+        ));
+        eventDispatcher.dispatchEvent(new ShutdownEvent("Connection lost: " + cause.getMessage()));
     }
 
     /**
