@@ -119,7 +119,7 @@
       },
       {
         "name": "Artifact Chance",
-        "value": 5.0
+        "value": 0.05
       }
     ]
   },
