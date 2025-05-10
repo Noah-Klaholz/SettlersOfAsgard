@@ -140,6 +140,12 @@ public class GameScreenController extends BaseController {
     /** Keeps the last round that has already been rendered. –1 ⇒ not initialised */
     private int lastKnownRound = -1;
 
+    // Artifact Indicator
+    private static final Duration ARTIFACT_INDICATOR_DURATION = Duration.seconds(10); // How long to show the indicator
+    private Point2D locatedArtifactScreenCoords = null;
+    private int locatedArtifactId = -1;
+    private PauseTransition artifactIndicatorClearTimer;
+
     private StatueConfirmationDialog statueConfirmationDialog;
 
     /*
@@ -315,6 +321,7 @@ public class GameScreenController extends BaseController {
         eventBus.subscribe(ErrorEvent.class, this::handleError);
         eventBus.subscribe(EndGameEvent.class, this::handleEndGame);
         eventBus.subscribe(GameSyncEvent.class, this::handleGameSync);
+        eventBus.subscribe(ArtifactLocationEvent.class, this::handleArtifactLocationEvent);
     }
 
     /**
@@ -807,6 +814,7 @@ public class GameScreenController extends BaseController {
         eventBus.unsubscribe(LobbyJoinedEvent.class, this::handleLobbyJoined);
         eventBus.unsubscribe(ErrorEvent.class, this::handleError);
         eventBus.unsubscribe(EndGameEvent.class, this::handleEndGame);
+        eventBus.unsubscribe(ArtifactLocationEvent.class, this::handleArtifactLocationEvent);
 
         playerManager.removePlayerUpdateListener(this::handlePlayerUpdate);
 
@@ -1584,17 +1592,26 @@ public class GameScreenController extends BaseController {
     }
 
     private void redrawEntities() {
+        if (gameCanvas == null || gameState == null || gameState.getBoardManager() == null) {
+            return;
+        }
         GraphicsContext gc = gameCanvas.getGraphicsContext2D();
         gc.clearRect(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
 
         for (int r = 0; r < HEX_ROWS; r++) {
             for (int c = 0; c < HEX_COLS; c++) {
-                if (getTile(r, c).hasEntity()) {
-                    double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2);
+                Tile tile = getTile(r, c);
+                if (tile != null && tile.hasEntity()) {
+                    double cx = gridOffsetX + c * hSpacing + (r % 2) * (hSpacing / 2.0);
                     double cy = gridOffsetY + r * vSpacing;
                     drawHexSprite(gc, cx, cy, effectiveHexSize, r, c);
                 }
             }
+        }
+
+        // Draw artifact location indicator
+        if (locatedArtifactScreenCoords != null && locatedArtifactId != -1) { // Add this block
+            drawArtifactLocationIndicator(gc, locatedArtifactScreenCoords.getX(), locatedArtifactScreenCoords.getY());
         }
     }
 
@@ -3076,4 +3093,97 @@ public class GameScreenController extends BaseController {
         return count;
     }
 
+    // ------------------------------------------------------
+    // Artifact location event handling
+    // ------------------------------------------------------
+    private void handleArtifactLocationEvent(ArtifactLocationEvent event) {
+        if (event == null || gameState == null) {
+            LOGGER.warning("Cannot handle ArtifactLocationEvent: event or gameState is null.");
+            return;
+        }
+        LOGGER.info("Received artifact location: ID=" + event.getArtifactId() + ", X (col)=" + event.getTileX()
+                + ", Y (row)=" + event.getTileY());
+
+        Platform.runLater(() -> {
+            this.locatedArtifactId = event.getArtifactId();
+            int col = event.getTileX(); // X is column
+            int row = event.getTileY(); // Y is row
+
+            if (row < 0 || row >= HEX_ROWS || col < 0 || col >= HEX_COLS) {
+                LOGGER.warning("Invalid tile coordinates for artifact location: row=" + row + ", col=" + col);
+                clearArtifactIndicator();
+                return;
+            }
+            if (hSpacing <= 0 || vSpacing <= 0 || effectiveHexSize <= 0) {
+                LOGGER.warning("Grid parameters not initialized, cannot display artifact location.");
+                clearArtifactIndicator();
+                return;
+            }
+
+            double cx = gridOffsetX + col * hSpacing + (row % 2) * (hSpacing / 2.0);
+            double cy = gridOffsetY + row * vSpacing;
+            this.locatedArtifactScreenCoords = new Point2D(cx, cy);
+
+            LOGGER.fine("Calculated screen coordinates for artifact: " + cx + ", " + cy);
+            redrawEntities();
+
+            if (artifactIndicatorClearTimer != null) {
+                artifactIndicatorClearTimer.stop();
+            }
+            artifactIndicatorClearTimer = new PauseTransition(ARTIFACT_INDICATOR_DURATION);
+            artifactIndicatorClearTimer.setOnFinished(e -> {
+                clearArtifactIndicator();
+                LOGGER.info("Artifact location indicator cleared after timeout.");
+            });
+            artifactIndicatorClearTimer.play();
+
+            if (chatComponentController != null) {
+                chatComponentController.addSystemMessage("Odin's Eye reveals an artifact's presence!");
+            }
+        });
+    }
+
+    private void clearArtifactIndicator() {
+        this.locatedArtifactScreenCoords = null;
+        this.locatedArtifactId = -1;
+        if (gameCanvas != null) {
+            redrawEntities();
+        }
+    }
+
+    private void drawArtifactLocationIndicator(GraphicsContext gc, double centerX, double centerY) {
+        if (effectiveHexSize <= 0) {
+            LOGGER.warning("Cannot draw artifact indicator: effectiveHexSize is invalid.");
+            return;
+        }
+
+        double indicatorRadius = effectiveHexSize * 0.4;
+        Paint oldFill = gc.getFill();
+        double oldAlpha = gc.getGlobalAlpha();
+        Paint oldStroke = gc.getStroke();
+        double oldLineWidth = gc.getLineWidth();
+
+        gc.setGlobalAlpha(0.8);
+
+        gc.setStroke(Color.GOLD);
+        gc.setLineWidth(4);
+        gc.strokeOval(centerX - indicatorRadius, centerY - indicatorRadius, indicatorRadius * 2, indicatorRadius * 2);
+
+        gc.setStroke(Color.rgb(255, 223, 0, 0.7));
+        gc.setLineWidth(2);
+        gc.strokeOval(centerX - indicatorRadius * 0.7, centerY - indicatorRadius * 0.7, indicatorRadius * 1.4,
+                indicatorRadius * 1.4);
+
+        gc.setFill(Color.YELLOW);
+        gc.fillOval(centerX - indicatorRadius * 0.2, centerY - indicatorRadius * 0.2, indicatorRadius * 0.4,
+                indicatorRadius * 0.4);
+
+        gc.setFill(oldFill);
+        gc.setGlobalAlpha(oldAlpha);
+        gc.setStroke(oldStroke);
+        gc.setLineWidth(oldLineWidth);
+
+        LOGGER.finer("Drawing artifact location indicator at: " + centerX + ", " + centerY + " for artifact ID: "
+                + locatedArtifactId);
+    }
 }
