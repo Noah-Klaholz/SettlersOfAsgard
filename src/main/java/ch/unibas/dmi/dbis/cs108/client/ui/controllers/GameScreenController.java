@@ -165,6 +165,8 @@ public class GameScreenController extends BaseController {
     private VBox chatContainer;
     @FXML
     private StackPane timerRoot;
+    @FXML
+    private Label roundLabel;
 
     private ChatComponent chatComponentController;
     private ResourceOverviewDialog resourceOverviewDialog;
@@ -521,10 +523,10 @@ public class GameScreenController extends BaseController {
         updateCardImages(); // Sets up card visuals and UserData based on gamePlayer
 
         updatePurchasableStates(); // <<< CALL THE NEW CENTRALIZED METHOD HERE
-
         updatePlayerList();
         updateMap();
 
+        roundLabel.setText("Round: " + gameState.getGameRound());
         // Initialize TimerComponent after FXML injection and only once
         if (timerComponent == null && timerRoot != null) {
             LOGGER.info("Initializing TimerComponent...");

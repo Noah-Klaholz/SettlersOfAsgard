@@ -458,3 +458,11 @@
     -fx-text-fill: -color-accent-gold;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 2, 0, 0, 1);
 }
+
+.round-label {
+    -fx-font-size: 13px;
+    -fx-font-family: "Cinzel", "Segoe UI", serif;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-accent-gold;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 2, 0, 0, 1);
+}
