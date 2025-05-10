@@ -14,9 +14,9 @@ freya: 334
 noah: 265
 vincent1: 220
 noh: 188
+pc: 100
 vincent3: 90
+laptop: 80
 vincent4: 50
 vincen2: 50
-pc: 50
 vincen1: 40
-laptop: 0
