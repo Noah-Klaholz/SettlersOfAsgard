@@ -526,7 +526,7 @@ public class GameScreenController extends BaseController {
         updatePlayerList();
         updateMap();
 
-        roundLabel.setText("Round: " + gameState.getGameRound());
+        roundLabel.setText("Round: " + (gameState.getGameRound() + 1));
         // Initialize TimerComponent after FXML injection and only once
         if (timerComponent == null && timerRoot != null) {
             LOGGER.info("Initializing TimerComponent...");
