@@ -77,7 +77,7 @@ public class NetworkController {
 
             @Override
             public void onDisconnect(Throwable cause) {
-                Platform.runLater(() -> handleConnectionLost(cause));
+                handleConnectionLost(cause);
             }
         });
     }
@@ -90,13 +90,12 @@ public class NetworkController {
     private void handleConnectionLost(Throwable cause) {
         LOGGER.info("Connection lost: " + cause.getMessage());
         stopPingScheduler();
-        if (!isReconnecting) {
-            eventDispatcher.dispatchEvent(new ConnectionEvent(
-                    ConnectionEvent.ConnectionState.DISCONNECTED,
-                    "Connection lost: " + cause.getMessage()
-            ));
-            attemptReconnect();
-        }
+        eventDispatcher.dispatchEvent(new ConnectionEvent(
+                ConnectionEvent.ConnectionState.DISCONNECTED,
+                "Connection lost: " + cause.getMessage(), true
+        ));
+        attemptReconnect();
+
     }
 
     /**
@@ -111,19 +110,19 @@ public class NetworkController {
         this.serverPort = port;
         eventDispatcher.dispatchEvent(new ConnectionEvent(
                 ConnectionEvent.ConnectionState.CONNECTING,
-                "Connecting to " + host + ":" + port));
+                "Connecting to " + host + ":" + port, true));
         networkClient.connect(host, port)
                 .thenRun(() -> {
                     eventDispatcher.dispatchEvent(new ConnectionEvent(
                             ConnectionEvent.ConnectionState.CONNECTED,
-                            "Connected to " + host + ":" + port));
+                            "Connected to " + host + ":" + port, true));
                     startPingScheduler();
                     register();
                 })
                 .exceptionally(ex -> {
                     eventDispatcher.dispatchEvent(new ConnectionEvent(
                             ConnectionEvent.ConnectionState.DISCONNECTED,
-                            "Failed to connect: " + ex.getMessage()));
+                            "Failed to connect: " + ex.getMessage(), true));
                     return null;
                 });
     }
@@ -139,7 +138,7 @@ public class NetworkController {
         stopPingScheduler();
         eventDispatcher.dispatchEvent(new ConnectionEvent(
                 ConnectionEvent.ConnectionState.DISCONNECTED,
-                "Lost connection to server."));
+                "Lost connection to server.", true));
         if (networkClient.isConnected()) {
             String disconnectMessage = translator.formatExit(localPlayer.getName());
             networkClient.send(disconnectMessage)
@@ -162,7 +161,7 @@ public class NetworkController {
         }
         eventDispatcher.dispatchEvent(new ConnectionEvent(
                 ConnectionEvent.ConnectionState.DISCONNECTED,
-                "Disconnected by user"
+                "Disconnected by user", true
         ));
         lastPingTime.set(0);
     }
@@ -215,7 +214,7 @@ public class NetworkController {
     private void handlePingTimeout() {
         eventDispatcher.dispatchEvent(new ConnectionEvent(
                 ConnectionEvent.ConnectionState.DISCONNECTED,
-                "Connection lost: " + localPlayer.getName()
+                "Connection lost: " + localPlayer.getName(), true
         ));
         attemptReconnect();
     }
@@ -275,16 +274,18 @@ public class NetworkController {
      */
     private void handleReconnectFailure(Throwable ex) {
         synchronized (this) {
-            if (reconnectAttempts >= SETTINGS.Config.MAX_RECONNECT_ATTEMPTS.getValue()) {
-                isReconnecting = false;
-                eventDispatcher.dispatchEvent(new ShutdownEvent("Failed to reconnect to the server."));
+            isReconnecting = false;
+
+            if (reconnectAttempts < SETTINGS.Config.MAX_RECONNECT_ATTEMPTS.getValue()) {
+                LOGGER.info("Reconnect failed (" + reconnectAttempts + "/" +
+                        SETTINGS.Config.MAX_RECONNECT_ATTEMPTS.getValue() + "): " + ex.getMessage());
+                attemptReconnect(); // <--- schedule next attempt
             } else {
-                LOGGER.warning("Reconnect failed (" + reconnectAttempts + "/" + SETTINGS.Config.MAX_RECONNECT_ATTEMPTS.getValue() + "): " + ex.getMessage());
-                attemptReconnect();
+                eventDispatcher.dispatchEvent(new ShutdownEvent("Failed to reconnect to the server."));
+                LOGGER.warning("Max reconnect attempts reached. Giving up.");
             }
         }
     }
-
 
     /**
      * This method is called when the reconnection attempt was successful.
@@ -296,9 +297,14 @@ public class NetworkController {
         }
         lastPingTime.set(0);
         LOGGER.info("Reconnected successfully!");
+        networkClient.send(translator.formatReconnect(getLocalPlayer().getName()))
+                 .exceptionally(ex -> {
+                     LOGGER.warning("Error sending reconnect message: " + ex.getMessage());
+                     return null;
+                 });
         eventDispatcher.dispatchEvent(new ConnectionEvent(
                 ConnectionEvent.ConnectionState.CONNECTED,
-                "Reconnected to server"));
+                "Reconnected to server", true));
         startPingScheduler();
         stopReconnectTimer();
     }

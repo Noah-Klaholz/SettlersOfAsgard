@@ -245,6 +245,7 @@ public class Lobby implements GameEventNotifier {
                 .toArray(String[]::new);
 
         this.gameLogic = new GameLogic(this);
+        players.forEach(ClientHandler::startGame);
         gameLogic.startGame(playerNames);
         startTurnScheduler();
         return true;

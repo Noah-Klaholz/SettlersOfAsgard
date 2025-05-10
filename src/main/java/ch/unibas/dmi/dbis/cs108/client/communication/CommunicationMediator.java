@@ -295,7 +295,9 @@ public class CommunicationMediator {
                         if (event.getState() == ConnectionEvent.ConnectionState.DISCONNECTED) {
                             UIEventBus.getInstance().publish(new GlobalChatEvent(event.getMessage(), "Server", GlobalChatEvent.ChatType.SYSTEM));
                         }
-                        UIEventBus.getInstance().publish(new ConnectionStatusEvent(event.getState(), event.getMessage()));
+                        if (event.isSelf()) {
+                            UIEventBus.getInstance().publish(new ConnectionStatusEvent(event.getState(), event.getMessage()));
+                        }
                     }
 
                     @Override
@@ -323,10 +325,10 @@ public class CommunicationMediator {
                                 System.exit(0);
                             });
 
-                            // Auto-close after 2 seconds if user doesn't respond
+                            // Auto-close after 5 seconds if user doesn't respond
                             new Thread(() -> {
                                 try {
-                                    Thread.sleep(2000);
+                                    Thread.sleep(5000);
                                     if (alert.isShowing()) {
                                         Platform.runLater(() -> {
                                             alert.close();

@@ -20,17 +20,11 @@ import java.util.stream.Collectors;
  */
 public class CommandHandler {
 
-    /**
-     * The ClientHandler instance that this CommandHandler is associated with.
-     */
+    /** The ClientHandler instance that this CommandHandler is associated with. */
     private final ClientHandler ch;
-    /**
-     * The GameServer instance that this CommandHandler is associated with.
-     */
+    /** The GameServer instance that this CommandHandler is associated with. */
     private final GameServer server;
-    /**
-     * The logger for this class.
-     */
+    /** The logger for this class. */
     Logger logger = Logger.getLogger(CommandHandler.class.getName());
 
     /**
@@ -134,6 +128,7 @@ public class CommandHandler {
      * @return true if the command was handled successfully, false otherwise
      */
     public boolean handleExit() {
+        Player localPlayer = ch.getPlayer();
         handleLeaveLobby();
         server.removeClient(ch);
         sendMessage("OK$EXIT" + ch.getPlayerName());
@@ -311,12 +306,28 @@ public class CommandHandler {
      *
      * @return true if the reconnection was successful, false otherwise.
      */
-    public boolean handleReconnect() {
-        if (ch.isDisconnected) {
-            ch.markConnected();
-            return true;
+    public boolean handleReconnect(Command cmd) {
+        String playerName = cmd.getArgs()[0];
+        if (playerName == null || playerName.isEmpty()) {
+            sendMessage("ERR$100$MISSING_PLAYER_NAME");
+            return false;
         }
-        return false;
+
+        // Find existing client handler
+        ClientHandler existingHandler = server.findClientHandler(playerName);
+
+        if (existingHandler != null) {
+            // Transfer player reference to new connection
+            ch.setPlayer(existingHandler.getPlayer());
+            existingHandler.shutdown(); // Clean up old connection
+        } else {
+            sendMessage("ERR$101$PLAYER_NOT_FOUND");
+            return false;
+        }
+
+        ch.reconnect();
+        sendMessage("OK$RECONNECTED$" + playerName);
+        return true;
     }
 
     /**
@@ -336,7 +347,7 @@ public class CommandHandler {
         String message = parts[2];
         if (server.containsPlayerName(receiverName)) {
             server.getClients().forEach(client -> {
-                if (client.isRunning() && (client.getPlayerName().equals(receiverName)) || client.getPlayerName().equals(senderName)) {
+                if (client.isConnected() && (client.getPlayerName().equals(receiverName)) || client.getPlayerName().equals(senderName)) {
                     client.sendMessage("CHTP$" + senderName + "$" + message);
                 }
             });

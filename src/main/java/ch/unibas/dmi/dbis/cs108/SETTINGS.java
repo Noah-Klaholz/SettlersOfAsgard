@@ -9,7 +9,7 @@ public class SETTINGS {
         SHOW_SPLASH_SCREEN(0), // 1 is true, 0 is false
         SPLASH_SCREEN_DURATION(3), // Seconds
         PING_INTERVAL(1000),
-        TIMEOUT(6 * 1000), // Milliseconds
+        TIMEOUT(3 * 1000), // Milliseconds
         MAX_ARTIFACTS(3),
         START_RUNES(50),
         START_ENERGY(0),
@@ -24,9 +24,9 @@ public class SETTINGS {
         MONUMENT_SIZE(33),
         ENTITY_SIZE(33), // Size of the monument
         TURN_TIME(60), // Seconds
-        GRACE_PERIOD(30000), // Milliseconds
-        MAX_RECONNECT_ATTEMPTS(5),
-        RECONNECT_DELAYS_MS(5000),
+        GRACE_PERIOD(60000), // Milliseconds
+        MAX_RECONNECT_ATTEMPTS(25),
+        RECONNECT_DELAYS_MS(2000),
         AUDIO_CROSSFADE_DURATION_MS(2500); // Crossfade duration in ms
 
         private final int value;

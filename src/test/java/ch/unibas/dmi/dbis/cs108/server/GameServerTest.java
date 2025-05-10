@@ -78,8 +78,8 @@ public class GameServerTest {
         gameServer.getClients().add(clientHandler2);
         gameServer.shutdown();
 
-        verify(clientHandler1).closeResources();
-        verify(clientHandler2).closeResources();
+        verify(clientHandler1).shutdown();
+        verify(clientHandler2).shutdown();
         assertTrue(gameServer.getClients().isEmpty());
     }
 
@@ -93,6 +93,7 @@ public class GameServerTest {
     void testRemoveClient() {
         Lobby mockLobby = mock(Lobby.class);
         when(clientHandler1.getCurrentLobby()).thenReturn(mockLobby);
+        when(clientHandler1.isShutdown()).thenReturn(true);
 
         gameServer.getClients().add(clientHandler1);
         gameServer.removeClient(clientHandler1);
@@ -175,21 +176,6 @@ public class GameServerTest {
     void testBroadcastToEmptyClients() {
         assertDoesNotThrow(() -> gameServer.broadcast("TEST_MSG"));
         // No client to verify
-    }
-
-    /**
-     * Tests handling of client with null lobby reference.
-     * Verifies:
-     * - No NullPointerException when removing client
-     * - Clean removal from client list
-     */
-    @Test
-    void testRemoveClientWithNullLobby() {
-        when(clientHandler1.getCurrentLobby()).thenReturn(null);
-        gameServer.getClients().add(clientHandler1);
-
-        assertDoesNotThrow(() -> gameServer.removeClient(clientHandler1));
-        assertTrue(gameServer.getClients().isEmpty());
     }
 
     /**

@@ -1,6 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.networking.protocol;
 
 import ch.unibas.dmi.dbis.cs108.client.networking.events.*;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI;
 import ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.NetworkProtocol.Commands;
 
@@ -81,6 +82,7 @@ public class ProtocolTranslator implements CommunicationAPI {
         commandHandlers.put(Commands.ENDGAME.getCommand(), this::processEndGameMessage);
         commandHandlers.put(Commands.SYNCHRONIZE.getCommand(), this::processSyncMessage);
         commandHandlers.put(Commands.LEADERBOARD.getCommand(), this::processLeaderboard);
+        commandHandlers.put(Commands.RECONNECT.getCommand(), this::processReconnectMessage);
     }
 
     /**
@@ -117,7 +119,20 @@ public class ProtocolTranslator implements CommunicationAPI {
      * @param args the args of the message.
      */
     public void processDisconnectMessage(String args) {
-        eventDispatcher.dispatchEvent(new ConnectionEvent(ConnectionEvent.ConnectionState.DISCONNECTED, "Player " + args + " has disconnected.")); // args is the player name
+        eventDispatcher.dispatchEvent(
+                new ConnectionEvent(ConnectionEvent.ConnectionState.DISCONNECTED, "Player " + args + " has disconnected. ", false)
+        ); // args is the player name
+    }
+
+    /**
+     * This method invokes a new Event based on the message.
+     *
+     * @param args the args of the message.
+     */
+    public void processReconnectMessage(String args) {
+        eventDispatcher.dispatchEvent(
+                new ConnectionEvent(ConnectionEvent.ConnectionState.CONNECTED, "Player " + args + " has reconnected. ", false)
+        );
     }
 
     /**
@@ -352,7 +367,7 @@ public class ProtocolTranslator implements CommunicationAPI {
     private void processShutdownMessage(String args) {
         ConnectionEvent event = new ConnectionEvent(
                 ConnectionEvent.ConnectionState.DISCONNECTED,
-                "Server is shutting down"
+                "Server is shutting down" ,true
         );
         eventDispatcher.dispatchEvent(event);
     }
@@ -400,8 +415,8 @@ public class ProtocolTranslator implements CommunicationAPI {
      *
      * @return the formatted messages.
      */
-    public String formatReconnect() {
-        return Commands.RECONNECT + DELIMITER;
+    public String formatReconnect(String args) {
+        return Commands.RECONNECT.getCommand() + DELIMITER + args;
     }
 
     /**

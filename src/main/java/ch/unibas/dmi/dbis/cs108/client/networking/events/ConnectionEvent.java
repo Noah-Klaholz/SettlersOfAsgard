@@ -19,6 +19,10 @@ public class ConnectionEvent implements Event {
      * The message associated with the connection event.
      */
     private final String message;
+    /**
+     * True if the event is regarding the client, false if its about other players.
+     */
+    private boolean isSelf;
 
     /**
      * Constructor for ConnectionEvent.
@@ -26,9 +30,10 @@ public class ConnectionEvent implements Event {
      * @param state   The state of the connection.
      * @param message The message associated with the connection event.
      */
-    public ConnectionEvent(ConnectionState state, String message) {
+    public ConnectionEvent(ConnectionState state, String message, boolean isSelf) {
         this.state = state;
         this.message = message;
+        this.isSelf = isSelf;
     }
 
     /**
@@ -57,6 +62,15 @@ public class ConnectionEvent implements Event {
      */
     public String getMessage() {
         return message;
+    }
+
+    /**
+     * Gets the current value of isSelf.
+     *
+     * @return the value of isSelf.
+     */
+    public boolean isSelf() {
+        return isSelf;
     }
 
     /**
