@@ -644,7 +644,7 @@ public class ProtocolTranslator implements CommunicationAPI {
      * @return the formatted messages.
      */
     public String formatUseFieldArtifact(int x, int y, int artifactID) {
-        return Commands.USEFIELDARTIFACT.getCommand() + DELIMITER + artifactID + DELIMITER + x + DELIMITER + y;
+        return Commands.USEFIELDARTIFACT.getCommand() + DELIMITER + x + DELIMITER + y + DELIMITER + artifactID;
     }
 
     /**

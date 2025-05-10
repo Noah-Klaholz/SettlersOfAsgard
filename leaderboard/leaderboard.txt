@@ -1,5 +1,5 @@
-noahklaholz2: 8300
-noahklaholz: 7077
+noahklaholz2: 10038
+noahklaholz: 8436
 vincent: 734
 odin: 725
 vincent2: 669

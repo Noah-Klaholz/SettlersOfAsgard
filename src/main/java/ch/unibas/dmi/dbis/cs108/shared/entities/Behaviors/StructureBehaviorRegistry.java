@@ -54,7 +54,7 @@ public class StructureBehaviorRegistry {
         });
 
         registerBehavior("Helgrindr", (structure, gameState, player) -> {
-            player.addBuff(Status.BuffType.DEBUFFABLE, 0); // sets the player to non-debuffable
+            player.addBuff(Status.BuffType.DEBUFFABLE, 0.0); // sets the player to non-debuffable
             player.addEnergy((int) structure.getParams().get(0).getValue());
             return true;
         });
@@ -90,20 +90,22 @@ public class StructureBehaviorRegistry {
             };
             int numberOfBuffs = (int) structure.getParams().get(0).getValue();
 
-            for (int i = 0; i < numberOfBuffs; i++) {
-                int random = (int) Math.ceil(Math.random() * buffTypes.length) - 1; // -1 because the array is 0-indexed
-                double val = (int) structure.getParams().get(random + 2).getValue();
-                player.addBuff(buffTypes[random], val); // +2 because 0 is the number of buffs and 1 is debuffOtherplayers
+            for (int i = 0; i < numberOfBuffs; i++) { // Use < instead of <= to avoid extra iteration
+                int random = (int) (Math.random() * buffTypes.length); // Ensure random index is within bounds
+                double val = structure.getParams().get(random + 2).getValue(); // +2 because 0 is number of buffs, 1 is debuffOtherPlayers
+                player.addBuff(buffTypes[random], val);
 
-                if (structure.getParams().get(1).getValue() == 1.0) { // If DebuffOtherPlayers is true (==1.0) then all other players should recieve the same buff(s) as the player using the statue, only negatively
+                if (structure.getParams().get(1).getValue() == 1.0) { // If DebuffOtherPlayers is true
                     gameState.getPlayers().forEach(otherPlayer -> {
-                        otherPlayer.addBuff(buffTypes[random], -val);
+                        if (!otherPlayer.equals(player)) { // Avoid debuffing the current player
+                            otherPlayer.addBuff(buffTypes[random], -val);
+                        }
                     });
                 }
             }
 
-            structure.setParam(0, 1); // Reset number of buffs -> should never be changed permanently
-            structure.setParam(1, 0); // Reset buffOtherPlayers -> should never last for more than one turn
+            structure.setParam(0, 1); // Reset number of buffs
+            structure.setParam(1, 0); // Reset buffOtherPlayers
             return true;
         });
 

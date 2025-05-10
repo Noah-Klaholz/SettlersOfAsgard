@@ -469,6 +469,10 @@ public class GameScreenController extends BaseController {
         LOGGER.info(String.format("Received GameSyncEvent: Updating game state. Board size: %d tiles. Player turn: %s",
                 updatedState.getBoardManager().getBoard().getTiles().length, updatedState.getPlayerTurn()));
 
+        updatedState.getPlayers().forEach(player -> {
+            LOGGER.info("Player: " + player.getName() + ", Status: " + player.getStatus().toString());
+        });
+
         Platform.runLater(() -> {
             gameState = updatedState;
             LOGGER.info("GameSyncEvent received. Searching for player " + localPlayer.getName());

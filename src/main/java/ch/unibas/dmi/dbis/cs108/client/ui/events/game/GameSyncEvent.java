@@ -13,6 +13,7 @@ public class GameSyncEvent implements UIEvent {
     private final GameStateManager gameStateManager;
 
     public GameSyncEvent(String args, GameStateManager gameStateManager) {
+        Logger.getGlobal().info(args);
         this.gameStateManager = gameStateManager;
         gameStateManager.updateGameState(args);
     }

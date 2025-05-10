@@ -26,6 +26,7 @@ public class ResourceOverviewDialog extends UIComponent<StackPane> {
     private final ResourceLoader resourceLoader;
     ScrollPane scrollPane;
     private VBox content;
+    private VBox playerList;
     private Map<String, Color> playerColors;
 
     public ResourceOverviewDialog(ResourceLoader resourceLoader, Map<String, Color> playerColors) {
@@ -65,15 +66,15 @@ public class ResourceOverviewDialog extends UIComponent<StackPane> {
         content.setAlignment(Pos.CENTER);
         content.setOnMouseClicked(e -> e.consume());
         content.setPadding(new Insets(30, 30, 30, 30));
-        content.setMaxWidth(700);
-        content.setMaxHeight(500);
+        content.setMaxWidth(1000); // Increased max width
+        content.setMaxHeight(700); // Increased max height
 
         // Title
         Label title = new Label("Player Resources");
         title.getStyleClass().add("dialog-title");
 
         // Player list container
-        VBox playerList = new VBox(10);
+        playerList = new VBox(10);
         playerList.setPadding(new Insets(5));
 
         // Add scroll container for players
@@ -99,20 +100,26 @@ public class ResourceOverviewDialog extends UIComponent<StackPane> {
     }
 
     public void updatePlayers(List<Player> players, String currentTurnPlayer, Map<String, Color> playerColors) {
+        LOGGER.info("Updating players in ResourceOverviewDialog...");
+        LOGGER.info("Number of players: " + players.size());
+        LOGGER.info("Current turn player: " + currentTurnPlayer);
+
         // Update player colors
         this.playerColors = playerColors;
+
         // Clear existing player rows
-        VBox playerList = (VBox) scrollPane.getContent();
         playerList.getChildren().clear();
 
         // Create a row for each player
         for (Player player : players) {
+            LOGGER.info("Processing player: " + player.getName());
             HBox playerRow = createPlayerResourceRow(player, player.getName().equals(currentTurnPlayer));
             playerList.getChildren().add(playerRow);
         }
     }
 
     private HBox createPlayerResourceRow(Player player, boolean isCurrentTurn) {
+        LOGGER.info("Creating resource row for player: " + player.getName());
         HBox row = new HBox(15);
         row.setAlignment(Pos.CENTER_LEFT);
         row.setPadding(new Insets(10));
@@ -166,34 +173,39 @@ public class ResourceOverviewDialog extends UIComponent<StackPane> {
         statusEffectsBox.getChildren().add(statusLabel);
 
         Status status = player.getStatus();
-        boolean hasEffects = false;
+        if (status == null) {
+            LOGGER.warning("Player " + player.getName() + " has no status object!");
+        } else {
+            boolean hasEffects = false;
 
-        // Add each buff type with its value
-        for (Status.BuffType buffType : Status.BuffType.values()) {
-            double value = status.get(buffType);
+            // Add each buff type with its value
+            for (Status.BuffType buffType : Status.BuffType.values()) {
+                double value = Math.round(status.get(buffType) * 100) / 100.0; // Round to 2 decimal places
+                LOGGER.info("Player " + player.getName() + " - BuffType: " + buffType + ", Value: " + value);
 
-            // Only show non-default values
-            if (value != 1.0) {
-                hasEffects = true;
-                String effect = formatBuffEffect(buffType, value);
-                Label effectLabel = new Label(effect);
+                // Only show non-default values
+                if (value != 1.0) {
+                    hasEffects = true;
+                    String effect = formatBuffEffect(buffType, value);
+                    Label effectLabel = new Label(effect);
 
-                if (value > 1.0) {
-                    effectLabel.getStyleClass().add("buff-positive");
-                } else if (value < 1.0) {
-                    effectLabel.getStyleClass().add("buff-negative");
-                } else {
-                    effectLabel.getStyleClass().add("buff-neutral");
+                    if (value > 1.0) {
+                        effectLabel.getStyleClass().add("buff-positive");
+                    } else if (value < 1.0) {
+                        effectLabel.getStyleClass().add("buff-negative");
+                    } else {
+                        effectLabel.getStyleClass().add("buff-neutral");
+                    }
+
+                    statusEffectsBox.getChildren().add(effectLabel);
                 }
-
-                statusEffectsBox.getChildren().add(effectLabel);
             }
-        }
 
-        if (!hasEffects) {
-            Label noEffectsLabel = new Label("No active effects");
-            noEffectsLabel.getStyleClass().add("no-effects-label");
-            statusEffectsBox.getChildren().add(noEffectsLabel);
+            if (!hasEffects) {
+                Label noEffectsLabel = new Label("No active effects");
+                noEffectsLabel.getStyleClass().add("no-effects-label");
+                statusEffectsBox.getChildren().add(noEffectsLabel);
+            }
         }
 
         // Add all to row
@@ -204,9 +216,10 @@ public class ResourceOverviewDialog extends UIComponent<StackPane> {
 
     private String formatBuffEffect(Status.BuffType buffType, double value) {
         String buffName = formatBuffName(buffType);
-        String valueStr = (value > 1.0) ? "+" + Math.round((value - 1.0) * 100) + "%" :
-                (value < 1.0) ? Math.round((1.0 - value) * 100) + "% reduction" :
-                        "neutral";
+        double roundedValue = Math.round((value - 1.0) * 100) / 100.0; // Round to 2 decimal places
+        String valueStr = (value > 1.0) ? "+" + roundedValue * 100 + "%" :
+                (value < 1.0) ? Math.abs(roundedValue * 100) + "% reduction" :
+                "neutral";
 
         return buffName + ": " + valueStr;
     }

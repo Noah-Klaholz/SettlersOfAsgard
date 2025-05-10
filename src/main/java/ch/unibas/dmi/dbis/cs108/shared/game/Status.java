@@ -1,5 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.shared.game;
 
+import javafx.fxml.FXML;
+
 /**
  * Status class represents the status of a player in the game.
  * It can be used to track various buffs and debuffs
@@ -68,21 +70,27 @@ public class Status {
      * @param value the value of the buff (positive for buff, negative for debuff)
      */
     public void buff(BuffType type, double value) {
+        value = Math.round(value * 100) / 100.0; // Round to 2 decimal places
         switch (type) {
             case RUNE_GENERATION:
-                runeEfficieny += value;
+                runeEfficieny = Math.round((runeEfficieny + value) * 100) / 100.0;
+                if (runeEfficieny < 0) runeEfficieny = 0;
                 break;
             case ENERGY_GENERATION:
-                energyEfficiency += value;
+                energyEfficiency = Math.round((energyEfficiency + value) * 100) / 100.0;
+                if (energyEfficiency < 0) energyEfficiency = 0;
                 break;
             case RIVER_RUNE_GENERATION:
-                riverRuneEfficiency += value;
+                riverRuneEfficiency = Math.round((riverRuneEfficiency + value) * 100) / 100.0;
+                if (riverRuneEfficiency < 0) riverRuneEfficiency = 0;
                 break;
             case SHOP_PRICE:
-                shopPriceEfficiency += value;
+                shopPriceEfficiency = Math.round((shopPriceEfficiency + value) * 100) / 100.0;
+                if (shopPriceEfficiency < 0.5) shopPriceEfficiency = 0.5;
                 break;
             case ARTIFACT_CHANCE:
-                artifactChance *= value;
+                artifactChance = Math.round((artifactChance + value) * 100) / 100.0;
+                if (artifactChance < 0) artifactChance = 0;
                 break;
             case DEBUFFABLE:
                 debuffable = value > 0;
@@ -102,6 +110,18 @@ public class Status {
         this.debuffable = true; // Default to debuffable
     }
 
+    public void set(BuffType buffType, double value) {
+        switch (buffType) {
+            case RUNE_GENERATION -> runeEfficieny = value;
+            case ENERGY_GENERATION -> energyEfficiency = value;
+            case RIVER_RUNE_GENERATION -> riverRuneEfficiency = value;
+            case SHOP_PRICE -> shopPriceEfficiency = value;
+            case ARTIFACT_CHANCE -> artifactChance = value;
+            case DEBUFFABLE -> debuffable = value > 0; // Return 1.0 if debuffable, else 0.0
+            default -> throw new IllegalArgumentException("Unknown buff type: " + buffType);
+        };
+    }
+
     public enum BuffType {
         RUNE_GENERATION,
         ENERGY_GENERATION,
@@ -110,5 +130,17 @@ public class Status {
         ARTIFACT_CHANCE,
         DEBUFFABLE
         // Add more buff types as needed
+    }
+
+    @Override
+    public String toString() {
+        return "Status{" +
+                "runeEfficieny=" + runeEfficieny +
+                ", energyEfficiency=" + energyEfficiency +
+                ", riverRuneEfficiency=" + riverRuneEfficiency +
+                ", shopPriceEfficiency=" + shopPriceEfficiency +
+                ", artifactChance=" + artifactChance +
+                ", debuffable=" + debuffable +
+                '}';
     }
 }

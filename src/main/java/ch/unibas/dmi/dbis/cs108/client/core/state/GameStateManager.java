@@ -12,6 +12,7 @@ import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -142,7 +143,7 @@ public class GameStateManager {
             gameState.addPlayer(player);
 
             // Parse properties
-            for (String prop : props.split(",(?=[A-Z]{1,2}:)")) { // Split on commas before property codes
+            for (String prop : splitTopLevelProperties(props)) {
                 String[] keyValue = prop.split(":", 2);
                 if (keyValue.length != 2) continue;
 
@@ -182,31 +183,45 @@ public class GameStateManager {
                         player.setPurchasableEntities(entities);
                         break;
                     case "ST":
+                        LOGGER.info("Parsing status for player " + playerName);
                         // Status buffs
                         String[] buffs = keyValue[1].substring(1, keyValue[1].length() - 1).split(",");
+                        LOGGER.info("Status buffs: " + Arrays.toString(buffs));
+                        Status status = player.getStatus();
                         for (String buff : buffs) {
+                            LOGGER.info("Parsing buff: " + buff);
                             String[] buffParts = buff.split(":");
+                            LOGGER.info("Buff parts: " + Arrays.toString(buffParts));
+                            if (buffParts.length != 2) {
+                                LOGGER.warning("Invalid status buff format: " + buff + " for player " + playerName);
+                                continue;
+                            }
+
                             double value = Double.parseDouble(buffParts[1]);
                             switch (buffParts[0]) {
                                 case "RG":
-                                    player.addBuff(Status.BuffType.RUNE_GENERATION, value - player.getStatus().get(Status.BuffType.RUNE_GENERATION));
+                                    status.set(Status.BuffType.RUNE_GENERATION, value); // Set directly
                                     break;
                                 case "EG":
-                                    player.addBuff(Status.BuffType.ENERGY_GENERATION, value - player.getStatus().get(Status.BuffType.ENERGY_GENERATION));
+                                    status.set(Status.BuffType.ENERGY_GENERATION, value); // Set directly
                                     break;
                                 case "RR":
-                                    player.addBuff(Status.BuffType.RIVER_RUNE_GENERATION, value - player.getStatus().get(Status.BuffType.RIVER_RUNE_GENERATION));
+                                    status.set(Status.BuffType.RIVER_RUNE_GENERATION, value); // Set directly
                                     break;
                                 case "SP":
-                                    player.addBuff(Status.BuffType.SHOP_PRICE, value - player.getStatus().get(Status.BuffType.SHOP_PRICE));
+                                    status.set(Status.BuffType.SHOP_PRICE, value); // Set directly
                                     break;
                                 case "AC":
-                                    player.addBuff(Status.BuffType.ARTIFACT_CHANCE, value - player.getStatus().get(Status.BuffType.ARTIFACT_CHANCE));
+                                    status.set(Status.BuffType.ARTIFACT_CHANCE, value); // Set directly
                                     break;
                                 case "DB":
-                                    player.addBuff(Status.BuffType.DEBUFFABLE, value > 0 ? 1 : -1);
+                                    status.set(Status.BuffType.DEBUFFABLE, value); // Set directly
                                     break;
+                                default:
+                                    LOGGER.warning("Unknown status buff type: " + buffParts[0] + " for player " + playerName);
+                                    continue;
                             }
+                            LOGGER.info("Set status " + buffParts[0] + " to " + value + " for player " + playerName);
                         }
                         break;
                 }
@@ -532,4 +547,32 @@ public class GameStateManager {
             return structure; // returns the structure
         }
     }
+
+    private List<String> splitTopLevelProperties(String props) {
+        List<String> result = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+        int braceDepth = 0;
+        int bracketDepth = 0;
+
+        for (int i = 0; i < props.length(); i++) {
+            char c = props.charAt(i);
+            if (c == ',' && braceDepth == 0 && bracketDepth == 0) {
+                result.add(current.toString());
+                current.setLength(0);
+            } else {
+                if (c == '{') braceDepth++;
+                else if (c == '}') braceDepth--;
+                else if (c == '[') bracketDepth++;
+                else if (c == ']') bracketDepth--;
+                current.append(c);
+            }
+        }
+
+        if (current.length() > 0) {
+            result.add(current.toString());
+        }
+
+        return result;
+    }
+
 }
