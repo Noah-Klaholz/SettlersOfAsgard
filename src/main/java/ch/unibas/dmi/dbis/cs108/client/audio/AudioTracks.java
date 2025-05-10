@@ -7,9 +7,11 @@ public class AudioTracks {
         BUTTON_CLICK("effect_button"),
         MUTE_UNMUTE("effect_muteUnmute"),
         PLACE_STRUCTURE("effect_placeStructure"),
+        USE_STRUCTURE("effect_useStructure"),
         USE_ARTIFACT("effect_useArtifact"),
         FANFARE("effect_fanfare"),
         BUY_TILE("effect_buyTile"),
+        SELECT_CARD("effect_selectCard"),
         MESSAGE_SENT("effect_messageSent"),
 
         // Music tracks

@@ -1269,6 +1269,7 @@ public class GameScreenController extends BaseController {
                 Tile t = getTile(row, col);
                 if (t.hasEntity() && t.getEntity().getId() == 1) {
                     eventBus.publish(new UseStructureUIEvent(col, row, t.getEntity().getId()));
+                    AudioManager.getInstance().playSoundEffect(AudioTracks.Track.USE_STRUCTURE.getFileName());
                 }
             } else {
                 showNotification("You already own this tile.");
@@ -1722,6 +1723,7 @@ public class GameScreenController extends BaseController {
                 selectedCard.getStyleClass().remove("selected-card");
             card.getStyleClass().add("selected-card");
             selectedCard = card;
+            AudioManager.getInstance().playSoundEffect(AudioTracks.Track.SELECT_CARD.getFileName());
         }
         event.consume();
     }
