@@ -184,7 +184,7 @@ public class CommandHandler {
                 Lobby lobby = server.getLobby(arg[1]);
                 if (lobby != null) {
                     list = lobby.listPlayers();
-                    sendMessage("OK$LSTP$LOBBY$" + lobby.getId() + "$" + list);
+                    sendMessage("OK$LSTP$LOBBY$" + list);
                     return true;
                 } else {
                     sendMessage("ERR$106$NOT_IN_LOBBY");
