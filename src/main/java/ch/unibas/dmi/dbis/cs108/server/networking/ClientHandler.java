@@ -142,6 +142,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         logger.info("Player " + localPlayer.getName() + " has reconnected.");
     }
 
+    /*
     private void checkReconnectionTimeout() {
         if (connectionState == STATE_DISCONNECTED) {
             if (currentLobby != null) {
@@ -151,7 +152,7 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             server.removeClient(this);
             shutdown();
         }
-    }
+    }*/
 
     /**
      * Transition to disconnected state
@@ -164,13 +165,16 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             // Notify lobby
             if (currentLobby != null) {
                 currentLobby.broadcastMessage("DISC$" + getPlayerName());
+                if (currentLobby.getStatus().equals(Lobby.LobbyStatus.IN_GAME.getStatus())) {
+                    currentLobby.endGame(); // current implementation: game ends immediately, no reconnect possible
+                }
             }
-
+            /*
             timeoutScheduler.schedule(
                     this::checkReconnectionTimeout,
                     SETTINGS.Config.GRACE_PERIOD.getValue(),
                     TimeUnit.MILLISECONDS
-            );
+            );*/
 
             logger.info("Player " + localPlayer.getName() + " has disconnected.");
         }
