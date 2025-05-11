@@ -1000,12 +1000,33 @@ public class LobbyScreenController extends BaseController {
      * Uses JavaFX properties for easy binding with TableView columns.
      */
     public static class GameLobby {
+        /**
+         * Logger for this class.
+         */
         private final String id;
+        /**
+         * The unique identifier for the lobby.
+         */
         private final StringProperty name;
+        /**
+         * The display name of the lobby.
+         */
         private final StringProperty playerCount;
+        /**
+         * The current number of players in the lobby.
+         */
         private final StringProperty status;
+        /**
+         * The current status of the lobby (e.g., "Waiting", "In Progress").
+         */
         private final StringProperty host;
+        /**
+         * The name of the player hosting the lobby.
+         */
         private int currentPlayersCount;
+        /**
+         * The current number of players in the lobby.
+         */
         private int maxPlayersCount;
 
         /**
@@ -1103,18 +1124,38 @@ public class LobbyScreenController extends BaseController {
             return maxPlayersCount;
         }
 
+        /**
+         * Gets the player count property for binding.
+         *
+         * @return The player count property.
+         */
         public StringProperty nameProperty() {
             return name;
         }
 
+        /**
+         * Gets the player count property for binding.
+         *
+         * @return The player count property.
+         */
         public StringProperty playerCountProperty() {
             return playerCount;
         }
 
+        /**
+         * Gets the status property for binding.
+         *
+         * @return The status property.
+         */
         public StringProperty statusProperty() {
             return status;
         }
 
+        /**
+         * Gets the host property for binding.
+         *
+         * @return The host property.
+         */
         public StringProperty hostProperty() {
             return host;
         }

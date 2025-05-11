@@ -66,6 +66,7 @@ public class Lobby implements GameEventNotifier {
      *
      * @param id         The name of the Lobby as a String.
      * @param maxPlayers The number of maximum players as an Integer.
+     *              * @param leaderboard The leaderboard object to use.
      */
     public Lobby(String id, int maxPlayers, Leaderboard leaderboard) {
         this.id = id;
@@ -444,16 +445,42 @@ public class Lobby implements GameEventNotifier {
      * "GAME_ENDED" means the game has ended.
      */
     public enum LobbyStatus {
+        /**
+         * The game is in the lobby.
+         */
         IN_LOBBY("In lobby"),
+        /**
+         * The game is in progress.
+         */
         IN_GAME("In-Game"),
+        /**
+         * The game has ended.
+         * This status is set when the game is over and the players are no longer in the game.
+         */
         GAME_ENDED("Game has ended");
+        /**
+         * The game is in the lobby.
+         */
 
+        /**
+         * The status of the Lobby.
+         */
         private final String status;
 
+        /**
+         * Constructor for the LobbyStatus enum.
+         *
+         * @param status The status of the Lobby.
+         */
         LobbyStatus(String status) {
             this.status = status;
         }
 
+        /**
+         * Gets the status of the Lobby.
+         *
+         * @return The status of the Lobby.
+         */
         public String getStatus() {
             return status;
         }

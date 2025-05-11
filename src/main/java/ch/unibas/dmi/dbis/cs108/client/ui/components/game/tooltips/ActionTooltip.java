@@ -32,6 +32,7 @@ public class ActionTooltip extends Tooltip {
      * Installs the tooltip on a given node.
      *
      * @param node The node to attach the tooltip to.
+     * @param tooltip The tooltip to install.
      */
     public static void install(Node node, ActionTooltip tooltip) {
         Tooltip.install(node, tooltip);

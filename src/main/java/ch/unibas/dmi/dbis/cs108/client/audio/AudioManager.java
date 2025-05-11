@@ -579,7 +579,9 @@ public class AudioManager {
     }
 
     /**
-     * Recursively attaches click sound to all Button nodes in the given parent node.
+     * Recursively attaches click sound to all Button nodes in the given parent node
+     *
+     * @param parent the parent node to search for Button nodes
      */
     public static void attachClickSoundToAllButtons(Parent parent) {
         for (Node node : parent.getChildrenUnmodifiable()) {
@@ -593,6 +595,8 @@ public class AudioManager {
 
     /**
      * Static utility to attach a click sound effect to a button.
+     *
+     * @param button the button to attach the click sound to
      */
     public static void attachClickSound(Button button) {
         if (button != null) {

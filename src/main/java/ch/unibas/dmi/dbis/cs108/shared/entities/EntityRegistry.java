@@ -284,6 +284,7 @@ public class EntityRegistry {
     /**
      * Returns the original GameEntity object by its ID.
      *
+     * @param id The ID of the entity to retrieve
      * @return The original GameEntity object with the given ID, or null if not found
      */
     public static GameEntity getGameEntityOriginalById(int id) {

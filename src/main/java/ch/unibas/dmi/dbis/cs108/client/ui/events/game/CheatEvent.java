@@ -80,6 +80,9 @@ public class CheatEvent implements UIEvent {
         return "CheatEvent";
     }
 
+    /**
+     * Enum representing different cheat codes.
+     */
     public enum Cheat {
         /**
          * Cheat Code for destroying all structures
@@ -106,7 +109,8 @@ public class CheatEvent implements UIEvent {
 
         /**
          * Returns the cheat code as a string.
-         *
+                         *
+         * @param code the cheat code string
          * @return the cheat code
          */
         public static Cheat fromCode(String code) {

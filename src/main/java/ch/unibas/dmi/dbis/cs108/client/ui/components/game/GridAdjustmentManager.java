@@ -292,6 +292,8 @@ public class GridAdjustmentManager {
 
     /**
      * Returns a formatted string with all grid parameters.
+     *
+     * @return A string representation of the grid settings.
      */
     public String getGridSettings() {
         return String.format(

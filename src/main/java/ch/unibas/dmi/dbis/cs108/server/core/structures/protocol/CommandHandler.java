@@ -304,9 +304,10 @@ public class CommandHandler {
     /**
      * Handles the reconnection of the client.
      *
+     * @param cmd the transmitted command
      * @return true if the reconnection was successful, false otherwise.
      */
-    public boolean handleReconnect(Command cmd) {
+        public boolean handleReconnect(Command cmd) {
         String playerName = cmd.getArgs()[0];
         if (playerName == null || playerName.isEmpty()) {
             sendMessage("ERR$100$MISSING_PLAYER_NAME");

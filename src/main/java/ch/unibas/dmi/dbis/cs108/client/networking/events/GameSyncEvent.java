@@ -16,6 +16,11 @@ public class GameSyncEvent implements Event {
      */
     private final String message;
 
+    /**
+     * Constructor for GameSyncEvent.
+     *
+     * @param message The message to be sent with the event.
+     */
     public GameSyncEvent(String message) {
         this.message = message;
     }

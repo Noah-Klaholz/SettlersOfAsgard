@@ -22,6 +22,8 @@ public class Parameter {
 
     /**
      * getName method to retrieve the name of the parameter.
+     *
+     * @return The name of the parameter.
      */
     public String getName() {
         return name;
@@ -29,6 +31,8 @@ public class Parameter {
 
     /**
      * getValue method to retrieve the value of the parameter.
+     *
+     * @return The value of the parameter.
      */
     public double getValue() {
         return value;

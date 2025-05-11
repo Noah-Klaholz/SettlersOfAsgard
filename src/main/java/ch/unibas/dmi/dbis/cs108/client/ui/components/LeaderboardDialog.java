@@ -226,7 +226,7 @@ public class LeaderboardDialog extends UIComponent<StackPane> {
     /**
      * Sets the leaderboard data for the dialog and updates the entries.
      *
-     * @param leaderboard
+     * @param leaderboard The leaderboard data to be displayed
      */
     public void setLeaderboard(Leaderboard leaderboard) {
         this.leaderboard = leaderboard;

@@ -254,6 +254,11 @@ public class GameServer {
         return lobbies;
     }
 
+    /**
+     * Returns a string representation of all connected players.
+     *
+     * @return A string with the names of all connected players
+     */
     public String listPlayers() {
         if (clients.isEmpty()) {
             return "No available players";
@@ -303,8 +308,12 @@ public class GameServer {
 
     /**
      * Finds a client handler by player name, even if disconnected
+     *
+     * @param playerName The name of the player to find
+     *
+     *                   @return The ClientHandler object associated with the player name, or null if not found
      */
-    public ClientHandler findClientHandler(String playerName) {
+                        public ClientHandler findClientHandler(String playerName) {
         return clients.stream()
                 .filter(c -> c.getPlayer() != null)
                 .filter(c -> playerName.equals(c.getPlayerName()))

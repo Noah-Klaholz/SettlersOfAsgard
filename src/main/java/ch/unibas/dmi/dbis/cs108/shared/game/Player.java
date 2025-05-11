@@ -168,6 +168,8 @@ public class Player {
 
     /**
      * adds a monument to the player
+     *
+     * @param monument the monument to add
      */
     public void addOwnedMonument(Monument monument) {
         monuments.add(monument);
@@ -353,6 +355,8 @@ public class Player {
 
     /**
      * Getter for owned tiles
+     *
+     * @return ownedTiles
      */
     public List<Tile> getOwnedTiles() {
         return ownedTiles;
