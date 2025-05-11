@@ -61,7 +61,6 @@ public class ResourceOverviewDialog extends UIComponent<StackPane> {
         this.resourceLoader = resourceLoader;
         this.playerColors = playerColors;
 
-
         this.view = new StackPane();
         this.view.setId("resourceOverview-overlay");
         this.view.getStyleClass().add("dialog-overlay");

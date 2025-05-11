@@ -655,7 +655,6 @@ public class GameScreenController extends BaseController {
         }
 
         GameState updatedState = e.getGameState();
-        detectRoundChangeAndRefresh();
 
         Platform.runLater(() -> {
             gameState = updatedState;
@@ -701,6 +700,8 @@ public class GameScreenController extends BaseController {
             markStatuePlaced(false);
         }
 
+
+        detectRoundChangeAndRefresh();
         updateRunesAndEnergyBar(); // Updates rune label based on gamePlayer
         updateCardImages(); // Sets up card visuals and UserData based on gamePlayer
         updatePurchasableStates(); // <<< CALL THE NEW CENTRALIZED METHOD HERE
