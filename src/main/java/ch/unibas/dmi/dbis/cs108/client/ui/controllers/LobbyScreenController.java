@@ -117,7 +117,8 @@ public class LobbyScreenController extends BaseController {
                 this.localPlayer = new Player("ErrorGuest"); // Fallback
             }
 
-            isConnected.set(true); // When LobbyScreen gets initialized, we are connected, because it wouldnt get shown if not connected.
+            isConnected.set(true); // When LobbyScreen gets initialized, we are connected, because it wouldnt get
+                                   // shown if not connected.
             setupLobbyTable();
             setupPlayerList();
             setupLobbyControls();
@@ -269,6 +270,7 @@ public class LobbyScreenController extends BaseController {
         eventBus.subscribe(ErrorEvent.class, this::handleError);
         eventBus.subscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
         eventBus.subscribe(ConnectionStatusEvent.class, this::handleConnectionStatus);
+        eventBus.subscribe(HostTransferEvent.class, this::handleHostTransfer);
     }
 
     /**
@@ -428,7 +430,8 @@ public class LobbyScreenController extends BaseController {
                 playerList.refresh();
                 LOGGER.info("Player list updated with " + playersInCurrentLobby.size() + " players.");
                 updateLobbyPlayerCountInTable(currentLobbyId, playersInCurrentLobby.size());
-            }});
+            }
+        });
     }
 
     /**
@@ -509,11 +512,25 @@ public class LobbyScreenController extends BaseController {
      * Handles notification that another player has left the current lobby.
      */
     private void handlePlayerLeftLobby(PlayerLeftLobbyEvent event) {
-        LOGGER.fine("Handling PlayerLeftLobbyEvent for player: " + event.getPlayerName() + " in lobby: " + event.getLobbyId() + " with currentLobbyId: " + currentLobbyId);
+        LOGGER.fine("Handling PlayerLeftLobbyEvent for player: " + event.getPlayerName() + " in lobby: "
+                + event.getLobbyId() + " with currentLobbyId: " + currentLobbyId);
         Objects.requireNonNull(event, "PlayerLeftLobbyEvent cannot be null");
         if (currentLobbyId != null && currentLobbyId.equals(event.getLobbyId())) {
             Platform.runLater(() -> {
                 String leftPlayerName = event.getPlayerName();
+
+                // Check if the leaving player was the host
+                boolean wasHost = false;
+                GameLobby currentLobby = allLobbies.stream()
+                        .filter(lobby -> lobby.getId().equals(currentLobbyId))
+                        .findFirst()
+                        .orElse(null);
+
+                if (currentLobby != null && leftPlayerName.equals(currentLobby.getHost())) {
+                    wasHost = true;
+                }
+
+                // Remove player from list
                 if (playersInCurrentLobby.remove(leftPlayerName)) {
                     LOGGER.info(leftPlayerName + " left the lobby.");
                     if (chatComponentController != null) {
@@ -522,12 +539,15 @@ public class LobbyScreenController extends BaseController {
                     playerList.setItems(playersInCurrentLobby);
                     playerList.refresh();
                     updateLobbyPlayerCountInTable(currentLobbyId, playersInCurrentLobby.size());
-                    updateStartGameButtonStyle();
-                    LOGGER.info("Updated player list after " + leftPlayerName + " left and " + playersInCurrentLobby.toString() + " are still in the lobby.");
-                    if (playersInCurrentLobby.get(0) != null && playersInCurrentLobby.get(0).equals(playerManager.getLocalPlayer().getName())) {
-                        isHost = true;
-                        updateStartGameButtonStyle();
+
+                    // Handle host transfer if necessary
+                    if (wasHost && !playersInCurrentLobby.isEmpty()) {
+                        handleHostTransferLogic();
                     }
+
+                    updateStartGameButtonStyle();
+                    LOGGER.info("Updated player list after " + leftPlayerName + " left and "
+                            + playersInCurrentLobby.toString() + " are still in the lobby.");
                 } else {
                     LOGGER.warning("Received PlayerLeftLobbyEvent for player not in list: " + leftPlayerName);
                 }
@@ -689,6 +709,40 @@ public class LobbyScreenController extends BaseController {
                 chatComponentController.addSystemMessage("Reconnected to the server.");
             }
         });
+    }
+
+    /**
+     * Handles notifications that host status has been transferred to a new player.
+     */
+    private void handleHostTransfer(HostTransferEvent event) {
+        Objects.requireNonNull(event, "HostTransferEvent cannot be null");
+        Platform.runLater(() -> {
+            if (currentLobbyId != null && currentLobbyId.equals(event.getLobbyId())) {
+                String newHostName = event.getNewHostName();
+                boolean isLocalPlayerNewHost = newHostName.equals(localPlayer.getName());
+
+                // Update host status for this client
+                isHost = isLocalPlayerNewHost;
+
+                // Update lobby table to reflect new host
+                allLobbies.stream()
+                        .filter(lobby -> lobby.getId().equals(currentLobbyId))
+                        .findFirst()
+                        .ifPresent(lobby -> lobby.setHost(newHostName));
+
+                // Update UI elements based on host status
+                updateStartGameButtonStyle();
+
+                // Add system message to chat
+                if (chatComponentController != null) {
+                    chatComponentController.addSystemMessage(newHostName + " is now the host.");
+                }
+
+                LOGGER.info("Host transferred to " + newHostName + " for lobby " + currentLobbyId +
+                        " (Local player is host: " + isLocalPlayerNewHost + ")");
+            }
+        });
+        requestLobbyList();
     }
 
     /**
@@ -885,6 +939,35 @@ public class LobbyScreenController extends BaseController {
     }
 
     /**
+     * Logic to handle host transfer when the current host leaves.
+     * Selects the next player in line to be host and publishes the appropriate
+     * event.
+     */
+    private void handleHostTransferLogic() {
+        if (playersInCurrentLobby.isEmpty()) {
+            LOGGER.warning("Cannot transfer host: no players left in lobby");
+            return;
+        }
+
+        // Select new host (first player in the list)
+        String newHostName = playersInCurrentLobby.get(0);
+
+        // Update local host status if the local player is the new host
+        if (newHostName.equals(localPlayer.getName())) {
+            isHost = true;
+            updateStartGameButtonStyle();
+            LOGGER.info("Local player is now the host");
+
+            // Publish host transfer event to server
+            eventBus.publish(new HostTransferEvent(currentLobbyId, newHostName));
+
+            if (chatComponentController != null) {
+                chatComponentController.addSystemMessage("You are now the host of this lobby.");
+            }
+        }
+    }
+
+    /**
      * Represents a game lobby entry displayed in the lobby table.
      * Uses JavaFX properties for easy binding with TableView columns.
      */
@@ -1052,7 +1135,8 @@ public class LobbyScreenController extends BaseController {
         /**
          * Returns a string representation of the GameLobby object.
          *
-         * @return A string containing the lobby's ID, name, player count, status, and host.
+         * @return A string containing the lobby's ID, name, player count, status, and
+         *         host.
          */
         @Override
         public String toString() {

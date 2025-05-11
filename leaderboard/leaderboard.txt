@@ -1,5 +1,5 @@
-noahklaholz2: 11248
-noahklaholz: 9139
+noahklaholz2: 12697
+noahklaholz: 10230
 vincent: 734
 odin: 725
 vincent2: 669
@@ -9,11 +9,12 @@ vince2: 424
 nahk: 423
 l: 412
 loki: 402
+noah: 390
 vince: 355
 freya: 334
-noah: 265
 vincent1: 220
 noh: 188
+deinemama: 124
 pc: 100
 vincent3: 90
 laptop: 80

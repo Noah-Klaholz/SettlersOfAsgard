@@ -101,7 +101,7 @@ public class ArtifactBehaviorRegistry {
         registerFieldBehavior("Freyja's Necklace", (artifact, gameState, player, x, y) -> {
             // Give a major rune generation buff to the tile
             Tile tile = gameState.getBoardManager().getTile(x, y);
-            if (tile == null || !tile.hasEntity()) return false;
+            if (tile == null) return false;
             tile.setBuff(Status.BuffType.RUNE_GENERATION, (int) artifact.getEffect());
             return true;
         });
@@ -117,7 +117,7 @@ public class ArtifactBehaviorRegistry {
         registerFieldBehavior("Blood of Jörmungandr", (artifact, gameState, player, x, y) -> {
             // Give a huge rune generation buff to the river-tile
             Tile tile = gameState.getBoardManager().getTile(x, y);
-            if (tile == null || !tile.hasEntity()) return false;
+            if (tile == null) return false;
             tile.setBuff(Status.BuffType.RIVER_RUNE_GENERATION, (int) artifact.getEffect());
             return true;
         });
