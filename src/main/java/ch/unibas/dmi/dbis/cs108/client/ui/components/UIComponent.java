@@ -12,6 +12,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public abstract class UIComponent<T extends Node> {
+    /**
+     * Logger for the UIComponent class.
+     */
     private static final Logger logger = Logger.getLogger(UIComponent.class.getName());
     /**
      * The root JavaFX Node of this component.

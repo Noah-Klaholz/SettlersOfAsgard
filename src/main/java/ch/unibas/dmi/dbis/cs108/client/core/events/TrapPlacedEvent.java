@@ -8,8 +8,14 @@ import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
  * This event is triggered when a player places a trap in the game.
  */
 public class TrapPlacedEvent implements GameEvent {
+    /**
+     * The player who placed the trap.
+     */
     private final Player player;
     //todo: private final sth trap;
+    /**
+     * The tile where the trap was placed.
+     */
     private final Tile tile;
 
     /**

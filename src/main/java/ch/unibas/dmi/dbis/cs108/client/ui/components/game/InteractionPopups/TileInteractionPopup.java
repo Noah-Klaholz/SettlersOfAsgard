@@ -22,13 +22,38 @@ import java.util.logging.Logger;
  * Base class for popups that allow players to interact with structures/statues on tiles
  */
 public abstract class TileInteractionPopup extends Popup {
+    /**
+     * Logger for TileInteractionPopup.
+     */
     private static final Logger LOGGER = Logger.getLogger(TileInteractionPopup.class.getName());
+    /**
+     * The resource loader for loading images and resources.
+     */
     protected final ResourceLoader resourceLoader;
+    /**
+     * The tile that the popup is associated with.
+     */
     protected final Tile tile;
+    /**
+     * The game entity associated with the tile.
+     */
     protected final GameEntity entity;
+    /**
+     * The name of the player interacting with the tile.
+     */
     protected final String playerName;
+    /**
+     * The container for the popup UI elements.
+     */
     protected VBox container;
 
+    /**
+     * Constructor for TileInteractionPopup.
+     *
+     * @param resourceLoader The resource loader for loading images and resources.
+     * @param tile           The tile that the popup is associated with.
+     * @param playerName     The name of the player interacting with the tile.
+     */
     public TileInteractionPopup(ResourceLoader resourceLoader, Tile tile, String playerName) {
         this.resourceLoader = resourceLoader;
         this.tile = tile;
@@ -38,6 +63,10 @@ public abstract class TileInteractionPopup extends Popup {
         initializeBaseUI();
     }
 
+    /**
+     * Initializes the base UI for the popup.
+     * Sets up the container, title, and entity information.
+     */
     private void initializeBaseUI() {
         container = new VBox(10);
         container.setPadding(new Insets(15));
@@ -69,6 +98,11 @@ public abstract class TileInteractionPopup extends Popup {
         this.setAutoHide(true);
     }
 
+    /**
+     * Creates the entity information box with an image and description.
+     *
+     * @return The HBox containing the entity information.
+     */
     protected HBox createEntityInfoBox() {
         HBox infoBox = new HBox(10);
         infoBox.setAlignment(Pos.CENTER_LEFT);

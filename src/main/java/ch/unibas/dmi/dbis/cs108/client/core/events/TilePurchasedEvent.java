@@ -8,7 +8,13 @@ import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
  * This event is triggered when a player purchases a tile in the game.
  */
 public class TilePurchasedEvent implements GameEvent {
+    /**
+     * The player who purchased the tile.
+     */
     private final Player player;
+    /**
+     * The tile that was purchased.
+     */
     private final Tile tile;
 
     /**
