@@ -13,15 +13,15 @@ noah: 390
 vince: 355
 freya: 334
 vincent1: 220
+1: 196
 noh: 188
-1: 168
 3: 134
 deinemama: 124
 pc: 100
 vincent3: 90
 laptop: 80
+2: 56
 vincent4: 50
 vincen2: 50
 vincen1: 40
 4: 16
-2: 6

@@ -109,6 +109,13 @@ public class ArtifactBehaviorRegistry {
             return true;
         });
 
+        registerPlayerBehavior("Mjölnir Charm", (artifact, gameState, player, targetPlayer) -> {
+            // Increases artifact chance
+            logger.info("Mjölnir Charm used on " + targetPlayer.getName());
+            targetPlayer.addBuff(Status.BuffType.ARTIFACT_CHANCE, (int) artifact.getEffect());
+            return true;
+        });
+
         // Field-targeting artifacts
         registerFieldBehavior("Freyja's Necklace", (artifact, gameState, player, x, y) -> {
             // Give a major rune generation buff to the tile
