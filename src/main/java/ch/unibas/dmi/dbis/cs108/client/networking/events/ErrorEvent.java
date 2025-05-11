@@ -7,9 +7,21 @@ import java.time.Instant;
  * This event is triggered when an error occurs, providing details about the error.
  */
 public class ErrorEvent implements Event {
+    /**
+     * The timestamp of the event.
+     */
     private final Instant timestamp = Instant.now();
+    /**
+     * The code representing the error.
+     */
     private final String errorCode;
+    /**
+     * A message describing the error.
+     */
     private final String errorMessage;
+    /**
+     * The severity of the error.
+     */
     private final ErrorSeverity severity;
 
     /**

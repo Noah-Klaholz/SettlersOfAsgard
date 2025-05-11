@@ -17,35 +17,113 @@ import java.util.logging.Logger;
  * in the GameScreen.
  */
 public class GridAdjustmentManager {
+    /**
+     * Logger for GridAdjustmentManager.
+     */
     private static final Logger LOGGER = Logger.getLogger(GridAdjustmentManager.class.getName());
 
     // Default grid parameters moved here
+    /**
+     * Default values for grid parameters.
+     */
     private static final double DEF_GRID_SCALE = 0.85;
+    /**
+     * Default horizontal offset for the grid.
+     */
     private static final double DEF_GRID_H_OFFSET = 0.00;
+    /**
+     * Default vertical offset for the grid.
+     */
     private static final double DEF_GRID_V_OFFSET = 0.15;
+    /**
+     * Default width percentage for the grid.
+     */
     private static final double DEF_GRID_WIDTH_PCT = 0.90;
+    /**
+     * Default height percentage for the grid.
+     */
     private static final double DEF_GRID_HEIGHT_PCT = 2.06;
+    /**
+     * Default rotation degree for the grid.
+     */
     private static final double DEF_ROTATION_DEG = 30.0;
+    /**
+     * Default horizontal spacing for the grid.
+     */
     private static final double DEF_H_SPACING = 1.80;
+    /**
+     * Default vertical spacing for the grid.
+     */
     private static final double DEF_V_SPACING = 1.33;
+    /**
+     * Default horizontal squish factor for the grid.
+     */
     private static final double DEF_H_SQUISH = 1.00;
+    /**
+     * Default vertical squish factor for the grid.
+     */
     private static final double DEF_V_SQUISH = 0.80;
     // References to UI elements and controller
+    /**
+     * The parent controller for the game screen.
+     */
     private final GameScreenController gameScreenController;
+    /**
+     * The label indicating that adjustment mode is active.
+     */
     private final Label adjustmentModeIndicator;
+    /**
+     * The label displaying the current adjustment values.
+     */
     private final Label adjustmentValuesLabel;
+    /**
+     * A callback to trigger a redraw of the game screen.
+     */
     private final Runnable redrawCallback;
     // Grid parameter fields moved here
+    /**
+     * The scale factor for the grid.
+     */
     private double gridScaleFactor = DEF_GRID_SCALE;
+    /**
+     * The horizontal offset for the grid.
+     */
     private double gridHorizontalOffset = DEF_GRID_H_OFFSET;
+    /**
+     * The vertical offset for the grid.
+     */
     private double gridVerticalOffset = DEF_GRID_V_OFFSET;
+    /**
+     * The width percentage for the grid.
+     */
     private double gridWidthPercentage = DEF_GRID_WIDTH_PCT;
+    /**
+     * The height percentage for the grid.
+     */
     private double gridHeightPercentage = DEF_GRID_HEIGHT_PCT;
+    /**
+     * The rotation degree for the grid.
+     */
     private double hexRotationDegrees = DEF_ROTATION_DEG;
+    /**
+     * The horizontal spacing factor for the grid.
+     */
     private double horizontalSpacingFactor = DEF_H_SPACING;
+    /**
+     * The vertical spacing factor for the grid.
+     */
     private double verticalSpacingFactor = DEF_V_SPACING;
+    /**
+     * The horizontal squish factor for the grid.
+     */
     private double horizontalSquishFactor = DEF_H_SQUISH;
+    /**
+     * The vertical squish factor for the grid.
+     */
     private double verticalSquishFactor = DEF_V_SQUISH;
+    /**
+     * Flag indicating whether grid adjustment mode is active.
+     */
     private boolean gridAdjustmentModeActive = false;
 
     /**
@@ -226,46 +304,107 @@ public class GridAdjustmentManager {
 
     // --- Getters for grid parameters needed by GameScreenController ---
 
+    /**
+     * Getters for grid parameters to be used by GameScreenController.
+     * These methods provide access to the current grid settings.
+     */
+    /**
+     * Returns the current grid scale factor.
+     *
+     * @return The grid scale factor.
+     */
     public double getGridScaleFactor() {
         return gridScaleFactor;
     }
 
+
+    /**
+     * Returns the current grid horizontal offset.
+     *
+     * @return The grid horizontal offset.
+     */
     public double getGridHorizontalOffset() {
         return gridHorizontalOffset;
     }
 
+    /**
+     * Returns the current grid vertical offset.
+     *
+     * @return The grid vertical offset.
+     */
     public double getGridVerticalOffset() {
         return gridVerticalOffset;
     }
 
+    /**
+     * Returns the current grid width percentage.
+     *
+     * @return The grid width percentage.
+     */
     public double getGridWidthPercentage() {
         return gridWidthPercentage;
     }
 
+    /**
+     * Returns the current grid height percentage.
+     *
+     * @return The grid height percentage.
+     */
     public double getGridHeightPercentage() {
         return gridHeightPercentage;
     }
 
+    /**
+     * Returns the current hexagon rotation degrees.
+     *
+     * @return The hexagon rotation degrees.
+     */
     public double getHexRotationDegrees() {
         return hexRotationDegrees;
     }
 
+    /**
+     * Returns the current horizontal spacing factor.
+     *
+     * @return The horizontal spacing factor.
+     */
     public double getHorizontalSpacingFactor() {
         return horizontalSpacingFactor;
     }
 
+    /**
+     * Returns the current vertical spacing factor.
+     *
+     * @return The vertical spacing factor.
+     */
     public double getVerticalSpacingFactor() {
         return verticalSpacingFactor;
     }
 
+    /**
+     * Returns the current horizontal squish factor.
+     *
+     * @return The horizontal squish factor.
+     */
     public double getHorizontalSquishFactor() {
         return horizontalSquishFactor;
     }
 
+    /**
+     * Returns the current vertical squish factor.
+     *
+     * @return The vertical squish factor.
+     */
     public double getVerticalSquishFactor() {
         return verticalSquishFactor;
     }
 
+    /**
+     * Returns whether grid adjustment mode is currently active.
+     *
+     * @return {@code true} if grid adjustment mode is active, {@code false}
+     *         otherwise.
+     */
     public boolean isGridAdjustmentModeActive() {
         return gridAdjustmentModeActive;
     }

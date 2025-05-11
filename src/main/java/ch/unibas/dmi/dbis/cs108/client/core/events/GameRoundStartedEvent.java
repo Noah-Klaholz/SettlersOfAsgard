@@ -4,6 +4,10 @@ package ch.unibas.dmi.dbis.cs108.client.core.events;
  * Class representing an event that indicates the start of a game round.
  */
 public class GameRoundStartedEvent implements GameEvent {
+
+    /**
+     * The round number that has started.
+     */
     private final int roundNumber;
 
     /**
