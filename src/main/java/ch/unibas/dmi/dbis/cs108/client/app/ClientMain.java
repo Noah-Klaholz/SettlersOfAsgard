@@ -23,6 +23,10 @@ public class ClientMain {
         NetworkController networkController = null;
         logger.setFilter(new PingFilter());
 
+        /*
+         * Check if the user has provided the server address and port
+         * If not, print usage information and exit
+         */
         try {
             if (args.length < 2) {
                 logger.warning("Missing server address. Usage: java ClientMain <serverip>:<serverport> [username]");

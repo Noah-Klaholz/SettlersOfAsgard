@@ -33,6 +33,9 @@ import java.util.logging.Logger;
  * UI.
  */
 public class CommunicationMediator {
+    /**
+     * Logger for CommunicationMediator
+     */
     private static final Logger LOGGER = Logger.getLogger(CommunicationMediator.class.getName()); // Add Logger
     /**
      * The NetworkController instance used for network communication.
@@ -98,6 +101,11 @@ public class CommunicationMediator {
         return args != null && args.length == (i + 1) && !args[i].trim().isEmpty();
     }
 
+    /**
+     * Register UI listeners for various events.
+     * This method subscribes to UI events and forwards them to the network
+     * controller.
+     */
     private void registerUIListeners() {
         // Chat Events
         UIEventBus.getInstance().subscribe(ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent.class,

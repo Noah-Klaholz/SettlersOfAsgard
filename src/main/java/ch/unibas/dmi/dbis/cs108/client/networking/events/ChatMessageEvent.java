@@ -7,9 +7,21 @@ import java.time.Instant;
  * This class encapsulates the details of a chat message, including the sender, content, and type of chat.
  */
 public class ChatMessageEvent implements Event {
+    /**
+     * The timestamp of when the event occurred.
+     */
     private final Instant timestamp = Instant.now();
+    /**
+     * The sender of the chat message.
+     */
     private final String sender;
+    /**
+     * The content of the chat message.
+     */
     private final String content;
+    /**
+     * The type of chat (e.g., GLOBAL, LOBBY, PRIVATE, INFO).
+     */
     private final ChatType type;
 
     /**
