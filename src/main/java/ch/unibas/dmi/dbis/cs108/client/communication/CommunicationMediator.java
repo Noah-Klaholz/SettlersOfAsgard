@@ -12,6 +12,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ServerCommandEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.ArtifactLocationEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.EndTurnRequestEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.game.TrapLocationEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.GameStartedEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyListResponseEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.PlayerJoinedLobbyEvent;
@@ -493,8 +494,13 @@ public class CommunicationMediator {
                 new EventDispatcher.EventListener<NotificationEvent>() {
                     @Override
                     public void onEvent(NotificationEvent event) {
-                        UIEventBus.getInstance()
-                                .publish(new ArtifactLocationEvent(event.getArtifactId(), event.getX(), event.getY(), event.isArtifactFound()));
+                        if (event.isTrap()) {
+                            UIEventBus.getInstance()
+                                    .publish(new TrapLocationEvent(event.getX(), event.getY(), event.getLostRunes()));
+                        } else {
+                            UIEventBus.getInstance()
+                                    .publish(new ArtifactLocationEvent(event.getArtifactId(), event.getX(), event.getY(), event.isArtifactFound()));
+                        }
                     }
 
                     @Override

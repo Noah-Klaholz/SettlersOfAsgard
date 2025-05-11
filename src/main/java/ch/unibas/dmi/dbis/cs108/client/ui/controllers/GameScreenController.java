@@ -501,6 +501,7 @@ public class GameScreenController extends BaseController {
         eventBus.subscribe(EndGameEvent.class, this::handleEndGame);
         eventBus.subscribe(GameSyncEvent.class, this::handleGameSync);
         eventBus.subscribe(ArtifactLocationEvent.class, this::handleArtifactLocationEvent);
+        eventBus.subscribe(TrapLocationEvent.class, this::handleTrapLocationEvent);
     }
 
     /**
@@ -3507,5 +3508,9 @@ public class GameScreenController extends BaseController {
 
         LOGGER.finer("Drawing artifact location indicator at: " + centerX + ", " + centerY + " for artifact ID: "
                 + locatedArtifactId);
+    }
+
+    public void handleTrapLocationEvent() {
+
     }
 }

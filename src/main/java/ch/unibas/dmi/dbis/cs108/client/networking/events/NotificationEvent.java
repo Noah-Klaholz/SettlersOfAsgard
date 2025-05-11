@@ -20,6 +20,10 @@ public class NotificationEvent implements Event {
     private final int y;
     /** Boolean representing if an artifact was found*/
     private final boolean artifactFound;
+    /** Boolean representing if the event is a trap*/
+    private final boolean isTrap;
+    /** Lost runes int */
+    private final int lostRunes;
 
     /**
      * Constructor for NotificationEvent.
@@ -27,28 +31,50 @@ public class NotificationEvent implements Event {
      * @param message The message associated with the notification event.
      */
     public NotificationEvent(String message) {
-        Logger.getGlobal().info("NotificationEvent: " + message);
         this.message = message;
+
+        // Handle empty/null messages
         if (message == null || message.isEmpty() || message.equals("NULL")) {
-            Logger.getGlobal().warning("NotificationEvent: Null message received" + message);
             this.artifactId = -1;
             this.x = -1;
             this.y = -1;
+            this.lostRunes = -1;
             this.artifactFound = false;
+            this.isTrap = false;
             return;
         }
+
+        // Handle trap messages (format: "TRAP$lostRunes")
+        if (message.startsWith("TRAP")) {
+            this.isTrap = true;
+            this.artifactFound = false;
+            this.artifactId = -1;
+            this.x = -1;
+            this.y = -1;
+
+            String[] trapParts = message.split("[$]");
+            this.lostRunes = (trapParts.length > 1) ? Integer.parseInt(trapParts[1]) : -1;
+            return;
+        }
+
+        // Handle artifact messages (format: "artifactId$x$y")
         String[] parts = message.split("[$]");
         if (parts.length == 3) {
+            // Valid artifact found message
             this.artifactId = Integer.parseInt(parts[0]);
             this.x = Integer.parseInt(parts[1]);
             this.y = Integer.parseInt(parts[2]);
             this.artifactFound = true;
+            this.isTrap = false;
+            this.lostRunes = -1;
         } else {
+            // Invalid message format
             this.artifactId = -1;
             this.x = -1;
             this.y = -1;
             this.artifactFound = false;
-            Logger.getGlobal().warning("NotificationEvent: Invalid message format: " + message);
+            this.isTrap = false;
+            this.lostRunes = -1;
         }
     }
 
@@ -96,6 +122,24 @@ public class NotificationEvent implements Event {
      */
     public int getY() {
         return y;
+    }
+
+    /**
+     * Checks if the event is a trap.
+     *
+     * @return True if the event is a trap, false otherwise.
+     */
+    public boolean isTrap() {
+        return isTrap;
+    }
+
+    /**
+     * Gets the lost runes associated with the notification event.
+     *
+     * @return The lost runes.
+     */
+    public int getLostRunes() {
+        return lostRunes;
     }
 
     /**
