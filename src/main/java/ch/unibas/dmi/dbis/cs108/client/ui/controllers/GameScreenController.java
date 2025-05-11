@@ -38,6 +38,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
@@ -666,6 +668,32 @@ public class GameScreenController extends BaseController {
         if (overlayCanvas != null)
             overlayCanvas.setDisable(true);
 
+        // Disable all card hands
+        if (artifactHand != null) {
+            artifactHand.setDisable(true);
+            // Remove all event handlers from artifact cards
+            for (Node card : artifactHand.getChildren()) {
+                disableCardInteractions(card);
+            }
+        }
+
+        if (structureHand != null) {
+            structureHand.setDisable(true);
+            // Remove all event handlers from structure cards
+            for (Node card : structureHand.getChildren()) {
+                disableCardInteractions(card);
+            }
+        }
+
+        // Clear any tooltips
+        cardTooltips.clear();
+
+        // Find and disable all game control buttons in the scene
+        Scene scene = gameCanvas.getScene();
+        if (scene != null) {
+            disableAllButtons(scene.getRoot());
+        }
+
         // Remove event handlers added via addEventHandler (for all event types)
         gameCanvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, e -> handleCanvasClick(e.getX(), e.getY()));
         gameCanvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
@@ -754,6 +782,38 @@ public class GameScreenController extends BaseController {
         pendingTooltipRow = -1;
         lastTooltipCol = -1;
         lastTooltipRow = -1;
+    }
+
+    /**
+     * Disables all interactions for a card
+     * 
+     * @param card The card node to disable
+     */
+    private void disableCardInteractions(Node card) {
+        card.setDisable(true);
+        card.setOnMouseEntered(null);
+        card.setOnMouseExited(null);
+        card.setOnMouseClicked(null);
+        card.setOnDragDetected(null);
+        card.setOnMouseDragged(null);
+
+        // Apply visual indication that the card is disabled
+        card.setOpacity(0.7);
+    }
+
+    /**
+     * Recursively disables all Button nodes in the scene graph
+     * 
+     * @param parent The parent node to search from
+     */
+    private void disableAllButtons(Node parent) {
+        if (parent instanceof Button) {
+            ((Button) parent).setDisable(true);
+        } else if (parent instanceof Parent) {
+            for (Node child : ((Parent) parent).getChildrenUnmodifiable()) {
+                disableAllButtons(child);
+            }
+        }
     }
 
     /**
