@@ -60,7 +60,10 @@ public class CommunicationMediator {
      *
      * @param networkController The network controller to handle network
      *                          communication.
-     */
+     *                     * @param gameStateManager  The game state manager to manage the game
+     * @param player
+     *
+             */
     public CommunicationMediator(NetworkController networkController, GameStateManager gameStateManager, Player player) {
         this.player = player;
         this.gameStateManager = gameStateManager;

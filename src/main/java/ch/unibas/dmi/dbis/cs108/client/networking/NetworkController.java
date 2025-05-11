@@ -413,6 +413,7 @@ public class NetworkController {
      * Sends a message to the server to create a new lobby.
      *
      * @param lobbyName The name of the lobby to create.
+     *                  * @param maxPlayers The maximum number of players allowed in the lobby.
      */
     public void createLobby(String lobbyName, int maxPlayers) {
         String message = translator.formatCreateLobby(localPlayer.getName(), lobbyName, maxPlayers);
@@ -516,6 +517,9 @@ public class NetworkController {
 
     /**
      * Sends a message to the server to buy a tile at the specified coordinates.
+     *
+     * @param x The x-coordinate of the tile.
+     *          * @param y The y-coordinate of the tile.
      */
     public void buyTile(int x, int y) {
         String message = translator.formatBuyTile(x, y);
@@ -526,6 +530,8 @@ public class NetworkController {
      * Sends a message to the server to place a statue with the specified ID.
      *
      * @param statueID The ID of the statue to place.
+     *                 * @param x        The x-coordinate to place the statue.
+     *                 * @param y        The y-coordinate to place the statue.
      */
     public void placeStatue(int x, int y, int statueID) {
         String message = translator.formatPlaceStatue(x, y, statueID);
@@ -536,6 +542,8 @@ public class NetworkController {
      * Sends a message to the server to upgrade a statue with the specified ID.
      *
      * @param x The x-coordinate of the statue.
+     *          * @param y The y-coordinate of the statue.
+     *          * @param statueID The ID of the statue to upgrade.
      */
     public void upgradeStatue(int x, int y, int statueID) {
         String message = translator.formatUpgradeStatue(x, y, statueID);
@@ -547,6 +555,8 @@ public class NetworkController {
      *
      * @param statueID The ID of the statue to use.
      * @param params   Additional parameters for using the statue.
+     *                 * @param x        The x-coordinate of the statue.
+     *                 * @param y        The y-coordinate of the statue.
      */
     public void useStatue(int x, int y, int statueID, String params) {
         String message = translator.formatUseStatue(x, y, statueID, params);
@@ -622,6 +632,7 @@ public class NetworkController {
     /**
      * Requests leaderboard data from the server.
      * The server will respond with a message containing player rankings and scores.
+     *
      */
     public void getLeaderboard() {
         String message = translator.formatGetLeaderboard();
@@ -630,6 +641,8 @@ public class NetworkController {
 
     /**
      * Sends a message to the server to get the local player's information.
+     *
+     * @return The local player object.
      */
     public Player getLocalPlayer() {
         return localPlayer;

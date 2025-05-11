@@ -2,6 +2,11 @@ package ch.unibas.dmi.dbis.cs108.client.networking.core;
 
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Interface for a network client that handles communication with a server.
+ * Provides methods for connecting, disconnecting, sending messages, and
+ * handling incoming messages.
+ */
 public interface NetworkClient {
     /**
      * Connects to the server.
@@ -50,6 +55,11 @@ public interface NetworkClient {
     interface MessageHandler {
         void onMessage(String message);
 
+        /**
+         * Called when the client is disconnected from the server.
+         *
+         * @param cause The cause of the disconnection, if available.
+         */
         void onDisconnect(Throwable cause);
     }
 }

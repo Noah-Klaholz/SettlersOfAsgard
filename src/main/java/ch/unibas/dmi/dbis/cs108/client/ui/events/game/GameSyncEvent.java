@@ -6,6 +6,11 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
 
 import java.util.logging.Logger;
 
+
+/**
+ * Represents a game synchronization event that updates the game state.
+ * This event is used to synchronize the game state between the server and the client.
+ */
 public class GameSyncEvent implements UIEvent {
     /**
      * The game state manager.

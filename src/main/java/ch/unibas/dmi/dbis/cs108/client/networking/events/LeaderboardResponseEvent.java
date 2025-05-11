@@ -17,6 +17,8 @@ public class LeaderboardResponseEvent implements Event {
     /**
      * Constructor for LeaderboardResponseEvent.
      * Initializes the event with the given parameters.
+     *
+     * @param leaderboard The leaderboard data as a string.
      */
     public LeaderboardResponseEvent(String leaderboard) {
         this.leaderboard = Leaderboard.fromString(leaderboard);

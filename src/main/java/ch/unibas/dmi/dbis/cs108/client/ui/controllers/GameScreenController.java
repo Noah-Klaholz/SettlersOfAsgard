@@ -605,6 +605,9 @@ public class GameScreenController extends BaseController {
      * --------------------------------------------------
      */
 
+    /**
+     * Handles the end game event and shows the win screen dialog.
+     */
     private void onConnectionStatus(ConnectionStatusEvent e) {
         if (e == null)
             return;
@@ -621,6 +624,9 @@ public class GameScreenController extends BaseController {
         });
     }
 
+    /**
+     * Handles the lobby joined event and updates the game state.
+     */
     private void onTileClick(TileClickEvent e) {
         LOGGER.fine(() -> String.format("Tile clicked externally (row=%d,col=%d)", e.getRow(), e.getCol()));
     }
@@ -1025,7 +1031,9 @@ public class GameScreenController extends BaseController {
     /**
      * Updates the lobby identifier for both the controller and the chat
      * component.
-     */
+     *
+     * @param lobbyId The new lobby ID.
+                                 */
     public void setCurrentLobbyId(String lobbyId) {
         this.currentLobbyId = lobbyId;
         chatComponentController.setCurrentLobbyId(lobbyId);
@@ -1033,6 +1041,8 @@ public class GameScreenController extends BaseController {
 
     /**
      * Updates the local player reference and forwards it to the chat UI.
+     *
+     * @param player The local player.
      */
     public void setLocalPlayer(Player player) {
         this.localPlayer = player;
@@ -1086,6 +1096,8 @@ public class GameScreenController extends BaseController {
 
     /**
      * Toggles grid‑adjustment mode.
+     *
+     *
      */
     public void toggleGridAdjustmentMode() {
         gridAdjustmentManager.toggleGridAdjustmentMode();
@@ -1093,6 +1105,8 @@ public class GameScreenController extends BaseController {
 
     /**
      * Enables or disables grid‑adjustment mode.
+     *
+     * @param active true to enable, false to disable.
      */
     public void setGridAdjustmentMode(boolean active) {
         gridAdjustmentManager.setGridAdjustmentMode(active);
@@ -1973,6 +1987,8 @@ public class GameScreenController extends BaseController {
 
     /**
      * Toggle card selection (golden frame) when clicked.
+     *
+     * @param event The mouse event triggered by the click.
      */
     @FXML
     public void handleCardClick(MouseEvent event) {
@@ -2009,10 +2025,13 @@ public class GameScreenController extends BaseController {
         statuePopup.show(window, point.getX(), point.getY() + source.getBoundsInLocal().getHeight());
 
         LOGGER.info("Statue selection popup opened");
-    }
+                    }
 
     /**
      * Shows the tooltip for a card after a short delay.
+     *
+     * @param event The mouse event triggered by the hover.
+     *
      */
     @FXML
     public void handleCardMouseEntered(MouseEvent event) {
@@ -2024,6 +2043,8 @@ public class GameScreenController extends BaseController {
 
     /**
      * Hides the tooltip once the mouse exits the card.
+     *
+     * @param event The mouse event triggered by the exit.
      */
     @FXML
     public void handleCardMouseExited(MouseEvent event) {
@@ -2712,9 +2733,11 @@ public class GameScreenController extends BaseController {
 
     /**
      * Marks that a statue has been placed and disables the statue card.
+     *
+     * @param hasPlacedStatue true if the statue has been placed, false otherwise.
      */
     public void markStatuePlaced(boolean hasPlacedStatue) {
-        this.hasPlacedStatue = hasPlacedStatue;
+                        this.hasPlacedStatue = hasPlacedStatue;
 
         // Update the statue card to be non-interactive
         for (Node card : structureHand.getChildren()) {
@@ -2726,7 +2749,7 @@ public class GameScreenController extends BaseController {
                 } else {
                     card.getStyleClass().remove("unaffordable-card");
                     card.getStyleClass().add("game-card");
-                    card.setOnMouseClicked(this::handleCardClick);
+                        card.setOnMouseClicked(this::handleCardClick);
                 }
             }
         }
@@ -2738,6 +2761,12 @@ public class GameScreenController extends BaseController {
      * --------------------------------------------------
      */
 
+    /**
+     * Updates the runes and energy bar display.
+     * This method is called when the game state changes.
+     *
+     *
+     */
     public void updateRunesAndEnergyBar() {
         if (gamePlayer != null) {
             runesLabel.setText(gamePlayer.getRunes() + "");

@@ -2,6 +2,10 @@ package ch.unibas.dmi.dbis.cs108.client.ui.events.game;
 
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
 
+/**
+ * Represents an event that indicates the location of an artifact on the tile map.
+ * This event is used to notify the UI about the position of an artifact.
+ */
 public class ArtifactLocationEvent implements UIEvent {
     /**
      * The ID of the artifact.

@@ -78,6 +78,13 @@ public class LobbyEvent implements Event {
      * Enum representing the possible actions that can occur in a lobby.
      */
     public enum LobbyAction {
-        LEFT, CREATED
+        /**
+         * Action indicating that a player has left the lobby.
+         */
+        LEFT,
+        /**
+         * Action indicating that a player has joined the lobby.
+         */
+        CREATED
     }
 }

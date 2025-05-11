@@ -60,11 +60,31 @@ public class Monument extends FindableEntity {
      * @param mapImagePath the URl for the image to be drawn on the map
      */
     public Monument(int id, String name, String description, String usage, int runes, boolean setBonus, List<Coordinates> tiles, String world, String mapImagePath) {
+
+        /*
+         * Call the parent constructor to initialize common properties
+         * such as id, name, description, and usage.
+         */
         super(id, name, description, usage);
+        /*
+         * runes is the number of runes this entity generates for its owner
+         */
         this.runes = runes;
+        /*
+         * setBonus is a boolean that indicates if this entity is part of a set
+         */
         this.setBonus = setBonus;
+        /*
+         * tiles is a List of Coordinates that represent the tiles this monument is placed upon
+         */
         this.tiles = tiles;
+        /*
+         * world is a String that represents the name of the world
+         */
         this.world = world;
+        /*
+         * mapImagePath is a String that represents the URL for the map-image
+         */
         this.mapImagePath = mapImagePath;
     }
 
@@ -233,11 +253,28 @@ public class Monument extends FindableEntity {
      */
     @Override
     public Monument clone() {
+        /*
+         * Create a new instance of Monument
+         * and copy the properties from this instance.
+         */
         Monument clone = new Monument();
 
+        /*
+         * Copy properties from this instance to the clone
+         * using the copyTo method.
+         */
         clone.setRunes(this.runes);
+        /*
+         * Copy the world name
+         */
         clone.setWorld(this.world);
+        /*
+         * Copy the disabled value
+         */
         clone.setTiles(new ArrayList<>(this.tiles));
+        /*
+         * Copy the setBonus value
+         */
         clone.setMapImagePath(this.mapImagePath);
 
         return (Monument) copyTo(clone);
@@ -249,14 +286,32 @@ public class Monument extends FindableEntity {
      * methods, making it suitable for use in collections that rely on these methods.
      */
     public static class Coordinates {
+        /**
+         * The x-coordinate of the tile
+         */
         public final int x;
+        /**
+         * The y-coordinate of the tile
+         */
         public final int y;
 
+        /**
+         * Constructor for Coordinates
+         *
+         * @param x The x-coordinate of the tile
+         * @param y The y-coordinate of the tile
+         */
         public Coordinates(int x, int y) {
             this.x = x;
             this.y = y;
         }
 
+        /**
+         * Factory method to create a Coordinates object from JSON data.
+         *
+         * @param json The JSON object containing coordinates data
+         * @return A new Coordinates instance populated with data from the JSON
+         */
         @Override
         public boolean equals(Object obj) {
             if (this == obj) return true;
@@ -264,6 +319,12 @@ public class Monument extends FindableEntity {
             return this.x == other.x && this.y == other.y;
         }
 
+        /**
+         * Returns a hash code value for this Coordinates object.
+         * The hash code is computed based on the x and y values.
+         *
+         * @return A hash code value for this Coordinates object
+         */
         @Override
         public int hashCode() {
             return Objects.hash(x, y);

@@ -7,6 +7,11 @@ import ch.unibas.dmi.dbis.cs108.server.core.structures.Command;
  * It provides methods to start the game and process commands.
  */
 public interface GameLogicInterface {
+    /**
+     * Starts the game with the given players.
+     *
+     * @param players The players to start the game with.
+     */
     void startGame(String[] players);
 
     /**

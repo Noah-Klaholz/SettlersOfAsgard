@@ -437,6 +437,8 @@ public class ChatComponent extends UIComponent<BorderPane> {
 
     /**
      * Adds a system message directly to the chat display.
+     *
+     * @param message The system message to display.
      */
     public void addSystemMessage(String message) {
         Platform.runLater(() -> {
@@ -448,6 +450,8 @@ public class ChatComponent extends UIComponent<BorderPane> {
 
     /**
      * Sets the current lobby ID for sending/receiving lobby messages.
+     *
+     * @param lobbyId The ID of the current lobby.
      */
     public void setCurrentLobbyId(String lobbyId) {
         this.currentLobbyId = lobbyId;

@@ -112,7 +112,13 @@ public class GlobalChatEvent implements UIEvent {
      * Enum representing the type of chat message.
      */
     public enum ChatType {
+        /**
+         * Global chat message.
+         */
         GLOBAL,
+        /**
+         * System chat message.
+         */
         SYSTEM
     }
 }

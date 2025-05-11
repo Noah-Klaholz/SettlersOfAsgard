@@ -194,7 +194,13 @@ public class MusicManager {
      * Defines how tracks should be selected from a scene's playlist.
      */
     public enum SelectionMode {
+        /**
+         * Select tracks in a random order.
+         */
         SEQUENTIAL,
+        /**
+         * Select tracks in a random order.
+         */
         RANDOM
     }
 }

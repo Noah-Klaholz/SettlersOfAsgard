@@ -77,6 +77,8 @@ public abstract class UIComponent<T extends Node> {
 
     /**
      * Gets the current onCloseAction (may be null).
+     *
+     * @return The action to be executed when the dialog/component is closed.
      */
     public Runnable getOnCloseAction() {
         return onCloseAction;
@@ -86,6 +88,8 @@ public abstract class UIComponent<T extends Node> {
      * Sets an action to be executed when the dialog/component is closed.
      * Used by BaseController to restore overlays/layouts.
      * Subclasses should call this action when closing.
+     *
+     * @param action The action to be executed
      */
     public void setOnCloseAction(Runnable action) {
         this.onCloseAction = action;
