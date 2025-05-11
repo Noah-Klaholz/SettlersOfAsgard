@@ -374,16 +374,12 @@ public class LobbyScreenController extends BaseController {
     }
 
     /**
-     * Handles the "Start Game" button click (host only).
+     * Handles the "Start Game" button click (any player can start once enough
+     * players join).
      */
     @FXML
     private void handleStartGame() {
         LOGGER.info("Start Game button clicked.");
-        if (!isHost) {
-            showError("Only the lobby host can start the game.");
-            LOGGER.warning("Non-host attempted to start the game.");
-            return;
-        }
         if (currentLobbyId == null) {
             showError("Cannot start game: Not currently in a lobby.");
             LOGGER.warning("Attempted to start game while not in a lobby.");
@@ -395,7 +391,7 @@ public class LobbyScreenController extends BaseController {
             return;
         }
         clearError();
-        LOGGER.info("Host is starting the game for lobby: " + currentLobbyId);
+        LOGGER.info("Player is starting the game for lobby: " + currentLobbyId);
         eventBus.publish(new StartGameRequestEvent(currentLobbyId));
     }
 
@@ -615,6 +611,7 @@ public class LobbyScreenController extends BaseController {
     private void handleGameStarted(GameStartedEvent event) {
         Objects.requireNonNull(event, "GameStartedEvent cannot be null");
         LOGGER.info("Game started for lobby: " + currentLobbyId + ". Switching to game screen.");
+
         GameApplication.setPlayers(playersInCurrentLobby.stream().toList());
         Platform.runLater(() -> {
             // Clear the cached GameScreenController so it reloads fresh every time
@@ -866,7 +863,8 @@ public class LobbyScreenController extends BaseController {
      * conditions.
      */
     private void updateStartGameButtonStyle() {
-        boolean isValid = isHost && currentLobbyId != null && playersInCurrentLobby.size() == maxLobbyPlayers;
+        // Any player can start the game if there are enough players
+        boolean isValid = currentLobbyId != null && playersInCurrentLobby.size() == maxLobbyPlayers;
 
         if (isValid) {
             startGameButton.setStyle("-fx-background-color: -color-accent-green;"); // Bootstrap-like green
