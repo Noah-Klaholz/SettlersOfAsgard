@@ -44,6 +44,7 @@ public class LeaderboardDialog extends UIComponent<StackPane> {
      * Initializes the dialog with a title and sets up the layout and styles.
      */
     public LeaderboardDialog() {
+
         super("");
         this.view = new StackPane();
         this.view.setId("leaderboard-overlay");

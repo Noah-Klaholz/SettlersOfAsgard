@@ -30,27 +30,76 @@ import java.util.regex.Pattern;
  * whisper chat.
  */
 public class ChatComponent extends UIComponent<BorderPane> {
+    /**
+     * Logger for the ChatComponent class.
+     */
     private static final Logger LOGGER = Logger.getLogger(ChatComponent.class.getName());
+    /**
+     * DateTimeFormatter for formatting chat timestamps.
+     */
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+    /**
+     * Pattern for matching whisper commands.
+     */
     private static final Pattern WHISPER_PATTERN = Pattern.compile("^/w\\s+(\\S+)\\s+(.*)", Pattern.CASE_INSENSITIVE);
+    /**
+     * Pattern for matching cheat codes.
+     */
     private static final Pattern CHEAT_PATTERN = CheatEvent.getCheatPattern();
 
+    /**
+     * Pattern for matching cheat codes.
+     */
     private final ObservableList<String> messages = FXCollections.observableArrayList();
+    /**
+     * The UI event bus for handling chat events.
+     */
     private final UIEventBus eventBus;
+    /**
+     * The current lobby ID for sending/receiving lobby messages.
+     */
     private String currentLobbyId;
+    /**
+     * The local player context for sending whispers and cheat codes.
+     */
     private Player localPlayer; // Use shared.game.Player
+    /**
+     * Flag to indicate if the player is currently in-game.
+     */
     private boolean inGame = false; // Flag to check if the player is in-game
 
+    /**
+     * FXML UI elements.
+     */
+
+    /**
+     * The main view of the chat component.
+     */
     @FXML
     private ListView<String> chatMessages;
+    /**
+     * The input field for sending chat messages.
+     */
     @FXML
     private TextField chatInput;
+    /**
+     * The button for sending chat messages.
+     */
     @FXML
     private ToggleButton globalChatButton;
+    /**
+     * The button for sending lobby chat messages.
+     */
     @FXML
     private ToggleButton lobbyChatButton;
+    /**
+     * The toggle group for chat mode selection.
+     */
     @FXML
     private ToggleGroup chatToggleGroup;
+    /**
+     * The button for sending chat messages.
+     */
     @FXML
     private Button sendButton;
 

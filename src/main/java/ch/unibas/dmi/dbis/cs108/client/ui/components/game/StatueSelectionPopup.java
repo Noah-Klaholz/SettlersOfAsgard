@@ -24,11 +24,29 @@ import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 public class StatueSelectionPopup extends Popup {
+    /**
+     * Logger for the StatueSelectionPopup class.
+     */
     private static final Logger LOGGER = Logger.getLogger(StatueSelectionPopup.class.getName());
+    /**
+     * The resource loader for loading images.
+     */
     private final ResourceLoader resourceLoader;
+    /**
+     * The consumer that will be called when a statue is selected.
+     */
     private final Consumer<CardDetails> onStatueSelected;
+    /**
+     * List of statue IDs to be displayed in the popup.
+     */
     private final List<Integer> statueIds;
 
+    /**
+     * Constructor for StatueSelectionPopup.
+     *
+     * @param resourceLoader  The resource loader for loading images.
+     * @param onStatueSelected The consumer that will be called when a statue is selected.
+     */
     public StatueSelectionPopup(ResourceLoader resourceLoader, Consumer<CardDetails> onStatueSelected) {
         this.resourceLoader = resourceLoader;
         this.onStatueSelected = onStatueSelected;
@@ -42,6 +60,9 @@ public class StatueSelectionPopup extends Popup {
         initializeUI();
     }
 
+    /**
+     * Initializes the UI components of the popup.
+     */
     private void initializeUI() {
         VBox container = new VBox(10);
         container.setPadding(new Insets(15));
@@ -77,6 +98,12 @@ public class StatueSelectionPopup extends Popup {
         this.setAutoHide(true);
     }
 
+    /**
+     * Creates a row for a statue with its details.
+     *
+     * @param statueId The ID of the statue.
+     * @return A HBox containing the statue details.
+     */
     private HBox createStatueRow(int statueId) {
         HBox row = new HBox(10);
         row.setAlignment(Pos.CENTER_LEFT);

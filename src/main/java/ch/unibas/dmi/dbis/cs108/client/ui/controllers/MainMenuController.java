@@ -35,30 +35,80 @@ import java.util.logging.Logger;
  * dialogs.
  */
 public class MainMenuController extends BaseController {
+    /**
+     * Logger for this class.
+     */
     private static final Logger LOGGER = Logger.getLogger(MainMenuController.class.getName());
+    /**
+     * Version of the application.
+     */
     private static final String VERSION = "1.0.0";
 
+    /**
+     * check if the application is connected to the server.
+     */
     private final AtomicBoolean isConnected = new AtomicBoolean(false);
+    /**
+     * local player instance.
+     */
     private Player localPlayer; // Use shared.game.Player
+    /**
+     * player manager instance.
+     */
     private PlayerIdentityManager playerManager;
+    /**
+     * online user count.
+     */
     private int onlineUserCount = 0;
 
+    /**
+     * Resource loader for loading images and other resources.
+     */
     @FXML
     private BorderPane mainMenuRoot;
+    /**
+     * main menu root node.
+     */
     @FXML
     private ImageView gameLogo;
+    /**
+     * game logo image view.
+     */
     @FXML
     private Label onlineUsersLabel;
+    /**
+     * label for online users.
+     */
     @FXML
     private Label connectionStatus;
+    /**
+     * connection status label.
+     */
     @FXML
     private Label versionLabel;
+    /**
+     * version label.
+     */
     @FXML
     private VBox chatContainer;
+    /**
+     * chat container for chat component.
+     */
 
+    /* * Dialogs for about
+     */
     private AboutDialog aboutDialog;
+    /**
+     * settings dialog.
+     */
     private SettingsDialog settingsDialog;
+    /**
+     * leaderboard dialog.
+     */
     private LeaderboardDialog leaderboardDialog;
+    /**
+     * chat component controller.
+     */
     private ChatComponent chatComponentController;
 
     /**

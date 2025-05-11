@@ -9,8 +9,18 @@ import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
  * This event is triggered when a player purchases a structure in the game.
  */
 public class StructurePurchasedEvent implements GameEvent {
+
+    /**
+     * The player who purchased the structure.
+     */
     private final Player player;
+    /**
+     * The tile where the structure is placed.
+     */
     private final Tile tile;
+    /**
+     * The structure that was purchased.
+     */
     private final Structure structure;
 
     /**

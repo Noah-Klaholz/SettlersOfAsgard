@@ -8,10 +8,25 @@ import java.util.List;
  * This event is triggered when a player successfully joins a lobby in the game.
  */
 public class LobbyJoinedEvent implements Event {
+    /**
+     * The ID of the lobby that was joined.
+     */
     private final String lobbyId;
+    /**
+     * The players in the lobby, separated by '%'.
+     */
     private final List<String> players; // the players in the lobby
+    /**
+     * The player that just joined the lobby.
+     */
     private final String player; // the player that just joined the lobby
+    /**
+     * Indicates if the player is the host of the lobby.
+     */
     private final boolean isHost;
+    /**
+     * The timestamp of when the event occurred.
+     */
     private final Instant timestamp = Instant.now();
 
     /**

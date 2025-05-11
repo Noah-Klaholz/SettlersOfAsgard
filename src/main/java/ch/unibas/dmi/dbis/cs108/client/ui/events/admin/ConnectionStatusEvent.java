@@ -8,7 +8,13 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
  */
 public class ConnectionStatusEvent implements UIEvent {
 
+    /**
+     * The connection state.
+     */
     private final ConnectionState state;
+    /**
+     * An optional message associated with the connection status.
+     */
     private final String message;
 
     /**

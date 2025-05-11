@@ -6,10 +6,22 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
  * Represents the response/result of a BuyTile action.
  */
 public class BuyTileResponseEvent implements UIEvent {
+    /**
+     * Indicates whether the action was successful.
+     */
 
     private final boolean success;
+    /**
+     * Optional message for success/failure.
+     */
     private final String message;
+    /**
+     * The x-coordinate of the tile.
+     */
     private final int x;
+    /**
+     * The y-coordinate of the tile.
+     */
     private final int y;
 
     /**

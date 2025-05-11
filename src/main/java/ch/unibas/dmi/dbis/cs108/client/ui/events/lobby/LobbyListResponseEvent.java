@@ -10,6 +10,9 @@ import java.util.List;
  */
 public class LobbyListResponseEvent implements UIEvent {
 
+    /**
+     * The list of available lobbies.
+     */
     private final List<GameLobby> lobbies;
 
     /**

@@ -9,6 +9,9 @@ import java.util.List;
  */
 public class PlayerListResponseEvent implements UIEvent {
 
+    /**
+     * The list of player names.
+     */
     private final List<String> playerNames;
 
     /**

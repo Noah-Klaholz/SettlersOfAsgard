@@ -9,7 +9,14 @@ import java.util.Optional;
  * This event is sent from the client to the server when a player wants to use an artifact.
  */
 public class UsePlayerArtifactUIEvent implements UIEvent {
+    /**
+     * The ID of the artifact to be used.
+     */
     private final int artifactId;
+    /**
+     * The targeted player for the artifact, if applicable.
+     * This is optional because some artifacts may not target a specific player.
+     */
     private final Optional<String> targetPlayer; // Optional for artifacts that don't target a specific player
 
     /**

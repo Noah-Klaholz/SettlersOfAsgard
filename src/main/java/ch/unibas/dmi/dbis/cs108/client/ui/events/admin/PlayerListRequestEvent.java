@@ -8,6 +8,10 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
  */
 public class PlayerListRequestEvent implements UIEvent {
 
+    /**
+     * The ID of the lobby for which players are requested. If null, all online
+     * players are requested.
+     */
     private final String lobbyId;
 
     /**

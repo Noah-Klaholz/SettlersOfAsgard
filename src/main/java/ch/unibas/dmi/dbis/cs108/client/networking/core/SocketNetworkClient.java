@@ -14,13 +14,41 @@ import java.util.logging.Logger;
  * It handles sending and receiving messages asynchronously and provides a message handler for processing incoming messages.
  */
 public class SocketNetworkClient implements NetworkClient {
+    /**
+     * Logger for logging messages and exceptions.
+     */
     private static final Logger LOGGER = Logger.getLogger(SocketNetworkClient.class.getName());
+    /**
+     * The executor service used for handling network operations.
+     * This allows for asynchronous processing of messages and events.
+     */
     private final ExecutorService executorService;
+    /**
+     * The socket used for communication with the server.
+     */
     private Socket socket;
+    /**
+     * The output stream for sending messages to the server.
+     */
     private PrintWriter out;
+    /**
+     * The input stream for receiving messages from the server.
+     */
     private BufferedReader in;
+    /**
+     * The message handler for processing incoming messages.
+     * This allows the client to handle messages in a custom way.
+     */
     private MessageHandler messageHandler;
+    /**
+     * A flag indicating whether the client is currently running.
+     * This is used to manage the lifecycle of the client and its resources.
+     */
     private volatile boolean running;
+    /**
+     * The thread responsible for reading messages from the socket.
+     * This thread runs in the background and processes incoming messages.
+     */
     private Thread readerThread;
 
     /**
@@ -61,6 +89,10 @@ public class SocketNetworkClient implements NetworkClient {
         return future;
     }
 
+    /**
+     * Cleans up resources used by the client.
+     * This method is called when the client is no longer needed or when an error occurs.
+     */
     public void cleanupResources() {
         try {
             if (readerThread != null) {

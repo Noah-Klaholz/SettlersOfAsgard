@@ -7,8 +7,17 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
  */
 public class UpdateLobbySettingsEvent implements UIEvent {
 
+    /**
+     * The ID of the lobby where the settings are being updated.
+     */
     private final String lobbyId;
+    /**
+     * The setting key to be updated (e.g., "maxPlayers").
+     */
     private final String settingKey;
+    /**
+     * The new value for the setting (e.g., "6").
+     */
     private final String settingValue;
 
     /**

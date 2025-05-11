@@ -26,21 +26,47 @@ import javafx.util.Duration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Controller for the splash screen of the application.
+ * This class handles the initialization and animation of the splash screen.
+ */
 public class SplashScreenController extends BaseController {
+    /**
+     * Logger for the SplashScreenController class.
+     */
     private static final Logger LOGGER = Logger.getLogger(SplashScreenController.class.getName());
+    /**
+     * Duration for the splash screen animation.
+     */
     private static final int duration = SETTINGS.Config.SPLASH_SCREEN_DURATION.getValue();
 
+    /**
+     * Root node of the splash screen.
+     */
     @FXML
     private StackPane splashRoot;
+    /**
+     * ImageView for the game logo.
+     */
     @FXML
     private ImageView gameLogo;
+    /**
+     * Label for the title of the game.
+     */
     @FXML
     private Label titleLabel;
 
+    /**
+     * Constructor for the SplashScreenController class.
+     * Initializes the controller with the resource loader, event bus, and scene manager.
+     */
     public SplashScreenController() {
         super(new ResourceLoader(), UIEventBus.getInstance(), SceneManager.getInstance());
     }
 
+    /**
+     * Initializes the splash screen by loading the game logo and starting the animations.
+     */
     @FXML
     private void initialize() {
         LOGGER.info("Initializing splash screen...");
@@ -50,6 +76,9 @@ public class SplashScreenController extends BaseController {
         playIntroAnimations();
     }
 
+    /**
+     * Loads the game logo image and sets it to the ImageView.
+     */
     private void loadGameLogo() {
         try {
             Image logo = resourceLoader.loadImage(ResourceLoader.GAME_LOGO);
@@ -61,6 +90,10 @@ public class SplashScreenController extends BaseController {
         }
     }
 
+    /**
+     * Plays the intro animations for the splash screen.
+     * This includes moving light effects and fading in the title label.
+     */
     private void playIntroAnimations() {
         // Initial setup - hide elements
         titleLabel.setOpacity(0);
@@ -144,6 +177,10 @@ public class SplashScreenController extends BaseController {
         titleFade.play();
     }
 
+    /**
+     * Plays the intro audio for the splash screen.
+     * This includes background music and sound effects.
+     */
     private void playIntroAudio() {
         // Play intro music and sound effects
         AudioManager.getInstance().playSoundEffect(AudioTracks.Track.INTRO_EFFECT.getFileName());

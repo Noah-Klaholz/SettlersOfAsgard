@@ -7,7 +7,13 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
  */
 public class PlayerLeftLobbyEvent implements UIEvent {
 
+    /**
+     * The ID of the lobby the player left.
+     */
     private final String lobbyId;
+    /**
+     * The name of the player who left.
+     */
     private final String playerName;
 
     /**

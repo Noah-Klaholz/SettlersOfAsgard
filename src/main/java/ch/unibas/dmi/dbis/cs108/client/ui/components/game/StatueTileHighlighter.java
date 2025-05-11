@@ -18,11 +18,23 @@ import java.util.logging.Logger;
  * like Freyr's tree growing on river tiles.
  */
 public class StatueTileHighlighter {
+    /**
+     * Logger for StatueTileHighlighter.
+     */
     private static final Logger LOGGER = Logger.getLogger(StatueTileHighlighter.class.getName());
 
+    /**
+     * The highlight color for river tiles.
+     */
     private final Map<String, Node> highlightedTiles;
+    /**
+     * The highlight layer containing all highlight elements.
+     */
     private final Group highlightLayer;
 
+    /**
+     * Callback for when a tile is selected.
+     */
     private BiConsumer<Integer, Integer> onTileSelectedCallback;
 
     /**

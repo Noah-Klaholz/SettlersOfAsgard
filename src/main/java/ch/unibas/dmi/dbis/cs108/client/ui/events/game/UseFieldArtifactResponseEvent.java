@@ -7,10 +7,25 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
  */
 public class UseFieldArtifactResponseEvent implements UIEvent {
 
+    /**
+     * Indicates whether the action was successful.
+     */
     private final boolean success;
+    /**
+     * Optional message for success/failure.
+     */
     private final String message;
+    /**
+     * The x-coordinate of the artifact.
+     */
     private final int x;
+    /**
+     * The y-coordinate of the artifact.
+     */
     private final int y;
+    /**
+     * The ID of the artifact.
+     */
     private final String artifactId;
 
     /**

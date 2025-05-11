@@ -15,12 +15,37 @@ import java.util.logging.Logger;
  * Popup for interacting with statues, providing level-dependent options
  */
 public class StatueInteractionPopup extends TileInteractionPopup {
+    /**
+     * Logger for StatueInteractionPopup.
+     */
     private static final Logger LOGGER = Logger.getLogger(StatueInteractionPopup.class.getName());
+    /**
+     * The statue being interacted with.
+     */
     private final Statue statue;
+    /**
+     * Callbacks for level up, deal, and blessing actions.
+     */
     private final Consumer<Tile> onLevelUp;
+    /**
+     * Callback for making a deal with the statue.
+     */
     private final Consumer<Tile> onDeal;
+    /**
+     * Callback for receiving a blessing from the statue.
+     */
     private final Consumer<Tile> onBlessing;
 
+    /**
+     * Constructor for StatueInteractionPopup.
+     *
+     * @param resourceLoader Resource loader for loading UI resources.
+     * @param tile           The tile associated with the statue.
+     * @param playerName     The name of the player interacting with the statue.
+     * @param onLevelUp      Callback for level up action.
+     * @param onDeal         Callback for making a deal with the statue.
+     * @param onBlessing     Callback for receiving a blessing from the statue.
+     */
     public StatueInteractionPopup(ResourceLoader resourceLoader, Tile tile, String playerName,
                                   Consumer<Tile> onLevelUp, Consumer<Tile> onDeal, Consumer<Tile> onBlessing) {
         super(resourceLoader, tile, playerName);
@@ -32,6 +57,9 @@ public class StatueInteractionPopup extends TileInteractionPopup {
         initializeUI();
     }
 
+    /**
+     * Initializes the UI components for the statue interaction popup.
+     */
     private void initializeUI() {
         // Show statue level
         Label levelLabel = new Label("Current Level: " + statue.getLevel());
@@ -87,6 +115,9 @@ public class StatueInteractionPopup extends TileInteractionPopup {
         addCloseButton();
     }
 
+    /**
+     * Adds a close button to the popup.
+     */
     private String getDealDescription() {
         // You can replace this with actual statue-specific deal descriptions
         return switch (statue.getId()) {
@@ -102,6 +133,9 @@ public class StatueInteractionPopup extends TileInteractionPopup {
         };
     }
 
+    /**
+     * Adds a close button to the popup.
+     */
     private String getBlessingDescription() {
         // You can replace this with actual statue-specific blessing descriptions
         return switch (statue.getId()) {

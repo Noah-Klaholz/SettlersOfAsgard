@@ -7,10 +7,25 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
  */
 public class LobbyUpdateEvent implements UIEvent {
 
+    /**
+     * The ID of the lobby.
+     */
     private final String lobbyId;
+    /**
+     * The new status of the lobby.
+     */
     private final String newStatus;
+    /**
+     * The current number of players in the lobby.
+     */
     private final int currentPlayers;
+    /**
+     * The maximum number of players allowed in the lobby.
+     */
     private final int maxPlayers;
+    /**
+     * The new host name of the lobby.
+     */
     private final String newHostName;
 
     /**

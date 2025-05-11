@@ -6,9 +6,22 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
  * UIEvent representing the response to a name change request.
  */
 public class NameChangeResponseEvent implements UIEvent {
+    /**
+     * Indicates if the name change was successful.
+     */
     private final boolean success;
+    /**
+     * The previous name.
+     */
     private final String oldName;
+    /**
+     * The new name.
+     */
     private final String newName;
+
+    /**
+     * An optional message associated with the name change response.
+     */
     private final String message;
 
     /**

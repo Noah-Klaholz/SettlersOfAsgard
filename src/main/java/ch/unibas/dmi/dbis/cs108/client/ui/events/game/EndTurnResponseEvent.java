@@ -7,6 +7,9 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
  */
 public class EndTurnResponseEvent implements UIEvent {
 
+    /**
+     * The name of the player whose turn it is now.
+     */
     private final String nextPlayerName;
 
     /**

@@ -25,9 +25,21 @@ import java.util.logging.Logger;
  * Uses the same pattern as the card tooltips.
  */
 public class TileTooltip {
+    /**
+     * Logger for TileTooltip.
+     */
     private static final Logger LOGGER = Logger.getLogger(TileTooltip.class.getName());
+    /**
+     * The tile associated with this tooltip.
+     */
     private final Tooltip tooltip;
 
+    /**
+     * Constructor for TileTooltip.
+     * Initializes the tooltip with the given tile information.
+     *
+     * @param tile The tile to display information about.
+     */
     public TileTooltip(Tile tile) {
         tooltip = new Tooltip();
         tooltip.setShowDelay(Duration.millis(500)); // Show immediately
@@ -151,6 +163,14 @@ public class TileTooltip {
         tooltip.getStyleClass().add("tile-tooltip");
     }
 
+
+    /**
+     * formats the buff effect for display.
+     *
+     * @param buffType The type of buff.
+     * @param value    The value of the buff.
+     * @return The formatted string for the buff effect.
+     */
     private String formatBuffEffect(Status.BuffType buffType, double value) {
         String buffName = formatBuffName(buffType);
         double roundedValue = Math.round((value - 1.0) * 100) / 100.0; // Round to 2 decimal places
@@ -161,6 +181,12 @@ public class TileTooltip {
         return buffName + ": " + valueStr;
     }
 
+    /**
+     * Formats the buff name for display.
+     *
+     * @param buffType The type of buff.
+     * @return The formatted string for the buff name.
+     */
     private String formatBuffName(Status.BuffType buffType) {
         // Convert enum name to readable format (e.g., SHOP_PRICE -> Shop Price)
         String name = buffType.toString();

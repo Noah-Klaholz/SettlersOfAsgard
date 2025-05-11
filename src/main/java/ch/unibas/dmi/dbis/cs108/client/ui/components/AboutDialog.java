@@ -22,15 +22,36 @@ import java.util.logging.Logger;
  * version.
  */
 public class AboutDialog extends UIComponent<StackPane> {
+    /**
+     * Logger for the AboutDialog class.
+     */
     private static final Logger LOGGER = Logger.getLogger(AboutDialog.class.getName());
+    /**
+     * The title of the game.
+     */
     private static final String GAME_TITLE = "Settlers of Asgard";
+    /**
+     * The version of the game.
+     */
     private static final String GAME_VERSION = "Version 1.0.0";
+    /**
+     * The description of the game.
+     */
     private static final String GAME_DESCRIPTION = "Settlers of Asgard is a strategic board game where players compete to build "
             + "the most powerful settlement in the mythical Norse realm of Asgard. "
             + "Gather resources, construct buildings, and earn the favor of the gods to win!";
+
+    /* * The development team information.
+     */
     private static final String DEVELOPMENT_TEAM = "Developed by Gruppe-3 for the Programming Project at University of Basel.";
+    /**
+     * The copyright information.
+     */
     private static final String COPYRIGHT = "© 2024 University of Basel";
 
+    /**
+     * The view of the dialog.
+     */
     private final VBox dialogContent;
 
     /**

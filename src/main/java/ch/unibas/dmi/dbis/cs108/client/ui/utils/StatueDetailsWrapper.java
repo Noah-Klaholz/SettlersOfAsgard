@@ -14,11 +14,29 @@ import java.util.logging.Logger;
  * entity package.
  */
 public class StatueDetailsWrapper {
+    /**
+     * Logger for this class.
+     */
     private static final Logger LOGGER = Logger.getLogger(StatueDetailsWrapper.class.getName());
+    /**
+     * Cache for statue details wrappers to avoid redundant object creation.
+     */
     private static final Map<Integer, StatueDetailsWrapper> CACHE = new HashMap<>();
+    /**
+     * The statue entity being wrapped.
+     */
     private final Statue statue;
+    /**
+     * The resource loader for loading images.
+     */
     private final ResourceLoader resourceLoader;
+    /**
+     * The image representing the statue on the card.
+     */
     private Image cardImage;
+    /**
+     * The image representing the statue on the map.
+     */
     private Image mapImage;
 
     /**
@@ -79,6 +97,10 @@ public class StatueDetailsWrapper {
         return wrapper;
     }
 
+    /**
+     * Loads the images for the statue.
+     * This method is called during the construction of the wrapper.
+     */
     private void loadImages() {
         if (statue == null)
             return;
@@ -97,66 +119,146 @@ public class StatueDetailsWrapper {
     }
 
     // Accessor methods for statue properties
+    /**
+     * Gets the name of the statue.
+     *
+     * @return The name of the statue
+     */
     public String getName() {
         return statue.getName();
     }
 
+    /**
+     * Gets the description of the statue.
+     *
+     * @return The description of the statue
+     */
     public String getDescription() {
         return statue.getDescription();
     }
 
+    /**
+     * Gets the usage of the statue.
+     *
+     * @return The usage of the statue
+     */
     public String getUsage() {
         return statue.getUsage();
     }
 
+    /**
+     * Gets the type of the statue.
+     *
+     * @return The type of the statue
+     */
     public String getDeal() {
         return statue.getDeal();
     }
 
+    /**
+     * Gets the blessing of the statue.
+     *
+     * @return The blessing of the statue
+     */
     public String getBlessing() {
         return statue.getBlessing();
     }
 
+    /**
+     * Gets the curse of the statue.
+     *
+     * @return The curse of the statue
+     */
     public String getCurse() {
         return statue.getCurse();
     }
 
+    /**
+     * Gets the price of the statue.
+     *
+     * @return The price of the statue
+     */
     public int getPrice() {
         return statue.getPrice();
     }
 
+    /**
+     * Gets the upgrade price of the statue.
+     *
+     * @return The upgrade price of the statue
+     */
     public int getUpgradePrice() {
         return statue.getUpgradePrice();
     }
 
+    /**
+     * Gets the level of the statue.
+     *
+     * @return The level of the statue
+     */
     public int getLevel() {
         return statue.getLevel();
     }
 
+    /**
+     * Gets the maximum level of the statue.
+     *
+     * @return The maximum level of the statue
+     */
     public boolean isActivated() {
         return statue.isActivated();
     }
 
+    /**
+     * Gets the ID of the statue.
+     *
+     * @return The ID of the statue
+     */
     public int getId() {
         return statue.getId();
     }
 
+    /**
+     * Gets the image representing the statue on the card.
+     *
+     * @return The card image of the statue
+     */
     public Image getCardImage() {
         return cardImage;
     }
 
+    /**
+     * Gets the image representing the statue on the map.
+     *
+     * @return The map image of the statue
+     */
     public Image getMapImage() {
         return mapImage;
     }
 
+    /**
+     * Gets the x-coordinate of the statue.
+     *
+     * @return The x-coordinate of the statue
+     */
     public String getWorld() {
         return statue.getWorld();
     }
 
+    /**
+     * Checks if the statue has a deployable deal based on its level.
+     *
+     * @return true if the statue is level 1 and has a deal
+     */
     public boolean hasDeployableDeal() {
         return statue.getLevel() >= 1 && !statue.getDeal().isEmpty();
     }
 
+    /**
+     * Checks if the statue has a deployable blessing based on its level.
+     *
+     * @return true if the statue is level 2 and has a blessing
+     */
     public boolean hasDeployableBlessing() {
         return statue.getLevel() >= 2 && !statue.getBlessing().isEmpty();
     }

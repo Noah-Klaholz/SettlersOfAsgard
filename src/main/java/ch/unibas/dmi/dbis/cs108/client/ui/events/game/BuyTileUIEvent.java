@@ -6,7 +6,13 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
  * Event representing a request to buy a tile on the board.
  */
 public class BuyTileUIEvent implements UIEvent {
+    /**
+     * The x-coordinate of the tile to buy.
+     */
     private final int x;
+    /**
+     * The y-coordinate of the tile to buy.
+     */
     private final int y;
 
     /**

@@ -6,8 +6,17 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
  * Event representing a request to place a structure on the board.
  */
 public class PlaceStructureUIEvent implements UIEvent {
+    /**
+     * The x-coordinate where the structure should be placed.
+     */
     private final int x;
+    /**
+     * The y-coordinate where the structure should be placed.
+     */
     private final int y;
+    /**
+     * The ID of the structure to be placed.
+     */
     private final int structureId;
 
     /**

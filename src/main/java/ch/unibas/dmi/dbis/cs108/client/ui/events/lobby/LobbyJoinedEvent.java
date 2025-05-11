@@ -9,10 +9,25 @@ import java.util.List;
  */
 public class LobbyJoinedEvent implements UIEvent {
 
+    /**
+     * The ID of the lobby.
+     */
     private final String lobbyId;
+    /**
+     * The name of the lobby.
+     */
     private final String lobbyName;
+    /**
+     * The name of the player.
+     */
     private final String playerName;
+    /**
+     * Indicates if the player is the host.
+     */
     private final boolean isHost;
+    /**
+     * The list of players already in the lobby.
+     */
     private final List<String> players;
 
     /**

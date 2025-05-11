@@ -7,6 +7,9 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
  */
 public class LobbyLeftEvent implements UIEvent {
 
+    /**
+     * The ID of the lobby left.
+     */
     private final String lobbyId;
 
     /**

@@ -21,24 +21,75 @@ import java.util.logging.Logger;
  * abilities.
  */
 public class TileHighlightManager {
+    /**
+     * Logger for TileHighlightManager.
+     */
     private static final Logger LOGGER = Logger.getLogger(TileHighlightManager.class.getName());
+    /**
+     * Canvas to draw highlights on.
+     */
     private final Canvas overlayCanvas;
+    /**
+     * Current game state.
+     */
     private final GameState gameState;
+    /**
+     * Callback for when a highlighted tile is clicked.
+     */
     private final BiConsumer<Integer, Integer> tileClickHandler; // Row, Column
     // Fields for state and callbacks
+    /**
+     * Current mode of the TileHighlightManager.
+     */
     private Mode currentMode = Mode.INACTIVE;
+    /**
+     * The statue being placed or interacted with.
+     */
     private Statue activeStatue; // Used when in PARAMETER_SELECTION mode
+    /**
+     * The requirement for the statue's ability.
+     */
     private StatueParameterRequirement activeRequirement; // Used when in PARAMETER_SELECTION mode
+    /**
+     * Color used for highlighting tiles.
+     */
     private Color highlightColor = Color.YELLOW; // Default highlight color
+    /**
+     * Predicate to check if a tile is eligible for highlighting.
+     */
     private Predicate<Tile> eligibilityCheck; // Custom logic for tile eligibility
     // For drawing
+    /**
+     * Size of the hexes used for highlighting.
+     */
     private double effectiveHexSize;
+    /**
+     * Offset for the grid.
+     */
     private double gridOffsetX;
+    /**
+     * Offset for the grid.
+     */
     private double gridOffsetY;
+    /**
+     * Horizontal spacing between hexes.
+     */
     private double hSpacing;
+    /**
+     * Vertical spacing between hexes.
+     */
     private double vSpacing;
+    /**
+     * Horizontal squish factor for hexes.
+     */
     private double hSquish; // Horizontal squish factor for hexes
+    /**
+     * Vertical squish factor for hexes.
+     */
     private double vSquish; // Vertical squish factor for hexes
+    /**
+     * Rotation of hexes in degrees.
+     */
     private double rotationDegrees; // Rotation of hexes
     /**
      * Creates a TileHighlightManager.
@@ -296,6 +347,9 @@ public class TileHighlightManager {
     }
 
     // Mode of operation
+    /**
+     * Enum representing the current mode of the TileHighlightManager.
+     */
     private enum Mode {
         INACTIVE, // Not highlighting any tiles
         STATUE_PLACEMENT, // Highlighting tiles for statue placement

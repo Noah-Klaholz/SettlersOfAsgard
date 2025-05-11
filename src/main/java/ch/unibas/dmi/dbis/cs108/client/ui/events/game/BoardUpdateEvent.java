@@ -11,6 +11,10 @@ import java.util.Map;
  */
 public class BoardUpdateEvent implements UIEvent {
 
+    /**
+     * A list of updates, where each update is represented as a map.
+     * The map contains key-value pairs representing the details of the update.
+     */
     private final List<Map<String, Object>> updates;
 
     /**

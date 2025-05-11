@@ -7,7 +7,13 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
  */
 public class PlayerJoinedLobbyEvent implements UIEvent {
 
+    /**
+     * The ID of the lobby the player joined.
+     */
     private final String lobbyId;
+    /**
+     * The name of the player who joined.
+     */
     private final String playerName;
 
     /**

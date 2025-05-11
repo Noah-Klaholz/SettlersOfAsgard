@@ -6,6 +6,9 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
  * UIEvent representing a request to buy a statue in the game.
  */
 public class BuyStatueUIEvent implements UIEvent {
+    /**
+     * The ID of the statue to be bought.
+     */
     private final int statueId;
 
     /**

@@ -27,14 +27,35 @@ import java.util.logging.Logger;
  * and performing fade transitions between scenes. Singleton pattern.
  */
 public class SceneManager {
+    /**
+     * Logger for SceneManager.
+     */
     private static final Logger LOGGER = Logger.getLogger(SceneManager.class.getName());
+    /**
+     * Background color for the scenes.
+     */
     private static final Color BACKGROUND_COLOR = Color.rgb(30, 30, 40); // Dark blue-grey background
+    /**
+     * Singleton instance of SceneManager.
+     */
     private static volatile SceneManager instance;
+    /**
+     * Cache for loaded FXML nodes and their controllers.
+     */
     private final Map<SceneType, NodeHolder> nodeCache = new ConcurrentHashMap<>();
+    /**
+     * Resource loader for loading FXML files.
+     */
     private final ResourceLoader resourceLoader;
+    /**
+     * Primary stage for the application.
+     */
     private Stage primaryStage;
 
     // Track the current scene type to avoid unnecessary music changes
+    /**
+     * Current scene type for music management.
+     */
     private SceneType currentSceneType;
 
     /**

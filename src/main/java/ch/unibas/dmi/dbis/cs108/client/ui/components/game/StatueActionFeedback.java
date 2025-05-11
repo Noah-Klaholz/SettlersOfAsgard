@@ -20,8 +20,14 @@ import java.util.logging.Logger;
  * or special abilities like Freyr's tree growing.
  */
 public class StatueActionFeedback {
+    /**
+     * Logger for the StatueActionFeedback class.
+     */
     private static final Logger LOGGER = Logger.getLogger(StatueActionFeedback.class.getName());
 
+    /**
+     * The pane that will contain the feedback elements.
+     */
     private final Pane parentPane;
 
     /**

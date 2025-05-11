@@ -81,7 +81,18 @@ import java.util.logging.Logger;
  */
 public class GameScreenController extends BaseController {
 
+    /**
+     * --------------------------------------------------
+     * Hex grid dimensions
+     * --------------------------------------------------
+     */
+    /*
+     * The number of rows in the hex grid.
+     */
     static final int HEX_ROWS = 7;
+    /*
+     * The number of collums in the hex grid.
+     */
     static final int HEX_COLS = 8;
     /*
      * --------------------------------------------------
@@ -96,57 +107,171 @@ public class GameScreenController extends BaseController {
      */
     private final AtomicBoolean uiInitialized = new AtomicBoolean(false);
 
+    /*
+     * The player manager is used to manage player identities and their
+     * properties.
+     */
     private final PlayerIdentityManager playerManager;
+    /*
+     * The observable list of players in the game.
+     */
     private final ObservableList<String> players = FXCollections.observableArrayList();
     // Simplified colour table – replace with proper game state look‑up
+    /*
+     * The map of player names to their corresponding colors.
+     */
     private final Map<String, Color> playerColors = new HashMap<>();
     List<Color> playerColours;
     /*
      * The following fields are package‑private because the adjustment manager
      * accesses them directly.
      */
+    /*
+     * The size of the hex grid.
+     */
     double effectiveHexSize;
+    /*
+     * The grid offset in the x direction.
+     */
     double gridOffsetX;
+    /*
+     * The grid offset in the y direction.
+     */
     double gridOffsetY;
+    /*
+     * The local player in the game.
+     */
     private Player localPlayer;
+    /*
+     * The game player in the game.
+     */
     private Player gamePlayer;
+    /*
+     * The game state of the game.
+     */
     private GameState gameState;
+    /*
+     * The list of players in the game.
+     */
     private List<Artifact> artifacts = new ArrayList<>();
     // Map and grid dimensions calculated at runtime
+
+    /*
+     * The width of the map.
+     */
     private double scaledMapWidth;
+    /*
+     * The height of the map.
+     */
     private double scaledMapHeight;
+    /*
+     * The width of the hex grid.
+     */
     private double mapOffsetX;
+    /*
+     * The height of the hex grid.
+     */
     private double mapOffsetY;
+    /*
+     * The vertical spacing between hexes.
+     */
     private double vSpacing;
+    /*
+     * The horizontal spacing between hexes.
+     */
     private double hSpacing;
+    /*
+     * The lobby ID of the game.
+     */
     private String currentLobbyId;
+    /*
+     * The image of the map.
+     */
     private Image mapImage;
+    /*
+     * the check if the map is loaded.
+     */
     private boolean isMapLoaded;
+    /*
+    * the settings dialog.
+     */
     private SettingsDialog settingsDialog;
+    /*
+     * The selected card in the game.
+     */
     private Node selectedCard;
+    /*
+     * The selected statue in the game.
+     */
     private CardDetails selectedStatue;
+
+    /*
+     * the check if the statue is placed.
+     */
     private boolean hasPlacedStatue = false;
+    /*
+     * The highlighted tile in the game.
+     */
     private Tile highlightedTile = null;
+    /*
+     * The grid adjustment manager.
+     */
     private GridAdjustmentManager gridAdjustmentManager;
     // --- Tile tooltip support ---
+    /*
+     * The current tile tooltip.
+     */
     private TileTooltip currentTileTooltip = null;
+    /*
+     * The last tile tooltip in the row.
+     */
     private int lastTooltipRow = -1;
+    /*
+     * The last tile tooltip in the column.
+     */
     private int lastTooltipCol = -1;
     // Add these fields to the class to track hover state and delay
+    /*
+     * The tooltip show delay.
+     */
     private PauseTransition tooltipShowDelay;
+    /*
+        * the pending tooltip row.
+     */
     private int pendingTooltipRow = -1;
+    /*
+     * The pending tooltip column.
+     */
     private int pendingTooltipCol = -1;
+    /*
+     * check if the tooltip is disabled.
+     */
     private boolean isTooltipDisabled = false;
 
     /** Keeps the last round that has already been rendered. –1 ⇒ not initialised */
     private int lastKnownRound = -1;
 
     // Artifact Indicator
+    /*
+     * The artifact indicator.
+     */
     private static final Duration ARTIFACT_INDICATOR_DURATION = Duration.seconds(10); // How long to show the indicator
+    /*
+     * the located artifact screen coordinates.
+     */
     private Point2D locatedArtifactScreenCoords = null;
+    /*
+     * The located artifact ID.
+     */
     private int locatedArtifactId = -1;
+    /*
+     * The artifact indicator clear timer.
+     */
     private PauseTransition artifactIndicatorClearTimer;
 
+    /*
+     * the statue confirmation dialog.
+     */
     private StatueConfirmationDialog statueConfirmationDialog;
 
     /*
@@ -154,35 +279,86 @@ public class GameScreenController extends BaseController {
      * FXML‑injected UI elements
      * --------------------------------------------------
      */
+    /*
+     * The game canvas.
+     */
     @FXML
     private Canvas gameCanvas;
+    /*
+     * The energy bar.
+     */
     @FXML
     private ProgressBar energyBar;
+    /*
+     * The runes label.
+     */
     @FXML
     private Label runesLabel;
+    /*
+    * the player list.
+     */
     @FXML
     private ListView<String> playersList;
+    /*
+     * The artifact hand.
+     */
     @FXML
     private HBox artifactHand;
+    /*
+     * The structure hand.
+     */
     @FXML
     private FlowPane structureHand;
+    /*
+     * The connection status label.
+     */
     @FXML
     private Label connectionStatusLabel;
+    /*
+    * the chat container.
+     */
     @FXML
     private VBox chatContainer;
+    /*
+     * The timer root.
+     */
     @FXML
     private StackPane timerRoot;
+    /*
+     * The round label.
+     */
     @FXML
     private Label roundLabel;
 
+    /*
+    * the chat component controller.
+     */
     private ChatComponent chatComponentController;
+    /*
+    * the resource overview dialog.
+     */
     private ResourceOverviewDialog resourceOverviewDialog;
     // Grid‑adjustment overlay controls (created programmatically)
+    /*
+    * the adjustment mode indicator.
+     */
     private Label adjustmentModeIndicator;
+    /*
+     * The adjustment values label.
+     */
     private Label adjustmentValuesLabel;
+    /*
+    * background canvas for the map and grid.
+     */
     private Canvas backgroundCanvas; // map + white grid (static)
+    /*
+     * The overlay canvas for the hover outline.
+     */
     private Canvas overlayCanvas; // yellow hover outline (dynamic)
 
+    /*
+    * the timer component.
+     */
     private TimerComponent timerComponent;
 
     /*
@@ -1341,12 +1517,20 @@ public class GameScreenController extends BaseController {
         }
     }
 
+    /**
+     * Handles mouse entering the canvas – shows the highlight for the tile under
+     * the mouse.
+     */
     private void handleCanvasEntered(double px, double py) {
         int[] t = getHexAt(px, py);
         if (t != null)
             showHighlight(t[0], t[1]);
     }
 
+    /**
+     * Handles mouse movement over the canvas – shows the highlight for the tile
+     * under the mouse.
+     */
     private void handleCanvasMouseMove(double px, double py) {
         int[] t = getHexAt(px, py);
         if (t != null) {
@@ -1639,14 +1823,23 @@ public class GameScreenController extends BaseController {
         }
     }
 
+    /**
+     * Draws the hex background (white outline) for the given tile.
+     */
     private void drawHexBackground(GraphicsContext gc, double cx, double cy, double size, int row, int col) {
         drawHex(gc, cx, cy, size, row, col, false, false);
     }
 
+    /**
+     * Draws the hex sprite (entity image) for the given tile.
+     */
     private void drawHexSprite(GraphicsContext gc, double cx, double cy, double size, int row, int col) {
         drawHex(gc, cx, cy, size, row, col, false, true);
     }
 
+    /**
+     * Redraws all entities on the game canvas.
+     */
     private void redrawEntities() {
         if (gameCanvas == null || gameState == null || gameState.getBoardManager() == null) {
             return;
@@ -1671,6 +1864,9 @@ public class GameScreenController extends BaseController {
         }
     }
 
+    /**
+     * Draws the artifact location indicator on the game canvas.
+     */
     private Image getEntityImage(int entityId) {
         String url = EntityRegistry.getURL(entityId, false);
         return resourceLoader.loadImageAsync(url, this::redrawEntities);
@@ -2649,14 +2845,32 @@ public class GameScreenController extends BaseController {
 
     // Helper methods for better gameState access
 
+    /*
+    * getter for the tile at the given row and column
+    *
+    * @param row the row of the tile
+    * @param col the column of the tile
+     */
     private Tile getTile(int row, int col) {
         return gameState.getBoardManager().getTile(col, row);
     }
 
+    /*
+     * getter for the tile at the given row and column
+     *
+     * @param row the row of the tile
+     * @param col the column of the tile
+     */
     private boolean isTileOwnedByPlayer(int row, int col) {
         return getTile(row, col).hasEntity();
     }
 
+    /**
+     * Checks if the player can afford a card based on its ID.
+     *
+     * @param cardId The ID of the card to check.
+     * @return true if the player can afford the card, false otherwise.
+     */
     private boolean canAffordCard(String cardId) {
         int cost = getCardCost(cardId);
 
@@ -2668,25 +2882,54 @@ public class GameScreenController extends BaseController {
         return getPlayerRunes() >= adjustedPrice;
     }
 
+    /**
+     * Gets the cost of a card based on its ID.
+     *
+     * @param cardId The ID of the card to check.
+     * @return The cost of the card.
+     */
     private int getCardCost(String cardId) {
         CardDetails details = getCardDetails(cardId);
         return details.getPrice();
     }
 
+    /**
+     * getter for the player runes
+     *
+     * @return the player runes
+     */
     private int getPlayerRunes() {
         return gamePlayer.getRunes();
     }
 
+    /**
+     * getter for the owner of the tile at the given row and column
+     *
+     * @param row the row of the tile
+     *            @param col the column of the tile
+     */
     private String getTileOwnerId(int row, int col) {
         Tile tile = getTile(row, col);
         return tile == null ? null : tile.getOwner();
     }
 
+    /**
+     * getter for the price of the tile at the given row and column
+     *
+     * @param row the row of the tile
+     * @param col the column of the tile
+     */
     private int getTilePrice(int row, int col) {
         Tile tile = getTile(row, col);
         return tile != null ? tile.getPrice() : 0;
     }
 
+    /**
+     * Counts the number of structures owned by a player.
+     *
+     * @param playerId The ID of the player.
+     * @return The number of structures owned by the player.
+     */
     private Color getPlayerColor(String playerId) {
         return playerId == null ? null : playerColors.getOrDefault(playerId, Color.GRAY);
     }
@@ -2740,6 +2983,9 @@ public class GameScreenController extends BaseController {
         showDialogAsOverlay(resourceOverviewDialog, root);
     }
 
+    /**
+     * Handles the end turn button click.
+     */
     @FXML
     private void handleEndTurn() {
         eventBus.publish(new EndTurnRequestEvent(localPlayer.getName()));
@@ -3131,6 +3377,11 @@ public class GameScreenController extends BaseController {
     // ------------------------------------------------------
     // Artifact location event handling
     // ------------------------------------------------------
+    /**
+     * Handles the artifact location event.
+     *
+     * @param event The artifact location event
+     */
     private void handleArtifactLocationEvent(ArtifactLocationEvent event) {
         if (event == null || gameState == null) {
             LOGGER.warning("Cannot handle ArtifactLocationEvent: event or gameState is null.");
@@ -3181,6 +3432,9 @@ public class GameScreenController extends BaseController {
         });
     }
 
+    /**
+     * Clears the artifact location indicator.
+     */
     private void clearArtifactIndicator() {
         this.locatedArtifactScreenCoords = null;
         this.locatedArtifactId = -1;
@@ -3189,6 +3443,12 @@ public class GameScreenController extends BaseController {
         }
     }
 
+
+    /**
+     * Draws the artifact location indicator on the canvas.
+     *
+     * @param gc The GraphicsContext to draw on
+     */
     private void drawArtifactLocationIndicator(GraphicsContext gc, double centerX, double centerY) {
         if (effectiveHexSize <= 0) {
             LOGGER.warning("Cannot draw artifact indicator: effectiveHexSize is invalid.");

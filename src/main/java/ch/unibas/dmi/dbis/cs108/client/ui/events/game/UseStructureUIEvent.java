@@ -6,8 +6,17 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
  * Event representing a request to use a structure on the board.
  */
 public class UseStructureUIEvent implements UIEvent {
+    /**
+     * The row coordinate where the structure is located.
+     */
     private final int row;
+    /**
+     * The column coordinate where the structure is located.
+     */
     private final int col;
+    /**
+     * The ID of the structure to be used.
+     */
     private final int structureId;
 
     /**

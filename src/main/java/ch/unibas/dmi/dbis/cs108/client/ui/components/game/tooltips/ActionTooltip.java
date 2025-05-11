@@ -8,12 +8,21 @@ import javafx.scene.control.Tooltip;
  */
 public class ActionTooltip extends Tooltip {
 
+    /**
+     * Default constructor for ActionTooltip.
+     * Initializes the tooltip with default styles.
+     */
     public ActionTooltip() {
         super();
         // Apply existing tooltip styles
         getStyleClass().add("action-tooltip");
     }
 
+    /**
+     * Constructor for ActionTooltip with custom text.
+     *
+     * @param text The text to display in the tooltip.
+     */
     public ActionTooltip(String text) {
         super(text);
         getStyleClass().add("action-tooltip");

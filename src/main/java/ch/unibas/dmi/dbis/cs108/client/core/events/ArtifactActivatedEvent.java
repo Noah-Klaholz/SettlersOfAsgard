@@ -8,7 +8,15 @@ import ch.unibas.dmi.dbis.cs108.shared.game.Player;
  * This event is triggered when a player activates an artifact in the game.
  */
 public class ArtifactActivatedEvent implements GameEvent {
+
+    /**
+     * The player who activated the artifact.
+     */
     private final Player player;
+
+    /**
+     * The artifact that was activated.
+     */
     private final Artifact artefact;
 
     /**

@@ -6,9 +6,21 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
  * Event representing a request to use a statue on the board.
  */
 public class UseStatueUIEvent implements UIEvent {
+    /**
+     * The x-coordinate where the statue should be used.
+     */
     private final int x;
+    /**
+     * The y-coordinate where the statue should be used.
+     */
     private final int y;
+    /**
+     * The ID of the statue to be used.
+     */
     private final int statueId;
+    /**
+     * The type of use (e.g., "use", "destroy").
+     */
     private final String params;
 
     /**
@@ -55,6 +67,9 @@ public class UseStatueUIEvent implements UIEvent {
         return "USE_STATUE";
     }
 
+    /**
+     * @return the type of use (e.g., "use", "destroy")
+     */
     public String getParams() {
         return params;
     }

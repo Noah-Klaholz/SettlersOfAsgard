@@ -11,10 +11,23 @@ import java.util.logging.Logger;
  */
 public class StylesheetLoader {
     // Stylesheet paths
+    /**
+     * The path to the CSS file containing the variables.
+     */
     public static final String VARIABLES_CSS = "/css/variables.css";
+    /**
+     * The path to the CSS file containing common styles.
+     */
     public static final String COMMON_CSS = "/css/common.css";
+    /**
+     * The path to the CSS file containing dialog common styles.
+     */
     public static final String DIALOG_COMMON_CSS = "/css/dialog-common.css";
+    /**
+     * The path to the CSS file containing dialog styles.
+     */
     private static final Logger LOGGER = Logger.getLogger(StylesheetLoader.class.getName());
+
 
     /**
      * Loads core stylesheets (variables + common) for all components.

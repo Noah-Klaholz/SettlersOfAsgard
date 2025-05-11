@@ -25,17 +25,48 @@ import java.util.logging.Logger;
  * such as placement, upgrade, or special abilities like Freyr's tree growing.
  */
 public class StatueConfirmationDialog extends Popup {
+    /**
+     * Logger for this class.
+     */
     private static final Logger LOGGER = Logger.getLogger(StatueConfirmationDialog.class.getName());
 
+    /**
+     * The main container for the dialog.
+     */
     private final VBox container;
+    /**
+     * The label for the title of the dialog.
+     */
     private final Label titleLabel;
+    /**
+     * The label for the description of the statue.
+     */
     private final Label descriptionLabel;
+    /**
+     * The image view for displaying the statue's image.
+     */
     private final ImageView imageView;
+    /**
+     * The label for displaying the cost of the statue.
+     */
     private final Label costLabel;
+    /**
+     * The button for confirming the action.
+     */
     private final Button confirmButton;
+    /**
+     * The button for canceling the action.
+     */
     private final Button cancelButton;
+    /**
+     * The resource loader for loading images.
+     */
     private final ResourceLoader resourceLoader;
 
+    /**
+     * The callback function to be called with the result of the confirmation.
+     * It accepts a boolean indicating whether the action was confirmed or canceled.
+     */
     public Consumer<Boolean> resultCallback;
 
     /**
