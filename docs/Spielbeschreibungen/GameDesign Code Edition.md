@@ -1,4 +1,4 @@
-# Settlers Of Asgard - Game Manual
+# Settlers Of Asgard - Game Design
 
 // einleitung
 
@@ -24,17 +24,15 @@ Unterarten übernehmen Eigenschaften ihrer Überarten außer anders angegeben
 ## Player
 **Beginn des Spiels**
 Besitzt ein Startkapital an x Runen (noch festzulegen bzw änderbar)
-Besitzt seinen eigenen **Shop** mit Listen der kaufbaren Strukturen und Statuen. (festgelegte Designs und Effekte -> json)
+Besitzt seinen eigenen **Shop** mit Listen der kaufbaren Strukturen. (festgelegte Designs und Effekte -> json)
 	->UI: jede Struktur hat eine eigene Karte im Menu. nicht gekauft = grau, gekauft = farbig
-	->UI: die Statuen sind unter einer einzigen Karte auffindbar (pop-up menü mit der Auswahl). wenn gekauft wird die ausgewählte Version auf der Karte sichtbar.
 Besitzt 0 Energie
 
 **PlayerRound**
 Spieler kann: 
 - Tile kaufen (0 bis 3, günstig) -> chance auf Artefakt finden -> gefundene Artefakte werden in den 3 freien Artefact-Slots gespeichert und können verwendet werden
 - Structure kaufen -> auf Tile platzieren (wenn Tile in seinem Besitz und ohne Structure/ Statue drauf)
-- Statue kaufen (teuer/ wenn noch keine Statue in Besitz) -> auf Tile platzieren (Wenn Tile in seinem Besitz und ohne Structure/ Statue drauf und die Welt der Tile der Welt der Statue entspricht)
--> ob eine gekaufte Structure/ Statue sofort platziert werden muss kann noch entschieden werden -> ja wird sie!
+-> ob eine gekaufte Structure sofort platziert werden muss kann noch entschieden werden -> ja wird sie!
 
 Limit der Käufe ist außer bei Tiles nur das Runenkapital (änderbar)
 
@@ -55,15 +53,6 @@ Nicht direkt nutzbar
 (Unterart der Structure)
 Kann nicht gekauft werden, sondern nur von einer bestimmten Statue geschaffen werden. Es kann mehrere Bäume geben und sie können nur auf Tiles platziert werden, auf denen auch der Fluss ist (RiverTile true)
 
-### Statue
-(Ansehbar als Variante der Structure mit besonderen Regeln/ Nutzen)
-Kaufbar, aber pro player max. 1 im Besitz möglich
-Wenn gekauft = lvl 1
-Farmt NICHTS 
-hochlevelbar: (teuer)
-- lvl 2: kann verwendet werden: Deal (1x pro Runde) -> buff für debuff (evt. hinzufügen einer Begrenzung: nur 1x pro Spiel?)
-- lvl 3: kann verwendet werden: Blessing (1x pro Runde?) -> starker buff (ebenso Begrenzung?)
-
 ### Spezifische Structures
 | **Struktur**      | **Nutzen**                                                                               | **Numbers** | **lvl 2**        | **lvl 3**                | **Beschränkung**                                               |
 |-------------------|------------------------------------------------------------------------------------------| ----------- | ---------------- | ------------------------ |----------------------------------------------------------------|
@@ -79,21 +68,6 @@ hochlevelbar: (teuer)
 | Baum              | Gibt jede Runde eine größere Menge an Runen und + Energie (flat)                         |             |                  |                          | Nur auf Fluss platzierbar (nicht kaufbar)                      |
 Aktiv: Spieler muss auf Structure klicken
 Passiv: jede Runde ohne nötige Aktion (alle die nicht aktiv sind, sind passiv)
-
-### Spezifische Statuen
-| **Statue**  | **Deal (lvl 2)**                                                                                                     | **Blessing (lvl 3)**                                                       | **Curse (lvl 3)**         | **World**                  |
-| ----------- |:---------------------------------------------------------------------------------------------------------------------| -------------------------------------------------------------------------- | ------------------------- | -------------------------- |
-| Jörmungandr | Zerstört 1 Struktur (random) von gewähltem Spieler - braucht Opfer: 1 eigene Struktur                                | -                                                                          | -                         | Midgard (humans)           |
-| Freyr       | Lässt 1 Baum wachsen auf Feld mit Fluss - Energie = 0                                                                | Lässt Bäume wachsen auf jedem Feld mit Fluss                               | Überwuchert: - 1 Struktur | Alfheim (light, yellow)    |
-| Dwarf       | Schmiede stellt nächstes Nutzen +1 Artefakt her -1 Struktur gibt keine Runen mehr                                    | Nächstes Artefakt debuffed alle Spieler                                    | zerstört: -1 Schmiede     | Svartalfheim (bright grey) |
-| Freyja      | Findet +1 Artefakt - kostet Runen                                                                                    | +1 kostenloses Feld auswählbar                                             | Conquers: -1 Feld         | Vanaheim (lush green)      |
-| Hel         | Blockiert Statue ausgewählten Spielers für nächste Runde - Blockiert random Struktur nächste Runde (- Nutzen/ Runen) | anderer Spieler -1 Statue                                                  | Death: -1 Statue          | Helheim (dead)             |
-| Nidhöggr    | Frisst einen Baum - füttern: -2 Artefakt                                                                             | Frisst alle Bäume auf der Map                                              | Frisst 2 Strukturen       | Nilfheim (ice)             |
-| Loki        | Klaut ein Artefakt von dir und einem ausgewählten Spieler und vertauscht sie                                         | Stiehlt 1 anderen Spieler gewisse Anzahl an Runen und gibt sie dem Spieler | Stellt Falle: 2 Fallen    | Jotunheim (giants, brown)  |
-| Surtr       | Für Feld mit Flammenschwert: ausgewählter Spieler -1 Struktur/ Statue - -1 Flammenschwert                            | + 2 Felder Muspelheim (Fire world) ohne Struktur                           | -1 Struktur/ Statue       | Muspelheim (fire)          |
-| Thor        |                                                                                                                      |                                                                            |                           | Asgard                     |
-Thor muss noch designed werden (gerne Ideen her)
-Jörmungandr hat nur einen Deal
 
 ## Artefakt
 Kann gefunden werden beim Kauf eines Feldes
@@ -129,3 +103,28 @@ Nutzung: FieldArtifact -> Wird auf ein von niemandem gekauftes Feld gesetzt (än
 Farmt Runen jede Runde -> jedes Feld hat eine eigene resourceValue (Anzahl an Runen die gefarmt werden) -> wenn ein Feld eine hohe resourceValue hat, haben anliegende Felder das auch (änderbar, vielleicht schwer zu implementieren?)
 Falls nicht geändert: sobald gekauft, zeigt es den anderen Spielern den resourceValue: fördert das strategische Element
 -> Nein, das ist schwer zu implementieren und macht das Spiel zu kompliziert.
+
+# Zukünftige Features
+## Statuen 
+(Ansehbar als Variante der Structure mit besonderen Regeln/ Nutzen)
+Kaufbar, aber pro player max. 1 im Besitz möglich
+Wenn gekauft = lvl 1
+Farmt NICHTS
+hochlevelbar: (teuer)
+- lvl 2: kann verwendet werden: Deal (1x pro Runde) -> buff für debuff (evt. hinzufügen einer Begrenzung: nur 1x pro Spiel?)
+- lvl 3: kann verwendet werden: Blessing (1x pro Runde?) -> starker buff (ebenso Begrenzung?)
+
+### Spezifische Statuen
+| **Statue**  | **Deal (lvl 2)**                                                                                                     | **Blessing (lvl 3)**                                                       | **Curse (lvl 3)**         | **World**                  |
+| ----------- | -------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------- | -------------------------- |
+| Jörmungandr | Zerstört 1 Struktur (random) von gewähltem Spieler - braucht Opfer: 1 eigene Struktur                                | -                                                                          | -                         | Midgard (humans)           |
+| Freyr       | Lässt 1 Baum wachsen auf Feld mit Fluss - Energie = 0                                                                | Lässt Bäume wachsen auf jedem Feld mit Fluss                               | Überwuchert: - 1 Struktur | Alfheim (light, yellow)    |
+| Dwarf       | Schmiede stellt nächstes Nutzen +1 Artefakt her -1 Struktur gibt diese Runde keine Runen                             | Nächstes Artefakt debuffed alle Spieler                                    | zerstört: -1 Schmiede     | Svartalfheim (bright grey) |
+| Freyja      | Findet +1 Artefakt - kostet Runen                                                                                    | +1 kostenloses Feld auswählbar                                             | Conquers: -1 Feld         | Vanaheim (lush green)      |
+| Hel         | Blockiert Statue ausgewählten Spielers für nächste Runde - Blockiert random Struktur nächste Runde (- Nutzen/ Runen) | anderer Spieler -1 Statue                                                  | Death: -1 Statue          | Helheim (dead)             |
+| Nidhöggr    | Frisst einen Baum - füttern: -2 Artefakt                                                                             | Frisst alle Bäume auf der Map                                              | Frisst 2 Strukturen       | Nilfheim (ice)             |
+| Loki        | Stellt 1 ausgewählten Spieler eine Falle - Stiehlt: -1 Artefakt                                                      | Stiehlt 1 anderen Spieler gewisse Anzahl an Runen und gibt sie dem Spieler | Stellt Falle: 2 Fallen    | Jotunheim (giants, brown)  |
+| Surtr       | Für Feld mit Flammenschwert: ausgewählter Spieler -1 Struktur/ Statue - -1 Flammenschwert                            | + 2 Felder Muspelheim (Fire world) ohne Struktur                           | -1 Struktur/ Statue       | Muspelheim (fire)          |
+| Thor        |                                                                                                                      |                                                                            |                           | Asgard                     |
+Thor muss noch designed werden (eventuell)
+Jörmungandr hat nur einen Deal
