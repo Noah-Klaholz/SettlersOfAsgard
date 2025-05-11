@@ -15,11 +15,23 @@ import java.util.logging.Logger;
  * Thread-safe handler for command parsing and execution with the command pattern
  */
 public class CommandProcessor {
+    /**
+     * Logger for CommandProcessor
+     */
     private static final Logger LOGGER = Logger.getLogger(CommandProcessor.class.getName());
+    /**
+     * The game logic instance
+     */
     private final GameLogic gameLogic;
+    /**
+     * Map of command types to their handlers
+     */
     private final Map<Commands, Function<Command, String>> commandHandlers = new ConcurrentHashMap<>();
 
     // Use a single lock for state-changing commands to ensure consistency
+    /**
+     * Lock object for synchronizing command execution
+     */
     private final Object commandExecutionLock = new Object();
 
     /**
@@ -320,6 +332,9 @@ public class CommandProcessor {
         }
     }
 
+    /**
+     * Process cheat code command
+     */
     private String handleCheatCode(Command cmd) {
         try {
             String cheatCode = cmd.getArgs()[0];
@@ -334,6 +349,9 @@ public class CommandProcessor {
         }
     }
 
+    /**
+     * Process claim all command
+     */
     private String handleClaimAll(Command cmd) {
         try {
             String playerName = cmd.getPlayer().getName();
@@ -347,6 +365,9 @@ public class CommandProcessor {
         }
     }
 
+    /**
+     * Process ragnarok command
+     */
     private String handleRagnarok(Command cmd) {
         try {
             String playerName = cmd.getPlayer().getName();

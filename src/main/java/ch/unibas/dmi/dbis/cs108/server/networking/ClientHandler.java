@@ -122,6 +122,9 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         sendMessage(NetworkProtocol.Commands.START + "$");
     }
 
+    /**
+     * Sends a message to the client indicating that the connection has been lost.
+     */
     public synchronized void shutdown() {
         if (connectionState != STATE_SHUTDOWN) {
             connectionState = STATE_SHUTDOWN;
@@ -428,14 +431,29 @@ public class ClientHandler implements Runnable, CommunicationAPI {
         }
     }
 
+    /**
+     * Returns the connection state of the client.
+     *
+     * @return the connection state as an int
+     */
     public boolean isConnected() {
         return connectionState == STATE_CONNECTED;
     }
 
+    /**
+     * Returns the connection state of the client.
+     *
+     * @return the connection state as an int
+     */
     public boolean isDisconnected() {
         return connectionState == STATE_DISCONNECTED;
     }
 
+    /**
+     * Returns the connection state of the client.
+     *
+     * @return the connection state as an int
+     */
     public boolean isShutdown() {
         return connectionState == STATE_SHUTDOWN;
     }

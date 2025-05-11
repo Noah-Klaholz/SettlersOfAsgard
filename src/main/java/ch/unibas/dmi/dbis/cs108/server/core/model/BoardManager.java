@@ -12,11 +12,25 @@ import java.util.logging.Logger;
  * Responsible for managing the game board
  */
 public class BoardManager {
+    /**
+     * Logger to log logging
+     */
     private static final Logger LOGGER = Logger.getLogger(BoardManager.class.getName());
 
+    /**
+     * Singleton instance of BoardManager
+     */
     private final ReadWriteLock stateLock;
+    /**
+     * The game board
+     */
     private final Board board;
 
+    /**
+     * Constructor for BoardManager
+     *
+     * @param stateLock The lock to use for state management
+     */
     public BoardManager(ReadWriteLock stateLock) {
         this.stateLock = stateLock;
         this.board = new Board();
