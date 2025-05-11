@@ -1,6 +1,15 @@
 package ch.unibas.dmi.dbis.cs108.client.audio;
 
+/**
+ * This class contains the audio tracks used in the application.
+ * Each track is represented by an enum constant with a corresponding file name.
+ * The file names are used to load the audio files from the resources directory.
+ */
 public class AudioTracks {
+    /**
+     * Enum representing the audio tracks used in the application.
+     * Each enum constant corresponds to a specific audio track.
+     */
     public enum Track {
         // Sound effects
         INTRO_EFFECT("effect_logo"),
