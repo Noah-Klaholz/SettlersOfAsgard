@@ -7,9 +7,21 @@ import java.time.Instant;
  * This class implements the Event interface and provides details about the lobby action.
  */
 public class LobbyEvent implements Event {
+    /**
+     * The timestamp of when the event occurred.
+     */
     private final Instant timestamp = Instant.now();
+    /**
+     * The action performed in the lobby (e.g., LEFT, CREATED).
+     */
     private final LobbyAction action;
+    /**
+     * The name of the player involved in the action.
+     */
     private final String playerName;
+    /**
+     * The name of the lobby where the action took place.
+     */
     private final String lobbyName;
 
     /**

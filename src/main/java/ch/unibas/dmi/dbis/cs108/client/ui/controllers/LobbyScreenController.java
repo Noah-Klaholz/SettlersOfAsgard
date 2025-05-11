@@ -44,53 +44,147 @@ import java.util.stream.Collectors;
  * player list, host controls, and chat.
  */
 public class LobbyScreenController extends BaseController {
+    /**
+     * Logger for LobbyScreenController.
+     */
     private static final Logger LOGGER = Logger.getLogger(LobbyScreenController.class.getName());
 
+    /**
+     * The event bus for handling UI events.
+     */
     private final ObservableList<GameLobby> allLobbies = FXCollections.observableArrayList();
+    /**
+     * The list of all lobbies available in the game.
+     */
     private final ObservableList<String> playersInCurrentLobby = FXCollections.observableArrayList();
+    /**
+     * The list of players currently in the lobby.
+     */
     private final AtomicBoolean isConnected = new AtomicBoolean(false);
+    /**
+     * Indicates whether the client is connected to the server.
+     */
     private FilteredList<GameLobby> filteredLobbies;
+    /**
+     * The filtered list of lobbies based on search criteria.
+     */
+
+    /**
+     * The current lobby ID the player is in.
+     */
     @FXML
     private BorderPane rootPane; // Add reference to the root pane
+    /**
+     * The root pane of the FXML layout.
+     */
     @FXML
     private Label playerNameLabel;
+    /**
+     * Label displaying the player's name.
+     */
     @FXML
     private Label connectionStatus;
+    /**
+     * Label displaying the connection status.
+     */
     @FXML
     private TextField searchField;
+    /**
+     * Text field for searching lobbies.
+     */
     @FXML
     private TableView<GameLobby> lobbyTable;
+    /**
+     * Table view displaying the list of lobbies.
+     */
     @FXML
     private TableColumn<GameLobby, String> nameColumn;
+    /**
+     * Table column for the lobby name.
+     */
     @FXML
     private TableColumn<GameLobby, String> playersColumn;
+    /**
+     * Table column for the number of players in the lobby.
+     */
     @FXML
     private TableColumn<GameLobby, String> statusColumn;
+    /**
+     * Table column for the lobby status.
+     */
     @FXML
     private TableColumn<GameLobby, String> hostColumn;
+    /**
+     * Table column for the lobby host.
+     */
     @FXML
     private TextField lobbyNameField;
+    /**
+     * Text field for entering the lobby name.
+     */
     @FXML
     private Label errorMessage;
+    /**
+     * Label for displaying error messages.
+     */
     @FXML
     private Button leaveLobbyButton;
+    /**
+     * Button for leaving the current lobby.
+     */
     @FXML
     private ListView<String> playerList;
+    /**
+     * List view displaying the players in the current lobby.
+     */
     @FXML
     private ComboBox<Integer> maxPlayersCombo;
+    /**
+     * Combo box for selecting the maximum number of players in the lobby.
+     */
     @FXML
     private VBox chatContainer;
+    /**
+     * Container for the chat component.
+     */
     @FXML
     private Button createLobbyButton;
+    /**
+     * Button for creating a new lobby.
+     */
     @FXML
     private Button startGameButton;
+    /**
+     * Button for starting the game.
+     */
     private String currentLobbyId;
+    /**
+     * The ID of the current lobby the player is in.
+     */
     private int maxLobbyPlayers;
+    /**
+     * The maximum number of players allowed in the lobby.
+     */
     private boolean isHost = false;
+    /**
+     * Indicates whether the player is the host of the lobby.
+     */
     private Player localPlayer;
+    /**
+     * The local player instance.
+     */
     private PlayerIdentityManager playerManager;
+    /**
+     * The player identity manager for managing player identities.
+     */
     private ChatComponent chatComponentController;
+    /**
+     * The chat component controller for managing chat functionality.
+     */
     private SettingsDialog settingsDialog; // Declare SettingsDialog
+    /**
+     * The settings dialog for managing player settings.
+     */
 
     /**
      * Constructs the controller, injecting dependencies via the BaseController.

@@ -13,7 +13,13 @@ import java.util.List;
  * This event is used to update the lobby list in the user interface.
  */
 public class LobbyListEvent implements Event {
+    /**
+     * The timestamp of when the event occurred.
+     */
     private final Instant timestamp = Instant.now();
+    /**
+     * The list of lobbies.
+     */
     private final List<LobbyScreenController.GameLobby> lobbies = new ArrayList<>();
 
     /**
