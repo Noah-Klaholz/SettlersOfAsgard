@@ -493,7 +493,6 @@ public class CommunicationMediator {
                 new EventDispatcher.EventListener<NotificationEvent>() {
                     @Override
                     public void onEvent(NotificationEvent event) {
-                        LOGGER.info("Notification Event: " + event.getMessage());
                         UIEventBus.getInstance()
                                 .publish(new ArtifactLocationEvent(event.getArtifactId(), event.getX(), event.getY(), event.isArtifactFound()));
                     }

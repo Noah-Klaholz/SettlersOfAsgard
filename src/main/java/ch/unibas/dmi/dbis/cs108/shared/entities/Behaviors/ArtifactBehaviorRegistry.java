@@ -151,7 +151,6 @@ public class ArtifactBehaviorRegistry {
                 if (entity != null && entity.isArtifact()) {
                     gameState.sendNotification(player.getName(),  entity.getId() + "$" + tile.getX() + "$" + tile.getY());
                     found = true;
-                    break;
                 }
             }
             if (!found) {

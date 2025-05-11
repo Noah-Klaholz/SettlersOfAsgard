@@ -3404,7 +3404,6 @@ public class GameScreenController extends BaseController {
      * @param event The artifact location event
      */
     private void handleArtifactLocationEvent(ArtifactLocationEvent event) {
-        LOGGER.info("Artifact location event: " + event);
         if (event == null || gameState == null) {
             LOGGER.warning("Cannot handle ArtifactLocationEvent: event or gameState is null.");
             return;
@@ -3412,8 +3411,6 @@ public class GameScreenController extends BaseController {
         if (chatComponentController != null && !event.isArtifactFound()) {
             chatComponentController.addSystemMessage("Odin's Eye could not locate any artifact.");
         }
-        LOGGER.info("Received artifact location: ID=" + event.getArtifactId() + ", X (col)=" + event.getTileX()
-                + ", Y (row)=" + event.getTileY());
 
         Platform.runLater(() -> {
             this.locatedArtifactId = event.getArtifactId();

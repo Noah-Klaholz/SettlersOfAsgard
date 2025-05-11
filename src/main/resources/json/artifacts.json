@@ -111,7 +111,7 @@
   },
   {
     "name": "Odin's Eye",
-    "usage": "Checks a tile and all adjacent ones for traps and reveals them",
+    "usage": "Checks a tile and all adjacent ones for artifacts and reveals all of them",
     "description": "Odin is the chief god in Norse mythology, associated with wisdom, prophecy, death and knowledge. He sacrificed one of his eyes to gain wisdom and insight into the future. Odin's eye symbolises how true insight demands personal loss.",
     "useType": "Field",
     "cardImagePath": "resources/images/cards/a_odinseye_card.png",
