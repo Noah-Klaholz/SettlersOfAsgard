@@ -65,12 +65,12 @@ public class StructureBehaviorRegistry {
             for (Tile[] tile : tiles) {
                 for (Tile t : tile) {
                     if (t.getArtifact() != null) {
-                        gameState.sendNotification(player.getName(), "4$" + t.getX() + "$" + t.getY() + "$" + t.getArtifact().getId());
+                        gameState.sendNotification(player.getName(),  t.getArtifact().getId() + "$" + t.getX() + "$" + t.getY());
                         b = true;
                     }
                 }
             }
-            if (!b) gameState.sendNotification(player.getName(), "4$Null");
+            if (!b) gameState.sendNotification(player.getName(), "NULL");
             player.addEnergy((int) structure.getParams().get(0).getValue());
             return true;
         });

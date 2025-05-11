@@ -142,13 +142,19 @@ public class ArtifactBehaviorRegistry {
         });
 
         registerFieldBehavior("Odin's Eye", (artifact, gameState, player, x, y) -> {
+            boolean found = false;
+            logger.info("Odin's Eye used on tile (" + x + "," + y + ")");
             // Checks a tile and all adjacent tiles for traps and notifies the user if found
             for (Tile tile : gameState.getBoardManager().getAdjacentTiles(x, y)) {
                 if (tile == null || !tile.hasEntity()) continue;
                 GameEntity entity = tile.getEntity();
-                if (entity != null && entity.getName().equals("ActiveTrap")) {
-                    gameState.sendNotification(player.getName(), "20$" + tile.getX() + "$" + tile.getY());
+                if (entity != null && entity.isArtifact()) {
+                    gameState.sendNotification(player.getName(),  entity.getId() + "$" + tile.getX() + "$" + tile.getY());
+                    found = true;
                 }
+            }
+            if (!found) {
+                gameState.sendNotification(player.getName(), "NULL");
             }
             return true;
         });

@@ -77,19 +77,19 @@ FieldArtifact -> Beeinflusst Feld (oder Structure) direkt
 Ein spezifisches Artefakt kann mehrfach gefunden werden (keine Begrenzung)
 
 ### Spezifische Artefakte
-| **Artefakt**             | **Effekt**                                                                      | **Numbers** |
-|--------------------------|---------------------------------------------------------------------------------| ----------- |
-| Freyas Holzamulett       | + Effizienz Runen-Farmen auf einem Feld                                         |             |
-| Freyrs Goldener Apfel    | + Energie (flat)                                                                |             |
-| Träne von Yggdrasil      | Anderer Spieler - Energie (flat)                                                |             |
-| Mjölnir-Charm            | + Chance auf Artefakte                                                          |             |
-| Fenrirs Knochen          | + Effizienz Energy generation auf einem Feld                                    |             |
-| Schatten von Hel         | Andere Spieler - Effizienz Runen Farmen                                         |             |
-| Flamme von Muspelheim    | + Preissenkung kaufbares für nächste Runde                                      |             |
-| Eissplitter von Nilfheim | Andere Spieler - Effizienz Energie Farmen                                       |             |
-| Blut von Jörmungandr     | + Effizienz Farmen am Fluss                                                     |             |
-| Asche von Surtur         | Andere Spieler - Preissteigerung kaufbares für nächste Runde                    |             |
-| Odins Auge               | + überprüft ein Tile und alle angrenzenden auf Fallen und deckt diese ggbf. auf |             |
+| **Artefakt**             | **Effekt**                                                                         | **Numbers** |
+|--------------------------|------------------------------------------------------------------------------------| ----------- |
+| Freyas Holzamulett       | + Effizienz Runen-Farmen auf einem Feld                                            |             |
+| Freyrs Goldener Apfel    | + Energie (flat)                                                                   |             |
+| Träne von Yggdrasil      | Anderer Spieler - Energie (flat)                                                   |             |
+| Mjölnir-Charm            | + Chance auf Artefakte                                                             |             |
+| Fenrirs Knochen          | + Effizienz Energy generation auf einem Feld                                       |             |
+| Schatten von Hel         | Andere Spieler - Effizienz Runen Farmen                                            |             |
+| Flamme von Muspelheim    | + Preissenkung kaufbares für nächste Runde                                         |             |
+| Eissplitter von Nilfheim | Andere Spieler - Effizienz Energie Farmen                                          |             |
+| Blut von Jörmungandr     | + Effizienz Farmen am Fluss                                                        |             |
+| Asche von Surtur         | Andere Spieler - Preissteigerung kaufbares für nächste Runde                       |             |
+| Odins Auge               | + überprüft ein Tile und alle angrenzenden auf Artefakte und deckt diese ggbf. auf |             |
 Chance auf Artefakte: Genereller buff für den Spieler 
 
 

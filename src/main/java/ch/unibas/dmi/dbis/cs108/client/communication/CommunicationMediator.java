@@ -10,6 +10,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.PlayerListRequestEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.RequestGameStateEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ServerCommandEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.game.ArtifactLocationEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.EndTurnRequestEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.GameStartedEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyListResponseEvent;
@@ -484,9 +485,7 @@ public class CommunicationMediator {
                         // Publish as a system chat message
                         // TODO : Handle INFO in UI (show artifacts, etc.)
                         UIEventBus.getInstance()
-                                .publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent(
-                                        event.getMessage(), null, // Sender is null for system messages
-                                        ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent.ChatType.SYSTEM));
+                                .publish(new ArtifactLocationEvent(event.getArtifactId(), event.getX(), event.getY(), event.isArtifactFound()));
                     }
 
                     @Override
@@ -520,7 +519,7 @@ public class CommunicationMediator {
                         // Publish end turn event to UI
                         UIEventBus.getInstance()
                                 .publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.game.EndTurnResponseEvent(
-                                        event.getNextPlayerName())); // TODO catch this event somewhere in the UI
+                                        event.getNextPlayerName()));
                     }
 
                     @Override
@@ -550,7 +549,6 @@ public class CommunicationMediator {
                 new EventDispatcher.EventListener<LeaderboardResponseEvent>() {
                     @Override
                     public void onEvent(LeaderboardResponseEvent event) {
-                        Logger.getGlobal().info("Communication mediator: LeaderboardResponseEvent: " + event.getLeaderboard());
                         // Publish leaderboard event to UI
                         UIEventBus.getInstance()
                                 .publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.admin.LeaderboardResponseUIEvent(event.getLeaderboard()));

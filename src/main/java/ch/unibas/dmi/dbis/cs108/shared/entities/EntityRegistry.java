@@ -277,7 +277,7 @@ public class EntityRegistry {
      * @return A random Artifact object
      */
     public static Artifact getRandomArtifact() {
-        int id = RandomGenerator.pickRandomElement(getAllArtifacts().stream().toList()).getId();
+        int id = RandomGenerator.pickRandomElement(getAllArtifacts().stream().filter(artifact -> !(artifact.getId() == 22)).toList()).getId();
         return getArtifact(id);
     }
 

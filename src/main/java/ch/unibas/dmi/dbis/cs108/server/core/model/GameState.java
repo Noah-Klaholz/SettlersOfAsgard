@@ -154,6 +154,7 @@ public class GameState {
     }
 
     public void sendNotification(String player, String s) {
+        LOGGER.info("Sending notification to " + player + ": " + s);
         notifications.add(s);
         notifier.sendMessageToPlayer(player, CommunicationAPI.NetworkProtocol.Commands.INFO.getCommand() + s);
     }
