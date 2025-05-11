@@ -8,9 +8,22 @@ import ch.unibas.dmi.dbis.cs108.shared.game.Player;
  * This event is triggered when a player upgrades a structure in the game.
  */
 public class StructureUpgradedEvent implements GameEvent {
+
+    /**
+     * The player who upgraded the structure.
+     */
     private final Player player;
+    /**
+     * The structure that was upgraded.
+     */
     private final Structure structure;
+    /**
+     * The previous level of the structure.
+     */
     private final int previousLevel;
+    /**
+     * The new level of the structure.
+     */
     private final int newLevel;
 
     /**

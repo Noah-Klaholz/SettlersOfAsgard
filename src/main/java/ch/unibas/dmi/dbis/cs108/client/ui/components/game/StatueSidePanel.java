@@ -21,20 +21,61 @@ import java.util.logging.Logger;
  * including its level, effects, and available actions.
  */
 public class StatueSidePanel extends VBox {
+    /**
+     * Logger for StatueSidePanel.
+     */
     private static final Logger LOGGER = Logger.getLogger(StatueSidePanel.class.getName());
 
+    /**
+     * The default width of the side panel.
+     */
     private final Label nameLabel;
+    /**
+     * The label displaying the name of the statue.
+     */
     private final ImageView imageView;
+    /**
+     * The image view displaying the statue's image.
+     */
     private final Label descriptionLabel;
+    /**
+     * The label displaying the description of the statue.
+     */
     private final Label worldLabel;
+    /**
+     * The label displaying the world of the statue.
+     */
     private final Label levelLabel;
+    /**
+     * The label displaying the level of the statue.
+     */
     private final ProgressBar levelProgress;
+    /**
+     * The progress bar showing the statue's level progress.
+     */
     private final VBox effectsBox;
+    /**
+     * The box displaying the effects of the statue.
+     */
     private final Button upgradeButton;
+    /**
+     * The button for upgrading the statue.
+     */
     private final Button useAbilityButton;
+    /**
+     * The button for using the statue's ability.
+     */
     private final Button closeButton;
+    /**
+     * The button for closing the side panel.
+     */
 
+    /* * The current statue being displayed in the side panel.
+     */
     private StatueDetailsWrapper currentStatue;
+    /**
+     * The action handler for button actions.
+     */
     private Consumer<String> actionHandler;
 
     /**

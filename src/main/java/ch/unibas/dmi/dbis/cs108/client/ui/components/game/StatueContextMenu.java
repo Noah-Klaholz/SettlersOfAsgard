@@ -16,9 +16,18 @@ import java.util.logging.Logger;
  * based on the statue's level and abilities.
  */
 public class StatueContextMenu extends Popup {
+    /**
+     * Logger for the StatueContextMenu class.
+     */
     private static final Logger LOGGER = Logger.getLogger(StatueContextMenu.class.getName());
 
+    /**
+     * The container for the context menu items.
+     */
     private final VBox container;
+    /**
+     * The action handler for menu item clicks.
+     */
     private Consumer<String> actionHandler;
 
     /**

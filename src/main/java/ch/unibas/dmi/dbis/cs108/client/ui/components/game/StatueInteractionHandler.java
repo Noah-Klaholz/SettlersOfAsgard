@@ -21,19 +21,52 @@ import java.util.logging.Logger;
  * confirmation dialogs, and dispatching events for statue actions.
  */
 public class StatueInteractionHandler {
+    /**
+     * Logger for the StatueInteractionHandler class.
+     */
     private static final Logger LOGGER = Logger.getLogger(StatueInteractionHandler.class.getName());
 
+    /**
+     * The UI event bus for dispatching events.
+     */
     private final UIEventBus eventBus;
+    /**
+     * The resource loader for loading resources.
+     */
     private final ResourceLoader resourceLoader;
+    /**
+     * The root node of the scene.
+     */
     private final Parent rootNode;
 
+    /**
+     * UI components for statue interactions.
+     */
     private StatueContextMenu contextMenu;
+    /**
+     * Confirmation dialog for statue actions.
+     */
     private StatueConfirmationDialog confirmationDialog;
+    /**
+     * Side panel for displaying statue details.
+     */
     private StatueSidePanel sidePanel;
+    /**
+     * Tile highlighter for highlighting eligible tiles.
+     */
     private StatueTileHighlighter tileHighlighter;
 
+    /**
+     * The current player information.
+     */
     private Player currentPlayer;
+    /**
+     * The current runes and energy of the player.
+     */
     private int currentRunes;
+    /**
+     * The current energy of the player.
+     */
     private int currentEnergy;
 
     /**

@@ -8,8 +8,18 @@ import ch.unibas.dmi.dbis.cs108.shared.game.Player;
  * This event is triggered when a player activates a statue in the game.
  */
 public class StatueActivatedEvent implements GameEvent {
+
+    /**
+     * The player who activated the statue.
+     */
     private final Player player;
+    /**
+     * The statue that was activated.
+     */
     private final Statue statue;
+    /**
+     * The outcome of the activation (DEAL, BLESSING, CURSE).
+     */
     private final Outcome outcome;
     /**
      * Constructor for StatueActivatedEvent.
@@ -51,5 +61,8 @@ public class StatueActivatedEvent implements GameEvent {
         return outcome;
     }
 
+    /**
+     * Enum representing the possible outcomes of statue activation.
+     */
     public enum Outcome {DEAL, BLESSING, CURSE}
 }

@@ -9,8 +9,18 @@ import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
  * This event is triggered when a player purchases a statue in the game.
  */
 public class StatuePurchasedEvent implements GameEvent {
+
+    /**
+     * The player who purchased the statue.
+     */
     private final Player player;
+    /**
+     * The tile where the statue was purchased.
+     */
     private final Tile tile;
+    /**
+     * The statue that was purchased.
+     */
     private final Statue statue;
 
     /**
