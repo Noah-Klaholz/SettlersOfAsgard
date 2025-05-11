@@ -670,6 +670,10 @@ footer .artist-credit {
     /* Remove extra space below video */
     margin: 0 auto;
     /* Center video if container is wider */
+    max-height: 85vh;
+    /* Limit video height to 85% of viewport height */
+    object-fit: contain;
+    /* Ensure video scales within bounds, maintaining aspect ratio */
 }
 
 .close-button {
