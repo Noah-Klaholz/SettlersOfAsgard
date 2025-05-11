@@ -309,7 +309,7 @@ public class Monument extends FindableEntity {
         /**
          * Factory method to create a Coordinates object from JSON data.
          *
-         * @param json The JSON object containing coordinates data
+         *
          * @return A new Coordinates instance populated with data from the JSON
          */
         @Override
