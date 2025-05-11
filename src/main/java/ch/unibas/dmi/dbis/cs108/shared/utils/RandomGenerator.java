@@ -59,7 +59,8 @@ public class RandomGenerator {
      * Returns a random element from an array or null if array is empty.
      *
      * @param array the array to pick a random element from
-     *              @return a random element from the array or null if the array is empty
+     *
+     * @return a random element from the array or null if the array is empty
      */
     public static <T> T pickRandomElement(T[] array) {
         if (array == null || array.length == 0) {

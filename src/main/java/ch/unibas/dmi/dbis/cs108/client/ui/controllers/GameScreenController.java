@@ -14,7 +14,9 @@ import ch.unibas.dmi.dbis.cs108.client.ui.components.game.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.*;
-import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.scene.text.Font;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LeaveLobbyRequestEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyJoinedEvent;
@@ -30,7 +32,10 @@ import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 import javafx.animation.PauseTransition;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -64,7 +69,6 @@ import java.util.logging.Logger;
 
 /**
  * JavaFX controller for the in‑game screen.
- * <p>
  *
  * <ul>
  * <li>Renders the map and hex‑grid overlay.</li>
@@ -264,6 +268,20 @@ public class GameScreenController extends BaseController {
      * The located artifact ID.
      */
     private int locatedArtifactId = -1;
+    /** The trap Coordinates*/
+    private Point2D trapLocationScreenCoords;
+    /*
+     * The trap lost runes.
+     */
+    private int trapLostRunes;
+    /*
+     * The trap indicator opdacity.
+     */
+    private DoubleProperty trapIndicatorOpacityProperty = new SimpleDoubleProperty(1.0);
+    /** A double value for the opacity */
+    private double trapIndicatorOpacity = 1.0;
+    /** The fadeAnimation Timeline */
+    private Timeline trapFadeAnimation;
     /*
      * The artifact indicator clear timer.
      */
@@ -1726,7 +1744,7 @@ public class GameScreenController extends BaseController {
         }
 
         GameEntity entity = tile.getEntity();
-        if (entity != null) {
+        if (entity != null && entity.getId() != 8) { // is an active Trap and should not get shown
             int id = tile.getEntity().getId();
             drawEntityImage(gc, cx, cy, size, gridAdjustmentManager.getHorizontalSquishFactor(), id);
         }
@@ -1869,6 +1887,11 @@ public class GameScreenController extends BaseController {
         // Draw artifact location indicator
         if (locatedArtifactScreenCoords != null && locatedArtifactId != -1) { // Add this block
             drawArtifactLocationIndicator(gc, locatedArtifactScreenCoords.getX(), locatedArtifactScreenCoords.getY());
+        }
+
+        // Draw Trap location indicator
+        if (trapLocationScreenCoords != null) {
+            drawTrapLocationIndicator(gc, trapLocationScreenCoords.getX(), trapLocationScreenCoords.getY());
         }
     }
 
@@ -3510,7 +3533,119 @@ public class GameScreenController extends BaseController {
                 + locatedArtifactId);
     }
 
-    public void handleTrapLocationEvent() {
+    /**
+     * Handles the trap location event.
+     *
+     * @param event The trap location event
+     */
+    private void handleTrapLocationEvent(TrapLocationEvent event) {
+        if (event == null || gameState == null) {
+            LOGGER.warning("Cannot handle TrapLocationEvent: event or gameState is null.");
+            return;
+        }
 
+        Platform.runLater(() -> {
+            int col = event.getX(); // X is column
+            int row = event.getY(); // Y is row
+            int lostRunes = event.getLostRunes();
+
+            if (row < 0 || row >= HEX_ROWS || col < 0 || col >= HEX_COLS) {
+                LOGGER.warning("Invalid tile coordinates for trap location: row=" + row + ", col=" + col);
+                clearTrapIndicator();
+                return;
+            }
+            if (hSpacing <= 0 || vSpacing <= 0 || effectiveHexSize <= 0) {
+                LOGGER.warning("Grid parameters not initialized, cannot display trap location.");
+                clearTrapIndicator();
+                return;
+            }
+
+            double cx = gridOffsetX + col * hSpacing + (row % 2) * (hSpacing / 2.0);
+            double cy = gridOffsetY + row * vSpacing;
+            this.trapLocationScreenCoords = new Point2D(cx, cy);
+            this.trapLostRunes = lostRunes;
+            this.trapIndicatorOpacity = 1.0; // Start fully visible
+
+            LOGGER.fine("Calculated screen coordinates for trap: " + cx + ", " + cy);
+            redrawEntities();
+
+            // Setup fading animation
+            if (trapFadeAnimation != null) {
+                trapFadeAnimation.stop();
+            }
+            trapFadeAnimation = new Timeline(
+                    new KeyFrame(Duration.ZERO, new KeyValue(trapIndicatorOpacityProperty, 1.0)),
+                    new KeyFrame(Duration.seconds(3), new KeyValue(trapIndicatorOpacityProperty, 0.0))
+            );
+            trapFadeAnimation.setOnFinished(e -> {
+                clearTrapIndicator();
+                LOGGER.info("Trap location indicator faded out.");
+            });
+            trapFadeAnimation.play();
+
+            if (chatComponentController != null) {
+                chatComponentController.addSystemMessage("You triggered a trap and lost " + lostRunes + " runes!");
+            }
+        });
+    }
+
+    /**
+     * Clears the trap location indicator.
+     */
+    private void clearTrapIndicator() {
+        this.trapLocationScreenCoords = null;
+        this.trapLostRunes = 0;
+        if (gameCanvas != null) {
+            redrawEntities();
+        }
+    }
+
+    /**
+     * Draws the trap location indicator on the canvas.
+     *
+     * @param gc The GraphicsContext to draw on
+     * @param centerX The x-coordinate of the trap center
+     * @param centerY The y-coordinate of the trap center
+     */
+    private void drawTrapLocationIndicator(GraphicsContext gc, double centerX, double centerY) {
+        if (effectiveHexSize <= 0 || trapIndicatorOpacity <= 0) {
+            return;
+        }
+
+        double indicatorRadius = effectiveHexSize * 0.4;
+
+        // Save current graphics context state
+        Paint oldFill = gc.getFill();
+        double oldAlpha = gc.getGlobalAlpha();
+        Paint oldStroke = gc.getStroke();
+        double oldLineWidth = gc.getLineWidth();
+        Font oldFont = gc.getFont();
+
+        // Set opacity based on animation
+        gc.setGlobalAlpha(trapIndicatorOpacity);
+
+        // Draw trap indicator (X shape in red)
+        gc.setStroke(Color.RED);
+        gc.setLineWidth(3);
+        gc.strokeLine(centerX - indicatorRadius, centerY - indicatorRadius,
+                centerX + indicatorRadius, centerY + indicatorRadius);
+        gc.strokeLine(centerX + indicatorRadius, centerY - indicatorRadius,
+                centerX - indicatorRadius, centerY + indicatorRadius);
+
+        // Draw circle around X
+        gc.strokeOval(centerX - indicatorRadius, centerY - indicatorRadius,
+                indicatorRadius * 2, indicatorRadius * 2);
+
+        // Draw lost runes text
+        gc.setFill(Color.RED);
+        gc.setFont(new Font(Font.getDefault().getFamily(), effectiveHexSize * 0.35));
+        gc.fillText("-" + trapLostRunes, centerX + indicatorRadius * 1.2, centerY);
+
+        // Restore graphics context state
+        gc.setFill(oldFill);
+        gc.setGlobalAlpha(oldAlpha);
+        gc.setStroke(oldStroke);
+        gc.setLineWidth(oldLineWidth);
+        gc.setFont(oldFont);
     }
 }

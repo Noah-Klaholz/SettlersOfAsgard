@@ -47,7 +47,7 @@
     "cardImagePath": "resources/images/cards/a_mjoelnircharm_card.png",
     "id": 13,
     "chance": 0.3,
-    "effect": 5.0
+    "effect": 0.05
   },
   {
     "name": "Fenrir's Bones",

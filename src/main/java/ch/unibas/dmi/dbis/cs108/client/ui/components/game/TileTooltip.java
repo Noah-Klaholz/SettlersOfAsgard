@@ -127,7 +127,7 @@ public class TileTooltip {
         }
 
         // Entity information if present
-        if (tile.hasEntity()) {
+        if (tile.hasEntity() && tile.getEntity().getId() != 8) { // 8 is the ID for active trap which should not get shown (for obvious reasons)
             GameEntity entity = tile.getEntity();
 
             content.getChildren().add(new Separator());

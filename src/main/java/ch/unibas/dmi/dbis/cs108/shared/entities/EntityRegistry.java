@@ -323,7 +323,7 @@ public class EntityRegistry {
                 path = mon.getMapImagePath();
             }
         }
-        if (path == null || path.isEmpty() && id != 22 && id != 38) { // 22 & 38 are special cases for the "No image" entity
+        if (path == null || path.isEmpty() && id != 22 && id != 38 && id != 8) { // 22 & 38 are special cases for the "No image" entity
             System.err.println("Image path is empty or null for entity ID: " + id + " entityname " + (entity != null ? entity.getName() : "Entity was not created properly"));
             return "";
         } else {

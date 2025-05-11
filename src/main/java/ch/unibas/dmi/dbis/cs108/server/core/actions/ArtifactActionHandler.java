@@ -79,15 +79,20 @@ public class ArtifactActionHandler {
                 return false;
             }
 
-            // Check if artifact is a field artifact
-            if (!(artifact.getUseType() == Artifact.UseType.FIELD || artifact.getUseType() == Artifact.UseType.TRAP)) {
-                System.out.println("[ArtifactActionHandler] Artifact " + artifact.getName() + " is not a FIELD artifact.");
+            boolean success = false;
+            if (artifact.getUseType() == Artifact.UseType.FIELD) {
+                // Execute artifact effect
+                success = registry.executeFieldArtifact(artifact, gameState, player, x, y);
+                System.out.println("[ArtifactActionHandler] registry.executeFieldArtifact returned: " + success);
+            } else if (artifact.getUseType() == Artifact.UseType.TRAP) {
+                // Execute trap artifact effect
+                success = registry.executeTrapArtifact(artifact, gameState, player, x, y);
+                System.out.println("[ArtifactActionHandler] registry.executeTrapArtifact returned: " + success);
+            } else {
+                System.out.println("[ArtifactActionHandler] Invalid artifact use type.");
                 return false;
             }
 
-            // Execute artifact effect
-            boolean success = registry.executeFieldArtifact(artifact, gameState, player, x, y);
-            System.out.println("[ArtifactActionHandler] registry.executeFieldArtifact returned: " + success);
 
             // Remove artifact from player inventory if used successfully
             if (success) {

@@ -365,7 +365,7 @@ public class Player {
     /**
      * Setter for owned tiles
      *
-     * @param ownedTiles List<Tile>
+     * @param ownedTiles List Tile
      */
     public void setOwnedTiles(List<Tile> ownedTiles) {
         this.ownedTiles = ownedTiles;

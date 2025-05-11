@@ -61,8 +61,8 @@ public class CommunicationMediator {
      *
      * @param networkController The network controller to handle network
      *                          communication.
-     *    @param gameStateManager  The game state manager to manage the game
-     * @param player
+     * @param gameStateManager  The game state manager to manage the game
+     * @param player The player instance representing the local player.
      *
      * */
     public CommunicationMediator(NetworkController networkController, GameStateManager gameStateManager, Player player) {
