@@ -1206,27 +1206,27 @@ public class GameScreenController extends BaseController {
                 CardDetails cardDetails = getCardDetails(selectedCard.getId());
                 if (cardDetails != null && cardDetails.getEntity() != null) {
                     GameEntity entityToPlace = cardDetails.getEntity();
-                    if (!clickedTile.hasEntity()) {
+                    if (entityToPlace instanceof Artifact a) {
+                        if (a.isFieldTarget()) {
+                        eventBus.publish(new UseFieldArtifactUIEvent(col, row, cardDetails.getID()));
+                        AudioManager.getInstance().playSoundEffect(AudioTracks.Track.USE_ARTIFACT.getFileName());
+                    } else if (a.isPlayerTarget() && clickedTile.getOwner() != null) {
+                        // Target the tile owner if the artifact is player-targeted
+                        eventBus.publish(new UsePlayerArtifactUIEvent(cardDetails.getID(), clickedTile.getOwner()));
+                        AudioManager.getInstance().playSoundEffect(AudioTracks.Track.USE_ARTIFACT.getFileName());
+                    } else if (a.isPlayerTarget()) {
+                        // If tile has no owner, maybe prompt for player or disallow? For now, log.
+                        LOGGER.info("Cannot use player-target artifact on unowned tile.");
+                    } else {
+                        LOGGER.info("Artifact is neither field nor player target: " + cardDetails.getID());
+                    }
+                    } else if (!clickedTile.hasEntity()) {
                         if (entityToPlace instanceof Statue && cardDetails.getID() == selectedStatue.getID()) {
                             eventBus.publish(new PlaceStatueUIEvent(col, row, cardDetails.getID()));
                         } else if (entityToPlace.isStructure()) {
                             eventBus.publish(new PlaceStructureUIEvent(col, row, cardDetails.getID()));
                         }
                         AudioManager.getInstance().playSoundEffect(AudioTracks.Track.PLACE_STRUCTURE.getFileName());
-                    } else if (entityToPlace instanceof Artifact a) {
-                        if (a.isFieldTarget()) {
-                            eventBus.publish(new UseFieldArtifactUIEvent(col, row, cardDetails.getID()));
-                            AudioManager.getInstance().playSoundEffect(AudioTracks.Track.USE_ARTIFACT.getFileName());
-                        } else if (a.isPlayerTarget() && clickedTile.getOwner() != null) {
-                            // Target the tile owner if the artifact is player-targeted
-                            eventBus.publish(new UsePlayerArtifactUIEvent(cardDetails.getID(), clickedTile.getOwner()));
-                            AudioManager.getInstance().playSoundEffect(AudioTracks.Track.USE_ARTIFACT.getFileName());
-                        } else if (a.isPlayerTarget()) {
-                            // If tile has no owner, maybe prompt for player or disallow? For now, log.
-                            LOGGER.info("Cannot use player-target artifact on unowned tile.");
-                        } else {
-                            LOGGER.info("Artifact is neither field nor player target: " + cardDetails.getID());
-                        }
                     }
                 } else {
                     LOGGER.info("Selected card does not exist or does not represent an entity: "

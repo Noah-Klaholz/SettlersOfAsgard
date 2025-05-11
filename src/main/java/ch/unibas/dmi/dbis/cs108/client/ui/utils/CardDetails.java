@@ -136,4 +136,17 @@ public class CardDetails {
     public GameEntity getEntity() {
         return entity;
     }
+
+    @Override
+    public String toString() {
+        return "CardDetails{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", lore='" + lore + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", price=" + price +
+                ", entity=" + entity +
+                '}';
+    }
 }
