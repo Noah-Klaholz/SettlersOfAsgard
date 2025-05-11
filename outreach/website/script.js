@@ -9,7 +9,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const navLinksContainer = document.getElementById('nav-links');
     const burgerButton = document.getElementById('burger-menu');
-    const navLinks = document.querySelectorAll('#nav-links li a'); // Select links inside the ul
+    const allNavLinks = document.querySelectorAll('#nav-links li a'); // Select all links
+
+    // Video Modal Elements
+    const trailerModal = document.getElementById('trailer-modal');
+    const demoModal = document.getElementById('demo-modal');
+    const closeTrailerModal = document.getElementById('close-trailer-modal');
+    const closeDemoModal = document.getElementById('close-demo-modal');
+    const trailerVideo = document.getElementById('trailer-video');
+    const demoVideo = document.getElementById('demo-video');
 
     // --- Debounce Function ---
     function debounce(func, wait = 15, immediate = false) {
@@ -35,37 +43,84 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Close nav menu when a link is clicked (for mobile view)
-    navLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            if (navLinksContainer.classList.contains('nav-active')) {
-                navLinksContainer.classList.remove('nav-active');
-                burgerButton.classList.remove('active'); // Remove burger animation class
+    // Function to open a modal
+    function openModal(modal, video) {
+        video.style.display = 'block'; // Ensure video is visible
+        video.play();
+        modal.classList.add('show');
+        // Close mobile nav if open
+        if (navLinksContainer.classList.contains('nav-active')) {
+            navLinksContainer.classList.remove('nav-active');
+            burgerButton.classList.remove('active');
+        }
+    }
+
+    // Function to close a modal
+    function closeModal(modal, video) {
+        modal.classList.remove('show');
+        video.pause();
+        video.currentTime = 0; // Reset video
+    }
+
+    // Event listeners for all navigation links
+    allNavLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
+            const linkId = link.id;
+
+            if (linkId === 'watch-trailer-link') {
+                e.preventDefault();
+                openModal(trailerModal, trailerVideo);
+            } else if (linkId === 'watch-demo-link') {
+                e.preventDefault();
+                openModal(demoModal, demoVideo);
+            } else if (href && href.startsWith('#')) {
+                e.preventDefault();
+                const targetId = href;
+                const targetElement = document.querySelector(targetId);
+
+                if (targetElement) {
+                    const headerOffset = document.querySelector('.sticky-nav').offsetHeight;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: "smooth"
+                    });
+                }
+                // Close nav menu when a link is clicked (for mobile view)
+                if (navLinksContainer.classList.contains('nav-active')) {
+                    navLinksContainer.classList.remove('nav-active');
+                    burgerButton.classList.remove('active');
+                }
             }
-
-            // Smooth scroll logic (already exists, slightly adjusted context)
-            const targetId = link.getAttribute('href');
-            const targetElement = document.querySelector(targetId);
-
-            if (targetElement) {
-                const headerOffset = document.querySelector('.sticky-nav').offsetHeight;
-                const elementPosition = targetElement.getBoundingClientRect().top;
-                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-                window.scrollTo({
-                    top: offsetPosition,
-                    behavior: "smooth"
-                });
-            }
+            // For external links or links not handled, default behavior will apply if e.preventDefault() wasn't called
         });
     });
 
-    // Prevent default anchor jump for all nav links (moved out of smooth scroll loop)
-    document.querySelectorAll('header nav ul li a').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            // Scroll logic is handled within the link click listener above
+    // Close modal listeners
+    if (closeTrailerModal) {
+        closeTrailerModal.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent click from bubbling to other elements
+            closeModal(trailerModal, trailerVideo);
         });
+    }
+    if (closeDemoModal) {
+        closeDemoModal.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent click from bubbling to other elements
+            closeModal(demoModal, demoVideo);
+        });
+    }
+
+    // Close modal when clicking outside
+    window.addEventListener('click', (event) => {
+        if (event.target === trailerModal) {
+            closeModal(trailerModal, trailerVideo);
+        }
+        if (event.target === demoModal) {
+            closeModal(demoModal, demoVideo);
+        }
     });
 
     // --- Debounced Scroll Handler ---

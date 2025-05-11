@@ -11,6 +11,7 @@ import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Registry for artifact behaviors based on their useType.
@@ -26,6 +27,10 @@ import java.util.Map;
  * </p>
  */
 public class ArtifactBehaviorRegistry {
+    /**
+     * Logger for the ArtifactBehaviorRegistry class.
+     */
+    private static final Logger logger = Logger.getLogger(ArtifactBehaviorRegistry.class.getName());
 
     /**
      * Map of player-targeting artifact behaviors, keyed by artifact name
@@ -57,43 +62,57 @@ public class ArtifactBehaviorRegistry {
         // Player-targeting artifacts
         registerPlayerBehavior("Tear of Yggdrasil", (artifact, gameState, player, targetPlayer) -> {
             // Remove energy from other player
+            logger.info("Tear of Yggdrasil used on " + targetPlayer.getName());
             targetPlayer.addEnergy((int) artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Hel's Shadow", (artifact, gameState, player, targetPlayer) -> {
             // Remove rune efficiency from other player
+            logger.info("Hel's Shadow used on " + targetPlayer.getName());
             targetPlayer.addBuff(Status.BuffType.RUNE_GENERATION, (int) artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Flame of Muspelheim", (artifact, gameState, player, targetPlayer) -> {
             // Give shop discount to player
+            logger.info("Flame of Muspelheim used on " + targetPlayer.getName());
             targetPlayer.addBuff(Status.BuffType.SHOP_PRICE, (int) artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Ice Splinter of Niflheim", (artifact, gameState, player, targetPlayer) -> {
             // Remove energy generation efficiency from other player
+            logger.info("Ice Splinter of Niflheim used on " + targetPlayer.getName());
             targetPlayer.addBuff(Status.BuffType.ENERGY_GENERATION, (int) artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Ashes of Surtr", (artifact, gameState, player, targetPlayer) -> {
             // Give higher prices in shop to other player
+            logger.info("Ashes of Surtr used on " + targetPlayer.getName());
             targetPlayer.addBuff(Status.BuffType.SHOP_PRICE, (int) artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Fragment of Mjölnir", (artifact, gameState, player, targetPlayer) -> {
             // Give higher chance of artifacts to player
+            logger.info("Fragment of Mjölnir used on " + targetPlayer.getName());
             targetPlayer.addBuff(Status.BuffType.ARTIFACT_CHANCE, (int) artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Freyr's Golden Apple", (artifact, gameState, player, targetPlayer) -> {
             // Gives energy to player
+            logger.info("Freyr's Golden Apple used on " + targetPlayer.getName());
             targetPlayer.addEnergy((int) artifact.getEffect());
+            return true;
+        });
+
+        registerPlayerBehavior("Mjölnir Charm", (artifact, gameState, player, targetPlayer) -> {
+            // Increases artifact chance
+            logger.info("Mjölnir Charm used on " + targetPlayer.getName());
+            targetPlayer.addBuff(Status.BuffType.ARTIFACT_CHANCE, (int) artifact.getEffect());
             return true;
         });
 
