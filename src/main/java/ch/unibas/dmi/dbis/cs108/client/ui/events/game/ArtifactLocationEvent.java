@@ -15,6 +15,8 @@ public class ArtifactLocationEvent implements UIEvent {
      * The Y coordinate of the artifact's location on the tile map.
      */
     private final int tileY; // Corresponds to row
+    /** Boolean representing if an artifact was found*/
+    private final boolean isArtifactFound;
 
     /**
      * Constructs an ArtifactLocationEvent with the specified artifact ID and
@@ -23,11 +25,13 @@ public class ArtifactLocationEvent implements UIEvent {
      * @param artifactId the ID of the artifact
      * @param tileX      the X coordinate of the artifact's location
      * @param tileY      the Y coordinate of the artifact's location
+     * @param isArtifactFound represents whether an artifact has been found
      */
-    public ArtifactLocationEvent(int artifactId, int tileX, int tileY) {
+    public ArtifactLocationEvent(int artifactId, int tileX, int tileY, boolean isArtifactFound) {
         this.artifactId = artifactId;
         this.tileX = tileX;
         this.tileY = tileY;
+        this.isArtifactFound = isArtifactFound
     }
 
     /**
@@ -55,6 +59,13 @@ public class ArtifactLocationEvent implements UIEvent {
      */
     public int getTileY() {
         return tileY;
+    }
+
+    /**
+     * @return true if an artifact was found, false otherwise
+     */
+    public boolean isArtifactFound() {
+        return isArtifactFound;
     }
 
     /**

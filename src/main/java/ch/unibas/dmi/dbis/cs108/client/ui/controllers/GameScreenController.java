@@ -14,6 +14,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.components.game.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.ErrorEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEventBus;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.*;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.*;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LeaveLobbyRequestEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyJoinedEvent;
@@ -3385,6 +3386,9 @@ public class GameScreenController extends BaseController {
         if (event == null || gameState == null) {
             LOGGER.warning("Cannot handle ArtifactLocationEvent: event or gameState is null.");
             return;
+        }
+        if (chatComponentController != null && !event.isArtifactFound()) {
+            chatComponentController.addSystemMessage("Odin's Eye could not locate any artifact.");
         }
         LOGGER.info("Received artifact location: ID=" + event.getArtifactId() + ", X (col)=" + event.getTileX()
                 + ", Y (row)=" + event.getTileY());
