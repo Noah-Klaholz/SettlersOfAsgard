@@ -266,7 +266,7 @@ public class GameLogicTest {
         // Verify notification was sent
         List<String> notifications = gameState.getNotifications();
         assertFalse(notifications.isEmpty());
-        assertTrue(notifications.contains("4$1$1$10"));
+        assertTrue(notifications.contains("10$1$1"));
     }
 
     /**
