@@ -356,7 +356,7 @@ public class Player {
     /**
      * Getter for owned tiles
      *
-     * @return List<Tile> List of owned tiles
+     * @return ownedTiles
      */
     public List<Tile> getOwnedTiles() {
         return ownedTiles;
