@@ -21,14 +21,41 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+/**
+ * ResourceOverviewDialog is a UI component that displays an overview of player resources in the game.
+ * It shows the resources and status effects of each player in a scrollable view.
+ */
 public class ResourceOverviewDialog extends UIComponent<StackPane> {
+    /**
+     * Logger for the ResourceOverviewDialog class.
+     */
     private static final Logger LOGGER = Logger.getLogger(ResourceOverviewDialog.class.getName());
+    /**
+     * The view of the dialog, which is a StackPane.
+     */
     private final ResourceLoader resourceLoader;
+    private final StackPane view;
     ScrollPane scrollPane;
+    /**
+     * The content of the dialog, which is a VBox.
+     */
     private VBox content;
+    /**
+     * The list of players displayed in the dialog.
+     */
     private VBox playerList;
+    /**
+     * The map of player colors.
+     */
     private Map<String, Color> playerColors;
 
+    /**
+     * Constructor for ResourceOverviewDialog.
+     * Initializes the dialog with a title and sets up the layout and styles.
+     *
+     * @param resourceLoader The resource loader for loading images and resources.
+     * @param playerColors   The map of player colors.
+     */
     public ResourceOverviewDialog(ResourceLoader resourceLoader, Map<String, Color> playerColors) {
         super("");
         this.resourceLoader = resourceLoader;
@@ -60,6 +87,11 @@ public class ResourceOverviewDialog extends UIComponent<StackPane> {
         AudioManager.attachClickSoundToAllButtons(this.view);
     }
 
+    /**
+     * Creates the content of the dialog, including the title, player list, and close button.
+     *
+     * @return The VBox containing the dialog content.
+     */
     public VBox createDialogContent() {
         content = new VBox(15);
         content.getStyleClass().add("dialog-content-box");
@@ -99,6 +131,13 @@ public class ResourceOverviewDialog extends UIComponent<StackPane> {
         return content;
     }
 
+    /**
+     * Updates the player list in the dialog with the current players and their resources.
+     *
+     * @param players            The list of players to display.
+     * @param currentTurnPlayer  The name of the player whose turn it is.
+     * @param playerColors       The map of player colors.
+     */
     public void updatePlayers(List<Player> players, String currentTurnPlayer, Map<String, Color> playerColors) {
         LOGGER.info("Updating players in ResourceOverviewDialog...");
         LOGGER.info("Number of players: " + players.size());
@@ -118,6 +157,13 @@ public class ResourceOverviewDialog extends UIComponent<StackPane> {
         }
     }
 
+    /**
+     * Creates a row for a player displaying their resources and status effects.
+     *
+     * @param player        The player to display.
+     * @param isCurrentTurn Indicates if it's the player's turn.
+     * @return The HBox containing the player's resources and status effects.
+     */
     private HBox createPlayerResourceRow(Player player, boolean isCurrentTurn) {
         LOGGER.info("Creating resource row for player: " + player.getName());
         HBox row = new HBox(15);
@@ -214,6 +260,13 @@ public class ResourceOverviewDialog extends UIComponent<StackPane> {
         return row;
     }
 
+    /**
+     * Formats the buff effect for display.
+     *
+     * @param buffType The type of buff.
+     * @param value    The value of the buff.
+     * @return A formatted string representing the buff effect.
+     */
     private String formatBuffEffect(Status.BuffType buffType, double value) {
         String buffName = formatBuffName(buffType);
         double roundedValue = Math.round((value - 1.0) * 100) / 100.0; // Round to 2 decimal places
@@ -224,6 +277,12 @@ public class ResourceOverviewDialog extends UIComponent<StackPane> {
         return buffName + ": " + valueStr;
     }
 
+    /**
+     * Formats the buff name for display.
+     *
+     * @param buffType The type of buff.
+     * @return A formatted string representing the buff name.
+     */
     private String formatBuffName(Status.BuffType buffType) {
         // Convert enum name to readable format (e.g., SHOP_PRICE -> Shop Price)
         String name = buffType.toString();
@@ -237,6 +296,12 @@ public class ResourceOverviewDialog extends UIComponent<StackPane> {
         return result.toString().trim();
     }
 
+    /**
+     * Provides a short description of the buff type.
+     *
+     * @param buffType The type of buff.
+     * @return A short description of the buff type.
+     */
     private String getBuffDescription(Status.BuffType buffType) {
         // Provide short descriptions for each buff type
         return switch (buffType) {

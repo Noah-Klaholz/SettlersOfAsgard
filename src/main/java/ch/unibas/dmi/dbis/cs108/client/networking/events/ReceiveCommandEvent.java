@@ -9,8 +9,17 @@ import java.time.Instant;
  * Uses the shared CommunicationAPI to define the command types.
  */
 public class ReceiveCommandEvent implements Event {
+    /**
+     * The timestamp of the event.
+     */
     private final Instant timestamp = Instant.now();
+    /**
+     * The message received from the server.
+     */
     private final String message;
+    /**
+     * The type of command received.
+     */
     private final Commands commandType;
 
     /**

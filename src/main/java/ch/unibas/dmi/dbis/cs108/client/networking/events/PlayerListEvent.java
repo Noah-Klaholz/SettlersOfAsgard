@@ -11,8 +11,15 @@ import java.util.List;
  * PlayerListEvent is an event that represents a list of game players in a lobby.
  */
 public class PlayerListEvent implements Event {
+    /**
+     * The timestamp of the event.
+     */
     private final Instant timestamp = Instant.now();
+    /**
+     * The list of players in the lobby.
+     */
     private final List<String> players = new ArrayList<>();
+
     private final ListType type;
 
     /**
@@ -52,6 +59,10 @@ public class PlayerListEvent implements Event {
         return type;
     }
 
+    /**
+     * ListType is an enum that represents the type of player list.
+     * It can be either SERVER_LIST or LOBBY_LIST.
+     */
     public enum ListType {
         SERVER_LIST,
         LOBBY_LIST
