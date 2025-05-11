@@ -110,6 +110,12 @@ public class Status {
         this.debuffable = true; // Default to debuffable
     }
 
+    /**
+     * Sets the efficiency value for a specific buff type.
+     *
+     * @param buffType the type of buff
+     * @param value    the efficiency value to set
+     */
     public void set(BuffType buffType, double value) {
         switch (buffType) {
             case RUNE_GENERATION -> runeEfficieny = value;
@@ -122,6 +128,9 @@ public class Status {
         };
     }
 
+    /**
+     * Enum representing different types of buffs.
+     */
     public enum BuffType {
         RUNE_GENERATION,
         ENERGY_GENERATION,
@@ -132,6 +141,11 @@ public class Status {
         // Add more buff types as needed
     }
 
+    /**
+     * Returns a string representation of the Status object.
+     *
+     * @return a string representation of the Status object
+     */
     @Override
     public String toString() {
         return "Status{" +
