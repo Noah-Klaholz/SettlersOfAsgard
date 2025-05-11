@@ -657,14 +657,6 @@ public class GameScreenController extends BaseController {
         GameState updatedState = e.getGameState();
         detectRoundChangeAndRefresh();
 
-        // Log details about the received event
-        LOGGER.info(String.format("Received GameSyncEvent: Updating game state. Board size: %d tiles. Player turn: %s",
-                updatedState.getBoardManager().getBoard().getTiles().length, updatedState.getPlayerTurn()));
-
-        updatedState.getPlayers().forEach(player -> {
-            LOGGER.info("Player: " + player.getName() + ", Status: " + player.getStatus().toString());
-        });
-
         Platform.runLater(() -> {
             gameState = updatedState;
             LOGGER.info("GameSyncEvent received. Searching for player " + localPlayer.getName());
@@ -3416,6 +3408,7 @@ public class GameScreenController extends BaseController {
      * @param event The artifact location event
      */
     private void handleArtifactLocationEvent(ArtifactLocationEvent event) {
+        LOGGER.info("Artifact location event: " + event);
         if (event == null || gameState == null) {
             LOGGER.warning("Cannot handle ArtifactLocationEvent: event or gameState is null.");
             return;

@@ -493,8 +493,7 @@ public class CommunicationMediator {
                 new EventDispatcher.EventListener<NotificationEvent>() {
                     @Override
                     public void onEvent(NotificationEvent event) {
-                        // Publish as a system chat message
-                        // TODO : Handle INFO in UI (show artifacts, etc.)
+                        LOGGER.info("Notification Event: " + event.getMessage());
                         UIEventBus.getInstance()
                                 .publish(new ArtifactLocationEvent(event.getArtifactId(), event.getX(), event.getY(), event.isArtifactFound()));
                     }

@@ -183,15 +183,12 @@ public class GameStateManager {
                         player.setPurchasableEntities(entities);
                         break;
                     case "ST":
-                        LOGGER.info("Parsing status for player " + playerName);
                         // Status buffs
                         String[] buffs = keyValue[1].substring(1, keyValue[1].length() - 1).split(",");
-                        LOGGER.info("Status buffs: " + Arrays.toString(buffs));
+
                         Status status = player.getStatus();
                         for (String buff : buffs) {
-                            LOGGER.info("Parsing buff: " + buff);
                             String[] buffParts = buff.split(":");
-                            LOGGER.info("Buff parts: " + Arrays.toString(buffParts));
                             if (buffParts.length != 2) {
                                 LOGGER.warning("Invalid status buff format: " + buff + " for player " + playerName);
                                 continue;
@@ -221,7 +218,6 @@ public class GameStateManager {
                                     LOGGER.warning("Unknown status buff type: " + buffParts[0] + " for player " + playerName);
                                     continue;
                             }
-                            LOGGER.info("Set status " + buffParts[0] + " to " + value + " for player " + playerName);
                         }
                         break;
                 }
