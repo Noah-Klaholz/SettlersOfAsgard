@@ -6,7 +6,13 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
  * UIEvent representing a request to join a lobby.
  */
 public class JoinLobbyRequestEvent implements UIEvent {
+    /**
+     * The ID of the lobby to join.
+     */
     private final String lobbyId;
+    /**
+     * The name of the player joining the lobby.
+     */
     private final String playerName;
 
     /**

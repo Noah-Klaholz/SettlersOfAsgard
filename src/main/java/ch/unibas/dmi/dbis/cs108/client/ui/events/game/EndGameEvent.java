@@ -13,6 +13,11 @@ public class EndGameEvent implements UIEvent {
      */
     private final HashMap<String, Integer> leaderboard;
 
+    /**
+     * Constructs a new EndGameEvent with the given leaderboard.
+     *
+     * @param leaderboard The leaderboard of the game.
+     */
     public EndGameEvent(HashMap<String, Integer> leaderboard) {
         this.leaderboard = leaderboard;
     }

@@ -11,7 +11,13 @@ import java.util.Map;
  */
 public class GameEndEvent implements UIEvent {
 
+    /**
+     * The name of the winner.
+     */
     private final String winnerName;
+    /**
+     * The list of final scores, where each score is represented as a map.
+     */
     private final List<Map<String, Object>> finalScores;
 
     /**

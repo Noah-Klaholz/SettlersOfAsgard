@@ -12,6 +12,12 @@ public class GameSyncEvent implements UIEvent {
      */
     private final GameStateManager gameStateManager;
 
+    /**
+     * Constructs a new GameSyncEvent.
+     *
+     * @param args              The arguments for the event.
+     * @param gameStateManager  The game state manager.
+     */
     public GameSyncEvent(String args, GameStateManager gameStateManager) {
         Logger.getGlobal().info(args);
         this.gameStateManager = gameStateManager;

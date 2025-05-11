@@ -9,9 +9,21 @@ import java.time.Instant;
  * Provides details about the error.
  */
 public class ErrorEvent implements UIEvent {
+    /**
+     * Enum representing the severity of the error.
+     */
     private final Instant timestamp = Instant.now();
+    /**
+     * The severity of the error.
+     */
     private final String errorCode;
+    /**
+     * The error code.
+     */
     private final String errorMessage;
+    /**
+     * The error message.
+     */
     private final ErrorSeverity severity;
 
     /**
@@ -63,6 +75,11 @@ public class ErrorEvent implements UIEvent {
         return severity;
     }
 
+    /**
+     * Returns the event type identifier.
+     *
+     * @return event type
+     */
     @Override
     public String getType() {
         return "ERROR";

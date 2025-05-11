@@ -8,9 +8,21 @@ import java.time.LocalDateTime;
  * UIEvent representing a global or system chat message.
  */
 public class GlobalChatEvent implements UIEvent {
+    /**
+     * The message content.
+     */
     private final String content;
+    /**
+     * The type of chat message (e.g., global or system).
+     */
     private final ChatType chatType;
+    /**
+     * The timestamp of when the message was sent.
+     */
     private final LocalDateTime timestamp;
+    /**
+     * The sender of the message (null if not specified).
+     */
     private String sender;
 
     /**

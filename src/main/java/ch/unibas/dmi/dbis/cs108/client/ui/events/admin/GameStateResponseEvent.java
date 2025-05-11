@@ -9,6 +9,9 @@ import java.util.Map;
  */
 public class GameStateResponseEvent implements UIEvent {
 
+    /**
+     * The game state data.
+     */
     private final Map<String, Object> gameStateData;
 
     /**
