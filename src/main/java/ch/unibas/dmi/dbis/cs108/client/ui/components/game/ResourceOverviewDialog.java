@@ -34,7 +34,9 @@ public class ResourceOverviewDialog extends UIComponent<StackPane> {
      * The view of the dialog, which is a StackPane.
      */
     private final ResourceLoader resourceLoader;
-    private final StackPane view;
+    /**
+     * Scroll pane used for scrolling through the player list.
+     */
     ScrollPane scrollPane;
     /**
      * The content of the dialog, which is a VBox.
