@@ -29,7 +29,7 @@ public class ConnectionEvent implements Event {
      *
      * @param state   The state of the connection.
      * @param message The message associated with the connection event.
-     *  * @param isSelf  True if the event is regarding the client, false if its about other players.
+     *   @param isSelf  True if the event is regarding the client, false if its about other players.
      */
     public ConnectionEvent(ConnectionState state, String message, boolean isSelf) {
         this.state = state;

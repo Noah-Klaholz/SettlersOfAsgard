@@ -2779,6 +2779,10 @@ public class GameScreenController extends BaseController {
         Platform.runLater(this::updatePurchasableStates);
     }
 
+    /**
+     * Updates the map and grid display.
+     * This method is called when the game state changes.
+     */
     public void updateMap() {
         if (gameState == null) {
             LOGGER.warning("Game state is null");

@@ -66,7 +66,7 @@ public class Lobby implements GameEventNotifier {
      *
      * @param id         The name of the Lobby as a String.
      * @param maxPlayers The number of maximum players as an Integer.
-     *              * @param leaderboard The leaderboard object to use.
+     *              @param leaderboard The leaderboard object to use.
      */
     public Lobby(String id, int maxPlayers, Leaderboard leaderboard) {
         this.id = id;

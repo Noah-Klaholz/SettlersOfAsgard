@@ -27,6 +27,7 @@ public class PlayerListEvent implements Event {
      * It takes a message string containing information about the players and parses it to create a list of String objects.
      *
      * @param message The message string containing list information.
+     *  @param type    The type of the list (SERVER_LIST or LOBBY_LIST).
      */
     public PlayerListEvent(String message, ListType type) {
         this.type = type;
@@ -47,6 +48,8 @@ public class PlayerListEvent implements Event {
 
     /**
      * Gets the list of players.
+     *
+     * @return A list of player names.
      */
     public List<String> getPlayers() {
         return players;
@@ -54,6 +57,8 @@ public class PlayerListEvent implements Event {
 
     /**
      * Gets the type of the list (SERVER_LIST or LOBBY_LIST).
+     *
+     * @return The type of the list.
      */
     public ListType getType() {
         return type;
@@ -64,7 +69,13 @@ public class PlayerListEvent implements Event {
      * It can be either SERVER_LIST or LOBBY_LIST.
      */
     public enum ListType {
+        /**
+         * Represents a list of players in the server.
+         */
         SERVER_LIST,
+        /**
+         * Represents a list of players in the lobby.
+         */
         LOBBY_LIST
     }
 }

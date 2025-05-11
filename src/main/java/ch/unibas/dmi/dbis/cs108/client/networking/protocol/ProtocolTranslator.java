@@ -431,6 +431,7 @@ public class ProtocolTranslator implements CommunicationAPI {
     /**
      * Formats the message based on the type.
      *
+     * @param args the args of the message.
      * @return the formatted messages.
      */
     public String formatReconnect(String args) {

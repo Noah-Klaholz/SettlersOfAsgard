@@ -187,6 +187,8 @@ public class SceneManager {
     /**
      * Removes the cached node and controller for the given scene type.
      * Use this to force a reload of the scene/controller on next switch.
+     *
+     * @param sceneType Scene type to clear from cache
      */
     public void clearCache(SceneType sceneType) {
         nodeCache.remove(sceneType);

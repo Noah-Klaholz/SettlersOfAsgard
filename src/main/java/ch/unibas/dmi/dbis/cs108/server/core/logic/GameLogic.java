@@ -187,8 +187,8 @@ public class GameLogic implements GameLogicInterface {
      *
      * @param x the x-coordinate of the tile.
      * @param y the y-coordinate of the tile.
-     *     * @param structureId the ID of the structure.
-     *          * @param playerName  the name of the player placing the structure.
+     *     @param structureId the ID of the structure.
+     *           @param playerName  the name of the player placing the structure.
      * @return if the action was successful.
          */
     public boolean placeStructure(int x, int y, int structureId, String playerName) {

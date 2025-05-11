@@ -82,7 +82,7 @@ public class BoardManager {
      * @param x    The x-coordinate of the tile
      * @param y    The y-coordinate of the tile
      * @param tile The tile to set
-     *            * @return true if the tile was set successfully, false otherwise
+     *             @return true if the tile was set successfully, false otherwise
      */
     public boolean setTile(int x, int y, Tile tile) {
         stateLock.writeLock().lock();

@@ -54,6 +54,11 @@ public abstract class PurchasableEntity extends GameEntity {
      * @param name        The name of this entity
      * @param description The description of this entity
      * @param price       The purchase price of this entity
+        * @param resourceValue The resource value of this entity
+     *  @param usage       The usage of this entity
+     *  @param cardImagePath The path to the image representing this entity as a card
+     *    @param mapImagePath  The path to the image representing this entity as a game piece
+     *
      */
     public PurchasableEntity(int id, String name, String description, String usage, int price, int resourceValue, String cardImagePath, String mapImagePath) {
         super(id, name, description, usage);
