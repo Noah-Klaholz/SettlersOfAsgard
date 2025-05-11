@@ -53,6 +53,11 @@ public interface NetworkClient {
      * Interface for handling incoming messages.
      */
     interface MessageHandler {
+        /**
+         * Called when a message is received from the server.
+         *
+         * @param message The received message.
+         */
         void onMessage(String message);
 
         /**

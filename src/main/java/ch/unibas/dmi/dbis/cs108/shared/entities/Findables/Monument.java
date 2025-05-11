@@ -58,6 +58,9 @@ public class Monument extends FindableEntity {
      * @param runes        how many runes this entity farms each round
      * @param setBonus     states wether this entity is part of a set
      * @param mapImagePath the URl for the image to be drawn on the map
+     * @param tiles       The tiles this artifact is placed upon
+     *  @param world        The name of the world
+     *  @param usage        The usage of this artifact
      */
     public Monument(int id, String name, String description, String usage, int runes, boolean setBonus, List<Coordinates> tiles, String world, String mapImagePath) {
 

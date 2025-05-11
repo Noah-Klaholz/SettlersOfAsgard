@@ -67,7 +67,7 @@ public class ReceiveCommandEvent implements Event {
     /**
      * Getter for the timestamp of the event.
      *
-     * @return
+     * @return The timestamp of the event.
      */
     @Override
     public Instant getTimestamp() {

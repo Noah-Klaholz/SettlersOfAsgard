@@ -56,7 +56,8 @@ public abstract class GameEntity {
      * @param id          The unique identifier for this entity
      * @param name        The name of this entity
      * @param description The description of this entity
-     *               * @param usage       The usage of this entity
+     *                @param usage       The usage of this entity
+     *
      */
     public GameEntity(int id, String name, String description, String usage) {
         this.id = id;

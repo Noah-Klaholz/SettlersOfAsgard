@@ -312,6 +312,9 @@ public class ResourceLoader {
     /**
      * Load an image *synchronously* (blocking) and cache it.
      * Use this for the background map or other “must-have before paint” assets.
+     *
+     * @param url The URL of the image to load
+     *            @return The loaded Image object
      */
     public Image loadImageSync(String url) {
         return entityImageCache.computeIfAbsent(url, u -> createImage(u, /*background*/ false));
@@ -321,6 +324,11 @@ public class ResourceLoader {
      * Load an image in the background (non-blocking) and cache it.
      * If you pass an onReady-callback, it is invoked on the **FX thread**
      * exactly once when the image is completely decoded.
+     *
+     * @param url The URL of the image to load
+     *            @param onReady A callback to be executed when the image is ready (can be null)
+     *
+     *            @return The loaded Image object
      */
     public Image loadImageAsync(String url, Runnable onReady /* nullable */) {
 

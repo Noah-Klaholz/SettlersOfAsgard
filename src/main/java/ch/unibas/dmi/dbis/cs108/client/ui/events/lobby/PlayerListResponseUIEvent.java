@@ -19,6 +19,7 @@ public class PlayerListResponseUIEvent implements UIEvent {
      * Constructor for PlayerListResponseUIEvent.
      *
      * @param playerList The list of players in the lobby.
+     *  @param listType   The type of the event (LOBBY_LIST).
      */
     public PlayerListResponseUIEvent(List<String> playerList, PlayerListEvent.ListType listType) {
         this.playerList = playerList;

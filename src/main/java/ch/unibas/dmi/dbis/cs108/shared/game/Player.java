@@ -364,6 +364,8 @@ public class Player {
 
     /**
      * Setter for owned tiles
+     *
+     * @param ownedTiles List<Tile>
      */
     public void setOwnedTiles(List<Tile> ownedTiles) {
         this.ownedTiles = ownedTiles;
@@ -373,6 +375,7 @@ public class Player {
      * Adds runes to the player, runes should never be negative
      *
      * @param amount int
+     *   @return int
      */
     public int addRunes(int amount) {
         runes += amount;

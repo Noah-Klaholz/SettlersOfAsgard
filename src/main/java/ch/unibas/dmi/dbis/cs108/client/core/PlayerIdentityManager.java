@@ -90,6 +90,8 @@ public class PlayerIdentityManager {
 
     /**
      * Sets the local player to a guest with a default name.
+     *
+     * @param listener
      */
     public void addPlayerUpdateListener(Consumer<Player> listener) {
         if (listener != null) {
