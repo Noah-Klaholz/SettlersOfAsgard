@@ -270,7 +270,6 @@ public class LobbyScreenController extends BaseController {
         eventBus.subscribe(ErrorEvent.class, this::handleError);
         eventBus.subscribe(NameChangeResponseEvent.class, this::handleNameChangeResponse);
         eventBus.subscribe(ConnectionStatusEvent.class, this::handleConnectionStatus);
-        eventBus.subscribe(HostTransferEvent.class, this::handleHostTransfer);
     }
 
     /**
@@ -375,16 +374,12 @@ public class LobbyScreenController extends BaseController {
     }
 
     /**
-     * Handles the "Start Game" button click (host only).
+     * Handles the "Start Game" button click (any player can start once enough
+     * players join).
      */
     @FXML
     private void handleStartGame() {
         LOGGER.info("Start Game button clicked.");
-        if (!isHost) {
-            showError("Only the lobby host can start the game.");
-            LOGGER.warning("Non-host attempted to start the game.");
-            return;
-        }
         if (currentLobbyId == null) {
             showError("Cannot start game: Not currently in a lobby.");
             LOGGER.warning("Attempted to start game while not in a lobby.");
@@ -396,7 +391,7 @@ public class LobbyScreenController extends BaseController {
             return;
         }
         clearError();
-        LOGGER.info("Host is starting the game for lobby: " + currentLobbyId);
+        LOGGER.info("Player is starting the game for lobby: " + currentLobbyId);
         eventBus.publish(new StartGameRequestEvent(currentLobbyId));
     }
 
@@ -542,7 +537,7 @@ public class LobbyScreenController extends BaseController {
 
                     // Handle host transfer if necessary
                     if (wasHost && !playersInCurrentLobby.isEmpty()) {
-                        handleHostTransferLogic();
+                        // ToDo
                     }
 
                     updateStartGameButtonStyle();
@@ -616,6 +611,7 @@ public class LobbyScreenController extends BaseController {
     private void handleGameStarted(GameStartedEvent event) {
         Objects.requireNonNull(event, "GameStartedEvent cannot be null");
         LOGGER.info("Game started for lobby: " + currentLobbyId + ". Switching to game screen.");
+
         GameApplication.setPlayers(playersInCurrentLobby.stream().toList());
         Platform.runLater(() -> {
             // Clear the cached GameScreenController so it reloads fresh every time
@@ -709,40 +705,6 @@ public class LobbyScreenController extends BaseController {
                 chatComponentController.addSystemMessage("Reconnected to the server.");
             }
         });
-    }
-
-    /**
-     * Handles notifications that host status has been transferred to a new player.
-     */
-    private void handleHostTransfer(HostTransferEvent event) {
-        Objects.requireNonNull(event, "HostTransferEvent cannot be null");
-        Platform.runLater(() -> {
-            if (currentLobbyId != null && currentLobbyId.equals(event.getLobbyId())) {
-                String newHostName = event.getNewHostName();
-                boolean isLocalPlayerNewHost = newHostName.equals(localPlayer.getName());
-
-                // Update host status for this client
-                isHost = isLocalPlayerNewHost;
-
-                // Update lobby table to reflect new host
-                allLobbies.stream()
-                        .filter(lobby -> lobby.getId().equals(currentLobbyId))
-                        .findFirst()
-                        .ifPresent(lobby -> lobby.setHost(newHostName));
-
-                // Update UI elements based on host status
-                updateStartGameButtonStyle();
-
-                // Add system message to chat
-                if (chatComponentController != null) {
-                    chatComponentController.addSystemMessage(newHostName + " is now the host.");
-                }
-
-                LOGGER.info("Host transferred to " + newHostName + " for lobby " + currentLobbyId +
-                        " (Local player is host: " + isLocalPlayerNewHost + ")");
-            }
-        });
-        requestLobbyList();
     }
 
     /**
@@ -901,7 +863,8 @@ public class LobbyScreenController extends BaseController {
      * conditions.
      */
     private void updateStartGameButtonStyle() {
-        boolean isValid = isHost && currentLobbyId != null && playersInCurrentLobby.size() == maxLobbyPlayers;
+        // Any player can start the game if there are enough players
+        boolean isValid = currentLobbyId != null && playersInCurrentLobby.size() == maxLobbyPlayers;
 
         if (isValid) {
             startGameButton.setStyle("-fx-background-color: -color-accent-green;"); // Bootstrap-like green
@@ -936,35 +899,6 @@ public class LobbyScreenController extends BaseController {
             settingsDialog.close(); // Ensure dialog is closed/removed
         }
         LOGGER.info("LobbyScreenController cleanup finished.");
-    }
-
-    /**
-     * Logic to handle host transfer when the current host leaves.
-     * Selects the next player in line to be host and publishes the appropriate
-     * event.
-     */
-    private void handleHostTransferLogic() {
-        if (playersInCurrentLobby.isEmpty()) {
-            LOGGER.warning("Cannot transfer host: no players left in lobby");
-            return;
-        }
-
-        // Select new host (first player in the list)
-        String newHostName = playersInCurrentLobby.get(0);
-
-        // Update local host status if the local player is the new host
-        if (newHostName.equals(localPlayer.getName())) {
-            isHost = true;
-            updateStartGameButtonStyle();
-            LOGGER.info("Local player is now the host");
-
-            // Publish host transfer event to server
-            eventBus.publish(new HostTransferEvent(currentLobbyId, newHostName));
-
-            if (chatComponentController != null) {
-                chatComponentController.addSystemMessage("You are now the host of this lobby.");
-            }
-        }
     }
 
     /**
