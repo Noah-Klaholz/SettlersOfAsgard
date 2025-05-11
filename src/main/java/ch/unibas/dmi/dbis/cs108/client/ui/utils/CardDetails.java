@@ -120,17 +120,6 @@ public class CardDetails {
     }
 
     /**
-     * Retrieves the shop price of the card.
-     *
-     * @return The shop price of the card.
-     */
-    public int getShopPrice(Status status) {
-        double priceModifier = status.get(Status.BuffType.SHOP_PRICE);
-        double adjusted = price / Math.max(priceModifier, 0.5); // Prevent divide-by-zero or negative scaling and ensure maximum price of 200% original
-        return Math.max(0, (int) Math.round(adjusted)); // Ensure price is never negative
-    }
-
-    /**
      * Retrieves the id of the entity for the card
      *
      * @return the id
@@ -146,5 +135,18 @@ public class CardDetails {
      */
     public GameEntity getEntity() {
         return entity;
+    }
+
+    @Override
+    public String toString() {
+        return "CardDetails{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", lore='" + lore + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", price=" + price +
+                ", entity=" + entity +
+                '}';
     }
 }

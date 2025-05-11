@@ -97,8 +97,6 @@ public class GameScreenController extends BaseController {
 
     private final PlayerIdentityManager playerManager;
     private final ObservableList<String> players = FXCollections.observableArrayList();
-    // Tooltips for cards are cached to avoid recreating them on every hover event
-    private final Map<Node, Tooltip> cardTooltips = new HashMap<>();
     // Simplified colour table – replace with proper game state look‑up
     private final Map<String, Color> playerColors = new HashMap<>();
     List<Color> playerColours;
@@ -530,7 +528,6 @@ public class GameScreenController extends BaseController {
 
         updateRunesAndEnergyBar(); // Updates rune label based on gamePlayer
         updateCardImages(); // Sets up card visuals and UserData based on gamePlayer
-
         updatePurchasableStates(); // <<< CALL THE NEW CENTRALIZED METHOD HERE
         updatePlayerList();
         updateMap();
@@ -684,9 +681,6 @@ public class GameScreenController extends BaseController {
                 disableCardInteractions(card);
             }
         }
-
-        // Clear any tooltips
-        cardTooltips.clear();
 
         // Find and disable all game control buttons in the scene
         Scene scene = gameCanvas.getScene();
@@ -890,12 +884,6 @@ public class GameScreenController extends BaseController {
             gameCanvas.getParent().removeEventHandler(MouseEvent.MOUSE_PRESSED,
                     e -> handleCanvasClick(e.getX(), e.getY()));
             gameCanvas.setOnKeyPressed(null);
-        }
-        if (cardTooltips != null) {
-            for (Tooltip tooltip : cardTooltips.values()) {
-                Tooltip.uninstall(tooltip.getOwnerNode(), tooltip);
-            }
-            cardTooltips.clear();
         }
         if (timerComponent != null) {
             timerComponent.stop();
@@ -1218,27 +1206,27 @@ public class GameScreenController extends BaseController {
                 CardDetails cardDetails = getCardDetails(selectedCard.getId());
                 if (cardDetails != null && cardDetails.getEntity() != null) {
                     GameEntity entityToPlace = cardDetails.getEntity();
-                    if (!clickedTile.hasEntity()) {
+                    if (entityToPlace instanceof Artifact a) {
+                        if (a.isFieldTarget()) {
+                        eventBus.publish(new UseFieldArtifactUIEvent(col, row, cardDetails.getID()));
+                        AudioManager.getInstance().playSoundEffect(AudioTracks.Track.USE_ARTIFACT.getFileName());
+                    } else if (a.isPlayerTarget() && clickedTile.getOwner() != null) {
+                        // Target the tile owner if the artifact is player-targeted
+                        eventBus.publish(new UsePlayerArtifactUIEvent(cardDetails.getID(), clickedTile.getOwner()));
+                        AudioManager.getInstance().playSoundEffect(AudioTracks.Track.USE_ARTIFACT.getFileName());
+                    } else if (a.isPlayerTarget()) {
+                        // If tile has no owner, maybe prompt for player or disallow? For now, log.
+                        LOGGER.info("Cannot use player-target artifact on unowned tile.");
+                    } else {
+                        LOGGER.info("Artifact is neither field nor player target: " + cardDetails.getID());
+                    }
+                    } else if (!clickedTile.hasEntity()) {
                         if (entityToPlace instanceof Statue && cardDetails.getID() == selectedStatue.getID()) {
                             eventBus.publish(new PlaceStatueUIEvent(col, row, cardDetails.getID()));
                         } else if (entityToPlace.isStructure()) {
                             eventBus.publish(new PlaceStructureUIEvent(col, row, cardDetails.getID()));
                         }
                         AudioManager.getInstance().playSoundEffect(AudioTracks.Track.PLACE_STRUCTURE.getFileName());
-                    } else if (entityToPlace instanceof Artifact a) {
-                        if (a.isFieldTarget()) {
-                            eventBus.publish(new UseFieldArtifactUIEvent(col, row, cardDetails.getID()));
-                            AudioManager.getInstance().playSoundEffect(AudioTracks.Track.USE_ARTIFACT.getFileName());
-                        } else if (a.isPlayerTarget() && clickedTile.getOwner() != null) {
-                            // Target the tile owner if the artifact is player-targeted
-                            eventBus.publish(new UsePlayerArtifactUIEvent(cardDetails.getID(), clickedTile.getOwner()));
-                            AudioManager.getInstance().playSoundEffect(AudioTracks.Track.USE_ARTIFACT.getFileName());
-                        } else if (a.isPlayerTarget()) {
-                            // If tile has no owner, maybe prompt for player or disallow? For now, log.
-                            LOGGER.info("Cannot use player-target artifact on unowned tile.");
-                        } else {
-                            LOGGER.info("Artifact is neither field nor player target: " + cardDetails.getID());
-                        }
                     }
                 } else {
                     LOGGER.info("Selected card does not exist or does not represent an entity: "
@@ -1832,7 +1820,7 @@ public class GameScreenController extends BaseController {
     @FXML
     public void handleCardMouseEntered(MouseEvent event) {
         Node card = (Node) event.getSource();
-        Tooltip tooltip = cardTooltips.computeIfAbsent(card, this::createTooltipForCard);
+        Tooltip tooltip = createTooltipForCard(card); // Always create a new tooltip
         Tooltip.install(card, tooltip);
         event.consume();
     }
@@ -1843,28 +1831,8 @@ public class GameScreenController extends BaseController {
     @FXML
     public void handleCardMouseExited(MouseEvent event) {
         Node card = (Node) event.getSource();
-        Tooltip tip = cardTooltips.get(card);
-        if (tip != null)
-            Tooltip.uninstall(card, tip);
+        Tooltip.uninstall(card, null); // Uninstall any tooltip
         event.consume();
-    }
-
-    // --- Drag‑and‑drop (Refactored for Extensibility) ---
-
-    /**
-     * Helper method to extract the card type from its ID.
-     * Returns "structure", "artifact", "statue", or an empty string.
-     */
-    private String getCardType(String cardId) {
-        if (cardId == null)
-            return "";
-        if (cardId.startsWith("structure"))
-            return "structure";
-        if (cardId.startsWith("artifact"))
-            return "artifact";
-        if (cardId.startsWith("statue"))
-            return "statue";
-        return ""; // Unknown type
     }
 
     /*
@@ -1943,7 +1911,7 @@ public class GameScreenController extends BaseController {
         }
 
         if (details.getPrice() > 0) {
-            Label priceLabel = new Label("Price: " + details.getShopPrice(localPlayer.getStatus()) + " runes");
+            Label priceLabel = new Label("Price: " + details.getPrice() + " runes");
             priceLabel.getStyleClass().add("tooltip-price");
             priceLabel.setWrapText(true);
             content.getChildren().add(priceLabel);
@@ -2427,7 +2395,6 @@ public class GameScreenController extends BaseController {
                 // Update tooltip
                 Tooltip tooltip = createTooltipForCard(card);
                 Tooltip.install(pane, tooltip);
-                cardTooltips.put(pane, tooltip);
 
             } catch (Exception e) {
                 LOGGER.severe("Error updating statue card: " + e.getMessage());
@@ -2538,7 +2505,6 @@ public class GameScreenController extends BaseController {
                 // Update tooltip
                 Tooltip tooltip = createStatueTooltip(details);
                 Tooltip.install(pane, tooltip);
-                cardTooltips.put(pane, tooltip);
 
             } catch (Exception e) {
                 LOGGER.severe("Error updating statue card: " + e.getMessage());

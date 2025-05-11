@@ -8,6 +8,7 @@ import ch.unibas.dmi.dbis.cs108.shared.game.Player;
 import ch.unibas.dmi.dbis.cs108.shared.game.Status;
 import ch.unibas.dmi.dbis.cs108.shared.game.Tile;
 import javafx.geometry.Insets;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
@@ -32,8 +33,7 @@ public class TileTooltip {
         tooltip.setShowDelay(Duration.millis(500)); // Show immediately
         tooltip.setHideDelay(Duration.ZERO); // Ensure it disappears immediately when mouse leaves
 
-        Scene scene = new Scene(new VBox());
-        StylesheetLoader.loadStylesheet(scene.getRoot(), "/css/ressource-overview.css");
+        StylesheetLoader.loadStylesheet((Parent) tooltip.getStyleableParent(), "/css/ressource-overview.css");
 
 
         // Create a layout with styled sections
@@ -106,6 +106,7 @@ public class TileTooltip {
                     noEffectsLabel.getStyleClass().add("no-effects-label");
                     statusEffectsBox.getChildren().add(noEffectsLabel);
                 }
+                content.getChildren().add(statusEffectsBox);
             }
         } else {
             Label priceLabel = new Label("Price: " + tile.getPrice() + " runes");
