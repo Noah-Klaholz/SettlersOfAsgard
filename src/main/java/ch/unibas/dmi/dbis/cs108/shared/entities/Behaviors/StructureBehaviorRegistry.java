@@ -110,10 +110,12 @@ public class StructureBehaviorRegistry {
             return true;
         });
 
+        // Cut from the game for now
         registerBehavior("Tree", (structure, gameState, player) -> true);
 
         registerBehavior("ActiveTrap", (structure, gameState, player) -> {
             player.addRunes((int) structure.getParams().get(0).getValue());
+            gameState.sendNotification(player.getName(), "TRAP$" + structure.getParams().get(0).getValue());
             return true;
         });
 

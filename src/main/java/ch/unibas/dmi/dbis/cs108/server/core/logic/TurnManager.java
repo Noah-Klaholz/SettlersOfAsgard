@@ -135,8 +135,8 @@ public class TurnManager {
                     int value = entity.getResourceValue();
                     if (entity.isStructure() && !entity.isDisabled()) {
                         calcAndAddRunes(player, tile, value);
-                        // All structures except rune table have a passive effect which should be used
-                        if (!entity.getName().equals("Rune Table")) {
+                        // All structures except rune table and the active trap have a passive effect which should be used -> the latter only gets used when buying the tile
+                        if (!entity.getName().equals("Rune Table") && !entity.getName().equals("ActiveTrap")) {
                             structureBehaviorRegistry.execute(entity, gameState, player); // Do passive effects -> each structure except Rune Table has one
                         }
                     }
