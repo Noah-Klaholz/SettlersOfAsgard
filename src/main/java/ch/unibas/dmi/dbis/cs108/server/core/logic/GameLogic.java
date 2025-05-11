@@ -21,18 +21,49 @@ import java.util.logging.Logger;
  * Acts as a facade coordinating specialized components.
  */
 public class GameLogic implements GameLogicInterface {
+    /**
+     * The logger for this class.
+     */
     private static final Logger LOGGER = Logger.getLogger(GameLogic.class.getName());
 
     // Thread safety mechanism
+    /**
+     * The lock for the game logic.
+     * It uses a ReadWriteLock to allow multiple readers or one writer at a time.
+     */
     private final ReadWriteLock gameLock = new ReentrantReadWriteLock();
 
+    /**
+     * The GameEventNotifier to notify game events.
+     */
     private final GameEventNotifier notifier;
+    /**
+     * The GameState object representing the current state of the game.
+     */
     private final GameState gameState;
+    /**
+     * The CommandProcessor to process commands.
+     */
     private final CommandProcessor commandProcessor;
+    /**
+     * The TurnManager to manage the turns of the players.
+     */
     private final TurnManager turnManager;
+    /**
+     * The TileActionHandler to handle tile-related actions.
+     */
     private final TileActionHandler tileActionHandler;
+    /**
+     * The StructureActionHandler to handle structure-related actions.
+     */
     private final StructureActionHandler structureActionHandler;
+    /**
+     * The StatueActionHandler to handle statue-related actions.
+     */
     private final StatueActionHandler statueActionHandler;
+    /**
+     * The ArtifactActionHandler to handle artifact-related actions.
+     */
     private final ArtifactActionHandler artifactActionHandler;
 
     /**

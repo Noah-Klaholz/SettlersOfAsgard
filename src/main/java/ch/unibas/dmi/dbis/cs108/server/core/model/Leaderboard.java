@@ -65,6 +65,11 @@ public class Leaderboard {
         load();
     }
 
+    /**
+     * Tries to get the Git-tracked leaderboard path.
+     *
+     * @return the path to the Git-tracked leaderboard, or null if not found
+     */
     private static Path tryGetGitTrackedLeaderboardPath() {
         try {
             // First try relative to current directory (where JAR is run)
@@ -79,6 +84,11 @@ public class Leaderboard {
         }
     }
 
+    /**
+     * Creates the path to the leaderboard in the user's home directory.
+     *
+     * @return the path to the leaderboard file
+     */
     private static Path createUserHomeLeaderboardPath() {
         String userHome = System.getProperty("user.home");
         Path appDataPath = Paths.get(userHome, ".settlersOfAsgard");

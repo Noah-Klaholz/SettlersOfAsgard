@@ -153,6 +153,12 @@ public class GameState {
         return new GameStateSerializer(this).createDetailedStatusMessage();
     }
 
+    /**
+     * Sends a notification to a player
+     *
+     * @param player the name of the player
+     * @param s      the message to send
+     */
     public void sendNotification(String player, String s) {
         notifications.add(s);
         notifier.sendMessageToPlayer(player, CommunicationAPI.NetworkProtocol.Commands.INFO.getCommand() + s);
@@ -212,6 +218,11 @@ public class GameState {
         this.gameRound = gameRound;
     }
 
+    /**
+     * Gets the notifier
+     *
+     * @return the notifier
+     */
     public GameEventNotifier getNotifier() {
         return notifier;
     }

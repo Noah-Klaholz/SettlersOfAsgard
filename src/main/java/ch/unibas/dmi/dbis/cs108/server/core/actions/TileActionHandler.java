@@ -14,11 +14,31 @@ import ch.unibas.dmi.dbis.cs108.shared.utils.RandomGenerator;
 
 import java.util.concurrent.locks.ReadWriteLock;
 
+/**
+ * Handles actions related to tiles, such as buying tiles and claiming all tiles.
+ * This class is responsible for managing the game state and ensuring thread safety
+ * when performing actions on tiles.
+ */
 public class TileActionHandler {
+    /**
+     * The game state that this handler operates on.
+     */
     private final GameState gameState;
+    /**
+     * The lock used to ensure thread safety when performing actions on tiles.
+     */
     private final ReadWriteLock gameLock;
+    /**
+     * The registry for structure behaviors.
+     */
     private final StructureBehaviorRegistry structureBehaviorRegistry;
 
+    /**
+     * Constructs a TileActionHandler with the specified game state and lock.
+     *
+     * @param gameState the game state
+     * @param gameLock  the lock used for thread safety
+     */
     public TileActionHandler(GameState gameState, ReadWriteLock gameLock) {
         this.gameState = gameState;
         this.gameLock = gameLock;

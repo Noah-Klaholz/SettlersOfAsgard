@@ -13,10 +13,25 @@ import static ch.unibas.dmi.dbis.cs108.shared.protocol.CommunicationAPI.PingFilt
  * Represents a command that is sent between a client to the server
  */
 public class Command {
+    /**
+     * Logger for the Command class
+     */
     private static final Logger logger = Logger.getLogger(Command.class.getName());
+    /**
+     * The command that is sent
+     */
     private String command;
+    /**
+     * The command type
+     */
     private Commands commandType;
+    /**
+     * The arguments that are sent with the command
+     */
     private String[] args;
+    /**
+     * The player who sent the command
+     */
     private Player player;
 
     /**

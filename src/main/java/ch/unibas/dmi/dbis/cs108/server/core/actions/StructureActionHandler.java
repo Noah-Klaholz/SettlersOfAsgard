@@ -21,8 +21,17 @@ import java.util.concurrent.locks.ReadWriteLock;
  * </p>
  */
 public class StructureActionHandler {
+    /**
+     * The registry for structure behaviors.
+     */
     private final StructureBehaviorRegistry registry = new StructureBehaviorRegistry();
+    /**
+     * The current game state.
+     */
     private final GameState gameState;
+    /**
+     * The lock used for thread safety.
+     */
     private final ReadWriteLock gameLock;
 
     /**
@@ -213,14 +222,29 @@ public class StructureActionHandler {
             this.tile = tile;
         }
 
+        /**
+         * Checks if the validation was successful.
+         *
+         * @return true if valid, false otherwise
+         */
         public boolean isValid() {
             return valid;
         }
 
+        /**
+         * Gets the player associated with the validation.
+         *
+         * @return The player
+         */
         public Player getPlayer() {
             return player;
         }
 
+        /**
+         * Gets the tile associated with the validation.
+         *
+         * @return The tile
+         */
         public Tile getTile() {
             return tile;
         }

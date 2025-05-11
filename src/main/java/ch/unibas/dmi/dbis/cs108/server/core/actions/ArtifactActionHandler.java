@@ -21,8 +21,17 @@ import java.util.concurrent.locks.ReadWriteLock;
  * </p>
  */
 public class ArtifactActionHandler {
+    /**
+     * The game state that this handler operates on.
+     */
     private final GameState gameState;
+    /**
+     * The lock used for thread safety.
+     */
     private final ReadWriteLock gameLock;
+    /**
+     * The registry that contains all artifact behaviors.
+     */
     private final ArtifactBehaviorRegistry registry = new ArtifactBehaviorRegistry();
 
     /**

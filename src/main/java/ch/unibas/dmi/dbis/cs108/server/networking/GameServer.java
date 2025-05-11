@@ -108,6 +108,10 @@ public class GameServer {
         }
     }
 
+    /**
+     * Checks if all clients are still connected and sends a ping to each.
+     * If a client is not connected, it will be removed from the list of clients.
+     */
     public void checkClientConnections() {
         clients.forEach(client -> {
             if (client.isConnected()) {

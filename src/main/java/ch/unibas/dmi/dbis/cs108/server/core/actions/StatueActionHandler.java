@@ -28,8 +28,17 @@ import java.util.logging.Logger;
  * </p>
  */
 public class StatueActionHandler {
+    /**
+     * The game state that this handler operates on.
+     */
     private final GameState gameState;
+    /**
+     * The lock used for thread safety.
+     */
     private final ReadWriteLock gameLock;
+    /**
+     * The registry for statue behaviors.
+     */
     private final StatueBehaviorRegistry registry = new StatueBehaviorRegistry();
 
     /**
