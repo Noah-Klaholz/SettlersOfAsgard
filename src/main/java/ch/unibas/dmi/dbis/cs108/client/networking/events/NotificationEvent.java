@@ -30,17 +30,26 @@ public class NotificationEvent implements Event {
         Logger.getGlobal().info("NotificationEvent: " + message);
         this.message = message;
         if (message == null || message.isEmpty() || message.equals("NULL")) {
+            Logger.getGlobal().warning("NotificationEvent: Null message received" + message);
             this.artifactId = -1;
             this.x = -1;
             this.y = -1;
             this.artifactFound = false;
             return;
         }
-        String[] parts = message.split("//$");
-        this.artifactId = Integer.parseInt(parts[0]);
-        this.x = Integer.parseInt(parts[1]);
-        this.y = Integer.parseInt(parts[2]);
-        this.artifactFound = Boolean.parseBoolean(parts[3]);
+        String[] parts = message.split("[$]");
+        if (parts.length == 3) {
+            this.artifactId = Integer.parseInt(parts[0]);
+            this.x = Integer.parseInt(parts[1]);
+            this.y = Integer.parseInt(parts[2]);
+            this.artifactFound = true;
+        } else {
+            this.artifactId = -1;
+            this.x = -1;
+            this.y = -1;
+            this.artifactFound = false;
+            Logger.getGlobal().warning("NotificationEvent: Invalid message format: " + message);
+        }
     }
 
     /**

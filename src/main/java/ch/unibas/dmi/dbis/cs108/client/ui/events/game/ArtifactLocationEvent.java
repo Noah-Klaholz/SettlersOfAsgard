@@ -2,6 +2,8 @@ package ch.unibas.dmi.dbis.cs108.client.ui.events.game;
 
 import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
 
+import java.util.logging.Logger;
+
 public class ArtifactLocationEvent implements UIEvent {
     /**
      * The ID of the artifact.
@@ -32,6 +34,7 @@ public class ArtifactLocationEvent implements UIEvent {
         this.tileX = tileX;
         this.tileY = tileY;
         this.isArtifactFound = isArtifactFound;
+        Logger.getGlobal().info("ArtifactLocationEvent: " + this);
     }
 
     /**

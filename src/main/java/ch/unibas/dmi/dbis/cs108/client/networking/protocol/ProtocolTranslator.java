@@ -266,7 +266,6 @@ public class ProtocolTranslator implements CommunicationAPI {
      * @param args the args of the message.
      */
     private void processNotificationMessage(String args) {
-        Logger.getGlobal().info("Processing notification message: " + args);
         eventDispatcher.dispatchEvent(new NotificationEvent(args));
     }
 

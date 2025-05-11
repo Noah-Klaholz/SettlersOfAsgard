@@ -3375,6 +3375,7 @@ public class GameScreenController extends BaseController {
      * @param event The artifact location event
      */
     private void handleArtifactLocationEvent(ArtifactLocationEvent event) {
+        LOGGER.info("Artifact location event: " + event);
         if (event == null || gameState == null) {
             LOGGER.warning("Cannot handle ArtifactLocationEvent: event or gameState is null.");
             return;
