@@ -24,15 +24,36 @@ import java.util.logging.Logger;
  * This centralizes all statue UI logic in one place.
  */
 public class StatueUIController {
+    /**
+     * Logger for the StatueUIController class.
+     */
     private static final Logger LOGGER = Logger.getLogger(StatueUIController.class.getName());
 
+    /**
+     * UI event bus for handling events.
+     */
     private final UIEventBus eventBus;
+    /**
+     * Resource loader for loading UI resources.
+     */
     private final ResourceLoader resourceLoader;
+    /**
+     * Root pane for the UI.
+     */
     private final Pane rootPane;
 
+    /**
+     * Interaction handler for statue-related interactions.
+     */
     private StatueInteractionHandler interactionHandler;
+    /**
+     * Action feedback component for showing action results.
+     */
     private StatueActionFeedback actionFeedback;
 
+    /**
+     * Current player information.
+     */
     private Player currentPlayer;
 
     /**

@@ -8,6 +8,9 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
  */
 public class StartGameRequestEvent implements UIEvent {
 
+    /**
+     * The ID of the lobby to start the game for.
+     */
     private final String lobbyId;
 
     /**

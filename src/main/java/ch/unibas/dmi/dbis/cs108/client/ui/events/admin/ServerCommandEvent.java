@@ -10,8 +10,17 @@ import java.util.List;
  */
 public class ServerCommandEvent implements UIEvent {
 
+    /**
+     * The command type.
+     */
     private final String command;
+    /**
+     * The command arguments.
+     */
     private final List<String> arguments;
+    /**
+     * An optional descriptive message.
+     */
     private final String message;
 
     /**

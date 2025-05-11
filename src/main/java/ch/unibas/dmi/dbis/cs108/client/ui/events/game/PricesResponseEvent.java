@@ -9,6 +9,9 @@ import java.util.Map;
  */
 public class PricesResponseEvent implements UIEvent {
 
+    /**
+     * The map of item prices.
+     */
     private final Map<String, Integer> prices;
 
     /**

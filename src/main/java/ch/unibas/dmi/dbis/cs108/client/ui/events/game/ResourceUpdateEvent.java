@@ -9,7 +9,13 @@ import java.util.Map;
  */
 public class ResourceUpdateEvent implements UIEvent {
 
+    /**
+     * The name of the player whose resources were updated.
+     */
     private final String playerName;
+    /**
+     * A map of resource names to their new total amounts.
+     */
     private final Map<String, Integer> updatedResources;
 
     /**
