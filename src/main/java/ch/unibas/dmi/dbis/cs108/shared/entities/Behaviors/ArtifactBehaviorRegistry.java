@@ -70,35 +70,35 @@ public class ArtifactBehaviorRegistry {
         registerPlayerBehavior("Hel's Shadow", (artifact, gameState, player, targetPlayer) -> {
             // Remove rune efficiency from other player
             logger.info("Hel's Shadow used on " + targetPlayer.getName());
-            targetPlayer.addBuff(Status.BuffType.RUNE_GENERATION, (int) artifact.getEffect());
+            targetPlayer.addBuff(Status.BuffType.RUNE_GENERATION, artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Flame of Muspelheim", (artifact, gameState, player, targetPlayer) -> {
             // Give shop discount to player
             logger.info("Flame of Muspelheim used on " + targetPlayer.getName());
-            targetPlayer.addBuff(Status.BuffType.SHOP_PRICE, (int) artifact.getEffect());
+            targetPlayer.addBuff(Status.BuffType.SHOP_PRICE, artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Ice Splinter of Niflheim", (artifact, gameState, player, targetPlayer) -> {
             // Remove energy generation efficiency from other player
             logger.info("Ice Splinter of Niflheim used on " + targetPlayer.getName());
-            targetPlayer.addBuff(Status.BuffType.ENERGY_GENERATION, (int) artifact.getEffect());
+            targetPlayer.addBuff(Status.BuffType.ENERGY_GENERATION, artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Ashes of Surtr", (artifact, gameState, player, targetPlayer) -> {
             // Give higher prices in shop to other player
             logger.info("Ashes of Surtr used on " + targetPlayer.getName());
-            targetPlayer.addBuff(Status.BuffType.SHOP_PRICE, (int) artifact.getEffect());
+            targetPlayer.addBuff(Status.BuffType.SHOP_PRICE, artifact.getEffect());
             return true;
         });
 
         registerPlayerBehavior("Fragment of Mjölnir", (artifact, gameState, player, targetPlayer) -> {
             // Give higher chance of artifacts to player
             logger.info("Fragment of Mjölnir used on " + targetPlayer.getName());
-            targetPlayer.addBuff(Status.BuffType.ARTIFACT_CHANCE, (int) artifact.getEffect());
+            targetPlayer.addBuff(Status.BuffType.ARTIFACT_CHANCE, artifact.getEffect());
             return true;
         });
 
@@ -112,7 +112,7 @@ public class ArtifactBehaviorRegistry {
         registerPlayerBehavior("Mjölnir Charm", (artifact, gameState, player, targetPlayer) -> {
             // Increases artifact chance
             logger.info("Mjölnir Charm used on " + targetPlayer.getName());
-            targetPlayer.addBuff(Status.BuffType.ARTIFACT_CHANCE, (int) artifact.getEffect());
+            targetPlayer.addBuff(Status.BuffType.ARTIFACT_CHANCE, artifact.getEffect());
             return true;
         });
 
@@ -121,7 +121,7 @@ public class ArtifactBehaviorRegistry {
             // Give a major rune generation buff to the tile
             Tile tile = gameState.getBoardManager().getTile(x, y);
             if (tile == null) return false;
-            tile.setBuff(Status.BuffType.RUNE_GENERATION, (int) artifact.getEffect());
+            tile.setBuff(Status.BuffType.RUNE_GENERATION, artifact.getEffect());
             return true;
         });
 
@@ -129,7 +129,7 @@ public class ArtifactBehaviorRegistry {
             // Give a major energy generation buff to the tile
             Tile tile = gameState.getBoardManager().getTile(x, y);
             if (tile == null || !tile.hasEntity()) return false;
-            tile.setBuff(Status.BuffType.ENERGY_GENERATION, (int) artifact.getEffect());
+            tile.setBuff(Status.BuffType.ENERGY_GENERATION, artifact.getEffect());
             return true;
         });
 
@@ -137,7 +137,7 @@ public class ArtifactBehaviorRegistry {
             // Give a huge rune generation buff to the river-tile
             Tile tile = gameState.getBoardManager().getTile(x, y);
             if (tile == null) return false;
-            tile.setBuff(Status.BuffType.RIVER_RUNE_GENERATION, (int) artifact.getEffect());
+            tile.setBuff(Status.BuffType.RIVER_RUNE_GENERATION, artifact.getEffect());
             return true;
         });
 

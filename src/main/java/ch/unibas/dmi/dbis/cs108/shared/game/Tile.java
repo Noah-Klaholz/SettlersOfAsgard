@@ -84,7 +84,7 @@ public class Tile {
      * @param buffType the type of buff to set
      * @param effect   the effect of the buff
      */
-    public void setBuff(Status.BuffType buffType, int effect) {
+    public void setBuff(Status.BuffType buffType, double effect) {
         status.buff(buffType, effect);
     }
 
