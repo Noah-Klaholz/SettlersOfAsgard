@@ -8,9 +8,21 @@ import java.time.LocalDateTime;
  * UIEvent representing a private message (whisper) between two players.
  */
 public class WhisperChatEvent implements UIEvent {
+    /**
+     * The sender of the message (null if not specified).
+     */
     private final String sender;
+    /**
+     * The recipient of the message.
+     */
     private final String recipient;
+    /**
+     * The message content.
+     */
     private final String message;
+    /**
+     * The timestamp of when the message was sent.
+     */
     private final LocalDateTime timestamp;
 
     /**

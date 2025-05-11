@@ -18,7 +18,13 @@ public class UpgradeStatueResponseEvent implements UIEvent {
      * The ID of the statue being purchased.
      */
     private final int statueId;
+    /**
+     * Indicates whether the action was successful.
+     */
     private final boolean success;
+    /**
+     * Optional message for success/failure.
+     */
     private final String message;
 
     /**

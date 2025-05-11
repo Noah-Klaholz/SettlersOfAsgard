@@ -6,8 +6,17 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
  * UIEvent representing a request to use a field artifact in the game.
  */
 public class UseFieldArtifactUIEvent implements UIEvent {
+    /**
+     * The x-coordinate of the location where the artifact is to be used.
+     */
     private final int x;
+    /**
+     * The y-coordinate of the location where the artifact is to be used.
+     */
     private final int y;
+    /**
+     * The ID of the artifact being used.
+     */
     private final int artifactId;
 
     /**

@@ -7,8 +7,17 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
  */
 public class TileClickEvent implements UIEvent {
 
+    /**
+     * The row coordinate of the clicked tile.
+     */
     private final int row;
+    /**
+     * The column coordinate of the clicked tile.
+     */
     private final int col;
+    /**
+     * The timestamp of when the event occurred.
+     */
     private final long timestamp;
 
     /**
@@ -52,6 +61,11 @@ public class TileClickEvent implements UIEvent {
         return "TILE_CLICK";
     }
 
+    /**
+     * Returns a string representation of the TileClickEvent.
+     *
+     * @return a string representation of the event
+     */
     @Override
     public String toString() {
         return "TileClickEvent{" +

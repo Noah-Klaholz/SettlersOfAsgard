@@ -12,11 +12,24 @@ import java.util.logging.Logger;
  * Supports multiple listeners per event type.
  */
 public class UIEventBus {
+    /**
+     * Logger for UIEventBus.
+     */
     private static final Logger LOGGER = Logger.getLogger(UIEventBus.class.getName());
+    /**
+     * Singleton instance of UIEventBus.
+     */
     private static volatile UIEventBus instance;
 
+    /**
+     * Map of event types to their listeners.
+     * Uses a concurrent hash map for thread-safe access.
+     */
     private final Map<Class<?>, Set<EventListener<?>>> listeners = new ConcurrentHashMap<>();
 
+    /**
+     * Private constructor to enforce singleton pattern.
+     */
     private UIEventBus() {
     }
 

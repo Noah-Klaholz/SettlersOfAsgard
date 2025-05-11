@@ -15,12 +15,28 @@ import java.util.logging.Logger;
  * Handles registering scenes and applying the current theme to all.
  */
 public class ThemeManager {
+    /**
+     * Logger for ThemeManager.
+     */
     private static final Logger LOGGER = Logger.getLogger(ThemeManager.class.getName());
+    /**
+     * Singleton instance of ThemeManager.
+     */
     private static volatile ThemeManager instance;
 
+    /**
+     * List of registered scenes for theme management.
+     */
     private final List<Scene> registeredScenes = new ArrayList<>();
+    /**
+     * Current theme CSS resource path.
+     */
     private String currentTheme = ResourceLoader.DEFAULT_THEME_CSS;
 
+    /**
+     * Private constructor to prevent instantiation.
+     * Loads default fonts.
+     */
     private ThemeManager() {
         loadFont(ResourceLoader.CINZEL_REGULAR);
         loadFont(ResourceLoader.ROBOTO_REGULAR);
