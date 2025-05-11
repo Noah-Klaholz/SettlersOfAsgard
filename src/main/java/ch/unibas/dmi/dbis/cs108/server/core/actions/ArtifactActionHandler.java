@@ -80,7 +80,7 @@ public class ArtifactActionHandler {
             }
 
             // Check if artifact is a field artifact
-            if (!(artifact.getUseType() == Artifact.UseType.FIELD)) {
+            if (!(artifact.getUseType() == Artifact.UseType.FIELD || artifact.getUseType() == Artifact.UseType.TRAP)) {
                 System.out.println("[ArtifactActionHandler] Artifact " + artifact.getName() + " is not a FIELD artifact.");
                 return false;
             }

@@ -121,7 +121,7 @@
   },
   {
     "name": "Fenrir's Chains",
-    "usage": "Can be found and used to trap a field",
+    "usage": "Can be found and used to trap a field which is not owned by anyone.",
     "description": "Fenrir is a monstrous wolf, prophesied to bring destruction to the gods and kill Odin during Ragnarök. Thus, the gods began to fear him and asked the dwarves to forge Gleipnir, a magical chain of impossible ingredients, like the sound of a cat's footsteps. These chains are unbreakable, even for Fenrir, and kept him bound until the time of Ragnarök.",
     "useType": "Trap",
     "cardImagePath": "resources/images/cards/a_fenrirschains_card.png",
