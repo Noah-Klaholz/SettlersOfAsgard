@@ -7,6 +7,9 @@ import ch.unibas.dmi.dbis.cs108.server.core.model.Leaderboard;
  * UIEvent triggered when leaderboard data is received from the server.
  */
 public class LeaderboardResponseUIEvent implements UIEvent {
+    /**
+     * The leaderboard data received from the server.
+     */
     private final Leaderboard leaderboard;
 
     /**

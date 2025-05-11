@@ -6,6 +6,9 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
  * UIEvent representing a request to leave a lobby.
  */
 public class LeaveLobbyRequestEvent implements UIEvent {
+    /**
+     * The ID of the lobby to leave.
+     */
     private final String lobbyId;
 
     /**

@@ -8,9 +8,21 @@ import java.time.LocalDateTime;
  * UIEvent representing a chat message within a lobby.
  */
 public class LobbyChatEvent implements UIEvent {
+    /**
+     * The ID of the lobby where the message was sent.
+     */
     private final String lobbyId;
+    /**
+     * The sender of the message (null if not specified).
+     */
     private final String sender;
+    /**
+     * The message content.
+     */
     private final String message;
+    /**
+     * The timestamp of when the message was sent.
+     */
     private final LocalDateTime timestamp;
 
     /**
