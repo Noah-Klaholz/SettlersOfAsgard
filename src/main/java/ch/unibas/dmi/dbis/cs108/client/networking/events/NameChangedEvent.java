@@ -7,7 +7,13 @@ import java.time.Instant;
  * This class encapsulates the details of the name change event, including the new name.
  */
 public class NameChangedEvent implements Event {
+    /**
+     * The timestamp of when the event occurred.
+     */
     private final Instant timestamp = Instant.now();
+    /**
+     * The new name of the player.
+     */
     private final String newName;
 
     /**

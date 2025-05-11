@@ -7,7 +7,13 @@ import java.time.Instant;
  * This class encapsulates the details of a notification, including the message.
  */
 public class NotificationEvent implements Event {
+    /**
+     * The timestamp of when the event occurred.
+     */
     private final Instant timestamp = Instant.now();
+    /**
+     * The message associated with the notification event.
+     */
     private final String message;
 
     /**

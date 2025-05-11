@@ -10,17 +10,39 @@ import java.util.logging.Logger;
  * Maps scenes to collections of music tracks and handles selection logic.
  */
 public class MusicManager {
+    /**
+     * Logger for MusicManager
+     */
     private static final Logger LOGGER = Logger.getLogger(MusicManager.class.getName());
+    /**
+     * Singleton instance of MusicManager
+     */
     private static MusicManager instance;
-    
+
+
     // Map each scene type to a list of possible music tracks
+    /**
+     * Map of scene types to their corresponding music tracks.
+     * Each scene type can have multiple tracks associated with it.
+     */
     private final Map<SceneManager.SceneType, List<AudioTracks.Track>> sceneMusicMap;
+    /**
+     * Random number generator for selecting tracks randomly.
+     */
     private final Random random = new Random();
     
     // Keep track of the currently playing track for each scene
+    /**
+     * Map of scene types to the index of the currently playing track.
+     * This is used for sequential track selection.
+     */
     private final Map<SceneManager.SceneType, Integer> currentTrackIndices = new HashMap<>();
     
     // Singleton constructor
+    /**
+     * Private constructor to enforce singleton pattern.
+     * Initializes the music map with default tracks for each scene type.
+     */
     private MusicManager() {
         sceneMusicMap = new EnumMap<>(SceneManager.SceneType.class);
         initializeMusicMap();

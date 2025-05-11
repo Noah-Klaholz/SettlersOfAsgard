@@ -7,8 +7,17 @@ import java.time.Instant;
  * This class encapsulates the details of the response, including success status, new name, and message.
  */
 public class NameChangeResponseEvent implements Event {
+    /**
+     * The timestamp of when the event occurred.
+     */
     private final boolean success;
+    /**
+     * The new name assigned to the player.
+     */
     private final String newName;
+    /**
+     * The message associated with the response.
+     */
     private final String message;
 
     /**
