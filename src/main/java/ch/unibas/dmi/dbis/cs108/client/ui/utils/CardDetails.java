@@ -137,6 +137,11 @@ public class CardDetails {
         return entity;
     }
 
+    /**
+     * Retrieves the status of the card.
+     *
+     * @return The status of the card.
+     */
     @Override
     public String toString() {
         return "CardDetails{" +

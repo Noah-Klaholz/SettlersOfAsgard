@@ -8,7 +8,13 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
  */
 public class CreateLobbyResponseEvent implements UIEvent {
 
+    /**
+     * The name of the created lobby.
+     */
     private final String lobbyName;
+    /**
+     * The name of the host (creator).
+     */
     private final String hostName;
 
     /**

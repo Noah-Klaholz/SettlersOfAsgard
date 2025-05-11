@@ -6,6 +6,9 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
  * UIEvent representing a request to change the player's name from the UI.
  */
 public class ChangeNameUIEvent implements UIEvent {
+    /**
+     * The desired new name.
+     */
     private final String newName;
 
     /**

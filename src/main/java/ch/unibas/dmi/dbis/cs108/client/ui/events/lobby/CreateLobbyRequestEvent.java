@@ -6,8 +6,17 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.UIEvent;
  * UIEvent representing a request to create a new lobby.
  */
 public class CreateLobbyRequestEvent implements UIEvent {
+    /**
+     * The name of the lobby to create.
+     */
     private final String lobbyName;
+    /**
+     * The name of the host (creator).
+     */
     private final String hostName;
+    /**
+     * The maximum number of players allowed in the lobby.
+     */
     private final int maxPlayers;
 
     /**
