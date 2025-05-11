@@ -18,8 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeDemoModal = document.getElementById('close-demo-modal');
     const trailerVideo = document.getElementById('trailer-video');
     const demoVideo = document.getElementById('demo-video');
-    const trailerFallback = document.getElementById('trailer-fallback-message');
-    const demoFallback = document.getElementById('demo-fallback-message');
 
     // --- Debounce Function ---
     function debounce(func, wait = 15, immediate = false) {
@@ -45,22 +43,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Function to check H.265 support
-    function supportsH265(videoElement) {
-        // Common H.265 codecs: hvc1 (common) or hev1
-        return videoElement.canPlayType('video/mp4; codecs="hvc1"') || videoElement.canPlayType('video/mp4; codecs="hev1"');
-    }
-
     // Function to open a modal
-    function openModal(modal, video, fallbackMessage) {
-        if (!supportsH265(video)) {
-            video.style.display = 'none';
-            fallbackMessage.style.display = 'block';
-        } else {
-            video.style.display = 'block';
-            fallbackMessage.style.display = 'none';
-            video.play();
-        }
+    function openModal(modal, video) {
+        video.style.display = 'block'; // Ensure video is visible
+        video.play();
         modal.classList.add('show');
         // Close mobile nav if open
         if (navLinksContainer.classList.contains('nav-active')) {
@@ -84,10 +70,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (linkId === 'watch-trailer-link') {
                 e.preventDefault();
-                openModal(trailerModal, trailerVideo, trailerFallback);
+                openModal(trailerModal, trailerVideo);
             } else if (linkId === 'watch-demo-link') {
                 e.preventDefault();
-                openModal(demoModal, demoVideo, demoFallback);
+                openModal(demoModal, demoVideo);
             } else if (href && href.startsWith('#')) {
                 e.preventDefault();
                 const targetId = href;
@@ -115,10 +101,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Close modal listeners
     if (closeTrailerModal) {
-        closeTrailerModal.addEventListener('click', () => closeModal(trailerModal, trailerVideo));
+        closeTrailerModal.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent click from bubbling to other elements
+            closeModal(trailerModal, trailerVideo);
+        });
     }
     if (closeDemoModal) {
-        closeDemoModal.addEventListener('click', () => closeModal(demoModal, demoVideo));
+        closeDemoModal.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent click from bubbling to other elements
+            closeModal(demoModal, demoVideo);
+        });
     }
 
     // Close modal when clicking outside

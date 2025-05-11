@@ -160,12 +160,9 @@ java -jar SettlersOfAsgard.jar client &lt;serverip&gt;:&lt;serverport&gt; [usern
         <div class="modal-content">
             <span class="close-button" id="close-trailer-modal">&times;</span>
             <video id="trailer-video" width="100%" controls>
-                <source src="videos/trailer.mp4" type="video/mp4; codecs=hvc1">
-                <!-- Fallback for browsers that might not understand codecs in source type -->
                 <source src="videos/trailer.mp4" type="video/mp4">
             </video>
-            <p class="fallback-message" id="trailer-fallback-message" style="display:none;">Your browser does not
-                support H.265 video playback. Please try a different browser or check for updates.</p>
+            <!-- Fallback message removed as H.264 is widely supported -->
         </div>
     </div>
 
@@ -173,11 +170,9 @@ java -jar SettlersOfAsgard.jar client &lt;serverip&gt;:&lt;serverport&gt; [usern
         <div class="modal-content">
             <span class="close-button" id="close-demo-modal">&times;</span>
             <video id="demo-video" width="100%" controls>
-                <source src="videos/demo.mp4" type="video/mp4; codecs=hvc1">
                 <source src="videos/demo.mp4" type="video/mp4">
             </video>
-            <p class="fallback-message" id="demo-fallback-message" style="display:none;">Your browser does not support
-                H.265 video playback. Please try a different browser or check for updates.</p>
+            <!-- Fallback message removed as H.264 is widely supported -->
         </div>
     </div>
 

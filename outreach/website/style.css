@@ -680,6 +680,8 @@ footer .artist-credit {
     font-size: 28px;
     font-weight: bold;
     transition: color 0.3s ease;
+    z-index: 10;
+    /* Ensure the close button is stacked on top */
 }
 
 .close-button:hover,
