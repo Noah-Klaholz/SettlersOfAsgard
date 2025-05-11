@@ -187,6 +187,9 @@ public abstract class PurchasableEntity extends GameEntity {
         this.disabled = disabled;
     }
 
+    /**
+     * clone method to create a copy of this entity.
+     */
     @Override
     public abstract PurchasableEntity clone();
 

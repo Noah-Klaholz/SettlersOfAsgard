@@ -5,6 +5,10 @@ package ch.unibas.dmi.dbis.cs108;
  * server and client.
  */
 public class SETTINGS {
+    /**
+     * The {@code Config} enum defines various configuration settings for the game.
+     * Each setting has a default value that can be accessed using the {@code getValue()} method.
+     */
     public enum Config {
         SHOW_SPLASH_SCREEN(0), // 1 is true, 0 is false
         SPLASH_SCREEN_DURATION(3), // Seconds
