@@ -31,7 +31,7 @@ public class ArtifactLocationEvent implements UIEvent {
         this.artifactId = artifactId;
         this.tileX = tileX;
         this.tileY = tileY;
-        this.isArtifactFound = isArtifactFound
+        this.isArtifactFound = isArtifactFound;
     }
 
     /**
