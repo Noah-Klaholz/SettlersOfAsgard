@@ -51,7 +51,7 @@
   },
   {
     "name": "Fenrir's Bones",
-    "usage": "Increases efficiency of rune farming on a tile",
+    "usage": "Increases efficiency of energy farming on a tile that has an entity.",
     "description": "Fenrir is a monstrous wolf in Norse mythology, the son of Loki and the giantess Angerboda. He is destined to kill Odin during Ragnarök, the end of the world. Fenrir's bones are said to be imbued with his ferocity and strength.",
     "useType": "Field",
     "cardImagePath": "resources/images/cards/a_fenrirsbones_card.png",

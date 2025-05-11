@@ -26,6 +26,8 @@
                 <li><a href="#world">World</a></li>
                 <li><a href="#resources">Download</a></li>
                 <li><a href="#documentation">Docs</a></li>
+                <li><a href="#" id="watch-trailer-link">Watch Trailer</a></li>
+                <li><a href="#" id="watch-demo-link">Watch Demo</a></li>
             </ul>
             <!-- Add Burger Menu Button -->
             <button class="burger-menu" id="burger-menu" aria-label="Toggle navigation menu">
@@ -121,7 +123,8 @@
             <h2 data-aos="zoom-in-up">Download & Resources</h2>
 
             <div class="download-section" data-aos="zoom-in-up" data-aos-delay="100">
-                <a href="../../build/libs/SettlersOfAsgard.jar" class="download-button" download="SettlersOfAsgard.jar">Download Game (JAR)</a>
+                <a href="../../build/libs/SettlersOfAsgard.jar" class="download-button"
+                    download="SettlersOfAsgard.jar">Download Game (JAR)</a>
             </div>
 
             <div class="run-instructions" data-aos="fade-up" data-aos-delay="200">
@@ -137,12 +140,12 @@ java -jar SettlersOfAsgard.jar client &lt;serverip&gt;:&lt;serverport&gt; [usern
                     desired values.</p>
             </div>
 
-            <h3 id = "documentation" class="docs-header" data-aos="fade-up" data-aos-delay="300">Documentation</h3>
+            <h3 id="documentation" class="docs-header" data-aos="fade-up" data-aos-delay="300">Documentation</h3>
             <ul data-aos="fade-up" data-aos-delay="400">
                 <li><a href="../Documents/GameManual.pdf" target="_blank" rel="noopener noreferrer">Game
                         Manual</a></li>
-                <li><a href="../Documents/GameDesign.pdf" target="_blank"
-                        rel="noopener noreferrer">Game Design Details</a></li>
+                <li><a href="../Documents/GameDesign.pdf" target="_blank" rel="noopener noreferrer">Game Design
+                        Details</a></li>
             </ul>
         </section>
     </main>
@@ -151,6 +154,32 @@ java -jar SettlersOfAsgard.jar client &lt;serverip&gt;:&lt;serverport&gt; [usern
         <p>&copy; 2024 Gruppe 3 - University Project. All rights reserved.</p>
         <p class="artist-credit">Original artwork and card designs by Janura Rose (@janura_r).</p>
     </footer>
+
+    <!-- Video Modals -->
+    <div id="trailer-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="close-trailer-modal">&times;</span>
+            <video id="trailer-video" width="100%" controls>
+                <source src="videos/trailer.mp4" type="video/mp4; codecs=hvc1">
+                <!-- Fallback for browsers that might not understand codecs in source type -->
+                <source src="videos/trailer.mp4" type="video/mp4">
+            </video>
+            <p class="fallback-message" id="trailer-fallback-message" style="display:none;">Your browser does not
+                support H.265 video playback. Please try a different browser or check for updates.</p>
+        </div>
+    </div>
+
+    <div id="demo-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="close-demo-modal">&times;</span>
+            <video id="demo-video" width="100%" controls>
+                <source src="videos/demo.mp4" type="video/mp4; codecs=hvc1">
+                <source src="videos/demo.mp4" type="video/mp4">
+            </video>
+            <p class="fallback-message" id="demo-fallback-message" style="display:none;">Your browser does not support
+                H.265 video playback. Please try a different browser or check for updates.</p>
+        </div>
+    </div>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="script.js"></script>
