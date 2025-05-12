@@ -26,5 +26,7 @@ laptop: 80
 2: 56
 vincent4: 50
 vincen2: 50
+neu1: 50
+neu2: 50
 vincen1: 40
 4: 16

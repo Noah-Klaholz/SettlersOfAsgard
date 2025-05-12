@@ -3650,7 +3650,7 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Handles the displaying of Buffs & Debuffs
+     * Handles the displaying of Buffs and Debuffs
      *
      * @param debuffEvent the debuffEvent containing the corresponding message.
      */

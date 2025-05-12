@@ -23,6 +23,8 @@ public class DebuffEvent implements UIEvent {
 
     /**
      * Getter for the message
+     *
+     * @return the message
      */
     public String getMessage() {
         return message;
