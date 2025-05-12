@@ -14,7 +14,7 @@ public class SETTINGS {
          * Configuration settings for the game.
          * Each setting has a default value that can be accessed using the getValue() method.
          */
-        SHOW_SPLASH_SCREEN(0), // 1 is true, 0 is false
+        SHOW_SPLASH_SCREEN(1), // 1 is true, 0 is false
         /*
          * The duration of the splash screen in seconds.
          * This is used to display a splash screen before the game starts.

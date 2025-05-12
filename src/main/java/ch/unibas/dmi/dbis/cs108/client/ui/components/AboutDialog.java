@@ -13,6 +13,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
+import javafx.scene.control.Hyperlink;
+import java.awt.Desktop;
+import java.net.URI;
+
 
 import java.util.logging.Logger;
 
@@ -121,6 +125,17 @@ public class AboutDialog extends UIComponent<StackPane> {
             e.consume();
         });
 
+        Hyperlink websiteLink = new Hyperlink("Visit our Website!");
+        websiteLink.getStyleClass().add("dialog-link");
+        websiteLink.setOnAction(e -> {
+            try {
+                Desktop.getDesktop().browse(new URI("https://settlersofasgard.netlify.app"));
+            } catch (Exception ex) {
+                LOGGER.warning("Failed to open link: " + ex.getMessage());
+            }
+        });
+
+
         content.getChildren().addAll(
                 title,
                 version,
@@ -128,6 +143,8 @@ public class AboutDialog extends UIComponent<StackPane> {
                 description,
                 new DialogSeparator(),
                 team,
+                new DialogSeparator(),
+                websiteLink,
                 copyright,
                 closeButton);
         return content;

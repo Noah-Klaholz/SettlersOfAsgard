@@ -2,3 +2,11 @@
 
 /* All styles are now handled by dialog-common.css */
 /* Add specific overrides below ONLY if absolutely necessary */
+
+
+.dialog-link {
+    -fx-text-fill: #961ae8;
+    -fx-underline: true;
+    -fx-font-size: 14px;
+}
+
