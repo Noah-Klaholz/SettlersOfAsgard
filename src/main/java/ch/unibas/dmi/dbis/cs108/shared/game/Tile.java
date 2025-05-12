@@ -57,6 +57,8 @@ public class Tile {
 
     /**
      * getter for x coordinate
+     *
+     * @return x coordinate
      */
     public int getX() {
         return x;
@@ -64,6 +66,8 @@ public class Tile {
 
     /**
      * getter for y coordinate
+     *
+     * @return y coordinate
      */
     public int getY() {
         return y;
@@ -332,6 +336,8 @@ public class Tile {
          * Constructor for TileBuilder.
          *
          * @param x The x-coordinate of the tile
+         *
+         *@return this TileBuilder instance
          */
         public TileBuilder setX(int x) {
             this.x = x;
@@ -342,6 +348,8 @@ public class Tile {
          * setter for y
          *
          * @param y The y-coordinate of the tile
+         *
+         *          @return this TileBuilder instance
          */
         public TileBuilder setY(int y) {
             this.y = y;
@@ -352,6 +360,8 @@ public class Tile {
          * setter for owner
          *
          * @param owner The owner of the tile
+         *
+         *              @return this TileBuilder instance
          */
         public TileBuilder setOwner(String owner) {
             this.owner = owner;
@@ -362,6 +372,8 @@ public class Tile {
          * setter for price
          *
          * @param price The price of the tile
+         *
+         *              @return this TileBuilder instance
          */
         public TileBuilder setPrice(int price) {
             this.price = price;
@@ -372,6 +384,8 @@ public class Tile {
          * setter for entity
          *
          * @param entity The entity on the tile
+         *
+         *               @return this TileBuilder instance
          */
         public TileBuilder setEntity(GameEntity entity) {
             this.entity = entity;
@@ -382,6 +396,8 @@ public class Tile {
          * setter for artefact
          *
          * @param artefact The artefact on the tile
+         *
+         *                 @return this TileBuilder instance
          */
         public TileBuilder setArtifact(Artifact artefact) {
             this.artefact = artefact;
@@ -392,6 +408,8 @@ public class Tile {
          * setter for world
          *
          * @param world The world of the tile
+         *
+         *              @return this TileBuilder instance
          */
         public TileBuilder setWorld(String world) {
             this.world = world;
@@ -402,6 +420,8 @@ public class Tile {
          * setter for purchased
          *
          * @param purchased true if the tile is purchased, false otherwise
+         *
+         *                  @return this TileBuilder instance
          */
         public TileBuilder setPurchased(boolean purchased) {
             this.purchased = purchased;
@@ -412,6 +432,8 @@ public class Tile {
          * setter for resourceValue
          *
          * @param resourceValue The resource value of the tile
+         *
+         *                      @return this TileBuilder instance
          */
         public TileBuilder setResourceValue(int resourceValue) {
             this.resourceValue = resourceValue;
@@ -422,6 +444,8 @@ public class Tile {
          * setter for hasRiver
          *
          * @param hasRiver true if the tile has a river, false otherwise
+         *
+         *                 @return this TileBuilder instance
          */
         public TileBuilder setHasRiver(boolean hasRiver) {
             this.hasRiver = hasRiver;
@@ -432,6 +456,8 @@ public class Tile {
          * setter for tileID
          *
          * @param tileID The ID of the tile
+         *
+         *               @return this TileBuilder instance
          */
         public TileBuilder setTileID(int tileID) {
             this.tileID = tileID;

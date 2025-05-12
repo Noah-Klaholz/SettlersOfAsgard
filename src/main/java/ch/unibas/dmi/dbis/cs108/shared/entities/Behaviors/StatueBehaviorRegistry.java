@@ -547,9 +547,13 @@ public class StatueBehaviorRegistry {
      * Effect types for statues based on their level.
      */
     public enum StatueEffectType {
+        /** No effect */
         NONE,      // Level 1: no effect
+        /** Deal effect */
         DEAL,      // Level 2: deal effect
+        /** Blessing effect */
         BLESSING,  // Level 3: positive effect (high probability)
+        /** Curse effect */
         CURSE      // Level 3: negative effect (low probability)
     }
 

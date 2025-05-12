@@ -47,6 +47,17 @@ public class Statue extends PurchasableEntity {
      * @param id          The unique identifier for this statue
      * @param name        The name of this statue
      * @param description The description of this statue
+     *   @param usage       The usage of this statue
+     *    @param price       The price of this statue
+     *     @param ressourceValue The resource value of this statue
+     *    @param upgradePrice The cost to upgrade this statue
+     *   @param world       The world in which this statue can be placed
+     *    @param cardImagePath The path to the card image for this statue
+     *     @param mapImagePath  The path to the map image for this statue
+     *   @param curse       The curse of this statue
+     *  @param deal        The deal this statue can make
+     *   @param blessing    The blessing of this statue
+     *
      */
     public Statue(int id, String name, int price, int ressourceValue, int upgradePrice, String description, String usage, String world, String cardImagePath, String mapImagePath, String curse, String deal, String blessing) {
         super(id, name, description, usage, price, ressourceValue, cardImagePath, mapImagePath);
@@ -222,9 +233,26 @@ public class Statue extends PurchasableEntity {
      * Defines the types of effects a statue can have based on its level.
      */
     public enum StatueEffectType {
+        /**
+         * Represents the type of effect a statue can have.
+         * The level determines the type of effect:
+         * - Level 1: no effect
+         * - Level 2: deal effect
+         * - Level 3: positive effect (high probability)
+         * - Level 3: negative effect (low probability)
+         */
         NONE,      // Level 1: no effect
+        /**
+         * Level 2: deal effect
+         */
         DEAL,      // Level 2: deal effect
+        /**
+         * Level 3: positive effect (high probability)
+         */
         BLESSING,  // Level 3: positive effect (high probability)
+        /**
+         * Level 3: negative effect (low probability)
+         */
         CURSE      // Level 3: negative effect (low probability)
     }
 }

@@ -143,7 +143,9 @@ public abstract class TileInteractionPopup extends Popup {
     }
 
     /**
-     * Shows this popup next to the provided node
+     * Shows this popup next to the provided node.
+     *
+     * @param source The node to show the popup near.
      */
     public void showNear(Node source) {
         if (!this.isShowing()) {

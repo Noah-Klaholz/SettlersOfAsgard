@@ -64,5 +64,18 @@ public class StatueActivatedEvent implements GameEvent {
     /**
      * Enum representing the possible outcomes of statue activation.
      */
-    public enum Outcome {DEAL, BLESSING, CURSE}
+    public enum Outcome {
+
+        /**
+         * The outcome is a deal.
+         */
+        DEAL,
+        /**
+         * The outcome is a blessing.
+         */
+        BLESSING,
+        /**
+         * The outcome is a curse.
+         */
+        CURSE}
 }

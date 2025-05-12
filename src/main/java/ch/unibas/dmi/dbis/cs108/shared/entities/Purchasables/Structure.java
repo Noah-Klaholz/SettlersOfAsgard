@@ -21,6 +21,11 @@ public class Structure extends PurchasableEntity {
      * @param name        The name of this structure
      * @param description The description of this structure
      * @param price       The purchase price of this structure
+     *  @param resourceValue The resource value of this structure
+     *    @param cardImagePath The path to the image used for this structure on the card
+     *     @param mapImagePath  The path to the image used for this structure on the map
+     *     @param usage       The usage of this structure
+     *
      */
     public Structure(int id, String name, String description, String usage, int price, int resourceValue, String cardImagePath, String mapImagePath) {
         super(id, name, description, usage, price, resourceValue, cardImagePath, mapImagePath);

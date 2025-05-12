@@ -14,7 +14,7 @@ public class StartApps {
      * The server is started on port 9000 and the client connects to it.
      * Can differ between operating systems (macOS, Windows, Linux).
      *
-     * @param args
+     * @param args Command line arguments (not used).
      */
     public static void main(String[] args) {
         String jarPath;
