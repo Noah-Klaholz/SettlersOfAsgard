@@ -293,6 +293,8 @@ public class StatueDetailsWrapper {
     /**
      * Gets the underlying statue entity.
      * Only use this when absolutely necessary to interact with game logic.
+     *
+     * @return the statue
      */
     public Statue getStatue() {
         return statue;

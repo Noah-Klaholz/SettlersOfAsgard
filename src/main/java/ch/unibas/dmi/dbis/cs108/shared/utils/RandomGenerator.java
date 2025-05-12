@@ -18,7 +18,7 @@ public class RandomGenerator {
      * Ex.: if percentage is 30.0, returns true ~30% of the time.
      *
      * @param percentage the percentage chance of returning true
-     *   @return true if the random chance is met, false otherwise
+     * @return true if the random chance is met, false otherwise
      */
     public static boolean chance(int percentage) {
         return RANDOM.nextDouble() * 100.0 < percentage;
@@ -28,8 +28,8 @@ public class RandomGenerator {
      * Returns a random integer between 'min' and 'max' (inclusive).
      *
      * @param min the minimum value (inclusive)
-     *  @param max the maximum value (inclusive)
-     *    @return a random integer between min and max
+     * @param max the maximum value (inclusive)
+     * @return a random integer between min and max
      */
     public static int randomIntInRange(int min, int max) {
         if (min > max) {
@@ -42,10 +42,8 @@ public class RandomGenerator {
      * Returns a random double between 'min' and 'max' (inclusive).
      *
      * @param min the minimum value (inclusive)
-     *          @param max the maximum value (inclusive)
-     *
-     *
-     *            @return a random double between min and max
+     * @param max the maximum value (inclusive)
+     * @return a random double between min and max
      *
      */
     public static double randomDoubleInRange(double min, double max) {
@@ -59,7 +57,7 @@ public class RandomGenerator {
      * Returns a random element from an array or null if array is empty.
      *
      * @param array the array to pick a random element from
-     *
+     * @param <T> the generic typ
      * @return a random element from the array or null if the array is empty
      */
     public static <T> T pickRandomElement(T[] array) {
@@ -73,8 +71,10 @@ public class RandomGenerator {
     /**
      * Returns a random element from a list or null if list is empty.
      *
+     *
      * @param array the list to pick a random element from
-     *       @return a random element from the list or null if the list is empty
+     * @param <T> the generic typ
+     * @return a random element from the list or null if the list is empty
      */
     public static <T> T pickRandomElement(List<T> array) {
         if (array == null || array.isEmpty()) {

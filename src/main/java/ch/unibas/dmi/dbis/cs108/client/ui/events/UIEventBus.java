@@ -101,6 +101,11 @@ public class UIEventBus {
      * @param <T> event type
      */
     public interface EventListener<T> {
+        /**
+         * On event
+         *
+         * @param event the event
+         */
         void onEvent(T event);
     }
 }
