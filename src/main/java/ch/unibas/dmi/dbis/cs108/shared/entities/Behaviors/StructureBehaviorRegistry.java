@@ -153,6 +153,14 @@ public class StructureBehaviorRegistry {
      */
     @FunctionalInterface
     public interface StructureBehavior {
+        /**
+         * Execute the behavior
+         *
+         * @param structure the structure
+         * @param gameState the gameState
+         * @param player the player
+         * @return true if the action was successful, false otherwise
+         */
         boolean execute(Structure structure, GameState gameState, Player player);
     }
 }

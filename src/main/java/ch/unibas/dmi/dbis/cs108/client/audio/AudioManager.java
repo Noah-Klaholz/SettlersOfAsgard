@@ -28,7 +28,9 @@ import java.util.logging.Logger;
  * Singleton class to manage audio playback in the application.
  */
 public class AudioManager {
+    /** Logger to log logging */
     private static final Logger LOGGER = Logger.getLogger(AudioManager.class.getName());
+    /** Sounds directory */
     private static final String SOUNDS_DIRECTORY = "/sounds";
 
     /** Singleton instance of AudioManager */

@@ -20,72 +20,72 @@ public class ResourceLoader {
      * FXML Paths
      */
     public static final String SPLASH_SCREEN_FXML = "/fxml/splash_screen.fxml";
-    /*
-    * path to the main menu fxml file
+    /**
+     * path to the main menu fxml file
      */
     public static final String MAIN_MENU_FXML = "/fxml/main_menu.fxml";
-    /*
-    * path to the settings dialog fxml file
+    /**
+     * path to the settings dialog fxml file
      */
     public static final String LOBBY_SCREEN_FXML = "/fxml/lobby_screen.fxml";
-    /*
-    * path to the settings dialog fxml file
+    /**
+     * path to the settings dialog fxml file
      */
     public static final String GAME_SCREEN_FXML = "/fxml/game_screen.fxml";
-    /*
-    * path to the settings dialog fxml file
+    /**
+     * path to the settings dialog fxml file
      */
     public static final String MAP_IMAGE = "/images/map.png";
-    /*
-    * path to the settings dialog fxml file
+    /**
+     * path to the settings dialog fxml file
      */
     public static final String GAME_LOGO = "/images/game-logo.png";
-    /*
-    * path to the settings dialog fxml file
+    /**
+     * path to the settings dialog fxml file
      */
     // CSS Paths
-    /*
-    * path to the main menu css file
+    /**
+     * path to the main menu css file
      */
     public static final String VARIABLES_CSS = "/css/variables.css";
-    /*
-    * path to the main menu css file
+    /**
+     * path to the main menu css file
      */
     public static final String COMMON_CSS = "/css/common.css";
-    /*
-    * path to the main menu css file
+    /**
+     * path to the main menu css file
      */
     public static final String DEFAULT_THEME_CSS = "/css/main-menu.css";
-    /*
-    * path to the main menu css file
+    /**
+     * path to the main menu css file
      */
     public static final String DARK_THEME_CSS = "/css/dark-theme.css";
-    /*
-    * path to the main menu css file
+    /**
+     * path to the main menu css file
      */
     public static final String CINZEL_REGULAR = "/fonts/Cinzel/static/Cinzel-Regular.ttf";
-    /*
-    * path to the main menu css file
+    /**
+     * path to the main menu css file
      */
     public static final String ROBOTO_REGULAR = "/fonts/Roboto/static/Roboto-Regular.ttf";
-    /*
-    * path to the main menu css file
+    /**
+     * path to the main menu css file
      */
     public static final String DIALOG_COMMON_CSS = "/css/dialog-common.css";
-    /*
-    * path to the main menu css file
+    /**
+     * path to the main menu css file
      */
     public static final String MAIN_MENU_CSS = "/css/main-menu.css";
-    /*
-    * path to the main menu css file
+    /**
+     * path to the main menu css file
      */
     public static final String LOBBY_SCREEN_CSS = "/css/lobby-screen.css";
-    /*
-    * path to the main menu css file
+    /**
+     * path to the main menu css file
      */
     public static final String GAME_SCREEN_CSS = "/css/game-screen.css";
-    /*
-    * path to the main menu css file
+    /**
+     * path to the main menu css file
      */
     public static final String CHAT_COMPONENT_CSS = "/css/chat-component.css";
 
@@ -93,36 +93,38 @@ public class ResourceLoader {
      * path to the main menu css file
      */
     public static final String SETTINGS_DIALOG_CSS = "/css/settings-dialog.css";
-    /*
-    * path to the main menu css file
+    /**
+     * path to the main menu css file
      */
     public static final String ABOUT_DIALOG_CSS = "/css/about-dialog.css";
-    /*
-    * path to the main menu css file
+    /**
+     * path to the main menu css file
      */
     public static final String DESCRIPTION_DIALOG_CSS = "/css/description-dialog.css";
-    /*
-    * path to the main menu css file
+    /**
+     * path to the main menu css file
      */
     private static final Logger LOGGER = Logger.getLogger(ResourceLoader.class.getName());
-    /*
-        * Cache for images, music, and sound effects.
+    /**
+     * Cache for images, music, and sound effects.
      */
     private final Map<String, Image> entityImageCache = new ConcurrentHashMap<>();
-    /*
-        * Cache for images, music, and sound effects.
+    /**
+     * Cache for images, music, and sound effects.
      */
     private final Map<Integer, Image> cardImageCache = new ConcurrentHashMap<>();
-    /*
-        * Cache for images, music, and sound effects.
+    /**
+     * Cache for images, music, and sound effects.
      */
     private final Map<String, Media> musicCache = new ConcurrentHashMap<>();
-    /*
-        * Cache for images, music, and sound effects.
+    /**
+     * Cache for images, music, and sound effects.
      */
     private final Map<String, AudioClip> soundEffectCache = new ConcurrentHashMap<>();
 
-    // Private constructor to prevent instantiation
+    /**
+     * Private constructor to prevent instantiation
+     */
     public ResourceLoader() {}
 
     /**

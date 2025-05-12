@@ -156,6 +156,11 @@ public class Tile {
         return price;
     }
 
+    /**
+     * Sets the price.
+     *
+     * @param price the price to set
+     */
     public void setPrice(int price) {
         this.price = price;
     }
@@ -187,6 +192,11 @@ public class Tile {
         return world;
     }
 
+    /**
+     * Sets the world.
+     *
+     * @param s the name of the world to set.
+     */
     public void setWorld(String s) {
         this.world = s;
     }
