@@ -295,7 +295,6 @@ public class Lobby implements GameEventNotifier {
             }
             gameLogic.getTurnManager().nextTurn();
             if (gameLogic.getGameState().getGameRound() > 4) {
-                gameLogic.getTurnManager().giveFinalScores();
                 endGame();
                 return;
             }
@@ -346,6 +345,7 @@ public class Lobby implements GameEventNotifier {
     public void endGame() {
         if (status == LobbyStatus.IN_GAME) {
             status = LobbyStatus.GAME_ENDED;
+            gameLogic.getTurnManager().giveFinalScores();
             broadcastMessage(CommunicationAPI.NetworkProtocol.Commands.ENDGAME.getCommand() + "$" + gameLogic.createFinalScoreMessage());
             gameLogic.getGameState().getPlayers().forEach(player -> {
                 leaderboard.update(player.getName(), player.getRunes());
