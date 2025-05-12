@@ -295,6 +295,7 @@ public class Lobby implements GameEventNotifier {
             }
             gameLogic.getTurnManager().nextTurn();
             if (gameLogic.getGameState().getGameRound() > 4) {
+                gameLogic.getTurnManager().giveFinalScores();
                 endGame();
                 return;
             }

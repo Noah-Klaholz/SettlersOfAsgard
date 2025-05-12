@@ -160,9 +160,18 @@ public class GameState {
      * @param s      the message to send
      */
     public void sendNotification(String player, String s) {
-        LOGGER.info("Sending notification to " + player + ": " + s);
         notifications.add(s);
         notifier.sendMessageToPlayer(player, CommunicationAPI.NetworkProtocol.Commands.INFO.getCommand() + "$" + s);
+    }
+
+    /**
+     * Sends a debuff notification to all players in the lobby
+     *
+     * @param message the debuff message to send
+     */
+    public void sendDebuffNotification(String message) {
+        notifications.add(message);
+        notifier.broadcastMessage(CommunicationAPI.NetworkProtocol.Commands.INFO.getCommand() + "$DEBUFF$" + message);
     }
 
     /**

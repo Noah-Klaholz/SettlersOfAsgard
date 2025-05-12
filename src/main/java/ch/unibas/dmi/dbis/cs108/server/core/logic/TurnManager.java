@@ -178,4 +178,13 @@ public class TurnManager {
         return gameState.getPlayerRound() == gameState.getPlayers().size() - 1;
     }
 
+    /**
+     * Gives each player their final scores.
+     * This method makes use of the already existing distributeResources method and simulates a new turn for each of the players.
+     */
+    public void giveFinalScores() {
+        for (Player player : gameState.getPlayers()) {
+            distributeResources(player);
+        }
+    }
 }
