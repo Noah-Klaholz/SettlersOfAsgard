@@ -267,7 +267,7 @@ public class ProtocolTranslator implements CommunicationAPI {
      */
     private void processNotificationMessage(String args) {
         if (args.startsWith("DEBUFF$")) {
-            eventDispatcher.dispatchEvent(new DebuffEvent(args.replace("DEBUFF", "")));
+            eventDispatcher.dispatchEvent(new DebuffEvent(args.replace("DEBUFF$", "")));
         } else {
             eventDispatcher.dispatchEvent(new NotificationEvent(args));
         }
