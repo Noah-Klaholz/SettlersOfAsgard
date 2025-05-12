@@ -23,6 +23,10 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
+/**
+ * Popup for selecting a statue.
+ * This class provides a UI component that allows players to select a statue from a list.
+ */
 public class StatueSelectionPopup extends Popup {
     /**
      * Logger for the StatueSelectionPopup class.

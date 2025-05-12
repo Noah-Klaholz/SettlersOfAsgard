@@ -47,9 +47,28 @@ public class StatueParameterRequirement {
      * Defines the types of parameters that can be used in statue effects.
      */
     public enum StatueParameterType {
+        /*
+         * The order of these types is important, as it is used to determine the
+         * order in which parameters are passed to the statue effect.
+         */
         PLAYER,    // Target player
+        /*
+         * The following types are used for the statue effect's target.
+         * They are used to determine the type of target that the statue effect
+         * can be applied to.
+         */
         TILE,      // x,y coordinates
+        /*
+         * The following types are used for the statue effect's target.
+         * They are used to determine the type of target that the statue effect
+         * can be applied to.
+         */
         STRUCTURE, // Structure ID
+        /*
+         * The following types are used for the statue effect's target.
+         * They are used to determine the type of target that the statue effect
+         * can be applied to.
+         */
         ARTIFACT   // Artifact ID
     }
 
