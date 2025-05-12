@@ -132,11 +132,29 @@ public class Status {
      * Enum representing different types of buffs.
      */
     public enum BuffType {
+        /**
+         * Buff types for the game.
+         */
         RUNE_GENERATION,
+        /**
+         * Buff types for the game.
+         */
         ENERGY_GENERATION,
+        /**
+         * Buff types for the game.
+         */
         RIVER_RUNE_GENERATION,
+        /**
+         * Buff types for the game.
+         */
         SHOP_PRICE,
+        /**
+         * Buff types for the game.
+         */
         ARTIFACT_CHANCE,
+        /**
+         * Buff types for the game.
+         */
         DEBUFFABLE
         // Add more buff types as needed
     }
