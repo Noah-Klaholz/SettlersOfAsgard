@@ -520,6 +520,7 @@ public class GameScreenController extends BaseController {
         eventBus.subscribe(GameSyncEvent.class, this::handleGameSync);
         eventBus.subscribe(ArtifactLocationEvent.class, this::handleArtifactLocationEvent);
         eventBus.subscribe(TrapLocationEvent.class, this::handleTrapLocationEvent);
+        eventBus.subscribe(DebuffEvent.class, this::handleBuffOrDebuff);
     }
 
     /**
@@ -3423,7 +3424,7 @@ public class GameScreenController extends BaseController {
     }
 
     // ------------------------------------------------------
-    // Artifact location event handling
+    // Notification Event handling
     // ------------------------------------------------------
     /**
      * Handles the artifact location event.
@@ -3646,5 +3647,16 @@ public class GameScreenController extends BaseController {
         gc.setStroke(oldStroke);
         gc.setLineWidth(oldLineWidth);
         gc.setFont(oldFont);
+    }
+
+    /**
+     * Handles the displaying of Buffs & Debuffs
+     *
+     * @param debuffEvent the debuffEvent containing the corresponding message.
+     */
+    public void handleBuffOrDebuff(DebuffEvent debuffEvent) {
+        if (chatComponentController != null) {
+            chatComponentController.addSystemMessage(debuffEvent.getMessage());
+        }
     }
 }
