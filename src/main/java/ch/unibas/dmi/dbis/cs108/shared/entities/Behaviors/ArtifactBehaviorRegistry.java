@@ -62,57 +62,50 @@ public class ArtifactBehaviorRegistry {
         // Player-targeting artifacts
         registerPlayerBehavior("Tear of Yggdrasil", (artifact, gameState, player, targetPlayer) -> {
             // Remove energy from other player
-            logger.info("Tear of Yggdrasil used on " + targetPlayer.getName());
             targetPlayer.addEnergy((int) artifact.getEffect());
+            gameState.sendDebuffNotification("The Tear of Yggdrasil used by " + player.getName() + " has consumed " + targetPlayer.getName() + "'s energy.");
             return true;
         });
 
         registerPlayerBehavior("Hel's Shadow", (artifact, gameState, player, targetPlayer) -> {
             // Remove rune efficiency from other player
-            logger.info("Hel's Shadow used on " + targetPlayer.getName());
             targetPlayer.addBuff(Status.BuffType.RUNE_GENERATION, artifact.getEffect());
+            gameState.sendDebuffNotification("The Shadow of Hel used by " + player.getName() + " has decreased " + targetPlayer.getName() + "'s rune farming prowess.");
             return true;
         });
 
         registerPlayerBehavior("Flame of Muspelheim", (artifact, gameState, player, targetPlayer) -> {
             // Give shop discount to player
-            logger.info("Flame of Muspelheim used on " + targetPlayer.getName());
             targetPlayer.addBuff(Status.BuffType.SHOP_PRICE, artifact.getEffect());
+            gameState.sendDebuffNotification("The Flame of Muspelheim used by " + player.getName() + " has decreased prices for " + targetPlayer.getName());
             return true;
         });
 
         registerPlayerBehavior("Ice Splinter of Niflheim", (artifact, gameState, player, targetPlayer) -> {
             // Remove energy generation efficiency from other player
-            logger.info("Ice Splinter of Niflheim used on " + targetPlayer.getName());
             targetPlayer.addBuff(Status.BuffType.ENERGY_GENERATION, artifact.getEffect());
+            gameState.sendDebuffNotification("The Ice Splinter of Niflheim used by " + player.getName() + " has descreased " + targetPlayer.getName() + "'s energy farming prowess.");
             return true;
         });
 
         registerPlayerBehavior("Ashes of Surtr", (artifact, gameState, player, targetPlayer) -> {
             // Give higher prices in shop to other player
-            logger.info("Ashes of Surtr used on " + targetPlayer.getName());
             targetPlayer.addBuff(Status.BuffType.SHOP_PRICE, artifact.getEffect());
-            return true;
-        });
-
-        registerPlayerBehavior("Fragment of Mjölnir", (artifact, gameState, player, targetPlayer) -> {
-            // Give higher chance of artifacts to player
-            logger.info("Fragment of Mjölnir used on " + targetPlayer.getName());
-            targetPlayer.addBuff(Status.BuffType.ARTIFACT_CHANCE, artifact.getEffect());
+            gameState.sendDebuffNotification("The Ashes of Surtr used by " + player.getName() + " have increased prices for " + targetPlayer.getName());
             return true;
         });
 
         registerPlayerBehavior("Freyr's Golden Apple", (artifact, gameState, player, targetPlayer) -> {
             // Gives energy to player
-            logger.info("Freyr's Golden Apple used on " + targetPlayer.getName());
             targetPlayer.addEnergy((int) artifact.getEffect());
+            gameState.sendDebuffNotification("The Golden Apple of Freyr used by " + player.getName() + " has given " + targetPlayer.getName() + " new energy.");
             return true;
         });
 
         registerPlayerBehavior("Mjölnir Charm", (artifact, gameState, player, targetPlayer) -> {
             // Increases artifact chance
-            logger.info("Mjölnir Charm used on " + targetPlayer.getName());
             targetPlayer.addBuff(Status.BuffType.ARTIFACT_CHANCE, artifact.getEffect());
+            gameState.sendDebuffNotification("The Charm of Mjölnir used by " + player.getName() + " has increased " + targetPlayer.getName() + "'s ability to find artifacts.");
             return true;
         });
 
@@ -122,6 +115,7 @@ public class ArtifactBehaviorRegistry {
             Tile tile = gameState.getBoardManager().getTile(x, y);
             if (tile == null) return false;
             tile.setBuff(Status.BuffType.RUNE_GENERATION, artifact.getEffect());
+            gameState.sendDebuffNotification("The Necklace of Freyja used by " + player.getName() + " has increased rune generation on a tile.");
             return true;
         });
 
@@ -130,6 +124,7 @@ public class ArtifactBehaviorRegistry {
             Tile tile = gameState.getBoardManager().getTile(x, y);
             if (tile == null || !tile.hasEntity()) return false;
             tile.setBuff(Status.BuffType.ENERGY_GENERATION, artifact.getEffect());
+            gameState.sendDebuffNotification("The Bones of Fenrir used by " + player.getName() + " have increased energy generation on a tile.");
             return true;
         });
 
@@ -138,6 +133,7 @@ public class ArtifactBehaviorRegistry {
             Tile tile = gameState.getBoardManager().getTile(x, y);
             if (tile == null || !tile.hasRiver()) return false;
             tile.setBuff(Status.BuffType.RIVER_RUNE_GENERATION, artifact.getEffect());
+            gameState.sendDebuffNotification("The Blood of Jörmungandr used by " + player.getName() + " has increased rune generation on a river tile.");
             return true;
         });
 
