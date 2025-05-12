@@ -121,7 +121,7 @@ public class Leaderboard {
                 String playerName = parts[0];
                 try {
                     int points = Integer.parseInt(parts[1]);
-                    leaderboard.update(playerName, points);
+                    leaderboard.set(playerName, points);
                 } catch (NumberFormatException e) {
                     LOGGER.log(Level.WARNING, "Failed to parse points for player: " + playerName, e);
                 }
@@ -152,6 +152,21 @@ public class Leaderboard {
         lock.writeLock().lock();
         try {
             leaderboard.merge(playerName, points, Integer::sum);
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    /**
+     * Sets the points for a player in the leaderboard.
+     *
+     * @param playerName the name of the player
+     * @param points     the points to set
+     */
+    public void set(String playerName, int points) {
+        lock.writeLock().lock();
+        try {
+            leaderboard.put(playerName, points);
         } finally {
             lock.writeLock().unlock();
         }
