@@ -996,7 +996,7 @@ public class GameScreenController extends BaseController {
     private void disableAllButtons(Node parent) {
         if (parent instanceof Button) {
             ((Button) parent).setDisable(true);
-        } else if (parent instanceof Parent) {
+        } else if (parent instanceof Parent && !parent.getId().equals("chatContainer")) {
             for (Node child : ((Parent) parent).getChildrenUnmodifiable()) {
                 disableAllButtons(child);
             }
