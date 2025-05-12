@@ -136,7 +136,7 @@ public class ArtifactBehaviorRegistry {
         registerFieldBehavior("Blood of Jörmungandr", (artifact, gameState, player, x, y) -> {
             // Give a huge rune generation buff to the river-tile
             Tile tile = gameState.getBoardManager().getTile(x, y);
-            if (tile == null) return false;
+            if (tile == null || !tile.hasRiver()) return false;
             tile.setBuff(Status.BuffType.RIVER_RUNE_GENERATION, artifact.getEffect());
             return true;
         });
@@ -164,11 +164,17 @@ public class ArtifactBehaviorRegistry {
         registerTrapBehavior("Fenrir's Chains", (artifact, gameState, player, x, y) -> {
             // Places an active trap on the tile
             Tile tile = gameState.getBoardManager().getTile(x, y);
-            if (tile == null || tile.hasEntity()) return false;
+            if (tile == null || tile.hasEntity() || tile.getOwner() != null ) {
+                logger.warning("Cannot place trap on tile (" + x + "," + y + ")");
+                return false;
+            }
 
             // Create a new ActiveTrap structure on the tile
             Structure trapStructure = EntityRegistry.getStructure((int) artifact.getEffect());
-            if (trapStructure == null) return false;
+            if (trapStructure == null) {
+                logger.warning("No structure found for artifact " + artifact.getName());
+                return false;
+            }
 
             tile.setEntity(trapStructure);
             return true;

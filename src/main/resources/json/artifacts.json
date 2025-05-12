@@ -47,7 +47,7 @@
     "cardImagePath": "resources/images/cards/a_mjoelnircharm_card.png",
     "id": 13,
     "chance": 0.3,
-    "effect": 5.0
+    "effect": 0.05
   },
   {
     "name": "Fenrir's Bones",
@@ -111,7 +111,7 @@
   },
   {
     "name": "Odin's Eye",
-    "usage": "Checks a tile and all adjacent ones for traps and reveals them",
+    "usage": "Checks a tile and all adjacent ones for artifacts and reveals all of them",
     "description": "Odin is the chief god in Norse mythology, associated with wisdom, prophecy, death and knowledge. He sacrificed one of his eyes to gain wisdom and insight into the future. Odin's eye symbolises how true insight demands personal loss.",
     "useType": "Field",
     "cardImagePath": "resources/images/cards/a_odinseye_card.png",
@@ -121,7 +121,7 @@
   },
   {
     "name": "Fenrir's Chains",
-    "usage": "Can be found and used to trap a field",
+    "usage": "Can be found and used to trap a field which is not owned by anyone.",
     "description": "Fenrir is a monstrous wolf, prophesied to bring destruction to the gods and kill Odin during Ragnarök. Thus, the gods began to fear him and asked the dwarves to forge Gleipnir, a magical chain of impossible ingredients, like the sound of a cat's footsteps. These chains are unbreakable, even for Fenrir, and kept him bound until the time of Ragnarök.",
     "useType": "Trap",
     "cardImagePath": "resources/images/cards/a_fenrirschains_card.png",

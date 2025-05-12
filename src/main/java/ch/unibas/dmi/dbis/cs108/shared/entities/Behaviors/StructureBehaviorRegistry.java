@@ -110,6 +110,7 @@ public class StructureBehaviorRegistry {
             return true;
         });
 
+        // Cut from the game for now
         registerBehavior("Tree", (structure, gameState, player) -> true);
 
         registerBehavior("ActiveTrap", (structure, gameState, player) -> {

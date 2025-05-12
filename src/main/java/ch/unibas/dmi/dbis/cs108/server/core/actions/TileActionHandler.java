@@ -68,7 +68,9 @@ public class TileActionHandler {
 
             // Execute ActiveTrap, upon buying the tile and remove it afterward
             if (tile.hasEntity() && tile.getEntity().getName().equals("ActiveTrap")) {
-                structureBehaviorRegistry.execute((Structure) tile.getEntity(), gameState, player);
+                Structure s = (Structure) tile.getEntity();
+                structureBehaviorRegistry.execute(s, gameState, player);
+                gameState.sendNotification(player.getName(), "TRAP$" + s.getParams().get(0).getValue() + "$" + x + "$" + y);
                 tile.setEntity(null);
             } else if (tile.hasEntity() && tile.getEntity().isMonument()) {
                 player.addOwnedMonument((Monument) tile.getEntity());

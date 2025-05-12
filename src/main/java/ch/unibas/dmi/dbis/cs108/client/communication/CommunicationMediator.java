@@ -12,6 +12,7 @@ import ch.unibas.dmi.dbis.cs108.client.ui.events.admin.ServerCommandEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.chat.GlobalChatEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.ArtifactLocationEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.game.EndTurnRequestEvent;
+import ch.unibas.dmi.dbis.cs108.client.ui.events.game.TrapLocationEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.GameStartedEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.LobbyListResponseEvent;
 import ch.unibas.dmi.dbis.cs108.client.ui.events.lobby.PlayerJoinedLobbyEvent;
@@ -60,7 +61,7 @@ public class CommunicationMediator {
      *
      * @param networkController The network controller to handle network
      *                          communication.
-     *    @param gameStateManager  The game state manager to manage the game
+     * @param gameStateManager  The game state manager to manage the game
      * @param player The player instance representing the local player.
      *
      * */
@@ -493,9 +494,14 @@ public class CommunicationMediator {
                 new EventDispatcher.EventListener<NotificationEvent>() {
                     @Override
                     public void onEvent(NotificationEvent event) {
-                        LOGGER.info("Notification Event: " + event.getMessage());
-                        UIEventBus.getInstance()
-                                .publish(new ArtifactLocationEvent(event.getArtifactId(), event.getX(), event.getY(), event.isArtifactFound()));
+                        if (event.isTrap()) {
+                            LOGGER.info("NotificationEvent: Trap at (" + event.getX() + "," + event.getY() + ")");
+                            UIEventBus.getInstance()
+                                    .publish(new TrapLocationEvent(event.getX(), event.getY(), event.getLostRunes()));
+                        } else {
+                            UIEventBus.getInstance()
+                                    .publish(new ArtifactLocationEvent(event.getArtifactId(), event.getX(), event.getY(), event.isArtifactFound()));
+                        }
                     }
 
                     @Override
