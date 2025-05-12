@@ -53,7 +53,6 @@ public class Player {
         energy = SETTINGS.Config.START_ENERGY.getValue(); //Startenergie
         status = new Status();
         roundBoughtTiles = 0;
-        artifacts.add(EntityRegistry.getArtifact(21));
     }
 
     /**

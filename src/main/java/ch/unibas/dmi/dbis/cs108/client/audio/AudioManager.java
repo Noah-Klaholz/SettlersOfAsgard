@@ -288,8 +288,6 @@ public class AudioManager {
             return;
         }
 
-        LOGGER.info("Request to play music: " + name);
-
         Media media = musicTracks.get(name);
         if (media == null) {
             LOGGER.warning("Music track not found: " + name + ". Available tracks: " + musicTracks.keySet());

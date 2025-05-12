@@ -677,7 +677,6 @@ public class GameScreenController extends BaseController {
 
         Platform.runLater(() -> {
             gameState = updatedState;
-            LOGGER.info("GameSyncEvent received. Searching for player " + localPlayer.getName());
             gamePlayer = gameState.findPlayerByName(localPlayer.getName());
 
             if (gamePlayer == null) {
@@ -737,7 +736,6 @@ public class GameScreenController extends BaseController {
 
         String currentPlayerTurn = gameState.getPlayerTurn();
         if (timerComponent != null) {
-            LOGGER.info("Updating TimerComponent...");
             timerComponent.resetIfPlayerChanged(currentPlayerTurn);
         }
     }

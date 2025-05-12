@@ -319,7 +319,6 @@ public class ClientHandler implements Runnable, CommunicationAPI {
             return;
         }
         Command cmd = new Command(received, localPlayer);
-        logger.info(cmd + " from message: " + received);
         if (cmd.isValid()) {
             if (cmd.isAdministrative()) {
                 processAdminCommand(cmd);
@@ -345,8 +344,6 @@ public class ClientHandler implements Runnable, CommunicationAPI {
      * @param cmd The command received from the client.
      */
     private void processAdminCommand(Command cmd) {
-        logger.info("Server processing " + cmd);
-
         NetworkProtocol.Commands command;
         try {
             command = NetworkProtocol.Commands.fromCommand(cmd.getCommand());
