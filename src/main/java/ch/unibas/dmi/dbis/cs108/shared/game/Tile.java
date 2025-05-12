@@ -311,22 +311,34 @@ public class Tile {
      * Builder class for creating Tile instances.
      */
     public static class TileBuilder {
+        /** If the tile is purchased */
         public boolean purchased;
+        /** The resource value of the tile */
         public int resourceValue;
+        /** If the tile has a river */
         public boolean hasRiver;
+        /** The ID of the tile */
         public int tileID;
+        /** The x-coordinate of the tile */
         private int x;
+        /** The y-coordinate of the tile */
         private int y;
+        /** The owner of the tile */
         private String owner;
+        /** The price of the tile */
         private int price;
+        /** The entity on the tile */
         private GameEntity entity;
+        /** The artifact on the tile */
         private Artifact artefact;
+        /** The world of the tile */
         private String world;
 
         /**
          * Creates a new TileBuilder.
          */
         public TileBuilder() {
+            /* Default values */
             this.purchased = false;
             this.hasRiver = false;
             this.owner = null;

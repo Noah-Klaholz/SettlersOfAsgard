@@ -11,6 +11,13 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Abstract base class for UI components in the application.
+ * This class provides a common structure for all UI components,
+ * including loading FXML views and managing visibility.
+ *
+ * @param <T> The type of JavaFX Node that this component represents.
+ */
 public abstract class UIComponent<T extends Node> {
     /**
      * Logger for the UIComponent class.
