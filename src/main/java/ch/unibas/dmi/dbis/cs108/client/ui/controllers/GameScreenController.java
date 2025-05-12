@@ -990,18 +990,43 @@ public class GameScreenController extends BaseController {
     }
 
     /**
-     * Recursively disables all Button nodes in the scene graph
-     * 
+     * Recursively disables all Button nodes in the scene graph except those in the chat component
+     *
      * @param parent The parent node to search from
      */
     private void disableAllButtons(Node parent) {
         if (parent instanceof Button) {
-            ((Button) parent).setDisable(true);
-        } else if (parent instanceof Parent && !parent.getId().equals("chatContainer")) {
+            // Check if this button is part of the chat component before disabling
+            if (!isDescendantOf(parent, chatContainer)) {
+                ((Button) parent).setDisable(true);
+            }
+        } else if (parent instanceof Parent) {
             for (Node child : ((Parent) parent).getChildrenUnmodifiable()) {
                 disableAllButtons(child);
             }
         }
+    }
+
+    /**
+     * Checks if a node is a descendant of another node (directly or indirectly)
+     *
+     * @param node The node to check
+     * @param potentialAncestor The potential ancestor node
+     * @return true if node is a descendant of potentialAncestor, false otherwise
+     */
+    private boolean isDescendantOf(Node node, Node potentialAncestor) {
+        if (node == null || potentialAncestor == null) {
+            return false;
+        }
+
+        Node parent = node.getParent();
+        while (parent != null) {
+            if (parent == potentialAncestor) {
+                return true;
+            }
+            parent = parent.getParent();
+        }
+        return false;
     }
 
     /**
