@@ -592,6 +592,19 @@ public class CommunicationMediator {
                     }
                 });
 
-    }
 
+        // Debuff Event
+        EventDispatcher.getInstance().registerListener(ch.unibas.dmi.dbis.cs108.client.networking.events.DebuffEvent.class,
+                new EventDispatcher.EventListener<DebuffEvent>() {
+                    @Override
+                    public void onEvent(DebuffEvent event) {
+                        // Publish DebuffEvent to UI
+                        UIEventBus.getInstance().publish(new ch.unibas.dmi.dbis.cs108.client.ui.events.game.DebuffEvent(event.getMessage()));
+                    }
+
+                    @Override
+                    public Class<DebuffEvent> getEventType() {return DebuffEvent.class;}
+                });
+
+    }
 }

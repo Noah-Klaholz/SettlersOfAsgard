@@ -266,7 +266,11 @@ public class ProtocolTranslator implements CommunicationAPI {
      * @param args the args of the message.
      */
     private void processNotificationMessage(String args) {
-        eventDispatcher.dispatchEvent(new NotificationEvent(args));
+        if (args.startsWith("DEBUFF$")) {
+            eventDispatcher.dispatchEvent(new DebuffEvent(args.replace("DEBUFF", "")));
+        } else {
+            eventDispatcher.dispatchEvent(new NotificationEvent(args));
+        }
     }
 
     /**
