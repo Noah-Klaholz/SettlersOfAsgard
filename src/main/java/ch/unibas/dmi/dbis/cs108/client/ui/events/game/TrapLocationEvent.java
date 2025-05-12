@@ -1,5 +1,7 @@
 package ch.unibas.dmi.dbis.cs108.client.ui.events.game;
 
+import java.util.logging.Logger;
+
 /**
  * Represents a trap location event in the game.
  */

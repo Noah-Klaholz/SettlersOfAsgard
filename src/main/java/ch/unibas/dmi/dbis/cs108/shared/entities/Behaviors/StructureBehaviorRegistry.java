@@ -115,7 +115,6 @@ public class StructureBehaviorRegistry {
 
         registerBehavior("ActiveTrap", (structure, gameState, player) -> {
             player.addRunes((int) structure.getParams().get(0).getValue());
-            gameState.sendNotification(player.getName(), "TRAP$" + structure.getParams().get(0).getValue());
             return true;
         });
 

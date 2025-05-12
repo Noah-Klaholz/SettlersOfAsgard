@@ -3539,6 +3539,7 @@ public class GameScreenController extends BaseController {
      * @param event The trap location event
      */
     private void handleTrapLocationEvent(TrapLocationEvent event) {
+        LOGGER.info("Trap location event received: " + event);
         if (event == null || gameState == null) {
             LOGGER.warning("Cannot handle TrapLocationEvent: event or gameState is null.");
             return;

@@ -495,6 +495,7 @@ public class CommunicationMediator {
                     @Override
                     public void onEvent(NotificationEvent event) {
                         if (event.isTrap()) {
+                            LOGGER.info("NotificationEvent: Trap at (" + event.getX() + "," + event.getY() + ")");
                             UIEventBus.getInstance()
                                     .publish(new TrapLocationEvent(event.getX(), event.getY(), event.getLostRunes()));
                         } else {

@@ -136,7 +136,7 @@ public class ArtifactBehaviorRegistry {
         registerFieldBehavior("Blood of Jörmungandr", (artifact, gameState, player, x, y) -> {
             // Give a huge rune generation buff to the river-tile
             Tile tile = gameState.getBoardManager().getTile(x, y);
-            if (tile == null) return false;
+            if (tile == null || !tile.hasRiver()) return false;
             tile.setBuff(Status.BuffType.RIVER_RUNE_GENERATION, artifact.getEffect());
             return true;
         });

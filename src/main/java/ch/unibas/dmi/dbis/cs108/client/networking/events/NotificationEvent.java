@@ -44,21 +44,23 @@ public class NotificationEvent implements Event {
             return;
         }
 
+
+        String[] parts = message.split("\\$");
+
         // Handle trap messages (format: "TRAP$lostRunes")
-        if (message.startsWith("TRAP")) {
+        if (parts.length == 4 && parts[0].equals("TRAP")) {
             this.isTrap = true;
             this.artifactFound = false;
             this.artifactId = -1;
-            this.x = -1;
-            this.y = -1;
 
-            String[] trapParts = message.split("[$]");
-            this.lostRunes = (trapParts.length > 1) ? Integer.parseInt(trapParts[1]) : -1;
+            this.lostRunes = (int) Double.parseDouble(parts[1]);
+            this.x = Integer.parseInt(parts[2]);
+            this.y = Integer.parseInt(parts[3]);
+
             return;
         }
 
         // Handle artifact messages (format: "artifactId$x$y")
-        String[] parts = message.split("[$]");
         if (parts.length == 3) {
             // Valid artifact found message
             this.artifactId = Integer.parseInt(parts[0]);
@@ -76,6 +78,7 @@ public class NotificationEvent implements Event {
             this.isTrap = false;
             this.lostRunes = -1;
         }
+
     }
 
     /**
@@ -149,5 +152,24 @@ public class NotificationEvent implements Event {
      */
     public boolean isArtifactFound() {
         return artifactFound;
+    }
+
+    /**
+     * Returns a string representation of the NotificationEvent.
+     *
+     * @return A string representation of the event.
+     */
+    @Override
+    public String toString() {
+        return "NotificationEvent{" +
+                "timestamp=" + timestamp +
+                ", message='" + message + '\'' +
+                ", artifactId=" + artifactId +
+                ", x=" + x +
+                ", y=" + y +
+                ", artifactFound=" + artifactFound +
+                ", isTrap=" + isTrap +
+                ", lostRunes=" + lostRunes +
+                '}';
     }
 }
