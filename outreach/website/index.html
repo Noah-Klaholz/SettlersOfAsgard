@@ -12,6 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Lato:wght@300;400;700&display=swap"
         rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Font Awesome CDN for social icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <meta name="google-site-verification" content="fUSkji2_FKndWGq7xEh1cDmS2PaXcorVwHNDSK3fH-k" />
 </head>
 
@@ -19,7 +21,6 @@
     <header class="sticky-nav">
         <nav>
             <div class="logo" data-aos="fade-down">SOA</div>
-            <!-- Add id="nav-links" to the ul -->
             <ul id="nav-links" data-aos="fade-down" data-aos-delay="100">
                 <li><a href="#hero">Home</a></li>
                 <li><a href="#story">Story</a></li>
@@ -29,8 +30,8 @@
                 <li><a href="#documentation">Docs</a></li>
                 <li><a href="#" id="watch-trailer-link">Watch Trailer</a></li>
                 <li><a href="#" id="watch-demo-link">Watch Demo</a></li>
+                <li><a href="#team">Team</a></li>
             </ul>
-            <!-- Add Burger Menu Button -->
             <button class="burger-menu" id="burger-menu" aria-label="Toggle navigation menu">
                 <span></span>
                 <span></span>
@@ -122,7 +123,7 @@
                 <button class="play-overlay-btn" id="world-play-btn" aria-label="Play Trailer">
                     <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
                         <circle cx="32" cy="32" r="30" stroke="white" stroke-width="4" fill="rgba(0,0,0,0.35)" />
-                        <polygon points="27,20 48,32 27,44" fill="white"/>
+                        <polygon points="26,20 26,44 44,32" fill="white"/>
                     </svg>
                 </button>
             </div>
@@ -158,6 +159,64 @@ java -jar SettlersOfAsgard.jar client &lt;serverip&gt;:&lt;serverport&gt; [usern
                 <li><a href="#" id="demo-play-btn">Watch Demo Video</a></li>
             </ul>
         </section>
+
+        <section id="team" class="team-section">
+            <h2 data-aos="fade-up">Meet the Team</h2>
+            <div class="team-grid">
+                <div class="team-member" data-aos="fade-up" data-aos-delay="100">
+                    <img src="images/team/member1.jpg" alt="Janura Rose" class="team-photo">
+                    <h3>Janura Rose</h3>
+                    <p>Artist & UI designer. Created all original artwork and card designs for the game.</p>
+                    <div class="team-socials">
+                        <a href="https://github.com/alexmueller" target="_blank" aria-label="GitHub">
+                            <i class="fa-brands fa-github"></i>
+                        </a>
+                        <a href="https://linkedin.com/in/alexmueller" target="_blank" aria-label="LinkedIn">
+                            <i class="fa-brands fa-linkedin"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="team-member" data-aos="fade-up" data-aos-delay="200">
+                    <img src="images/team/member2.jpg" alt="Noah Klaholz" class="team-photo">
+                    <h3>Noah Klaholz</h3>
+                    <p>Frontend & gameplay developer. Enjoys crafting engaging user experiences and game logic.</p>
+                    <div class="team-socials">
+                        <a href="https://www.linkedin.com/in/noah-klaholz-251939359/" target="_blank" aria-label="LinkedIn">
+                            <i class="fa-brands fa-linkedin"></i>
+                        </a>
+                        <a href="https://noahklaholz.netlify.app" target="_blank" aria-label="Portfolio">
+                            <i class="fa-solid fa-laptop-code"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="team-member" data-aos="fade-up" data-aos-delay="300">
+                    <img src="images/team/member3.jpg" alt="Sebastian Müller" class="team-photo">
+                    <h3>Sebastian Müller</h3>
+                    <p>Lead UI designer. Enjoys learning new tools and writing clean code.</p>
+                    <div class="team-socials">
+                        <a href="https://github.com/noahklaholz" target="_blank" aria-label="GitHub">
+                            <i class="fa-brands fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="team-member" data-aos="fade-up" data-aos-delay="400">
+                    <img src="images/team/member4.jpg" alt="Vincent Schall" class="team-photo">
+                    <h3>Vincent Schall</h3>
+                    <p>Server & Testing. Ensures everything runs smoothly and </p>
+                    <div class="team-socials">
+                        <a href="https://twitter.com/emmasvensson" target="_blank" aria-label="Twitter">
+                            <i class="fa-brands fa-twitter"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="github-link">
+                <a href="https://github.com/Noah-Klaholz/SettlersOfAsgard" target="_blank">
+                    <i class="fa-brands fa-github github-icon"></i>
+                    View Project on GitHub
+                </a>
+            </div>
+        </section>
     </main>
 
     <footer>
@@ -172,7 +231,6 @@ java -jar SettlersOfAsgard.jar client &lt;serverip&gt;:&lt;serverport&gt; [usern
             <video id="trailer-video" width="100%" controls>
                 <source src="videos/trailer.mp4" type="video/mp4">
             </video>
-            <!-- Fallback message removed as H.264 is widely supported -->
         </div>
     </div>
 
@@ -182,7 +240,6 @@ java -jar SettlersOfAsgard.jar client &lt;serverip&gt;:&lt;serverport&gt; [usern
             <video id="demo-video" width="100%" controls>
                 <source src="videos/demo.mp4" type="video/mp4">
             </video>
-            <!-- Fallback message removed as H.264 is widely supported -->
         </div>
     </div>
 

@@ -460,6 +460,95 @@ nav ul li a:hover::after {
     pointer-events: none;
 }
 
+/* Team Section */
+.team-section {
+    padding: var(--section-padding);
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--grid-gap);
+    margin-top: 2.5rem;
+}
+
+.team-member {
+    background-color: var(--card-bg-color);
+    border: 1px solid var(--secondary-color);
+    border-radius: 8px;
+    padding: var(--card-padding);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+    /* Ensure all cards have the same height in the grid */
+    height: 100%;
+}
+
+.team-photo {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 1.2rem;
+    border: 2px solid var(--accent-color);
+    background: var(--background-color);
+}
+
+.team-member h3 {
+    margin-bottom: 0.5rem;
+    color: var(--accent-color);
+    font-size: 1.2rem;
+}
+
+.team-member p {
+    font-size: 0.97rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.team-socials {
+    display: flex;
+    gap: 1rem;
+    margin-top: auto; /* Push socials to the bottom */
+    margin-bottom: 0.5rem;
+}
+
+.github-link {
+    margin-top: 2.5rem;
+    text-align: center;
+}
+
+.github-link a {
+    display: inline-flex;
+    align-items: center;
+    font-size: 1.15rem;
+    font-weight: bold;
+    color: var(--accent-color);
+    border: 2px solid var(--accent-color);
+    border-radius: 4px;
+    padding: 0.7rem 1.6rem;
+    transition: background 0.3s, color 0.3s;
+    text-decoration: none;
+    gap: 0.7rem;
+}
+
+.github-link a i.github-icon {
+    font-size: 28px;
+    vertical-align: middle;
+    margin-right: 0.5rem;
+}
+
+.github-link a:hover {
+    background: var(--accent-color);
+    color: var(--background-color);
+}
+
 /* Footer */
 footer {
     text-align: center;
@@ -642,6 +731,14 @@ footer .artist-credit {
     .docs-header {
         font-size: 1.6rem;
     }
+
+    .team-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .team-section {
+        padding: 2.5rem 5%;
+    }
 }
 
 @media (max-width: 480px) {
@@ -752,3 +849,4 @@ footer .artist-credit {
         font-size: 24px;
     }
 }
+
