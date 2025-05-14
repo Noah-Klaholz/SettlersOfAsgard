@@ -177,7 +177,11 @@ nav ul li a:hover::after {
     justify-content: center;
     text-align: center;
     color: white;
-    background: url('assets/images/map_pixel.png') no-repeat center center/cover;
+    background-color: var(--background-color);
+    background-image: url('images/map_prelook.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 70% auto; /* Scale image to 70% of section width */
     overflow: hidden;
     padding: var(--section-padding);
 }
@@ -233,7 +237,7 @@ nav ul li a:hover::after {
 
 .cta-button:hover {
     background-color: var(--secondary-color);
-    color: var (--background-color);
+    color: var(--background-color);
     transform: translateY(-3px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
@@ -298,7 +302,7 @@ nav ul li a:hover::after {
 
 .feature-card p {
     font-size: 0.95rem;
-    color: var (--primary-color);
+    color: var(--primary-color);
 }
 
 /* Resources Section */
@@ -419,6 +423,41 @@ nav ul li a:hover::after {
     border-radius: 8px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     border: 1px solid var(--secondary-color);
+}
+
+.world-map-container {
+    position: relative;
+    display: inline-block;
+}
+
+.play-overlay-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    z-index: 2;
+    padding: 0;
+    width: 64px;
+    height: 64px;
+    opacity: 0.85;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.play-overlay-btn:hover,
+.play-overlay-btn:focus {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08);
+}
+
+.play-overlay-btn svg {
+    display: block;
+    width: 64px;
+    height: 64px;
+    pointer-events: none;
 }
 
 /* Footer */

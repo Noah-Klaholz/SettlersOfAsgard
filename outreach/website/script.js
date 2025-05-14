@@ -19,6 +19,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const trailerVideo = document.getElementById('trailer-video');
     const demoVideo = document.getElementById('demo-video');
 
+    // Play button overlay for world map
+    const worldPlayBtn = document.getElementById('world-play-btn');
+    if (worldPlayBtn) {
+        worldPlayBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openModal(trailerModal, trailerVideo);
+        });
+    }
+
+    // Play button overlay for world map
+    const demoPlayButton = document.getElementById('demo-play-btn');
+    if (demoPlayButton) {
+        demoPlayButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            openModal(demoModal, demoVideo);
+        });
+    }
+
     // --- Debounce Function ---
     function debounce(func, wait = 15, immediate = false) {
         let timeout;

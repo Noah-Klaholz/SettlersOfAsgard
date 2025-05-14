@@ -115,8 +115,16 @@
                 structures offering unique advantages and challenges across the interconnected realms. Strategic
                 expansion is key!
             </p>
-            <img src="images/map_prelook.png" alt="Game Map Overview" class="world-map-image" data-aos="zoom-in"
-                data-aos-delay="200">
+            <div class="world-map-container" style="position:relative; display:inline-block;">
+                <img src="images/map_prelook.png" alt="Game Map Overview" class="world-map-image" data-aos="zoom-in"
+                    data-aos-delay="200">
+                <button class="play-overlay-btn" id="world-play-btn" aria-label="Play Trailer">
+                    <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                        <circle cx="32" cy="32" r="30" stroke="white" stroke-width="4" fill="rgba(0,0,0,0.35)" />
+                        <polygon points="27,20 48,32 27,44" fill="white"/>
+                    </svg>
+                </button>
+            </div>
         </section>
 
         <section id="resources" class="resources-section">
@@ -146,6 +154,7 @@ java -jar SettlersOfAsgard.jar client &lt;serverip&gt;:&lt;serverport&gt; [usern
                         Manual</a></li>
                 <li><a href="../Documents/GameDesign.pdf" target="_blank" rel="noopener noreferrer">Game Design
                         Details</a></li>
+                <li><a href="#" id="demo-play-btn">Watch Demo Video</a></li>
             </ul>
         </section>
     </main>
