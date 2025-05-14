@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
             timeout = setTimeout(later, wait);
             if (callNow) func.apply(context, args);
         };
-    };
+    }
 
     // Toggle nav menu on burger button click
     if (burgerButton && navLinksContainer) {

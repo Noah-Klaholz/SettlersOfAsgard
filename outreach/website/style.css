@@ -473,20 +473,32 @@ nav ul li a:hover::after {
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: var(--grid-gap);
     margin-top: 2.5rem;
+    align-items: stretch; /* Ensure all cards stretch to same height */
 }
 
 .team-member {
-    background-color: var(--card-bg-color);
-    border: 1px solid var(--secondary-color);
+    background-color: #35302a; /* Lighter than --card-bg-color for more contrast */
+    border: 2px solid var(--accent-color); /* Thicker, brighter border */
     border-radius: 8px;
     padding: var(--card-padding);
     display: flex;
     flex-direction: column;
     align-items: center;
-    transition: transform 0.3s, box-shadow 0.3s;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
-    /* Ensure all cards have the same height in the grid */
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.25s;
+    box-shadow: 0 2px 8px rgba(200,160,100,0.10), 0 2px 8px 0 rgba(0,0,0,0.18);
     height: 100%;
+    min-width: 0; /* Prevent overflow in grid */
+}
+
+.team-member:hover {
+    transform: translateY(-10px) scale(1.04);
+    box-shadow:
+        0 0 18px 4px rgba(200,160,100,0.18), /* soft accent glow */
+        0 2px 12px 0 rgba(0,0,0,0.22);       /* subtle shadow */
+    border-color: #e2c185; /* softer, less bright than before */
+    z-index: 2;
 }
 
 .team-photo {
@@ -517,6 +529,17 @@ nav ul li a:hover::after {
     gap: 1rem;
     margin-top: auto; /* Push socials to the bottom */
     margin-bottom: 0.5rem;
+    justify-content: center;
+}
+
+.team-socials a {
+    font-size: 1.5rem;
+    color: var(--accent-color);
+    transition: color 0.3s;
+}
+
+.team-socials a:hover {
+    color: var(--primary-color);
 }
 
 .github-link {
@@ -598,6 +621,10 @@ footer .artist-credit {
 
     :root {
         --section-padding: 4rem 5%;
+    }
+
+    .team-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     }
 }
 
@@ -849,4 +876,3 @@ footer .artist-credit {
         font-size: 24px;
     }
 }
-
