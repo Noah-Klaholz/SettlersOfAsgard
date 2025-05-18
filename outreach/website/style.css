@@ -181,7 +181,8 @@ nav ul li a:hover::after {
     background-image: url('images/map_prelook.png');
     background-repeat: no-repeat;
     background-position: center center;
-    background-size: 70% auto; /* Scale image to 70% of section width */
+    background-size: 70% auto;
+    /* Scale image to 70% of section width */
     overflow: hidden;
     padding: var(--section-padding);
 }
@@ -473,31 +474,38 @@ nav ul li a:hover::after {
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: var(--grid-gap);
     margin-top: 2.5rem;
-    align-items: stretch; /* Ensure all cards stretch to same height */
+    align-items: stretch;
+    /* Ensure all cards stretch to same height */
 }
 
 .team-member {
-    background-color: #35302a; /* Lighter than --card-bg-color for more contrast */
-    border: 2px solid var(--accent-color); /* Thicker, brighter border */
+    background-color: #35302a;
+    /* Lighter than --card-bg-color for more contrast */
+    border: 2px solid var(--accent-color);
+    /* Thicker, brighter border */
     border-radius: 8px;
     padding: var(--card-padding);
     display: flex;
     flex-direction: column;
     align-items: center;
     transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-                box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-                border-color 0.25s;
-    box-shadow: 0 2px 8px rgba(200,160,100,0.10), 0 2px 8px 0 rgba(0,0,0,0.18);
+        box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+        border-color 0.25s;
+    box-shadow: 0 2px 8px rgba(200, 160, 100, 0.10), 0 2px 8px 0 rgba(0, 0, 0, 0.18);
     height: 100%;
-    min-width: 0; /* Prevent overflow in grid */
+    min-width: 0;
+    /* Prevent overflow in grid */
 }
 
 .team-member:hover {
     transform: translateY(-10px) scale(1.04);
     box-shadow:
-        0 0 18px 4px rgba(200,160,100,0.18), /* soft accent glow */
-        0 2px 12px 0 rgba(0,0,0,0.22);       /* subtle shadow */
-    border-color: #e2c185; /* softer, less bright than before */
+        0 0 18px 4px rgba(200, 160, 100, 0.18),
+        /* soft accent glow */
+        0 2px 12px 0 rgba(0, 0, 0, 0.22);
+    /* subtle shadow */
+    border-color: #e2c185;
+    /* softer, less bright than before */
     z-index: 2;
 }
 
@@ -509,6 +517,8 @@ nav ul li a:hover::after {
     margin-bottom: 1.2rem;
     border: 2px solid var(--accent-color);
     background: var(--background-color);
+    pointer-events: none;
+    /* Add this line */
 }
 
 .team-member h3 {
@@ -527,7 +537,8 @@ nav ul li a:hover::after {
 .team-socials {
     display: flex;
     gap: 1rem;
-    margin-top: auto; /* Push socials to the bottom */
+    margin-top: auto;
+    /* Push socials to the bottom */
     margin-bottom: 0.5rem;
     justify-content: center;
 }
