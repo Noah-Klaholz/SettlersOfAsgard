@@ -736,6 +736,8 @@ footer .artist-credit {
     .hero-section {
         min-height: auto;
         padding: 6rem 5% 4rem;
+        background-size: 85% auto;
+        /* Adjust background size for mobile */
     }
 
     .features-grid {

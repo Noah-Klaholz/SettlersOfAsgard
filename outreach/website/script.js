@@ -9,7 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const navLinksContainer = document.getElementById('nav-links');
     const burgerButton = document.getElementById('burger-menu');
-    const allNavLinks = document.querySelectorAll('#nav-links li a'); // Select all links
+    const allNavLinks = document.querySelectorAll('#nav-links li a');
+    const stickyNav = document.querySelector('.sticky-nav'); // Cache sticky-nav
 
     // Video Modal Elements
     const trailerModal = document.getElementById('trailer-modal');
@@ -67,9 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
         video.play();
         modal.classList.add('show');
         // Close mobile nav if open
-        if (navLinksContainer.classList.contains('nav-active')) {
+        if (navLinksContainer && navLinksContainer.classList.contains('nav-active')) { // Added null check for navLinksContainer
             navLinksContainer.classList.remove('nav-active');
-            burgerButton.classList.remove('active');
+            if (burgerButton) burgerButton.classList.remove('active'); // Added null check for burgerButton
         }
     }
 
@@ -98,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const targetElement = document.querySelector(targetId);
 
                 if (targetElement) {
-                    const headerOffset = document.querySelector('.sticky-nav').offsetHeight;
+                    const headerOffset = stickyNav ? stickyNav.offsetHeight : 0; // Use cached stickyNav
                     const elementPosition = targetElement.getBoundingClientRect().top;
                     const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
@@ -108,9 +109,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 }
                 // Close nav menu when a link is clicked (for mobile view)
-                if (navLinksContainer.classList.contains('nav-active')) {
+                if (navLinksContainer && navLinksContainer.classList.contains('nav-active')) { // Added null check
                     navLinksContainer.classList.remove('nav-active');
-                    burgerButton.classList.remove('active');
+                    if (burgerButton) burgerButton.classList.remove('active'); // Added null check
                 }
             }
             // For external links or links not handled, default behavior will apply if e.preventDefault() wasn't called
@@ -143,18 +144,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Debounced Scroll Handler ---
     const handleScroll = debounce(() => {
-        const nav = document.querySelector('.sticky-nav');
-        if (!nav) return; // Guard clause
+        // const nav = document.querySelector('.sticky-nav'); // No longer needed here
+        if (!stickyNav) return; // Guard clause using cached stickyNav
 
         let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         if (scrollTop > 50) {
             // Check if style needs changing to avoid unnecessary DOM manipulation
-            if (nav.style.backgroundColor !== 'rgba(26, 26, 26, 0.95)') {
-                nav.style.backgroundColor = 'rgba(26, 26, 26, 0.95)';
+            if (stickyNav.style.backgroundColor !== 'rgba(26, 26, 26, 0.95)') {
+                stickyNav.style.backgroundColor = 'rgba(26, 26, 26, 0.95)';
             }
         } else {
-            if (nav.style.backgroundColor !== 'rgba(26, 26, 26, 0.9)') {
-                nav.style.backgroundColor = 'rgba(26, 26, 26, 0.9)';
+            if (stickyNav.style.backgroundColor !== 'rgba(26, 26, 26, 0.9)') {
+                stickyNav.style.backgroundColor = 'rgba(26, 26, 26, 0.9)';
             }
         }
 
