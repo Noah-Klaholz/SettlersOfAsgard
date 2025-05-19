@@ -1,0 +1,85 @@
+name: CI Pipeline
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+env:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: gradle:7-jdk17
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache Gradle
+        uses: actions/cache@v3
+        with:
+          path: |
+            .gradle
+            build
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+
+      - name: Build (skip tests)
+        run: gradle build -x test
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: |
+            build/libs/*.jar
+            build/docs/Documentation/javadoc/**
+          retention-days: 7
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    container: gradle:7-jdk17
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Headless JavaFX
+        run: |
+          sudo apt-get update && sudo apt-get install -y libopenjfx-java
+          echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
+
+      - name: Run Tests with Headless Mode
+        run: |
+          gradle test \
+            -Dtestfx.robot=glass \
+            -Dglass.platform=Monocle \
+            -Dmonocle.platform=Headless \
+            -Dprism.order=sw
+
+      - name: Upload Test Reports
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: test-reports
+          path: |
+            build/reports/tests/**
+            build/reports/jacoco/**
+            build/reports/spotbugs/main.html
+          retention-days: 7
+
+  code-quality:
+    needs: build
+    runs-on: ubuntu-latest
+    container: gradle:7-jdk17
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run SpotBugs
+        run: gradle spotbugsMain
+
+      - name: Run JaCoCo Report
+        run: gradle jacocoTestReport
+
+      - name: Check Documentation Coverage
+        run: gradle docMetrics
