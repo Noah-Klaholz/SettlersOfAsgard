@@ -471,7 +471,7 @@ nav ul li a:hover::after {
 
 .team-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(4, 1fr); /* Changed from auto-fit to ensure 4 columns */
     gap: var(--grid-gap);
     margin-top: 2.5rem;
     align-items: stretch;
@@ -633,10 +633,6 @@ footer .artist-credit {
     :root {
         --section-padding: 4rem 5%;
     }
-
-    .team-grid {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    }
 }
 
 @media (max-width: 768px) {
@@ -770,10 +766,6 @@ footer .artist-credit {
 
     .docs-header {
         font-size: 1.6rem;
-    }
-
-    .team-grid {
-        grid-template-columns: 1fr;
     }
 
     .team-section {
