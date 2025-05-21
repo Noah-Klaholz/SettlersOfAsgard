@@ -40,8 +40,8 @@ Via gradle das Projekt builden:
 ```
 Im Terminal zuerst den Server, dann den Client starten: 
 ```shell
-Server: java -jar /build/libs/SettlersOfAsgard.jar server <listenport>
-Client: java -jar /build/libs/SettlersOfAsgard.jar client <server-ip> <server-port>
+Server: java -jar /build/libs/settlersOfAsgard.jar server <listenport>
+Client: java -jar /build/libs/settlersOfAsgard.jar client <server-ip> <server-port>
 ```
 Beachte: listenport und server-port müssen identisch sein.
 Die server-ip ist entweder die lokale IP-Adresse des Servers im Netzwerk oder "localhost", wenn beides auf der gleichen Maschine läuft.
