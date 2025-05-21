@@ -2,7 +2,7 @@
 
 ## Überblick
 
-Settlers of Asgard ist ein strategisches Multiplayer-Wirtschaftsspiel für 3-4 Spieler, 
+Settlers of Asgard ist ein strategisches Multiplayer-Wirtschaftsspiel für 3-4 Spieler, geschrieben in java 17, 
 in dem es darum geht, durch geschicktes Kaufen von Feldern, den Bau und das Upgraden von Strukturen
 sowie die Nutzung von Artefakten und Göttersegen möglichst viele Runen zu sammeln. 
 Der Spieler mit den meisten Runen nach 5 Spielrunden gewinnt das Spiel.
