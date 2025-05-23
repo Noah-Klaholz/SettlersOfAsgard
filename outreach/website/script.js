@@ -6,8 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
         easing: 'ease-in-out',
     });
 
-    const $ = id => document.getElementById(id);
-    const $$ = selector => document.querySelector(selector);
+    const $ = (id) => document.getElementById(id);
+    const $$ = (selector) => document.querySelector(selector);
 
     const elements = {
         navLinksContainer: $('nav-links'),
@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
         demoVideo: $('demo-video')
     };
 
+    const { navLinksContainer, burgerButton, stickyNav, trailerModal, demoModal, trailerVideo, demoVideo } = elements;
+
     const debounce = (func, wait = 15) => {
         let timeout;
         return (...args) => {
@@ -28,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const closeNavMenu = () => {
-        const { navLinksContainer, burgerButton } = elements;
         if (navLinksContainer?.classList.contains('nav-active')) {
             navLinksContainer.classList.remove('nav-active');
             burgerButton?.classList.remove('active');
@@ -50,8 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const scrollToElement = (href) => {
         const targetElement = $$(href);
-        if (targetElement && elements.stickyNav) {
-            const headerOffset = elements.stickyNav.offsetHeight || 0;
+        if (targetElement && stickyNav) {
+            const headerOffset = stickyNav.offsetHeight || 0;
             const elementPosition = targetElement.getBoundingClientRect().top;
             const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
@@ -62,45 +63,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Event delegation for navigation clicks
+    // Optimized event delegation with early returns
     document.addEventListener('click', (e) => {
-        const target = e.target;
-        const link = target.closest('a');
-        const button = target.closest('button');
+        const { target } = e;
+        const targetId = target.id;
 
         // Handle burger menu
         if (target.closest('#burger-menu')) {
-            elements.navLinksContainer?.classList.toggle('nav-active');
-            elements.burgerButton?.classList.toggle('active');
+            navLinksContainer?.classList.toggle('nav-active');
+            burgerButton?.classList.toggle('active');
             return;
         }
 
-        // Handle modal close buttons with early return
-        const targetId = target.id;
+        // Handle modal close buttons
         if (targetId === 'close-trailer-modal') {
             e.stopPropagation();
-            closeModal(elements.trailerModal, elements.trailerVideo);
+            closeModal(trailerModal, trailerVideo);
             return;
         }
 
         if (targetId === 'close-demo-modal') {
             e.stopPropagation();
-            closeModal(elements.demoModal, elements.demoVideo);
+            closeModal(demoModal, demoVideo);
             return;
         }
 
         // Handle modal background clicks
-        if (e.target === elements.trailerModal) {
-            closeModal(elements.trailerModal, elements.trailerVideo);
+        if (target === trailerModal) {
+            closeModal(trailerModal, trailerVideo);
             return;
         }
 
-        if (e.target === elements.demoModal) {
-            closeModal(elements.demoModal, elements.demoVideo);
+        if (target === demoModal) {
+            closeModal(demoModal, demoVideo);
             return;
         }
 
         // Handle navigation and video buttons
+        const link = target.closest('a');
         if (!link) return;
 
         const href = link.getAttribute('href');
@@ -110,12 +110,12 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'watch-trailer-link':
             case 'world-play-btn':
                 e.preventDefault();
-                openModal(elements.trailerModal, elements.trailerVideo);
+                openModal(trailerModal, trailerVideo);
                 break;
             case 'watch-demo-link':
             case 'demo-play-btn':
                 e.preventDefault();
-                openModal(elements.demoModal, elements.demoVideo);
+                openModal(demoModal, demoVideo);
                 break;
             default:
                 if (href?.startsWith('#')) {
@@ -126,12 +126,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Optimized scroll handler with cached color values
+    const scrollColors = {
+        scrolled: 'rgba(26, 26, 26, 0.95)',
+        default: 'rgba(26, 26, 26, 0.9)'
+    };
+
     const handleScroll = debounce(() => {
-        const { stickyNav } = elements;
         if (!stickyNav) return;
 
         const scrollTop = window.pageYOffset;
-        const newColor = scrollTop > 50 ? 'rgba(26, 26, 26, 0.95)' : 'rgba(26, 26, 26, 0.9)';
+        const newColor = scrollTop > 50 ? scrollColors.scrolled : scrollColors.default;
 
         if (stickyNav.style.backgroundColor !== newColor) {
             stickyNav.style.backgroundColor = newColor;

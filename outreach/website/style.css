@@ -22,6 +22,7 @@
     --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.1);
     --shadow-medium: 0 4px 10px rgba(0, 0, 0, 0.2);
     --shadow-heavy: 0 8px 20px rgba(0, 0, 0, 0.4);
+    --border-radius: 8px;
 }
 
 html {
@@ -274,7 +275,7 @@ nav ul li a:hover::after {
 .team-member {
     background-color: var(--background-color);
     padding: var(--card-padding);
-    border-radius: 8px;
+    border-radius: var(--border-radius);
     text-align: center;
     border: 1px solid var(--secondary-color);
     transition: transform var(--transition), box-shadow var(--transition);
@@ -401,7 +402,7 @@ nav ul li a:hover::after {
 .run-instructions {
     background-color: var(--card-bg-color);
     padding: var(--card-padding);
-    border-radius: 8px;
+    border-radius: var(--border-radius);
     margin: 2rem auto 3rem;
     max-width: 700px;
     text-align: left;
@@ -461,7 +462,7 @@ nav ul li a:hover::after {
     max-width: 80%;
     height: auto;
     margin-top: 2rem;
-    border-radius: 8px;
+    border-radius: var(--border-radius);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     border: 1px solid var(--secondary-color);
 }
@@ -498,9 +499,6 @@ nav ul li a:hover::after {
 
 /* Team Section */
 .team-section {
-    padding: var(--section-padding);
-    max-width: 1200px;
-    margin: 0 auto;
     text-align: center;
 }
 
@@ -815,7 +813,7 @@ footer {
     background-color: var(--card-bg-color);
     padding: 20px;
     border: 1px solid var(--secondary-color);
-    border-radius: 8px;
+    border-radius: var(--border-radius);
     width: 80%;
     max-width: 900px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
