@@ -6,19 +6,17 @@ document.addEventListener('DOMContentLoaded', () => {
         easing: 'ease-in-out',
     });
 
+    const $ = id => document.getElementById(id);
+    const $$ = selector => document.querySelector(selector);
+
     const elements = {
-        navLinksContainer: document.getElementById('nav-links'),
-        burgerButton: document.getElementById('burger-menu'),
-        allNavLinks: document.querySelectorAll('#nav-links li a'),
-        stickyNav: document.querySelector('.sticky-nav'),
-        trailerModal: document.getElementById('trailer-modal'),
-        demoModal: document.getElementById('demo-modal'),
-        closeTrailerModal: document.getElementById('close-trailer-modal'),
-        closeDemoModal: document.getElementById('close-demo-modal'),
-        trailerVideo: document.getElementById('trailer-video'),
-        demoVideo: document.getElementById('demo-video'),
-        worldPlayBtn: document.getElementById('world-play-btn'),
-        demoPlayButton: document.getElementById('demo-play-btn')
+        navLinksContainer: $('nav-links'),
+        burgerButton: $('burger-menu'),
+        stickyNav: $$('.sticky-nav'),
+        trailerModal: $('trailer-modal'),
+        demoModal: $('demo-modal'),
+        trailerVideo: $('trailer-video'),
+        demoVideo: $('demo-video')
     };
 
     const debounce = (func, wait = 15) => {
@@ -51,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const scrollToElement = (href) => {
-        const targetElement = document.querySelector(href);
+        const targetElement = $$(href);
         if (targetElement && elements.stickyNav) {
             const headerOffset = elements.stickyNav.offsetHeight || 0;
             const elementPosition = targetElement.getBoundingClientRect().top;
@@ -64,74 +62,75 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Event listeners setup
-    const {
-        burgerButton, navLinksContainer, worldPlayBtn, demoPlayButton,
-        allNavLinks, closeTrailerModal, closeDemoModal,
-        trailerModal, demoModal, trailerVideo, demoVideo
-    } = elements;
+    // Event delegation for navigation clicks
+    document.addEventListener('click', (e) => {
+        const target = e.target;
+        const link = target.closest('a');
+        const button = target.closest('button');
 
-    if (burgerButton && navLinksContainer) {
-        burgerButton.addEventListener('click', () => {
-            navLinksContainer.classList.toggle('nav-active');
-            burgerButton.classList.toggle('active');
-        });
-    }
+        // Handle burger menu
+        if (target.closest('#burger-menu')) {
+            elements.navLinksContainer?.classList.toggle('nav-active');
+            elements.burgerButton?.classList.toggle('active');
+            return;
+        }
 
-    worldPlayBtn?.addEventListener('click', (e) => {
-        e.preventDefault();
-        openModal(trailerModal, trailerVideo);
-    });
+        // Handle modal close buttons with early return
+        const targetId = target.id;
+        if (targetId === 'close-trailer-modal') {
+            e.stopPropagation();
+            closeModal(elements.trailerModal, elements.trailerVideo);
+            return;
+        }
 
-    demoPlayButton?.addEventListener('click', (e) => {
-        e.preventDefault();
-        openModal(demoModal, demoVideo);
-    });
+        if (targetId === 'close-demo-modal') {
+            e.stopPropagation();
+            closeModal(elements.demoModal, elements.demoVideo);
+            return;
+        }
 
-    allNavLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            const href = link.getAttribute('href');
-            const linkId = link.id;
+        // Handle modal background clicks
+        if (e.target === elements.trailerModal) {
+            closeModal(elements.trailerModal, elements.trailerVideo);
+            return;
+        }
 
-            switch (linkId) {
-                case 'watch-trailer-link':
+        if (e.target === elements.demoModal) {
+            closeModal(elements.demoModal, elements.demoVideo);
+            return;
+        }
+
+        // Handle navigation and video buttons
+        if (!link) return;
+
+        const href = link.getAttribute('href');
+        const linkId = link.id;
+
+        switch (linkId) {
+            case 'watch-trailer-link':
+            case 'world-play-btn':
+                e.preventDefault();
+                openModal(elements.trailerModal, elements.trailerVideo);
+                break;
+            case 'watch-demo-link':
+            case 'demo-play-btn':
+                e.preventDefault();
+                openModal(elements.demoModal, elements.demoVideo);
+                break;
+            default:
+                if (href?.startsWith('#')) {
                     e.preventDefault();
-                    openModal(trailerModal, trailerVideo);
-                    break;
-                case 'watch-demo-link':
-                    e.preventDefault();
-                    openModal(demoModal, demoVideo);
-                    break;
-                default:
-                    if (href?.startsWith('#')) {
-                        e.preventDefault();
-                        scrollToElement(href);
-                        closeNavMenu();
-                    }
-            }
-        });
-    });
-
-    closeTrailerModal?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        closeModal(trailerModal, trailerVideo);
-    });
-
-    closeDemoModal?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        closeModal(demoModal, demoVideo);
-    });
-
-    window.addEventListener('click', (event) => {
-        if (event.target === trailerModal) closeModal(trailerModal, trailerVideo);
-        if (event.target === demoModal) closeModal(demoModal, demoVideo);
+                    scrollToElement(href);
+                    closeNavMenu();
+                }
+        }
     });
 
     const handleScroll = debounce(() => {
         const { stickyNav } = elements;
         if (!stickyNav) return;
 
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollTop = window.pageYOffset;
         const newColor = scrollTop > 50 ? 'rgba(26, 26, 26, 0.95)' : 'rgba(26, 26, 26, 0.9)';
 
         if (stickyNav.style.backgroundColor !== newColor) {
