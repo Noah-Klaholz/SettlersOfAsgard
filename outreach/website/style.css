@@ -7,26 +7,21 @@
 
 :root {
     --primary-color: #e0e0e0;
-    /* Light grey for text */
     --secondary-color: #a89a8a;
-    /* Muted beige/brown */
     --background-color: #1a1a1a;
-    /* Dark background */
     --accent-color: #c8a064;
-    /* Gold/Bronze accent */
     --hero-overlay-color: rgba(0, 0, 0, 0.7);
-    /* Dark overlay for hero */
     --card-bg-color: #2a2a2a;
-    /* Slightly lighter dark for cards */
     --nav-bg-color: rgba(26, 26, 26, 0.9);
-    /* Semi-transparent dark for nav */
-
     --font-title: 'Cinzel', serif;
     --font-body: 'Lato', sans-serif;
-
     --section-padding: 5rem 5%;
     --card-padding: 2rem;
     --grid-gap: 2rem;
+    --transition: 0.3s ease;
+    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --shadow-medium: 0 4px 10px rgba(0, 0, 0, 0.2);
+    --shadow-heavy: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
 html {
@@ -76,7 +71,7 @@ p {
 a {
     color: var(--accent-color);
     text-decoration: none;
-    transition: color 0.3s ease;
+    transition: color var(--transition);
 }
 
 a:hover {
@@ -89,14 +84,10 @@ a:hover {
     top: 0;
     width: 100%;
     background-color: var(--nav-bg-color);
-    /* backdrop-filter: blur(10px); */
-    /* Removed for performance */
     z-index: 1000;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-medium);
     padding: 0.8rem 5%;
-    transition: background-color 0.3s ease;
-    /* will-change: background-color; */
-    /* Removed for cleanup */
+    transition: background-color var(--transition);
 }
 
 nav {
@@ -140,7 +131,7 @@ nav ul li a::after {
     bottom: -2px;
     left: 0;
     background-color: var(--accent-color);
-    transition: width 0.3s ease;
+    transition: width var(--transition);
 }
 
 nav ul li a:hover::after {
@@ -150,13 +141,11 @@ nav ul li a:hover::after {
 /* Burger Menu Button (Hidden on Desktop) */
 .burger-menu {
     display: none;
-    /* Hidden by default */
     background: none;
     border: none;
     cursor: pointer;
     padding: 0.5rem;
     z-index: 1100;
-    /* Ensure it's above nav background */
 }
 
 .burger-menu span {
@@ -165,7 +154,7 @@ nav ul li a:hover::after {
     height: 3px;
     background-color: var(--primary-color);
     margin: 5px 0;
-    transition: all 0.3s ease;
+    transition: all var(--transition);
 }
 
 /* Hero Section */
@@ -177,22 +166,15 @@ nav ul li a:hover::after {
     justify-content: center;
     text-align: center;
     color: white;
-    background-color: var(--background-color);
-    background-image: url('images/map_prelook.png');
-    background-repeat: no-repeat;
-    background-position: center center;
+    background: var(--background-color) url('images/map_prelook.png') no-repeat center center;
     background-size: 70% auto;
-    /* Scale image to 70% of section width */
     overflow: hidden;
     padding: var(--section-padding);
 }
 
 .hero-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     background-color: var(--hero-overlay-color);
     z-index: 1;
 }
@@ -217,13 +199,12 @@ nav ul li a:hover::after {
 .hero-content .description {
     font-size: 1.1rem;
     color: var(--primary-color);
-    margin-bottom: 2.5rem;
+    margin: 0 auto 2.5rem;
     max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
 }
 
-.cta-button {
+.cta-button,
+.download-button {
     display: inline-block;
     background-color: var(--accent-color);
     color: var(--background-color);
@@ -232,21 +213,27 @@ nav ul li a:hover::after {
     font-weight: bold;
     text-transform: uppercase;
     letter-spacing: 1px;
-    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: all var(--transition);
+    box-shadow: var(--shadow-medium);
 }
 
-.cta-button:hover {
+.cta-button:hover,
+.download-button:hover {
     background-color: var(--secondary-color);
     color: var(--background-color);
     transform: translateY(-3px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
 
+.download-button {
+    font-size: 1.1rem;
+}
+
 /* General Content Sections */
 .content-section,
 .features-section,
-.resources-section {
+.resources-section,
+.team-section {
     padding: var(--section-padding);
     max-width: 1200px;
     margin: 0 auto;
@@ -255,8 +242,7 @@ nav ul li a:hover::after {
 /* Story Section */
 .content-section p {
     max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto;
     text-align: center;
     font-size: 1.1rem;
     color: var(--primary-color);
@@ -267,20 +253,31 @@ nav ul li a:hover::after {
     background-color: var(--card-bg-color);
 }
 
-.features-grid {
+.features-grid,
+.team-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: var(--grid-gap);
     margin-top: 2rem;
 }
 
-.feature-card {
+.features-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.team-grid {
+    grid-template-columns: repeat(4, 1fr);
+    margin-top: 2.5rem;
+    align-items: stretch;
+}
+
+.feature-card,
+.team-member {
     background-color: var(--background-color);
     padding: var(--card-padding);
     border-radius: 8px;
     text-align: center;
     border: 1px solid var(--secondary-color);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform var(--transition), box-shadow var(--transition);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -288,7 +285,25 @@ nav ul li a:hover::after {
 
 .feature-card:hover {
     transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-heavy);
+}
+
+.team-member {
+    background-color: #35302a;
+    border: 2px solid var(--accent-color);
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+        border-color 0.25s;
+    box-shadow: var(--shadow-light), 0 2px 8px 0 rgba(0, 0, 0, 0.18);
+    height: 100%;
+    min-width: 0;
+}
+
+.team-member:hover {
+    transform: translateY(-10px) scale(1.04);
+    box-shadow: 0 0 18px 4px rgba(200, 160, 100, 0.18), 0 2px 12px 0 rgba(0, 0, 0, 0.22);
+    border-color: #e2c185;
+    z-index: 2;
 }
 
 .feature-card .icon {
@@ -297,12 +312,53 @@ nav ul li a:hover::after {
     object-fit: contain;
 }
 
-.feature-card h3 {
+.feature-card h3,
+.team-member h3 {
     color: var(--accent-color);
 }
 
 .feature-card p {
     font-size: 0.95rem;
+    color: var(--primary-color);
+}
+
+.team-photo {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 1.2rem;
+    border: 2px solid var(--accent-color);
+    background: var(--background-color);
+    pointer-events: none;
+}
+
+.team-member h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+}
+
+.team-member p {
+    font-size: 0.97rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.team-socials {
+    display: flex;
+    gap: 1rem;
+    margin-top: auto;
+    margin-bottom: 0.5rem;
+    justify-content: center;
+}
+
+.team-socials a {
+    font-size: 1.5rem;
+    color: var(--accent-color);
+    transition: color var(--transition);
+}
+
+.team-socials a:hover {
     color: var(--primary-color);
 }
 
@@ -328,7 +384,7 @@ nav ul li a:hover::after {
     padding: 0.6rem 1.5rem;
     border: 2px solid var(--accent-color);
     border-radius: 4px;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color var(--transition), color var(--transition);
 }
 
 .resources-section a:hover {
@@ -339,27 +395,6 @@ nav ul li a:hover::after {
 /* Download Button */
 .download-section {
     margin-bottom: 3rem;
-}
-
-.download-button {
-    display: inline-block;
-    background-color: var(--accent-color);
-    color: var(--background-color);
-    padding: 0.9rem 2.2rem;
-    border-radius: 5px;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    font-size: 1.1rem;
-}
-
-.download-button:hover {
-    background-color: var(--secondary-color);
-    color: var(--background-color);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
 
 /* Run Instructions */
@@ -417,6 +452,11 @@ nav ul li a:hover::after {
     text-align: center;
 }
 
+.world-map-container {
+    position: relative;
+    display: inline-block;
+}
+
 .world-map-image {
     max-width: 80%;
     height: auto;
@@ -424,11 +464,6 @@ nav ul li a:hover::after {
     border-radius: 8px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     border: 1px solid var(--secondary-color);
-}
-
-.world-map-container {
-    position: relative;
-    display: inline-block;
 }
 
 .play-overlay-btn {
@@ -471,18 +506,15 @@ nav ul li a:hover::after {
 
 .team-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* Changed from auto-fit to ensure 4 columns */
+    grid-template-columns: repeat(4, 1fr);
     gap: var(--grid-gap);
     margin-top: 2.5rem;
     align-items: stretch;
-    /* Ensure all cards stretch to same height */
 }
 
 .team-member {
     background-color: #35302a;
-    /* Lighter than --card-bg-color for more contrast */
     border: 2px solid var(--accent-color);
-    /* Thicker, brighter border */
     border-radius: 8px;
     padding: var(--card-padding);
     display: flex;
@@ -491,21 +523,15 @@ nav ul li a:hover::after {
     transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
         box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1),
         border-color 0.25s;
-    box-shadow: 0 2px 8px rgba(200, 160, 100, 0.10), 0 2px 8px 0 rgba(0, 0, 0, 0.18);
+    box-shadow: var(--shadow-light), 0 2px 8px 0 rgba(0, 0, 0, 0.18);
     height: 100%;
     min-width: 0;
-    /* Prevent overflow in grid */
 }
 
 .team-member:hover {
     transform: translateY(-10px) scale(1.04);
-    box-shadow:
-        0 0 18px 4px rgba(200, 160, 100, 0.18),
-        /* soft accent glow */
-        0 2px 12px 0 rgba(0, 0, 0, 0.22);
-    /* subtle shadow */
+    box-shadow: 0 0 18px 4px rgba(200, 160, 100, 0.18), 0 2px 12px 0 rgba(0, 0, 0, 0.22);
     border-color: #e2c185;
-    /* softer, less bright than before */
     z-index: 2;
 }
 
@@ -518,7 +544,6 @@ nav ul li a:hover::after {
     border: 2px solid var(--accent-color);
     background: var(--background-color);
     pointer-events: none;
-    /* Add this line */
 }
 
 .team-member h3 {
@@ -538,7 +563,6 @@ nav ul li a:hover::after {
     display: flex;
     gap: 1rem;
     margin-top: auto;
-    /* Push socials to the bottom */
     margin-bottom: 0.5rem;
     justify-content: center;
 }
@@ -546,7 +570,7 @@ nav ul li a:hover::after {
 .team-socials a {
     font-size: 1.5rem;
     color: var(--accent-color);
-    transition: color 0.3s;
+    transition: color var(--transition);
 }
 
 .team-socials a:hover {
@@ -567,7 +591,7 @@ nav ul li a:hover::after {
     border: 2px solid var(--accent-color);
     border-radius: 4px;
     padding: 0.7rem 1.6rem;
-    transition: background 0.3s, color 0.3s;
+    transition: background var(--transition), color var(--transition);
     text-decoration: none;
     gap: 0.7rem;
 }
@@ -594,7 +618,7 @@ footer {
     border-top: 1px solid #333;
 }
 
-footer .artist-credit {
+.artist-credit {
     font-size: 0.8rem;
     margin-top: 0.5rem;
     color: var(--secondary-color);
@@ -655,32 +679,22 @@ footer .artist-credit {
     nav ul {
         position: absolute;
         top: 100%;
-        /* Position below the nav bar */
         left: 0;
         width: 100%;
         background-color: var(--nav-bg-color);
-        /* Use nav background */
-        /* backdrop-filter: blur(10px); */
-        /* Removed for performance */
         flex-direction: column;
         align-items: center;
         padding: 1rem 0;
         box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-        /* Hide menu off-screen or using visibility/opacity */
         max-height: 0;
-        /* Use max-height for transition */
         overflow: hidden;
         transition: max-height 0.4s ease-out;
-        /* Reset AOS fade-down for mobile toggle */
         transform: none !important;
         opacity: 1 !important;
     }
 
-    /* Active state for mobile menu */
     nav ul.nav-active {
         max-height: 500px;
-        /* Adjust as needed, large enough for content */
-        padding: 1rem 0;
     }
 
     nav ul li {
@@ -692,10 +706,8 @@ footer .artist-credit {
     nav ul li a {
         padding: 1rem 0;
         display: block;
-        /* Make link fill the li */
         width: 100%;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        /* Separator */
     }
 
     nav ul li:last-child a {
@@ -704,15 +716,12 @@ footer .artist-credit {
 
     nav ul li a::after {
         display: none;
-        /* Hide underline effect on mobile */
     }
 
-    /* Show Burger Menu */
     .burger-menu {
         display: block;
     }
 
-    /* Burger menu active state animation (optional) */
     .burger-menu.active span:nth-child(1) {
         transform: rotate(45deg) translate(5px, 5px);
     }
@@ -733,11 +742,14 @@ footer .artist-credit {
         min-height: auto;
         padding: 6rem 5% 4rem;
         background-size: 85% auto;
-        /* Adjust background size for mobile */
     }
 
     .features-grid {
         grid-template-columns: 1fr;
+    }
+
+    .team-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 
     :root {
@@ -746,30 +758,15 @@ footer .artist-credit {
         --grid-gap: 1.5rem;
     }
 
-    .content-section p {
-        font-size: 1rem;
+    .modal-content {
+        width: 90%;
+        padding: 15px;
     }
 
-    .resources-section a {
-        font-size: 1.1rem;
-    }
-
-    .run-instructions {
-        max-width: 90%;
-        padding: 1rem;
-    }
-
-    .download-button {
-        padding: 0.8rem 1.8rem;
-        font-size: 1rem;
-    }
-
-    .docs-header {
-        font-size: 1.6rem;
-    }
-
-    .team-section {
-        padding: 2.5rem 5%;
+    .close-button {
+        top: 5px;
+        right: 15px;
+        font-size: 24px;
     }
 }
 
@@ -782,9 +779,14 @@ footer .artist-credit {
         font-size: 1.8rem;
     }
 
-    .cta-button {
+    .cta-button,
+    .download-button {
         padding: 0.8rem 1.8rem;
         font-size: 0.9rem;
+    }
+
+    .team-grid {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -799,20 +801,15 @@ footer .artist-credit {
     display: none;
     position: fixed;
     z-index: 2000;
-    /* Higher than nav */
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.85);
     opacity: 0;
-    transition: opacity 0.3s ease-in-out;
+    transition: opacity var(--transition);
 }
 
 .modal.show {
     display: flex;
-    /* Use flex to center content */
     align-items: center;
     justify-content: center;
     opacity: 1;
@@ -835,13 +832,9 @@ footer .artist-credit {
     height: auto;
     border-radius: 4px;
     display: block;
-    /* Remove extra space below video */
     margin: 0 auto;
-    /* Center video if container is wider */
     max-height: 85vh;
-    /* Limit video height to 85% of viewport height */
     object-fit: contain;
-    /* Ensure video scales within bounds, maintaining aspect ratio */
 }
 
 .close-button {
@@ -851,33 +844,13 @@ footer .artist-credit {
     right: 20px;
     font-size: 28px;
     font-weight: bold;
-    transition: color 0.3s ease;
+    transition: color var(--transition);
     z-index: 10;
-    /* Ensure the close button is stacked on top */
+    cursor: pointer;
 }
 
 .close-button:hover,
 .close-button:focus {
     color: var(--accent-color);
     text-decoration: none;
-    cursor: pointer;
-}
-
-.fallback-message {
-    color: var(--primary-color);
-    font-size: 1rem;
-    margin-top: 1rem;
-}
-
-@media (max-width: 768px) {
-    .modal-content {
-        width: 90%;
-        padding: 15px;
-    }
-
-    .close-button {
-        top: 5px;
-        right: 15px;
-        font-size: 24px;
-    }
 }
