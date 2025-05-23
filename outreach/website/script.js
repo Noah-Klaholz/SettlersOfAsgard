@@ -146,4 +146,48 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 15);
 
     window.addEventListener('scroll', handleScroll, { passive: true });
+
+    // Add Intersection Observer for performance
+    const observerOptions = {
+        root: null,
+        rootMargin: '50px',
+        threshold: 0.1
+    };
+
+    const lazyImageObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                if (img.dataset.src) {
+                    img.src = img.dataset.src;
+                    img.removeAttribute('data-src');
+                    lazyImageObserver.unobserve(img);
+                }
+            }
+        });
+    }, observerOptions);
+
+    // Enhanced prefetching
+    const prefetchLinks = () => {
+        const links = ['videos/trailer.mp4', 'videos/demo.mp4'];
+        links.forEach(href => {
+            const link = document.createElement('link');
+            link.rel = 'prefetch';
+            link.href = href;
+            document.head.appendChild(link);
+        });
+    };
+
+    // Service Worker registration
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('SW registered'))
+            .catch(err => console.log('SW registration failed'));
+    }
+
+    // Enhanced error handling with reporting
+    window.addEventListener('error', (e) => {
+        // Analytics/error reporting
+        console.warn('Error captured:', e.error);
+    });
 });
