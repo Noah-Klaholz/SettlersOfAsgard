@@ -3,6 +3,7 @@ noahklaholz: 12765
 noah: 1916
 vincent: 1239
 deinemama: 1193
+noahk: 951
 odin: 725
 vince: 691
 loki: 671
@@ -17,8 +18,10 @@ jenny: 423
 l: 412
 freya: 334
 vincent1: 220
+golmi: 200
 1: 196
 noh: 188
+noahk2: 160
 sebastian: 145
 3: 134
 pc: 100

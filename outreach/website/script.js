@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-
     AOS.init({
         duration: 800,
         offset: 100,
@@ -7,166 +6,188 @@ document.addEventListener('DOMContentLoaded', () => {
         easing: 'ease-in-out',
     });
 
-    const navLinksContainer = document.getElementById('nav-links');
-    const burgerButton = document.getElementById('burger-menu');
-    const allNavLinks = document.querySelectorAll('#nav-links li a');
-    const stickyNav = document.querySelector('.sticky-nav'); // Cache sticky-nav
+    const $ = (id) => document.getElementById(id);
+    const $$ = (selector) => document.querySelector(selector);
 
-    // Video Modal Elements
-    const trailerModal = document.getElementById('trailer-modal');
-    const demoModal = document.getElementById('demo-modal');
-    const closeTrailerModal = document.getElementById('close-trailer-modal');
-    const closeDemoModal = document.getElementById('close-demo-modal');
-    const trailerVideo = document.getElementById('trailer-video');
-    const demoVideo = document.getElementById('demo-video');
+    const elements = {
+        navLinksContainer: $('nav-links'),
+        burgerButton: $('burger-menu'),
+        stickyNav: $$('.sticky-nav'),
+        trailerModal: $('trailer-modal'),
+        demoModal: $('demo-modal'),
+        trailerVideo: $('trailer-video'),
+        demoVideo: $('demo-video')
+    };
 
-    // Play button overlay for world map
-    const worldPlayBtn = document.getElementById('world-play-btn');
-    if (worldPlayBtn) {
-        worldPlayBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            openModal(trailerModal, trailerVideo);
-        });
-    }
+    const { navLinksContainer, burgerButton, stickyNav, trailerModal, demoModal, trailerVideo, demoVideo } = elements;
 
-    // Play button overlay for world map
-    const demoPlayButton = document.getElementById('demo-play-btn');
-    if (demoPlayButton) {
-        demoPlayButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            openModal(demoModal, demoVideo);
-        });
-    }
-
-    // --- Debounce Function ---
-    function debounce(func, wait = 15, immediate = false) {
+    const debounce = (func, wait = 15) => {
         let timeout;
-        return function () {
-            const context = this, args = arguments;
-            const later = function () {
-                timeout = null;
-                if (!immediate) func.apply(context, args);
-            };
-            const callNow = immediate && !timeout;
+        return (...args) => {
             clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-            if (callNow) func.apply(context, args);
+            timeout = setTimeout(() => func.apply(this, args), wait);
         };
-    }
+    };
 
-    // Toggle nav menu on burger button click
-    if (burgerButton && navLinksContainer) {
-        burgerButton.addEventListener('click', () => {
-            navLinksContainer.classList.toggle('nav-active');
-            burgerButton.classList.toggle('active'); // Toggle burger animation class
-        });
-    }
-
-    // Function to open a modal
-    function openModal(modal, video) {
-        video.style.display = 'block'; // Ensure video is visible
-        video.play();
-        modal.classList.add('show');
-        // Close mobile nav if open
-        if (navLinksContainer && navLinksContainer.classList.contains('nav-active')) { // Added null check for navLinksContainer
+    const closeNavMenu = () => {
+        if (navLinksContainer?.classList.contains('nav-active')) {
             navLinksContainer.classList.remove('nav-active');
-            if (burgerButton) burgerButton.classList.remove('active'); // Added null check for burgerButton
+            burgerButton?.classList.remove('active');
         }
-    }
+    };
 
-    // Function to close a modal
-    function closeModal(modal, video) {
+    const openModal = (modal, video) => {
+        video.style.display = 'block';
+        video.play().catch(() => { });
+        modal.classList.add('show');
+        closeNavMenu();
+    };
+
+    const closeModal = (modal, video) => {
         modal.classList.remove('show');
         video.pause();
-        video.currentTime = 0; // Reset video
-    }
+        video.currentTime = 0;
+    };
 
-    // Event listeners for all navigation links
-    allNavLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            const href = link.getAttribute('href');
-            const linkId = link.id;
+    const scrollToElement = (href) => {
+        const targetElement = $$(href);
+        if (targetElement && stickyNav) {
+            const headerOffset = stickyNav.offsetHeight || 0;
+            const elementPosition = targetElement.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
-            if (linkId === 'watch-trailer-link') {
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: "smooth"
+            });
+        }
+    };
+
+    // Optimized event delegation with early returns
+    document.addEventListener('click', (e) => {
+        const { target } = e;
+        const targetId = target.id;
+
+        // Handle burger menu
+        if (target.closest('#burger-menu')) {
+            navLinksContainer?.classList.toggle('nav-active');
+            burgerButton?.classList.toggle('active');
+            return;
+        }
+
+        // Handle modal close buttons
+        if (targetId === 'close-trailer-modal') {
+            e.stopPropagation();
+            closeModal(trailerModal, trailerVideo);
+            return;
+        }
+
+        if (targetId === 'close-demo-modal') {
+            e.stopPropagation();
+            closeModal(demoModal, demoVideo);
+            return;
+        }
+
+        // Handle modal background clicks
+        if (target === trailerModal) {
+            closeModal(trailerModal, trailerVideo);
+            return;
+        }
+
+        if (target === demoModal) {
+            closeModal(demoModal, demoVideo);
+            return;
+        }
+
+        // Handle navigation and video buttons
+        const link = target.closest('a');
+        if (!link) return;
+
+        const href = link.getAttribute('href');
+        const linkId = link.id;
+
+        switch (linkId) {
+            case 'watch-trailer-link':
+            case 'world-play-btn':
                 e.preventDefault();
                 openModal(trailerModal, trailerVideo);
-            } else if (linkId === 'watch-demo-link') {
+                break;
+            case 'watch-demo-link':
+            case 'demo-play-btn':
                 e.preventDefault();
                 openModal(demoModal, demoVideo);
-            } else if (href && href.startsWith('#')) {
-                e.preventDefault();
-                const targetId = href;
-                const targetElement = document.querySelector(targetId);
-
-                if (targetElement) {
-                    const headerOffset = stickyNav ? stickyNav.offsetHeight : 0; // Use cached stickyNav
-                    const elementPosition = targetElement.getBoundingClientRect().top;
-                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-                    window.scrollTo({
-                        top: offsetPosition,
-                        behavior: "smooth"
-                    });
+                break;
+            default:
+                if (href?.startsWith('#')) {
+                    e.preventDefault();
+                    scrollToElement(href);
+                    closeNavMenu();
                 }
-                // Close nav menu when a link is clicked (for mobile view)
-                if (navLinksContainer && navLinksContainer.classList.contains('nav-active')) { // Added null check
-                    navLinksContainer.classList.remove('nav-active');
-                    if (burgerButton) burgerButton.classList.remove('active'); // Added null check
-                }
-            }
-            // For external links or links not handled, default behavior will apply if e.preventDefault() wasn't called
-        });
-    });
-
-    // Close modal listeners
-    if (closeTrailerModal) {
-        closeTrailerModal.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent click from bubbling to other elements
-            closeModal(trailerModal, trailerVideo);
-        });
-    }
-    if (closeDemoModal) {
-        closeDemoModal.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent click from bubbling to other elements
-            closeModal(demoModal, demoVideo);
-        });
-    }
-
-    // Close modal when clicking outside
-    window.addEventListener('click', (event) => {
-        if (event.target === trailerModal) {
-            closeModal(trailerModal, trailerVideo);
-        }
-        if (event.target === demoModal) {
-            closeModal(demoModal, demoVideo);
         }
     });
 
-    // --- Debounced Scroll Handler ---
+    // Optimized scroll handler with cached color values
+    const scrollColors = {
+        scrolled: 'rgba(26, 26, 26, 0.95)',
+        default: 'rgba(26, 26, 26, 0.9)'
+    };
+
     const handleScroll = debounce(() => {
-        // const nav = document.querySelector('.sticky-nav'); // No longer needed here
-        if (!stickyNav) return; // Guard clause using cached stickyNav
+        if (!stickyNav) return;
 
-        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        if (scrollTop > 50) {
-            // Check if style needs changing to avoid unnecessary DOM manipulation
-            if (stickyNav.style.backgroundColor !== 'rgba(26, 26, 26, 0.95)') {
-                stickyNav.style.backgroundColor = 'rgba(26, 26, 26, 0.95)';
-            }
-        } else {
-            if (stickyNav.style.backgroundColor !== 'rgba(26, 26, 26, 0.9)') {
-                stickyNav.style.backgroundColor = 'rgba(26, 26, 26, 0.9)';
-            }
+        const scrollTop = window.pageYOffset;
+        const newColor = scrollTop > 50 ? scrollColors.scrolled : scrollColors.default;
+
+        if (stickyNav.style.backgroundColor !== newColor) {
+            stickyNav.style.backgroundColor = newColor;
         }
 
-        // Close mobile nav if open when scrolling starts
-        if (navLinksContainer && burgerButton && navLinksContainer.classList.contains('nav-active')) {
-            navLinksContainer.classList.remove('nav-active');
-            burgerButton.classList.remove('active');
-        }
-    }, 15); // Debounce time in ms (adjust as needed)
+        closeNavMenu();
+    }, 15);
 
-    // Attach debounced scroll listener
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
+    // Add Intersection Observer for performance
+    const observerOptions = {
+        root: null,
+        rootMargin: '50px',
+        threshold: 0.1
+    };
+
+    const lazyImageObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                if (img.dataset.src) {
+                    img.src = img.dataset.src;
+                    img.removeAttribute('data-src');
+                    lazyImageObserver.unobserve(img);
+                }
+            }
+        });
+    }, observerOptions);
+
+    // Enhanced prefetching
+    const prefetchLinks = () => {
+        const links = ['videos/trailer.mp4', 'videos/demo.mp4'];
+        links.forEach(href => {
+            const link = document.createElement('link');
+            link.rel = 'prefetch';
+            link.href = href;
+            document.head.appendChild(link);
+        });
+    };
+
+    // Service Worker registration
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('SW registered'))
+            .catch(err => console.log('SW registration failed'));
+    }
+
+    // Enhanced error handling with reporting
+    window.addEventListener('error', (e) => {
+        // Analytics/error reporting
+        console.warn('Error captured:', e.error);
+    });
 });

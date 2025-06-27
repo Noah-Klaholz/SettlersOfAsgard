@@ -138,6 +138,10 @@
                                   onMouseClicked="#handleCardClick"
                                   onMouseEntered="#handleCardMouseEntered"
                                   onMouseExited="#handleCardMouseExited"/>
+                            <Pane fx:id="statue" styleClass="card,structure-card" prefWidth="80" prefHeight="120"
+                                  onMouseClicked="#handleCardClick"
+                                  onMouseEntered="#handleCardMouseEntered"
+                                  onMouseExited="#handleCardMouseExited"/>
                         </FlowPane>
                     </VBox>
                 </HBox>

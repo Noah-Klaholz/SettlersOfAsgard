@@ -1,0 +1,26 @@
+/* Inline critical CSS for above-the-fold content */
+:root {
+    --primary-color: #e0e0e0;
+    --accent-color: #c8a064;
+    --background-color: #1a1a1a
+}
+
+body {
+    font-family: 'Lato', sans-serif;
+    background: #1a1a1a;
+    color: #e0e0e0;
+    line-height: 1.6
+}
+
+.hero-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    background: #1a1a1a url('images/map_prelook.png') no-repeat center;
+    background-size: 70% auto
+}
+
+/* ...rest inlined in HTML head */

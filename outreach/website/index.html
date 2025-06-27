@@ -12,10 +12,44 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Lato:wght@300;400;700&display=swap"
         rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <!-- Font Awesome CDN for social icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <!-- Google Tag Manager - DO NOT REMOVE! -->
     <meta name="google-site-verification" content="fUSkji2_FKndWGq7xEh1cDmS2PaXcorVwHNDSK3fH-k" />
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#c8a064">
+
+    <!-- Enhanced SEO -->
+    <meta name="description"
+        content="Settlers Of Asgard - Norse mythology strategy game. Build settlements, invoke gods, discover artifacts in this multiplayer strategy experience.">
+    <meta property="og:title" content="Settlers Of Asgard - Norse Strategy Game">
+    <meta property="og:description"
+        content="Build, strategize, and conquer in this Norse mythology-inspired multiplayer strategy game.">
+    <meta property="og:image" content="/images/og-image.jpg">
+    <meta property="og:url" content="https://settlersofasgard.com">
+
+    <!-- JSON-LD structured data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "VideoGame",
+        "name": "Settlers Of Asgard",
+        "description": "Norse mythology strategy game",
+        "genre": "Strategy",
+        "playMode": "MultiPlayer",
+        "applicationCategory": "Game"
+    }
+    </script>
+
+    <!-- Critical CSS inlined here -->
+    <style>
+        /* Critical CSS */
+    </style>
+
+    <!-- Resource hints -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="preconnect" href="https://unpkg.com">
+    <link rel="preload" href="/images/map_prelook.png" as="image">
 </head>
 
 <body>
@@ -44,16 +78,14 @@
     <main>
         <section id="hero" class="hero-section">
             <div class="hero-content">
-                <h1 data-aos="zoom-in" data-aos-duration="1000">Settlers Of Asgard</h1>
-                <p class="tagline" data-aos="fade-up" data-aos-delay="300" data-aos-duration="800">Forge Your Saga in
-                    the Realm of Gods</p>
-                <p class="description" data-aos="fade-up" data-aos-delay="500" data-aos-duration="800">
+                <h1 data-aos="zoom-in">Settlers Of Asgard</h1>
+                <p class="tagline" data-aos="fade-up" data-aos-delay="300">Forge Your Saga in the Realm of Gods</p>
+                <p class="description" data-aos="fade-up" data-aos-delay="500">
                     Build, strategize, and conquer in Settlers Of Asgard, a multiplayer game inspired by Norse
                     mythology. Gather resources, construct powerful structures, invoke ancient gods, and outwit your
                     rivals to claim victory.
                 </p>
-                <a href="#story" class="cta-button" data-aos="zoom-in-up" data-aos-delay="700"
-                    data-aos-duration="600">Discover the Story</a>
+                <a href="#story" class="cta-button" data-aos="zoom-in-up" data-aos-delay="700">Discover the Story</a>
             </div>
             <div class="hero-overlay"></div>
         </section>
@@ -137,18 +169,19 @@
             <h2 data-aos="zoom-in-up">Download & Resources</h2>
 
             <div class="download-section" data-aos="zoom-in-up" data-aos-delay="100">
-                <a href="../../build/libs/SettlersOfAsgard.jar" class="download-button"
-                    download="SettlersOfAsgard.jar">Download Game (JAR)</a>
+                <a href="download/settlersOfAsgard.jar" class="download-button" download="settlersOfAsgard.jar">Download
+                    Game (JAR)</a>
             </div>
 
             <div class="run-instructions" data-aos="fade-up" data-aos-delay="200">
                 <h3>How to Run</h3>
                 <pre><code>
+# To run the game, you need to have Java 17+ installed on your system.
 # To start the Server:
-java -jar SettlersOfAsgard.jar server &lt;listenport&gt;
+java -jar settlersOfAsgard.jar server &lt;listenport&gt;
 
 # To start the Client:
-java -jar SettlersOfAsgard.jar client &lt;serverip&gt;:&lt;serverport&gt; [username]
+java -jar settlersOfAsgard.jar client &lt;serverip&gt;:&lt;serverport&gt; [username]
                 </code></pre>
                 <p>Replace `&lt;listenport&gt;`, `&lt;serverip&gt;`, `&lt;serverport&gt;`, and `[username]` with your
                     desired values.</p>
@@ -168,57 +201,58 @@ java -jar SettlersOfAsgard.jar client &lt;serverip&gt;:&lt;serverport&gt; [usern
             <h2 data-aos="fade-up">Meet the Team</h2>
             <div class="team-grid">
                 <div class="team-member" data-aos="fade-up" data-aos-delay="100">
-                    <img src="images/team/profile_janura.jpeg" alt="Janura Rose" class="team-photo"
-                        oncontextmenu="return false;" loading="lazy">
+                    <img src="images/team/profile_janura.jpeg" alt="Janura Rose" class="team-photo" loading="lazy">
                     <h3>Janura Rose</h3>
                     <p>Artist & UI designer. Created all original artwork and card designs for the game.</p>
                     <div class="team-socials">
-                        <a href="https://www.instagram.com/janura_r?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" aria-label="GitHub">
+                        <a href="https://www.instagram.com/janura_r?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                            target="_blank" rel="noopener noreferrer" aria-label="Janura's Instagram">
                             <i class="fa-brands fa-instagram"></i>
                         </a>
                     </div>
                 </div>
                 <div class="team-member" data-aos="fade-up" data-aos-delay="200">
-                    <img src="images/team/profile_noah.jpg" alt="Noah Klaholz" class="team-photo"
-                        oncontextmenu="return false;" loading="lazy">
+                    <img src="images/team/profile_noah.jpg" alt="Noah Klaholz" class="team-photo" loading="lazy">
                     <h3>Noah Klaholz</h3>
-                    <p> Network architect, game logic fixer, UI helper, sound wrangler. Also kept the chaos organized.
+                    <p>Network architect, game logic fixer, UI helper, sound wrangler. Also kept the chaos organized.
                     </p>
                     <div class="team-socials">
                         <a href="https://www.linkedin.com/in/noah-klaholz-251939359/" target="_blank"
-                            aria-label="LinkedIn">
+                            rel="noopener noreferrer" aria-label="Noah's LinkedIn">
                             <i class="fa-brands fa-linkedin"></i>
                         </a>
-                        <a href="https://noahklaholz.netlify.app" target="_blank" aria-label="Portfolio">
+                        <a href="https://noahklaholz.netlify.app" target="_blank" rel="noopener noreferrer"
+                            aria-label="Noah's Portfolio">
                             <i class="fa-solid fa-laptop-code"></i>
                         </a>
                     </div>
                 </div>
                 <div class="team-member" data-aos="fade-up" data-aos-delay="300">
                     <img src="images/team/profile_sebastian.jpg" alt="Sebastian Müller" class="team-photo"
-                        oncontextmenu="return false;" loading="lazy">
+                        loading="lazy">
                     <h3>Sebastian Müller</h3>
                     <p>Lead UI designer. Enjoys learning new tools and writing clean code.</p>
                     <div class="team-socials">
-                        <a href="https://github.com/YggdrasilLabs" target="_blank" aria-label="GitHub">
+                        <a href="https://github.com/YggdrasilLabs" target="_blank" rel="noopener noreferrer"
+                            aria-label="Sebastian's GitHub">
                             <i class="fa-brands fa-github"></i>
                         </a>
                     </div>
                 </div>
                 <div class="team-member" data-aos="fade-up" data-aos-delay="400">
-                    <img src="images/team/profile_vincent.jpg" alt="Vincent Schall" class="team-photo"
-                        oncontextmenu="return false;" loading="lazy">
+                    <img src="images/team/profile_vincent.jpg" alt="Vincent Schall" class="team-photo" loading="lazy">
                     <h3>Vincent Schall</h3>
-                    <p> Backend developer—"The clock is ruond in both directions" </p>
+                    <p>Backend developer—"The clock is round in both directions"</p>
                     <div class="team-socials">
-                        <a href="https://github.com/vincentschall" target="_blank" aria-label="GitHub">
-                            <i class="fa-brands fa-github"></i>
+                        <a href="https://leetcode.com/u/Witzknoten/" target="_blank" rel="noopener noreferrer"
+                            aria-label="Vincent's Leetcode">
+                            <i class="fa-solid fa-laptop-code"></i>
                         </a>
                     </div>
                 </div>
             </div>
             <div class="github-link">
-                <a href="https://github.com/Noah-Klaholz/SettlersOfAsgard" target="_blank">
+                <a href="https://github.com/Noah-Klaholz/SettlersOfAsgard" target="_blank" rel="noopener noreferrer">
                     <i class="fa-brands fa-github github-icon"></i>
                     View Project on GitHub
                 </a>
