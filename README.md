@@ -48,3 +48,58 @@ Die server-ip ist entweder die lokale IP-Adresse des Servers im Netzwerk oder "l
 
 Eine Anleitung, wie das Spiel zu spielen ist finden Sie hier:
 [Spielanleitung](docs/Spielbeschreibungen/GameManual.pdf).
+
+
+# README - Settlers of Asgard (English translation)
+
+## Overview
+
+Settlers of Asgard is a strategic multiplayer economic game for 3–4 players, written in Java 17, 
+in which the goal is to collect as many runes as possible by skillfully purchasing fields, building and upgrading structures,
+and utilizing artifacts and divine blessings. 
+The player with the most runes after 5 rounds wins the game.
+
+[Website](https://settlersofasgard.netlify.app)
+
+## Documents
+
+All relevant documents can be found in the `docs` folder.
+Links to the most important documents are provided here:
+
+## Links
+
+Detailed documentation of the game rules: [Game Rules](docs/Spielbeschreibungen/GameDesign.pdf).
+Documentation of the exact game flow: [Manual](docs/Spielbeschreibungen/GameManual.md).
+
+Network protocol: [Network Protocol](docs/Networking/Netzwerkprotokoll.pdf).
+
+GitHub contributors: [Contributors](docs/Contributors/CONTRIBUTORS.txt).
+
+An overview of the continuously updated project plan, calendar, and task assignments can be found here:
+[Project Management](https://tungsten-carrot-2b4.notion.site/1ad104ac2da581e0bd69d7f92ebc897b?v=1ad104ac2da581f5ba1b000c74035432&pvs=4)
+
+The continuously updated project log can be found here:
+[Log](https://tungsten-carrot-2b4.notion.site/Projekttagebuch-1ad104ac2da58189ad61c4600e771cbd?pvs=4)
+
+A PDF overview of the project timeline can be found here:
+- [Project Plan](docs/Projektplanung/ProjektPlan.pdf).
+- [Project Diary](docs/Projektplanung/Projekttagebuch.pdf).
+
+## Start
+Build the project via gradle:
+```shell
+./gradlew build-cs108
+```
+In the terminal, start the server first, then the client:
+```shell
+Server: java -jar /build/libs/settlersOfAsgard.jar server <listenport>
+Client: java -jar /build/libs/settlersOfAsgard.jar client <server-ip> <server-port>
+```
+Note: listenport and server-port must be identical.
+The server-ip is either the server’s local IP address on the network or “localhost” if both are running on the same machine.
+
+You can find instructions on how to play the game here:
+[GameManual](docs/Spielbeschreibungen/GameManual.pdf).
+
+Translated with DeepL.com (free version)
+
